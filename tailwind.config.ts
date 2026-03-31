@@ -16,11 +16,13 @@ const config: Config = {
         "text-base": tokens.colors.text,
         heading: tokens.colors.heading,
         muted: tokens.colors.muted,
+        accent: tokens.colors.accent,
       },
       fontFamily: {
         brand: [...tokens.fontFamily.brand],
         body: [...tokens.fontFamily.body],
         heading: [...tokens.fontFamily.heading],
+        ui: [...tokens.fontFamily.ui],
       },
       borderRadius: {
         sm: tokens.borderRadius.sm,

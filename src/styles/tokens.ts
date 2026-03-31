@@ -6,6 +6,7 @@ export const tokens = {
     text: "#000000",
     heading: "#091624",
     muted: "#717379",
+    accent: "#e96f18",
   },
   fontFamily: {
     // Geist Mono — nav links, CTA (loaded via next/font/google)
@@ -15,6 +16,8 @@ export const tokens = {
     // GT Alpina Trial — headings (loaded via @font-face in globals.css)
     // Add font files to public/fonts/: GTAlpinaTrial-Regular.woff2 + GTAlpinaTrial-RegularItalic.woff2
     heading: ["GT Alpina Trial", "serif"],
+    // Inter — card titles, buttons (loaded via next/font/google)
+    ui: ["var(--font-ui)", "sans-serif"],
   },
   borderRadius: {
     sm: "4px",
