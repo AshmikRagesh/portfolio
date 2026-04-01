@@ -43,16 +43,16 @@ function ProductCard({ item }: { item: PlaygroundItem }) {
         Container stays fixed.
       */}
       <div className="relative h-[270px] w-full mb-[-67px]">
-        {/* Orange card — fans left + slightly down on hover */}
-        <div className="absolute inset-0 flex items-center justify-center w-[294px] transition-transform duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-x-2 group-hover:translate-y-1 will-change-transform">
+        {/* Orange card — lifts up with slight left lean */}
+        <div className="absolute inset-0 flex items-center justify-center w-[294px] transition-transform duration-[500ms] ease-[cubic-bezier(0.34,2.0,0.64,1)] group-hover:-translate-y-4 group-hover:-translate-x-1 will-change-transform">
           <div className="w-[267px] h-[239px] bg-[#f75923] rounded-[14px] -rotate-[7.06deg]" />
         </div>
-        {/* Blue card — fans right + slightly up on hover */}
-        <div className="absolute top-[9px] left-[29px] flex items-center justify-center w-[287px] h-[261px] transition-transform duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:translate-x-2 group-hover:-translate-y-1 will-change-transform">
+        {/* Blue card — lifts up the most, slight right lean */}
+        <div className="absolute top-[9px] left-[29px] flex items-center justify-center w-[287px] h-[261px] transition-transform duration-[500ms] ease-[cubic-bezier(0.34,2.0,0.64,1)] group-hover:-translate-y-5 group-hover:translate-x-1 will-change-transform">
           <div className="w-[264px] h-[234px] bg-[#1f88f9] rounded-[14px] rotate-6" />
         </div>
-        {/* Screenshot card — lifts straight up on hover */}
-        <div className="absolute top-[31px] left-[29px] w-[268px] h-[238px] rounded-[14px] overflow-hidden transition-transform duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2 will-change-transform">
+        {/* Screenshot card — lifts up the least (top card, subtle) */}
+        <div className="absolute top-[31px] left-[29px] w-[268px] h-[238px] rounded-[14px] overflow-hidden transition-transform duration-[500ms] ease-[cubic-bezier(0.34,2.0,0.64,1)] group-hover:-translate-y-3 will-change-transform">
           <Image
             src={item.image}
             alt={item.title}
@@ -76,7 +76,7 @@ function ProductCard({ item }: { item: PlaygroundItem }) {
 
         {/* Text */}
         <div className="flex flex-col gap-2">
-          <h3 className="font-ui font-bold text-[26px] leading-[1.18] tracking-[-0.3px] text-heading">
+          <h3 className="font-heading font-medium text-[26px] leading-[1.18] tracking-[-0.3px] text-heading">
             {item.title}
           </h3>
           <p className="font-body font-normal text-[16px] leading-[22px] text-[rgba(9,13,51,0.7)]">
