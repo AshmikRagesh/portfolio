@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X, LayoutGrid, CirclePlay, CircleUser } from "lucide-react";
+import { useChatDrawer } from "@/context/ChatContext";
 
 // TODO: Replace with permanent SVG asset (Figma URL expires in ~7 days)
 const ICON_SPARKLE =
@@ -18,6 +19,7 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isOpen, toggle: toggleChat } = useChatDrawer();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -35,12 +37,12 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 bg-background border-b border-dashed border-[#c8ccd4] transition-shadow duration-200 ${
+      className={`fixed top-0 left-0 h-[80px] z-50 bg-background border-b border-[#c8ccd4] transition-[right,box-shadow] duration-300 ease-in-out ${
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
-      }`}
+      } ${isOpen ? "lg:right-[400px]" : "right-0"}`}
     >
       {/* Main nav row */}
-      <nav className="flex items-center justify-between px-6 py-3 md:px-10 md:py-4 lg:px-[100px]">
+      <nav className="flex items-center justify-between h-full px-6 md:px-10 lg:px-[100px]">
         {/* Logo */}
         <Link href="/" aria-label="Home" className="shrink-0">
           <span className="font-heading italic font-normal text-[28px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.36px] leading-[44px]">
@@ -67,13 +69,16 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
-          <a
-            href="#"
-            className="flex items-center gap-2 bg-[#172b4d] text-white font-brand font-medium text-[15px] lg:text-[16px] tracking-[-0.08px] px-[16px] py-[8px] h-[42px] rounded-[10px] hover:bg-[#0049c4] transition-colors duration-200 whitespace-nowrap"
+          <button
+            type="button"
+            onClick={toggleChat}
+            className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] lg:text-[16px] tracking-[-0.08px] px-[16px] py-[8px] h-[42px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
+                isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
+              }`}
           >
             <Image src={ICON_SPARKLE} alt="" width={18} height={18} unoptimized />
-            Chat
-          </a>
+            ASH LLM
+          </button>
         </div>
 
         {/* Mobile: hamburger */}
@@ -103,13 +108,16 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
-          <a
-            href="#"
-            className="inline-flex items-center gap-2 bg-[#172b4d] text-white font-brand font-medium text-[16px] tracking-[-0.08px] px-[16px] py-[8px] rounded-[10px] hover:bg-[#0049c4] transition-colors duration-200"
+          <button
+            type="button"
+            onClick={toggleChat}
+            className={`inline-flex items-center gap-2 text-white font-brand font-medium text-[16px] tracking-[-0.08px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 cursor-pointer ${
+                isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
+              }`}
           >
             <Image src={ICON_SPARKLE} alt="" width={18} height={18} unoptimized />
-            Chat
-          </a>
+            ASH LLM
+          </button>
         </div>
       )}
     </header>
