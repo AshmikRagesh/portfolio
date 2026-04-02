@@ -52,12 +52,12 @@ export default function Navbar() {
 
         {/* Desktop + tablet: nav links + CTA */}
         <div className="hidden md:flex items-center gap-[20px]">
-          <ul className="flex items-center gap-[20px] lg:gap-[24px]">
+          <ul className="flex items-center gap-[24px]">
             {navLinks.map(({ label, href, Icon }) => (
               <li key={label}>
                 <a
                   href={href}
-                  className="group/tab flex items-center gap-2 font-brand text-[13px] lg:text-[15px] font-normal text-[#354454] uppercase tracking-[1px] transition-colors duration-200 hover:text-black hover:underline hover:decoration-wavy"
+                  className="group/tab flex items-center gap-2 font-brand text-[14px] font-normal text-[#354454] uppercase tracking-[1px] transition-colors duration-200 hover:text-black hover:underline hover:decoration-wavy"
                 >
                   <Icon
                     size={18}
@@ -72,11 +72,11 @@ export default function Navbar() {
           <button
             type="button"
             onClick={toggleChat}
-            className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] lg:text-[16px] tracking-[-0.08px] px-[16px] py-[8px] h-[42px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
+            className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
                 isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
               }`}
           >
-            <Image src={ICON_SPARKLE} alt="" width={18} height={18} unoptimized />
+            <Image src={ICON_SPARKLE} alt="" width={16} height={16} unoptimized />
             ASH LLM
           </button>
         </div>
@@ -111,11 +111,11 @@ export default function Navbar() {
           <button
             type="button"
             onClick={toggleChat}
-            className={`inline-flex items-center gap-2 text-white font-brand font-medium text-[16px] tracking-[-0.08px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 cursor-pointer ${
+            className={`inline-flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 cursor-pointer ${
                 isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
               }`}
           >
-            <Image src={ICON_SPARKLE} alt="" width={18} height={18} unoptimized />
+            <Image src={ICON_SPARKLE} alt="" width={16} height={16} unoptimized />
             ASH LLM
           </button>
         </div>
