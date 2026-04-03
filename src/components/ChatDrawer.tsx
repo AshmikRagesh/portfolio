@@ -74,7 +74,7 @@ function ChatInput({
           onClick={() => onSend(value)}
           disabled={!value.trim()}
           aria-label="Send"
-          className="shrink-0 text-[#354454] disabled:opacity-30 hover:text-[#0049c4] transition-colors duration-150"
+          className="shrink-0 flex items-center justify-center size-[28px] rounded-full text-[#354454] disabled:opacity-30 hover:text-[#0049c4] hover:bg-black/[0.05] transition-colors duration-150"
         >
           <ArrowUp size={20} strokeWidth={1.5} />
         </button>
@@ -133,11 +133,13 @@ export default function ChatDrawer() {
       aria-label="Chat with Ashmik"
       aria-hidden={!isOpen}
       className={`
-        fixed flex flex-col bg-[#f5f7f8] border-l border-[#c8ccd4]
-        inset-0 z-[60]
-        lg:top-0 lg:right-0 lg:bottom-0 lg:left-auto lg:w-[400px] lg:z-40
+        fixed flex flex-col bg-[#f5f7f8]
+        inset-x-0 bottom-0 top-0 z-[60]
+        lg:top-0 lg:right-0 lg:bottom-0 lg:left-auto lg:w-[400px] lg:z-40 lg:border-l lg:border-[#c8ccd4]
         transition-transform duration-300 ease-in-out
-        ${isOpen ? "translate-x-0" : "translate-x-full"}
+        ${isOpen
+          ? "translate-y-0 lg:translate-y-0 lg:translate-x-0"
+          : "translate-y-full lg:translate-y-0 lg:translate-x-full"}
       `}
     >
       {/* ── Header ── same 76px height as the Navbar on desktop */}
@@ -154,7 +156,7 @@ export default function ChatDrawer() {
             type="button"
             onClick={handleReset}
             aria-label="Reset conversation"
-            className="text-[#717379] hover:text-[#354454] transition-colors duration-150"
+            className="flex items-center justify-center size-[32px] rounded-full text-[#717379] hover:text-[#354454] hover:bg-black/[0.05] transition-colors duration-150"
           >
             <RotateCcw size={18} strokeWidth={1.5} />
           </button>
@@ -162,7 +164,7 @@ export default function ChatDrawer() {
             type="button"
             onClick={close}
             aria-label="Close chat"
-            className="text-[#717379] hover:text-[#354454] transition-colors duration-150"
+            className="flex items-center justify-center size-[32px] rounded-full text-[#717379] hover:text-[#354454] hover:bg-black/[0.05] transition-colors duration-150"
           >
             <X size={20} strokeWidth={1.5} />
           </button>

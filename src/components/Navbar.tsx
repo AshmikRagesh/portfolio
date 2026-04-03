@@ -37,15 +37,15 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 h-[80px] z-50 bg-background border-b border-[#c8ccd4] transition-[right,box-shadow] duration-300 ease-in-out ${
+      className={`fixed top-0 left-0 right-0 h-[80px] z-50 bg-background border-b border-[#c8ccd4] transition-shadow duration-200 ${
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
-      } ${isOpen ? "lg:right-[400px]" : "right-0"}`}
+      }`}
     >
       {/* Main nav row */}
-      <nav className="flex items-center justify-between h-full px-6 md:px-10 lg:px-[100px]">
+      <nav className="flex items-center justify-between h-full px-[20px] md:px-10 lg:px-[100px]">
         {/* Logo */}
         <Link href="/" aria-label="Home" className="shrink-0">
-          <span className="font-heading italic font-normal text-[28px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.36px] leading-[44px]">
+          <span className="font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px]">
             Ash
           </span>
         </Link>
@@ -81,25 +81,38 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile: hamburger */}
-        <button
-          className="md:hidden text-primary p-1"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        {/* Mobile: ASH LLM button + hamburger */}
+        <div className="md:hidden flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleChat}
+            className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
+              isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
+            }`}
+          >
+            <Image src={ICON_SPARKLE} alt="" width={16} height={16} unoptimized />
+            ASH LLM
+          </button>
+          <button
+            className="flex items-center justify-center w-[38px] self-stretch rounded-full border-[0.5px] border-[#c8ccd4] bg-[rgba(23,43,77,0.1)] p-[4px] text-[#091624]"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? <X size={18} strokeWidth={1.5} /> : <Menu size={18} strokeWidth={1.5} />}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile drawer */}
       {menuOpen && (
-        <div className="md:hidden border-t border-dashed border-[#c8ccd4] bg-background px-6 py-6">
-          <ul className="flex flex-col gap-5 mb-6">
+        <div className="md:hidden bg-background border-b border-[#c8ccd4]">
+          {/* Nav items — each with a bottom divider */}
+          <ul>
             {navLinks.map(({ label, href, Icon }) => (
-              <li key={label}>
+              <li key={label} className="border-b border-[#e8eaed]">
                 <a
                   href={href}
-                  className="flex items-center gap-3 font-brand text-[14px] font-normal text-[#354454] uppercase tracking-[1px] transition-colors duration-200 hover:text-black"
+                  className="flex items-center gap-3 font-brand text-[14px] font-normal text-[#354454] uppercase tracking-[1px] px-[20px] py-5 transition-colors duration-200 hover:text-black"
                   onClick={() => setMenuOpen(false)}
                 >
                   <Icon size={18} strokeWidth={1.5} />
@@ -108,16 +121,26 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
-          <button
-            type="button"
-            onClick={toggleChat}
-            className={`inline-flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 cursor-pointer ${
+
+          {/* CTA buttons */}
+          <div className="flex flex-col gap-3 px-[20px] py-8">
+            <button
+              type="button"
+              onClick={() => { toggleChat(); setMenuOpen(false); }}
+              className={`w-full flex items-center justify-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[10px] rounded-[10px] transition-colors duration-200 cursor-pointer ${
                 isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
               }`}
-          >
-            <Image src={ICON_SPARKLE} alt="" width={16} height={16} unoptimized />
-            ASH LLM
-          </button>
+            >
+              <Image src={ICON_SPARKLE} alt="" width={16} height={16} unoptimized />
+              ASH LLM
+            </button>
+            <a
+              href="/resume"
+              className="w-full flex items-center justify-center font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[10px] rounded-[10px] border border-[#c8ccd4] text-[#354454] hover:border-[#354454] transition-colors duration-200"
+            >
+              Resume
+            </a>
+          </div>
         </div>
       )}
     </header>
