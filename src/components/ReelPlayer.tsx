@@ -2,21 +2,27 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Maximize2, X, ChevronUp, ChevronDown, ArrowRight } from "lucide-react";
+import { X, ChevronUp, ChevronDown, ArrowRight, Maximize2 } from "lucide-react";
 import { useChatDrawer } from "@/context/ChatContext";
 
 interface Reel {
-  videoSrc: string;
+  youtubeId: string;
   title: string;
   projectHref: string;
 }
 
-// TODO: Replace videoSrc paths with real video files in /public/videos/
+// TODO: Replace youtubeId with actual YouTube Short IDs and update projectHref per project
 const reels: Reel[] = [
-  { videoSrc: "/videos/reel-1.mp4", title: "Artemis Design System", projectHref: "#" },
-  { videoSrc: "/videos/reel-2.mp4", title: "PokerGPT", projectHref: "#" },
-  { videoSrc: "/videos/reel-3.mp4", title: "RBC AI Solution", projectHref: "#" },
+  { youtubeId: "dQw4w9WgXcQ", title: "Artemis Design System", projectHref: "#" },
+  { youtubeId: "dQw4w9WgXcQ", title: "PokerGPT", projectHref: "#" },
+  { youtubeId: "dQw4w9WgXcQ", title: "RBC AI Solution", projectHref: "#" },
 ];
+
+const floatSrc = (id: string) =>
+  `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&modestbranding=1&iv_load_policy=3&rel=0`;
+
+const expandSrc = (id: string) =>
+  `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&playsinline=1&rel=0&modestbranding=1`;
 
 export default function ReelPlayer() {
   const [index, setIndex] = useState(0);
@@ -54,26 +60,26 @@ export default function ReelPlayer() {
         onClick={() => setExpanded(true)}
         onKeyDown={(e) => e.key === "Enter" && setExpanded(true)}
       >
-        {/* Outer navy bezel — matches Figma spec */}
+        {/* Navy bezel frame */}
         <div className="bg-[#172b4d] p-[4px] rounded-[8px] shadow-[0_8px_32px_rgba(0,0,0,0.32)]">
-          <div className="relative w-[102px] h-[180px] rounded-[6px] overflow-hidden">
-            <video
+          <div className="relative w-[102px] h-[180px] rounded-[6px] overflow-hidden bg-black">
+            <iframe
               key={index}
-              src={reel.videoSrc}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover"
+              src={floatSrc(reel.youtubeId)}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+              className="absolute inset-0 w-full h-full pointer-events-none"
+              style={{ border: "none" }}
+              title={reel.title}
             />
             {/* Expand overlay on hover */}
             <div
               className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
-                hovered ? "opacity-100 bg-black/25" : "opacity-0"
+                hovered ? "opacity-100 bg-black/30" : "opacity-0"
               }`}
             >
               <div className="bg-white/20 backdrop-blur-sm rounded-full p-2.5">
-                <Maximize2 size={18} strokeWidth={1.5} className="text-white" />
+                <Maximize2 size={16} strokeWidth={1.5} className="text-white" />
               </div>
             </div>
           </div>
@@ -82,56 +88,58 @@ export default function ReelPlayer() {
 
       {/* ── Expanded overlay ── */}
       {expanded && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[radial-gradient(ellipse_at_center,_rgba(25,25,25,0.96)_0%,_rgba(0,0,0,0.98)_100%)]">
-          {/* Close */}
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#060d18]">
+          {/* Close — top left */}
           <button
             onClick={() => setExpanded(false)}
             aria-label="Close"
-            className="absolute top-6 right-6 flex items-center justify-center size-[40px] rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+            className="absolute top-5 left-5 flex items-center justify-center size-[36px] rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors"
           >
-            <X size={24} strokeWidth={1.5} />
+            <X size={20} strokeWidth={1.5} />
           </button>
 
-          {/* Phone frame + nav */}
-          <div className="flex items-center gap-5">
-            {/* Phone-shaped video — navy bezel matches Figma spec */}
-            <div className="bg-[#172b4d] p-[4px] rounded-[8px] shadow-[0_24px_80px_rgba(0,0,0,0.6)]">
-              <div className="relative w-[332px] h-[612px] rounded-[6px] overflow-hidden">
-                <video
+          {/* Video column + nav row */}
+          <div className="flex items-center gap-4">
+            {/* Video + CTA stacked vertically */}
+            <div className="flex flex-col gap-0">
+              {/* Phone-frame video — no bezel, just rounded corners */}
+              <div className="relative w-[380px] h-[676px] rounded-t-[16px] overflow-hidden bg-black">
+                <iframe
                   key={index}
-                  src={reel.videoSrc}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
+                  src={expandSrc(reel.youtubeId)}
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                  style={{ border: "none" }}
+                  title={reel.title}
                 />
-                {/* See Full Project bar */}
-                <Link
-                  href={reel.projectHref}
-                  className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-[#0d1821]/80 backdrop-blur-sm px-5 py-4 text-white font-brand font-medium text-[14px] tracking-[-0.07px] hover:bg-[#0d1821]/95 transition-colors"
-                >
-                  See Full Project
-                  <ArrowRight size={16} strokeWidth={1.5} />
-                </Link>
               </div>
+
+              {/* See Full Project — below the video */}
+              <Link
+                href={reel.projectHref}
+                className="flex items-center justify-between w-[380px] bg-[#111827] hover:bg-[#1a2537] transition-colors px-6 py-5 rounded-b-[16px] text-white font-brand font-medium text-[15px] tracking-[-0.07px]"
+              >
+                See Full Project
+                <ArrowRight size={16} strokeWidth={1.5} />
+              </Link>
             </div>
 
-            {/* Up / Down navigation */}
+            {/* Up / Down navigation — down on top, up on bottom (matches screenshot) */}
             <div className="flex flex-col gap-3">
-              <button
-                onClick={() => go(-1)}
-                aria-label="Previous reel"
-                className="flex items-center justify-center size-[44px] rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-              >
-                <ChevronUp size={22} strokeWidth={1.5} />
-              </button>
               <button
                 onClick={() => go(1)}
                 aria-label="Next reel"
                 className="flex items-center justify-center size-[44px] rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
               >
                 <ChevronDown size={22} strokeWidth={1.5} />
+              </button>
+              <button
+                onClick={() => go(-1)}
+                aria-label="Previous reel"
+                className="flex items-center justify-center size-[44px] rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+              >
+                <ChevronUp size={22} strokeWidth={1.5} />
               </button>
             </div>
           </div>
