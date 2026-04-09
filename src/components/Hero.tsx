@@ -21,7 +21,7 @@ export default function Hero() {
       </div>
 
       {/* Portrait */}
-      <div className="relative overflow-hidden w-full aspect-[502/514] md:w-[502px] md:h-[514px] md:aspect-auto lg:w-[502px] lg:h-[514px]">
+      <div className="relative overflow-hidden w-[80%] aspect-[502/514] md:w-[502px] md:h-[514px] md:aspect-auto lg:w-[502px] lg:h-[514px]">
         <Image
           src={PORTRAIT_SRC}
           alt="Portrait of Ashmik Ragesh"
