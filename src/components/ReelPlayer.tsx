@@ -2,8 +2,31 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { X, ChevronUp, ChevronDown, ArrowRight, Maximize2 } from "lucide-react";
+import { X, Maximize2 } from "lucide-react";
 import { useChatDrawer } from "@/context/ChatContext";
+
+// Figma arrow/arrow-up icon — points up by default; rotate-90 = right, rotate-180 = down
+function ArrowIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 12.0001 15.3333"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ display: "block" }}
+    >
+      <path
+        d="M1.00006 5.85867C2.29637 4.10584 3.81072 2.53153 5.5048 1.1746C5.65012 1.0582 5.82509 1 6.00006 1M11.0001 5.85867C9.70376 4.10583 8.18941 2.53153 6.49533 1.1746C6.35 1.0582 6.17503 1 6.00006 1M6.00006 1V14.3333"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 interface Reel {
   youtubeId: string;
@@ -11,11 +34,10 @@ interface Reel {
   projectHref: string;
 }
 
-// TODO: Replace youtubeId with actual YouTube Short IDs and update projectHref per project
 const reels: Reel[] = [
-  { youtubeId: "dQw4w9WgXcQ", title: "Artemis Design System", projectHref: "#" },
-  { youtubeId: "dQw4w9WgXcQ", title: "PokerGPT", projectHref: "#" },
-  { youtubeId: "dQw4w9WgXcQ", title: "RBC AI Solution", projectHref: "#" },
+  { youtubeId: "2rs_wDV_0Ww", title: "Artemis Design System", projectHref: "#" },
+  { youtubeId: "2rs_wDV_0Ww", title: "PokerGPT", projectHref: "#" },
+  { youtubeId: "2rs_wDV_0Ww", title: "RBC AI Solution", projectHref: "#" },
 ];
 
 const floatSrc = (id: string) =>
@@ -50,11 +72,16 @@ export default function ReelPlayer() {
         aria-label="Expand reel"
         className={`
           fixed bottom-8 z-[45] cursor-pointer select-none
-          transition-[right,transform] duration-300 ease-in-out
+          transition-[right] duration-300 ease-in-out
           right-[20px] md:right-[80px] lg:right-[100px]
           ${chatOpen ? "lg:!right-[500px]" : ""}
-          ${hovered ? "scale-[1.08]" : "scale-100"}
         `}
+        style={{
+          transform: hovered ? "scale(1.13)" : "scale(1)",
+          transition: hovered
+            ? "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), right 0.3s ease-in-out"
+            : "transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), right 0.3s ease-in-out",
+        }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onClick={() => setExpanded(true)}
@@ -88,22 +115,24 @@ export default function ReelPlayer() {
 
       {/* ── Expanded overlay ── */}
       {expanded && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#060d18]">
-          {/* Close — top left */}
-          <button
-            onClick={() => setExpanded(false)}
-            aria-label="Close"
-            className="absolute top-5 left-5 flex items-center justify-center size-[36px] rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#060d18] px-4 py-10">
+          {/* Full-width flex row: video column (flex-1, centered) + right column (close + nav) */}
+          <div
+            className="flex items-center w-full h-full"
+            style={
+              {
+                "--vh": "min(604px, calc(100svh - 150px))",
+                "--vw": "calc(var(--vh) * 9 / 16)",
+              } as React.CSSProperties
+            }
           >
-            <X size={20} strokeWidth={1.5} />
-          </button>
-
-          {/* Video column + nav row */}
-          <div className="flex items-center gap-4">
-            {/* Video + CTA stacked vertically */}
-            <div className="flex flex-col gap-0">
-              {/* Phone-frame video — no bezel, just rounded corners */}
-              <div className="relative w-[380px] h-[676px] rounded-t-[16px] overflow-hidden bg-black">
+            {/* Video + CTA — centered within flex-1, 20px gap between them */}
+            <div className="flex flex-1 flex-col items-center justify-center gap-5">
+              {/* Phone-frame video — fully rounded */}
+              <div
+                className="relative rounded-[16px] overflow-hidden bg-black"
+                style={{ width: "var(--vw)", height: "var(--vh)" }}
+              >
                 <iframe
                   key={index}
                   src={expandSrc(reel.youtubeId)}
@@ -115,32 +144,44 @@ export default function ReelPlayer() {
                 />
               </div>
 
-              {/* See Full Project — below the video */}
+              {/* View Case Study — standalone button with its own rounding */}
               <Link
                 href={reel.projectHref}
-                className="flex items-center justify-between w-[380px] bg-[#111827] hover:bg-[#1a2537] transition-colors px-6 py-5 rounded-b-[16px] text-white font-brand font-medium text-[15px] tracking-[-0.07px]"
+                className="flex items-center justify-center gap-2 bg-[#354454] hover:bg-[#3f5065] transition-colors h-[50px] px-4 rounded-[10px] text-white font-brand font-medium text-[15px] tracking-[-0.07px]"
+                style={{ width: "var(--vw)" }}
               >
-                See Full Project
-                <ArrowRight size={16} strokeWidth={1.5} />
+                View Case Study
+                <ArrowIcon size={16} className="rotate-90" />
               </Link>
             </div>
 
-            {/* Up / Down navigation — down on top, up on bottom (matches screenshot) */}
-            <div className="flex flex-col gap-3">
+            {/* Right column: close pinned top, nav buttons centered in remaining space */}
+            <div className="flex flex-col items-center shrink-0 pr-6 self-stretch">
+              {/* Close — top of column */}
               <button
-                onClick={() => go(1)}
-                aria-label="Next reel"
-                className="flex items-center justify-center size-[44px] rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                onClick={() => setExpanded(false)}
+                aria-label="Close"
+                className="flex items-center justify-center size-[46px] rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors"
               >
-                <ChevronDown size={22} strokeWidth={1.5} />
+                <X size={20} strokeWidth={1.5} />
               </button>
-              <button
-                onClick={() => go(-1)}
-                aria-label="Previous reel"
-                className="flex items-center justify-center size-[44px] rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-              >
-                <ChevronUp size={22} strokeWidth={1.5} />
-              </button>
+              {/* Nav buttons — centered in remaining height */}
+              <div className="flex flex-1 flex-col items-center justify-center gap-2">
+                <button
+                  onClick={() => go(-1)}
+                  aria-label="Previous reel"
+                  className="flex items-center justify-center size-[46px] rounded-full bg-[#354454] text-white hover:bg-[#3f5065] transition-colors"
+                >
+                  <ArrowIcon size={18} />
+                </button>
+                <button
+                  onClick={() => go(1)}
+                  aria-label="Next reel"
+                  className="flex items-center justify-center size-[46px] rounded-full bg-[#354454] text-white hover:bg-[#3f5065] transition-colors"
+                >
+                  <ArrowIcon size={18} className="rotate-180" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
