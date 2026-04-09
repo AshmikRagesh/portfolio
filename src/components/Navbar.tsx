@@ -6,7 +6,7 @@ import { Menu, X, LayoutGrid, CirclePlay, CircleUser, Sparkles } from "lucide-re
 import { useChatDrawer } from "@/context/ChatContext";
 
 const navLinks = [
-  { label: "Works", href: "#works", Icon: LayoutGrid },
+  { label: "Works", href: "#works", Icon: LayoutGrid, tabletHidden: true },
   { label: "Playground", href: "#playground", Icon: CirclePlay },
   { label: "About", href: "#about", Icon: CircleUser },
 ];
@@ -37,7 +37,7 @@ export default function Navbar() {
       } ${isOpen ? "lg:right-[400px] right-0" : "right-0"}`}
     >
       {/* Main nav row */}
-      <nav className="flex items-center justify-between h-full px-[20px] md:px-10 lg:px-[100px]">
+      <nav className="flex items-center justify-between h-full px-[20px] md:px-[80px] lg:px-[100px]">
         {/* Logo */}
         <Link href="/" aria-label="Home" className="shrink-0">
           <span className="font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px]">
@@ -48,8 +48,8 @@ export default function Navbar() {
         {/* Desktop + tablet: nav links + CTA */}
         <div className="hidden md:flex items-center gap-[20px]">
           <ul className="flex items-center gap-[24px]">
-            {navLinks.map(({ label, href, Icon }) => (
-              <li key={label}>
+            {navLinks.map(({ label, href, Icon, tabletHidden }) => (
+              <li key={label} className={tabletHidden ? "hidden lg:block" : undefined}>
                 <a
                   href={href}
                   className="group/tab flex items-center gap-2 font-brand text-[14px] font-normal text-[#354454] uppercase tracking-[1px] transition-colors duration-200 hover:text-black hover:underline hover:decoration-wavy"

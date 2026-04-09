@@ -6,22 +6,22 @@ const PORTRAIT_SRC =
 
 export default function Hero() {
   return (
-    <section className="bg-background flex flex-col items-center gap-10 px-6 pb-12 pt-[96px] md:gap-14 md:px-10 md:pt-[112px] md:pb-16 lg:gap-[60px] lg:px-[240px] lg:pt-[144px] lg:pb-[60px]">
+    <section className="bg-background flex flex-col items-center gap-[60px] px-[20px] pt-[140px] pb-[60px] md:px-[60px] md:pt-[140px] md:pb-[60px] lg:px-[240px] lg:pt-[144px] lg:pb-[60px]">
       {/* Text */}
-      <div className="flex flex-col items-center gap-4 text-center w-full md:gap-5 lg:gap-6">
-        <h1 className="font-heading font-normal text-[30px] leading-[36px] tracking-[-0.3px] text-heading whitespace-normal md:text-[38px] md:leading-[44px] md:tracking-[-0.38px] lg:text-[48px] lg:leading-[50px] lg:tracking-[-0.48px] lg:whitespace-pre-wrap">
+      <div className="flex flex-col items-center gap-6 text-center w-full">
+        <h1 className="font-heading font-normal text-[36px] leading-[40px] tracking-[-0.36px] text-heading whitespace-normal md:text-[44px] md:leading-[50px] md:tracking-[-0.44px] lg:text-[48px] lg:leading-[50px] lg:tracking-[-0.48px] lg:whitespace-pre-wrap">
           {`Hi, I'm `}
           <em>Ashmik Ragesh</em>
           {`,\ncreator that designs for creators.`}
         </h1>
-        <p className="font-body font-normal text-[15px] leading-[22px] tracking-[-0.3px] text-muted max-w-[320px] md:text-[18px] md:leading-[26px] md:tracking-[-0.5px] md:max-w-[480px] lg:text-[20px] lg:leading-[28px] lg:tracking-normal lg:max-w-[653px]">
+        <p className="font-body font-normal text-[18px] leading-[26px] text-muted w-full md:text-[20px] md:leading-[28px] md:max-w-[653px] lg:text-[20px] lg:leading-[28px] lg:max-w-[653px]">
           Designing for the world. I care about systems that scale and
           the small details that make them feel human.
         </p>
       </div>
 
       {/* Portrait */}
-      <div className="relative overflow-hidden w-[280px] h-[290px] md:w-[380px] md:h-[392px] lg:w-[502px] lg:h-[514px]">
+      <div className="relative overflow-hidden w-full aspect-[502/514] md:w-[502px] md:h-[514px] md:aspect-auto lg:w-[502px] lg:h-[514px]">
         <Image
           src={PORTRAIT_SRC}
           alt="Portrait of Ashmik Ragesh"
