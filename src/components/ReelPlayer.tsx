@@ -45,7 +45,8 @@ export default function ReelPlayer() {
         className={`
           fixed bottom-8 z-[45] cursor-pointer select-none
           transition-[right,transform] duration-300 ease-in-out
-          ${chatOpen ? "lg:right-[416px] right-8" : "right-8"}
+          right-[20px] md:right-[80px] lg:right-[100px]
+          ${chatOpen ? "lg:!right-[500px]" : ""}
           ${hovered ? "scale-[1.08]" : "scale-100"}
         `}
         onMouseEnter={() => setHovered(true)}
@@ -55,7 +56,7 @@ export default function ReelPlayer() {
       >
         {/* Outer navy bezel — matches Figma spec */}
         <div className="bg-[#172b4d] p-[4px] rounded-[8px] shadow-[0_8px_32px_rgba(0,0,0,0.32)]">
-          <div className="relative w-[122px] h-[212px] rounded-[6px] overflow-hidden">
+          <div className="relative w-[102px] h-[180px] rounded-[6px] overflow-hidden">
             <video
               key={index}
               src={reel.videoSrc}
