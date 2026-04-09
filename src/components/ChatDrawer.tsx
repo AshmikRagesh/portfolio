@@ -198,20 +198,20 @@ export default function ChatDrawer() {
                   key={msg.id}
                   className={`flex justify-end px-5 py-2 ${i === 0 ? "pt-8" : ""}`}
                 >
-                  <div className="bg-white border border-[#c8ccd4] rounded-[2px] px-6 py-4 font-body text-[14px] leading-[20px] text-heading max-w-[85%]">
+                  <div className="bg-white border border-[#c8ccd4] rounded-[2px] px-6 py-4 font-body text-[14px] leading-[20px] text-heading">
                     {msg.content}
                   </div>
                 </div>
               ) : (
                 /* Assistant reply — full width, border-b separator + follow-ups */
-                <div key={msg.id} className="px-5 py-2">
+                <div key={msg.id} className="flex flex-col gap-4 px-5 py-2">
                   <div className="border-b border-[#c8ccd4] pr-6 py-4">
                     <p className="font-body text-[14px] leading-[20px] text-heading">
                       {msg.content}
                     </p>
                   </div>
                   {msg.followUps && msg.followUps.length > 0 && (
-                    <div className="flex flex-col gap-1 pt-2 pb-2">
+                    <div className="flex flex-col gap-1">
                       {msg.followUps.map((q) => (
                         <SuggestionRow
                           key={q}

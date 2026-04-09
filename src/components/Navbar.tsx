@@ -2,13 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { Menu, X, LayoutGrid, CirclePlay, CircleUser } from "lucide-react";
+import { Menu, X, LayoutGrid, CirclePlay, CircleUser, Sparkles } from "lucide-react";
 import { useChatDrawer } from "@/context/ChatContext";
-
-// TODO: Replace with permanent SVG asset (Figma URL expires in ~7 days)
-const ICON_SPARKLE =
-  "https://www.figma.com/api/mcp/asset/1858483a-3433-4113-b266-1594a7d33744";
 
 const navLinks = [
   { label: "Works", href: "#works", Icon: LayoutGrid },
@@ -37,9 +32,9 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 h-[80px] z-50 bg-background border-b border-[#c8ccd4] transition-shadow duration-200 ${
+      className={`fixed top-0 left-0 h-[80px] z-50 bg-background border-b border-[#c8ccd4] transition-[right,box-shadow] duration-300 ease-in-out ${
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
-      }`}
+      } ${isOpen ? "lg:right-[400px] right-0" : "right-0"}`}
     >
       {/* Main nav row */}
       <nav className="flex items-center justify-between h-full px-[20px] md:px-10 lg:px-[100px]">
@@ -72,11 +67,11 @@ export default function Navbar() {
           <button
             type="button"
             onClick={toggleChat}
-            className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
+            className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] h-[42px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
                 isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
               }`}
           >
-            <Image src={ICON_SPARKLE} alt="" width={16} height={16} unoptimized />
+            <Sparkles size={16} strokeWidth={1.5} />
             ASH LLM
           </button>
         </div>
@@ -90,7 +85,7 @@ export default function Navbar() {
               isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
             }`}
           >
-            <Image src={ICON_SPARKLE} alt="" width={16} height={16} unoptimized />
+            <Sparkles size={16} strokeWidth={1.5} />
             ASH LLM
           </button>
           <button
@@ -131,7 +126,7 @@ export default function Navbar() {
                 isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
               }`}
             >
-              <Image src={ICON_SPARKLE} alt="" width={16} height={16} unoptimized />
+              <Sparkles size={16} strokeWidth={1.5} />
               ASH LLM
             </button>
             <a

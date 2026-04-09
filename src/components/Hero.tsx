@@ -1,8 +1,8 @@
 import Image from "next/image";
 
-// TODO: Replace with your own portrait asset (Figma URL expires 2026-04-06)
+// TODO: Replace with a permanent portrait asset (Figma URL expires ~7 days from 2026-04-09)
 const PORTRAIT_SRC =
-  "https://www.figma.com/api/mcp/asset/c7934756-93bc-4652-9baf-f301f2ce9990";
+  "https://www.figma.com/api/mcp/asset/95d75a7c-dfb2-4409-86f7-b250fe5e5b2c";
 
 export default function Hero() {
   return (
@@ -14,7 +14,7 @@ export default function Hero() {
           <em>Ashmik Ragesh</em>
           {`,\ncreator that designs for creators.`}
         </h1>
-        <p className="font-body font-normal text-[15px] leading-[22px] tracking-[-0.3px] text-muted max-w-[320px] md:text-[18px] md:leading-[26px] md:tracking-[-0.5px] md:max-w-[480px] lg:text-[24px] lg:leading-[32px] lg:tracking-[-0.9px] lg:max-w-[653px]">
+        <p className="font-body font-normal text-[15px] leading-[22px] tracking-[-0.3px] text-muted max-w-[320px] md:text-[18px] md:leading-[26px] md:tracking-[-0.5px] md:max-w-[480px] lg:text-[20px] lg:leading-[28px] lg:tracking-normal lg:max-w-[653px]">
           Designing for the world. I care about systems that scale and
           the small details that make them feel human.
         </p>
