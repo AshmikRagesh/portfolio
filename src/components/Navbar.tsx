@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, LayoutGrid, CirclePlay, CircleUser } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Menu, X, LayoutGrid, CirclePlay, CircleUser, ArrowLeft } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import { useChatDrawer } from "@/context/ChatContext";
 
@@ -16,6 +17,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { isOpen, toggle: toggleChat } = useChatDrawer();
+  const pathname = usePathname();
+  const isCaseStudy = pathname.startsWith("/works/");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -39,12 +42,29 @@ export default function Navbar() {
     >
       {/* Main nav row */}
       <nav className="flex items-center justify-between h-full px-[20px] md:px-[80px] lg:px-[100px]">
-        {/* Logo */}
-        <Link href="/" aria-label="Home" className="shrink-0">
-          <span className="font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px]">
-            Ash
-          </span>
-        </Link>
+        {/* Mobile on case study pages: back button. Everything else: Ash logo */}
+        {isCaseStudy ? (
+          <>
+            <Link
+              href="/#works"
+              className="md:hidden flex items-center gap-2 font-brand text-[14px] font-medium uppercase tracking-[1px] text-[#9ca3af] hover:text-[#091624] transition-colors duration-150 shrink-0"
+            >
+              <ArrowLeft size={14} strokeWidth={2} />
+              Back
+            </Link>
+            <Link href="/" aria-label="Home" className="hidden md:block shrink-0">
+              <span className="font-heading italic font-normal md:text-[32px] lg:text-[36px] text-heading md:tracking-[-0.32px] lg:tracking-[-0.36px] md:leading-[44px]">
+                Ash
+              </span>
+            </Link>
+          </>
+        ) : (
+          <Link href="/" aria-label="Home" className="shrink-0">
+            <span className="font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px]">
+              Ash
+            </span>
+          </Link>
+        )}
 
         {/* Desktop + tablet: nav links + CTA */}
         <div className="hidden md:flex items-center gap-[20px]">

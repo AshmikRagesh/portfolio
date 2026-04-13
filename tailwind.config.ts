@@ -23,6 +23,7 @@ const config: Config = {
         body: [...tokens.fontFamily.body],
         heading: [...tokens.fontFamily.heading],
         ui: [...tokens.fontFamily.ui],
+        handwriting: ["var(--font-handwriting)", "cursive"],
       },
       borderRadius: {
         sm: tokens.borderRadius.sm,

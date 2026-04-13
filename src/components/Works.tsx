@@ -15,14 +15,14 @@ interface WorkItem {
 
 const works: WorkItem[] = [
   {
-    tags: "AI, Product Design, Research",
+    tags: "UX Design, Product Design",
     title:
-      "Creating and maintaining the Artemis Design System for Enchanting Travels",
+      "Streamlining the Reservations Module in Artemis 3.0: Saving Time for Reservations Team",
     subtitle:
-      "Conceptualised the product strategy. Led the end-to-end design process.",
+      "Migrated the legacy Bookings UI—introducing auto‑save, in‑app notifications, and categorised flights.",
     image: PLACEHOLDER_IMG,
-    imageAlt: "Artemis Design System preview",
-    href: "#",
+    imageAlt: "Artemis 3.0 Reservations Module preview",
+    href: "/works/artemis-reservations",
   },
   {
     tags: "AI, Product Design, Research",

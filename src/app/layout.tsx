@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Roboto_Slab, Inter } from "next/font/google";
+import { Geist_Mono, Roboto_Slab, Inter, Nanum_Pen_Script } from "next/font/google";
+import GlobalLayout from "@/components/GlobalLayout";
 import "./globals.css";
 
 const geistMono = Geist_Mono({
@@ -12,6 +13,12 @@ const robotoSlab = Roboto_Slab({
   subsets: ["latin"],
   variable: "--font-body",
   weight: ["400", "500"],
+});
+
+const nanumPen = Nanum_Pen_Script({
+  subsets: ["latin"],
+  variable: "--font-handwriting",
+  weight: ["400"],
 });
 
 const inter = Inter({
@@ -33,9 +40,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistMono.variable} ${robotoSlab.variable} ${inter.variable} bg-background text-text-base antialiased`}
+        className={`${geistMono.variable} ${robotoSlab.variable} ${inter.variable} ${nanumPen.variable} bg-background text-text-base antialiased`}
       >
-        {children}
+        <GlobalLayout>{children}</GlobalLayout>
       </body>
     </html>
   );
