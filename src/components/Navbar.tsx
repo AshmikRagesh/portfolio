@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, LayoutGrid, CirclePlay, CircleUser, Sparkles } from "lucide-react";
+import { Menu, X, LayoutGrid, CirclePlay, CircleUser } from "lucide-react";
+import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import { useChatDrawer } from "@/context/ChatContext";
 
 const navLinks = [
@@ -71,7 +72,7 @@ export default function Navbar() {
                 isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
               }`}
           >
-            <Sparkles size={16} strokeWidth={1.5} />
+            <SparkleAiIcon size={16} />
             ASH LLM
           </button>
         </div>
@@ -85,7 +86,7 @@ export default function Navbar() {
               isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
             }`}
           >
-            <Sparkles size={16} strokeWidth={1.5} />
+            <SparkleAiIcon size={16} />
             ASH LLM
           </button>
           <button
@@ -126,7 +127,7 @@ export default function Navbar() {
                 isOpen ? "bg-[#0049c4]" : "bg-[#172b4d] hover:bg-[#0049c4]"
               }`}
             >
-              <Sparkles size={16} strokeWidth={1.5} />
+              <SparkleAiIcon size={16} />
               ASH LLM
             </button>
             <a
