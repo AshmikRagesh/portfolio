@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Save, Grid2X2, CircleX, BellOff, Workflow } from "lucide-react";
+import { Save, CircleX, BellOff, Workflow } from "lucide-react";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 
 export const metadata: Metadata = {
@@ -325,19 +325,34 @@ function TheProblem() {
 const CHALLENGE_CARDS = [
   [
     {
-      icon: <Save size={26} className="text-[#0049c4]" strokeWidth={1.5} />,
+      icon: <Save size={26} className="text-[#0049c4]" strokeWidth={2} />,
       title: "Manual Saves",
       description:
         "Edits weren't auto-saved, often leading to lost work and wasted time when consultants switched between screens.",
     },
     {
-      icon: <Grid2X2 size={26} className="text-[#0049c4]" strokeWidth={1.5} />,
+      icon: (
+        <svg
+          viewBox="0 0 26 26"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="text-[#0049c4] shrink-0"
+          width={26}
+          height={26}
+          aria-hidden="true"
+        >
+          <circle cx="6.5" cy="6.5" r="4.5" fill="currentColor" />
+          <circle cx="19.5" cy="6.5" r="4.5" fill="currentColor" />
+          <circle cx="6.5" cy="19.5" r="4.5" fill="currentColor" />
+          <circle cx="19.5" cy="19.5" r="4.5" fill="currentColor" />
+        </svg>
+      ),
       title: "Cluttered actions",
       description:
         "Outdated and overlapping UI elements made navigation unintuitive and slowed down task completion.",
     },
     {
-      icon: <CircleX size={26} className="text-[#0049c4]" strokeWidth={1.5} />,
+      icon: <CircleX size={26} className="text-[#0049c4]" strokeWidth={2} />,
       title: "Unclear statuses",
       description:
         "Ambiguous booking and request statuses caused delays in confirmations and extra back-and-forth between teams.",
@@ -345,13 +360,13 @@ const CHALLENGE_CARDS = [
   ],
   [
     {
-      icon: <BellOff size={26} className="text-[#0049c4]" strokeWidth={1.5} />,
+      icon: <BellOff size={26} className="text-[#0049c4]" strokeWidth={2} />,
       title: "No notifications",
       description:
         "Important updates—like vendor confirmations or cancellations—were missed due to the lack of real-time alerts.",
     },
     {
-      icon: <Workflow size={26} className="text-[#0049c4]" strokeWidth={1.5} />,
+      icon: <Workflow size={26} className="text-[#0049c4]" strokeWidth={2} />,
       title: "Inefficient workflows",
       description:
         "Flight details and cancellation flows involved too many steps, creating inefficiencies in vendor coordination.",
