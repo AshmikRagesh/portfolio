@@ -46,12 +46,7 @@ const floatSrc = (id: string) =>
 const expandSrc = (id: string) =>
   `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&playsinline=1&rel=0&modestbranding=1`;
 
-interface ReelPlayerProps {
-  /** Render the mini card inline (no fixed positioning) — used in the Works sidebar */
-  inline?: boolean;
-}
-
-export default function ReelPlayer({ inline = false }: ReelPlayerProps) {
+export default function ReelPlayer() {
   const [index, setIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -75,14 +70,12 @@ export default function ReelPlayer({ inline = false }: ReelPlayerProps) {
         role="button"
         tabIndex={0}
         aria-label="Expand reel"
-        className={
-          inline
-            ? "cursor-pointer select-none"
-            : `fixed bottom-8 z-[45] cursor-pointer select-none
+        className={`
+          fixed bottom-8 z-[45] cursor-pointer select-none
           transition-[right] duration-300 ease-in-out
           right-[20px] md:right-[80px] lg:right-[100px]
-          ${chatOpen ? "lg:!right-[500px]" : ""}`
-        }
+          ${chatOpen ? "lg:!right-[500px]" : ""}
+        `}
         style={{
           transform: hovered ? "scale(1.13)" : "scale(1)",
           transition: hovered
