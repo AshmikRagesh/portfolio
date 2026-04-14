@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { Save, Grid2X2, CircleX, BellOff, Workflow } from "lucide-react";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 
 export const metadata: Metadata = {
@@ -9,10 +10,11 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS: CaseStudySection[] = [
-  { id: "overview",    label: "Overview"     },
-  { id: "my-role",     label: "My Role"      },
-  { id: "background",  label: "Background"   },
-  { id: "the-problem", label: "The Problem"  },
+  { id: "overview",    label: "Overview"    },
+  { id: "my-role",     label: "My Role"     },
+  { id: "background",  label: "Background"  },
+  { id: "the-problem", label: "The Problem" },
+  { id: "challenges",  label: "Challenges"  },
 ];
 
 // TODO: Replace with permanent assets — Figma URLs expire ~7 days from 2026-04-14
@@ -318,6 +320,107 @@ function TheProblem() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Section: Challenges
+// ─────────────────────────────────────────────────────────────────────────────
+const CHALLENGE_CARDS = [
+  [
+    {
+      icon: <Save size={26} className="text-[#0049c4]" strokeWidth={1.5} />,
+      title: "Manual Saves",
+      description:
+        "Edits weren't auto-saved, often leading to lost work and wasted time when consultants switched between screens.",
+    },
+    {
+      icon: <Grid2X2 size={26} className="text-[#0049c4]" strokeWidth={1.5} />,
+      title: "Cluttered actions",
+      description:
+        "Outdated and overlapping UI elements made navigation unintuitive and slowed down task completion.",
+    },
+    {
+      icon: <CircleX size={26} className="text-[#0049c4]" strokeWidth={1.5} />,
+      title: "Unclear statuses",
+      description:
+        "Ambiguous booking and request statuses caused delays in confirmations and extra back-and-forth between teams.",
+    },
+  ],
+  [
+    {
+      icon: <BellOff size={26} className="text-[#0049c4]" strokeWidth={1.5} />,
+      title: "No notifications",
+      description:
+        "Important updates—like vendor confirmations or cancellations—were missed due to the lack of real-time alerts.",
+    },
+    {
+      icon: <Workflow size={26} className="text-[#0049c4]" strokeWidth={1.5} />,
+      title: "Inefficient workflows",
+      description:
+        "Flight details and cancellation flows involved too many steps, creating inefficiencies in vendor coordination.",
+    },
+  ],
+];
+
+function Challenges() {
+  return (
+    <section
+      id="challenges"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:px-[80px] lg:py-[80px]"
+    >
+      <div className="flex flex-col gap-10 w-full max-w-[780px] md:gap-[48px]">
+        {/* Header block */}
+        <div className="flex flex-col gap-5 md:gap-[24px]">
+          <div className="flex flex-col gap-3">
+            <div className="-rotate-3 w-fit">
+              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+                {"< Challenges >"}
+              </span>
+            </div>
+            <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+              Where the System Fell Short
+            </h3>
+          </div>
+          <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+            The Reservations module in Artemis 2.0 had become a daily friction
+            point for users. Feedback from Reservations Consultants and Travel
+            Consultants highlighted recurring pain areas.
+          </p>
+        </div>
+
+        {/* Challenge cards */}
+        <div className="flex flex-col gap-[16px] md:gap-[24px]">
+          {CHALLENGE_CARDS.map((row, rowIdx) => (
+            <div
+              key={rowIdx}
+              className={`grid gap-[16px] md:gap-[24px] ${
+                row.length === 3
+                  ? "grid-cols-1 md:grid-cols-3"
+                  : "grid-cols-1 md:grid-cols-2"
+              }`}
+            >
+              {row.map(({ icon, title, description }) => (
+                <div
+                  key={title}
+                  className="flex flex-col gap-[16px] bg-[#f8f8f8] rounded-[16px] p-[20px]"
+                >
+                  <div className="shrink-0">{icon}</div>
+                  <div className="flex flex-col gap-3">
+                    <h4 className="font-heading font-normal text-[18px] leading-[1.1] tracking-[-0.72px] text-[#091624] lg:text-[24px] lg:tracking-[-0.96px]">
+                      {title}
+                    </h4>
+                    <p className="font-body font-normal text-[13px] leading-[1.6] text-[#717379] lg:text-[14px] lg:leading-[20px]">
+                      {description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ArtemisReservationsPage() {
@@ -327,6 +430,7 @@ export default function ArtemisReservationsPage() {
       <MyRole />
       <Background />
       <TheProblem />
+      <Challenges />
     </CaseStudyLayout>
   );
 }
