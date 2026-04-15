@@ -15,6 +15,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "background",  label: "Background"  },
   { id: "the-problem", label: "The Problem" },
   { id: "challenges",  label: "Challenges"  },
+  { id: "process",     label: "Process"     },
 ];
 
 // TODO: Replace with permanent assets — Figma URLs expire ~7 days from 2026-04-14
@@ -436,6 +437,69 @@ function Challenges() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Section: Process
+// ─────────────────────────────────────────────────────────────────────────────
+function Process() {
+  return (
+    <section
+      id="process"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:px-[80px] lg:py-[80px]"
+    >
+      <div className="flex flex-col gap-[48px] w-full max-w-[780px]">
+
+        {/* Section header */}
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-3">
+            <div className="-rotate-3 w-fit">
+              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+                {"< Process >"}
+              </span>
+            </div>
+            <h2 className="font-heading font-normal text-[24px] leading-[1.1] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+              From v0 Prototype to High-Fidelity Designs
+            </h2>
+          </div>
+          <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+            We shipped the improved booking workflow using a phased approach. We
+            experimented with handing off the AI-generated v0 prototype directly
+            to engineering, which seemed efficient since it was already
+            interactive and we weren&apos;t yet using a formal Figma design
+            system.
+          </p>
+        </div>
+
+        {/* Phase 1: v0 → High-Fidelity */}
+        <div className="flex flex-col gap-[48px]">
+          <div className="flex flex-col gap-[24px]">
+            <h3 className="font-heading font-normal text-[24px] leading-[1.1] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px]">
+              From v0 Prototype to High-Fidelity Designs
+            </h3>
+            {/* TODO: paste Phase 1 description from Figma (node 4282:449273) */}
+            <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]" />
+          </div>
+          <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]" />
+          <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]" />
+        </div>
+
+        {/* Phase 2: Iterative Feedback */}
+        <div className="flex flex-col gap-[48px]">
+          <div className="flex flex-col gap-[24px]">
+            <h3 className="font-heading font-normal text-[24px] leading-[1.1] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px]">
+              Iterative Feedback and Refinement
+            </h3>
+            {/* TODO: paste Phase 2 description from Figma (node 4282:449285) */}
+            <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]" />
+          </div>
+          <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]" />
+          <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]" />
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ArtemisReservationsPage() {
@@ -446,6 +510,7 @@ export default function ArtemisReservationsPage() {
       <Background />
       <TheProblem />
       <Challenges />
+      <Process />
     </CaseStudyLayout>
   );
 }

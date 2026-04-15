@@ -58,7 +58,7 @@ export default function CaseStudyLayout({
     <div className="flex min-h-screen pt-[80px]">
 
       {/* ── Sticky sidebar (desktop only) ── */}
-      <aside className="hidden lg:flex flex-col w-[260px] xl:w-[300px] shrink-0 sticky top-[80px] self-start h-[calc(100vh-80px)] px-8 py-10 overflow-y-auto">
+      <aside className="hidden lg:flex flex-col w-[260px] xl:w-[300px] shrink-0 sticky top-[80px] self-start h-[calc(100vh-80px)] pl-[100px] pr-8 py-10 overflow-y-auto">
         {/* Back button */}
         <Link
           href={backHref}
