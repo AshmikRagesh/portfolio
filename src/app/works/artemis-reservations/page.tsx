@@ -15,9 +15,20 @@ const SECTIONS: CaseStudySection[] = [
   { id: "background",  label: "Background"  },
   { id: "the-problem", label: "The Problem" },
   { id: "challenges",  label: "Challenges"  },
+  { id: "process",     label: "Process"     },
 ];
 
 // TODO: Replace with permanent assets — Figma URLs expire ~7 days from 2026-04-14
+// Process section images (all placeholders in Figma; swap when real assets are ready)
+const PROCESS_IMAGE_1 =
+  "https://www.figma.com/api/mcp/asset/bed86782-e0f9-4923-be8f-de03dab9c8e3";
+const PROCESS_IMAGE_2 =
+  "https://www.figma.com/api/mcp/asset/bed86782-e0f9-4923-be8f-de03dab9c8e3";
+const PROCESS_IMAGE_3 =
+  "https://www.figma.com/api/mcp/asset/bed86782-e0f9-4923-be8f-de03dab9c8e3";
+const PROCESS_IMAGE_4 =
+  "https://www.figma.com/api/mcp/asset/bed86782-e0f9-4923-be8f-de03dab9c8e3";
+
 const OVERVIEW_IMAGE =
   "https://www.figma.com/api/mcp/asset/bd222c70-fe17-447e-bf69-a7de8dca1c4c";
 const UNDERSTANDING_IMAGE =
@@ -436,6 +447,163 @@ function Challenges() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Section: Process
+// ─────────────────────────────────────────────────────────────────────────────
+function Process() {
+  return (
+    <section
+      id="process"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:px-[80px] lg:py-[80px]"
+    >
+      <div className="flex flex-col gap-10 w-full max-w-[780px] md:gap-[80px]">
+        {/* Header block */}
+        <div className="flex flex-col gap-5 md:gap-[24px]">
+          <div className="flex flex-col gap-3">
+            <div className="-rotate-3 w-fit">
+              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+                {"< Process >"}
+              </span>
+            </div>
+            <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+              From v0 Prototype to High-Fidelity Designs
+            </h3>
+          </div>
+          <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+            We shipped the improved booking workflow using a phased approach. We
+            experimented with handing off the AI-generated v0 prototype directly
+            to engineering, which seemed efficient since it was already
+            interactive and we weren&apos;t yet using a formal Figma design
+            system.
+          </p>
+        </div>
+
+        {/* Step 1 */}
+        <div className="flex flex-col gap-10 md:gap-[48px]">
+          <div className="flex flex-col gap-5 md:gap-[24px]">
+            <ol className="list-decimal">
+              <li className="ms-[36px] font-heading font-normal text-[20px] leading-[1.1] tracking-[-0.8px] text-[#091624] md:text-[22px] md:tracking-[-0.88px] lg:text-[24px] lg:tracking-[-0.96px]">
+                From v0 Prototype to High-Fidelity Designs
+              </li>
+            </ol>
+
+            <div className="flex flex-col gap-4 font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+              <p>
+                Our first step was to build a functional low-fidelity prototype
+                using Vercel V0 — a code-first prototyping tool that allowed us
+                to move fast and test ideas early.
+              </p>
+              <div>
+                <p className="font-semibold text-[#091624]">Goals:</p>
+                <ul className="list-disc mt-1">
+                  <li className="ms-[27px]">
+                    Visualise the full booking flow end-to-end.
+                  </li>
+                  <li className="ms-[27px]">
+                    Test core usability patterns like step indicators and
+                    drag-and-drop workflows.
+                  </li>
+                  <li className="ms-[27px]">
+                    Gather early reactions from Reservations and TC teams.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]">
+            <Image
+              src={PROCESS_IMAGE_1}
+              alt="v0 prototype — booking flow screenshot"
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
+
+          <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]">
+            <Image
+              src={PROCESS_IMAGE_2}
+              alt="v0 prototype — usability testing screenshot"
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
+        </div>
+
+        {/* Step 2 */}
+        <div className="flex flex-col gap-10 md:gap-[48px]">
+          <div className="flex flex-col gap-5 md:gap-[24px]">
+            <ol start={2} className="list-decimal">
+              <li className="ms-[36px] font-heading font-normal text-[20px] leading-[1.1] tracking-[-0.8px] text-[#091624] md:text-[22px] md:tracking-[-0.88px] lg:text-[24px] lg:tracking-[-0.96px]">
+                Iterative Feedback and Refinement
+              </li>
+            </ol>
+
+            <div className="flex flex-col gap-4 font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+              <div>
+                <p className="font-medium text-[#091624]">Activities:</p>
+                <ul className="list-disc mt-1">
+                  <li className="ms-[27px]">
+                    Conducted internal review sessions with ResCos, TCs, and
+                    TCOs.
+                  </li>
+                  <li className="ms-[27px]">
+                    Tested booking creation, modification, and cancellation
+                    workflows.
+                  </li>
+                  <li className="ms-[27px]">
+                    Iterated weekly on layout hierarchy, action placement, and
+                    form usability.
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-semibold text-[#091624]">
+                  Key Design Adjustments:
+                </p>
+                <ul className="list-disc mt-1">
+                  <li className="ms-[27px]">
+                    Simplified action bar and consolidated frequent actions at
+                    the top.
+                  </li>
+                  <li className="ms-[27px]">
+                    Introduced inline validation for quicker feedback.
+                  </li>
+                  <li className="ms-[27px]">
+                    Added consistent spacing and section headers for readability.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]">
+            <Image
+              src={PROCESS_IMAGE_3}
+              alt="Iterative feedback — design refinement screenshot"
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
+
+          <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]">
+            <Image
+              src={PROCESS_IMAGE_4}
+              alt="Iterative feedback — layout adjustments screenshot"
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ArtemisReservationsPage() {
@@ -446,6 +614,7 @@ export default function ArtemisReservationsPage() {
       <Background />
       <TheProblem />
       <Challenges />
+      <Process />
     </CaseStudyLayout>
   );
 }
