@@ -711,7 +711,8 @@ function Solution() {
 // Section: Impact
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Upward trend arrow icon
+// Play arrow icon rotated -90° to point upward — matches Figma node 4323:449509
+// Original: right-pointing triangle (M10 6 L26 18 L10 30), rotated 90° CCW around center (18,18)
 function TrendUpArrow() {
   return (
     <svg
@@ -722,7 +723,7 @@ function TrendUpArrow() {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <path d="M18 7L31 28H5L18 7Z" fill="#198754" />
+      <path d="M6 26 L18 10 L30 26 Z" fill="#0E9A49" />
     </svg>
   );
 }
