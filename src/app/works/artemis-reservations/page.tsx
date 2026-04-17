@@ -16,9 +16,16 @@ const SECTIONS: CaseStudySection[] = [
   { id: "the-problem", label: "The Problem" },
   { id: "challenges",  label: "Challenges"  },
   { id: "process",     label: "Process"     },
+  { id: "solution",    label: "Solution"    },
+  { id: "impact",      label: "Impact"      },
+  { id: "reflection",  label: "Reflection"  },
 ];
 
-// TODO: Replace with permanent assets — Figma URLs expire ~7 days from 2026-04-14
+// TODO: Replace with permanent assets — Figma URLs expire ~7 days from 2026-04-17
+// Solution section images (all placeholders in Figma; swap when real assets are ready)
+const SOLUTION_IMAGE =
+  "https://www.figma.com/api/mcp/asset/b7bf0626-b02e-4cae-8342-73ee66a4ef5a";
+
 // Process section images (all placeholders in Figma; swap when real assets are ready)
 const PROCESS_IMAGE_1 =
   "https://www.figma.com/api/mcp/asset/bed86782-e0f9-4923-be8f-de03dab9c8e3";
@@ -604,6 +611,263 @@ function Process() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Section: Solution
+// ─────────────────────────────────────────────────────────────────────────────
+const SOLUTION_ITEMS = [
+  {
+    num: 1,
+    title: "Lost Edits → Auto-Save and Real-Time Sync",
+    body: "ResCos often lost data when switching tabs or submitting partial forms. We introduced auto-save and real-time syncing to ensure edits were never lost. Every action—add, edit, delete—was preserved automatically, reducing rework and frustration.",
+    impact: "Impact: Zero cases of lost edits reported during usability testing.",
+  },
+  {
+    num: 2,
+    title: "Cluttered Actions → Streamlined, Hierarchical Layout",
+    body: "The previous layout was dense and repetitive. Actions lacked hierarchy, causing cognitive load. We restructured the UI with clear grouping, progressive disclosure, and consistent spacing. Common actions (like Save, Update, Cancel) were placed persistently at the top-level navigation.",
+    impact: 'Users completed tasks 35% faster and described the layout as "finally intuitive."',
+  },
+  {
+    num: 3,
+    title: "Unclear Statuses → Colour-Coded Status Indicators",
+    body: "Booking statuses like Pending, On Request, and Confirmed were ambiguous. We added consistent colour-coded labels and contextual microcopy—so users could instantly see what needed action and what didn't.",
+    impact: "Reduced back-and-forth between ResCos and TCs by 40%.",
+  },
+  {
+    num: 4,
+    title: "No Notifications → In-App Alerts & Activity Feed",
+    body: "Users often missed vendor updates or cancellations. We implemented real-time notifications for key actions and a persistent activity feed for audit trails. This ensured visibility across teams and reduced dependency on manual communication.",
+    impact: "Eliminated 60% of missed vendor updates in pilot tests.",
+  },
+  {
+    num: 5,
+    title: "Cumbersome Workflows → Bulk Update Modal",
+    body: "Flight and cancellation workflows were multi-step and repetitive. We introduced a Bulk Update Modal—allowing multiple bookings to be edited or cancelled simultaneously, with inline validation and pre-filled suggestions.",
+    impact: "Reduced task completion time for bulk edits by 3×.",
+  },
+];
+
+function Solution() {
+  return (
+    <section
+      id="solution"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:px-[80px] lg:py-[80px]"
+    >
+      <div className="flex flex-col gap-10 w-full max-w-[780px] md:gap-[80px]">
+        {/* Header block */}
+        <div className="flex flex-col gap-5 md:gap-[24px]">
+          <div className="flex flex-col gap-3">
+            <div className="-rotate-3 w-fit">
+              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+                {"< Solution >"}
+              </span>
+            </div>
+            <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+              Redesigning Bookings to Enable Speed, Clarity &amp; Confidence
+            </h3>
+          </div>
+          <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+            Our redesign focused on directly addressing the five major user challenges identified
+            through interviews and observation. Each solution was anchored in simplifying core
+            workflows while preserving familiar patterns to minimise relearning effort.
+          </p>
+        </div>
+
+        {/* Solution sub-sections */}
+        {SOLUTION_ITEMS.map(({ num, title, body, impact }) => (
+          <div key={num} className="flex flex-col gap-10 md:gap-[48px]">
+            <div className="flex flex-col gap-5 md:gap-[24px]">
+              <ol start={num} className="list-decimal">
+                <li className="ms-[36px] font-heading font-normal text-[20px] leading-[1.1] tracking-[-0.8px] text-[#091624] md:text-[22px] md:tracking-[-0.88px] lg:text-[24px] lg:tracking-[-0.96px]">
+                  {title}
+                </li>
+              </ol>
+              <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+                {body}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-5 md:gap-[24px]">
+              <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]">
+                <Image
+                  src={SOLUTION_IMAGE}
+                  alt={`Solution ${num} — ${title}`}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
+              <p className="font-body font-normal text-[15px] leading-[1.6] text-[#4caf50] text-center uppercase md:text-[17px] lg:text-[18px] lg:leading-[28px]">
+                {impact}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section: Impact
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Upward trend arrow icon
+function TrendUpArrow() {
+  return (
+    <svg
+      width="36"
+      height="36"
+      viewBox="0 0 36 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path d="M18 7L31 28H5L18 7Z" fill="#198754" />
+    </svg>
+  );
+}
+
+const METRIC_ROWS: { stat: string; label: string }[][] = [
+  [
+    {
+      stat: "100%",
+      label: "Zero data loss after introducing Auto-save and Inline Validation.",
+    },
+    {
+      stat: "40%",
+      label: "Streamlined booking process with significantly fewer clicks.",
+    },
+    {
+      stat: "35%",
+      label: "Users completed tasks faster after the streamlined layout redesign.",
+    },
+  ],
+  [
+    {
+      stat: "60%",
+      label:
+        "Fewer missed vendor updates after in-app alerts and an activity feed.",
+    },
+    {
+      stat: "3×",
+      label: "Faster bulk edits during peak hours with the new Bulk Update Modal.",
+    },
+  ],
+];
+
+function Impact() {
+  return (
+    <section
+      id="impact"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:px-[80px] lg:py-[80px]"
+    >
+      <div className="flex flex-col gap-10 w-full max-w-[780px] md:gap-[48px]">
+        {/* Header block */}
+        <div className="flex flex-col gap-5 md:gap-[24px]">
+          <div className="flex flex-col gap-3">
+            <div className="-rotate-3 w-fit">
+              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+                {"< Impact >"}
+              </span>
+            </div>
+            <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+              Measuring the Outcomes That Mattered
+            </h3>
+          </div>
+          <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+            The redesigned Bookings module in Artemis 3.0 delivered measurable improvements across
+            both user experience and operational efficiency.
+          </p>
+        </div>
+
+        {/* Metric cards */}
+        <div className="flex flex-col gap-5 md:gap-[24px]">
+          <h4 className="font-heading font-normal text-[20px] leading-[1.1] tracking-[-0.8px] text-[#091624] md:text-[22px] md:tracking-[-0.88px] lg:text-[24px] lg:tracking-[-0.96px]">
+            Quantitative Outcomes
+          </h4>
+
+          <div className="flex flex-col gap-4 md:gap-[24px]">
+            {METRIC_ROWS.map((row, rowIdx) => (
+              <div
+                key={rowIdx}
+                className={`grid gap-4 md:gap-[24px] ${
+                  row.length === 3
+                    ? "grid-cols-1 sm:grid-cols-3"
+                    : "grid-cols-1 sm:grid-cols-2"
+                }`}
+              >
+                {row.map(({ stat, label }) => (
+                  <div
+                    key={stat + label}
+                    className="flex flex-col gap-4 bg-[#e7f8f2] rounded-[16px] p-[20px]"
+                  >
+                    <div className="flex justify-end">
+                      <TrendUpArrow />
+                    </div>
+                    <div className="flex flex-col gap-3">
+                      <p className="font-body font-normal text-[14px] leading-[1.5] text-[#354454] lg:text-[16px] lg:leading-[24px]">
+                        {label}
+                      </p>
+                      <span className="font-heading font-medium text-[36px] leading-[1.1] tracking-[-1.44px] text-[#091624] md:text-[40px] md:tracking-[-1.6px] lg:text-[44px] lg:tracking-[-1.76px]">
+                        {stat}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section: Reflection
+// ─────────────────────────────────────────────────────────────────────────────
+function Reflection() {
+  return (
+    <section
+      id="reflection"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:px-[80px] lg:py-[80px]"
+    >
+      <div className="flex flex-col gap-5 w-full max-w-[780px] md:gap-[24px]">
+        {/* Tag + heading */}
+        <div className="flex flex-col gap-3">
+          <div className="-rotate-3 w-fit">
+            <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+              {"< Reflection >"}
+            </span>
+          </div>
+          <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+            What I learned
+          </h3>
+        </div>
+
+        {/* Body */}
+        <div className="flex flex-col gap-4 font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+          <p>
+            Redesigning the Reservations module reinforced the importance of deep workflow
+            empathy — understanding not just what users do, but why they do it that way.
+            Simplifying operations for efficiency had to coexist with preserving familiar mental
+            models for the teams that rely on Artemis daily.
+          </p>
+          <p>
+            The project also emphasised the value of rapid prototyping and early feedback loops.
+            Building the v0 prototype helped us validate assumptions early and align engineering
+            and operations teams from the start.
+            <br />
+            Finally, this project reminded me that the best internal tools aren&apos;t flashy —
+            they&apos;re invisible enablers of focus, speed, and trust in everyday workflows.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ArtemisReservationsPage() {
@@ -615,6 +879,9 @@ export default function ArtemisReservationsPage() {
       <TheProblem />
       <Challenges />
       <Process />
+      <Solution />
+      <Impact />
+      <Reflection />
     </CaseStudyLayout>
   );
 }

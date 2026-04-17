@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import Footer from "@/components/Footer";
 
 export interface CaseStudySection {
   id: string;
@@ -55,6 +56,7 @@ export default function CaseStudyLayout({
   };
 
   return (
+    <>
     <div className="flex min-h-screen pt-[80px]">
 
       {/* ── Sticky sidebar (desktop only) ── */}
@@ -111,5 +113,7 @@ export default function CaseStudyLayout({
         {children}
       </main>
     </div>
+    <Footer />
+    </>
   );
 }
