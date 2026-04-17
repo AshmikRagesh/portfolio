@@ -809,9 +809,9 @@ function Impact() {
                       <p className="font-body font-normal text-[14px] leading-[1.5] text-[#354454] lg:text-[16px] lg:leading-[24px]">
                         {label}
                       </p>
-                      <span className="font-heading font-medium text-[36px] leading-[1.1] tracking-[-1.44px] text-[#091624] md:text-[40px] md:tracking-[-1.6px] lg:text-[44px] lg:tracking-[-1.76px]">
+                      <h4 className="font-heading font-medium text-[44px] leading-[1.1] tracking-[-1.76px] text-[#091624]">
                         {stat}
-                      </span>
+                      </h4>
                     </div>
                   </div>
                 ))}
