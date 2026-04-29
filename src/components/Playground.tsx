@@ -1,9 +1,7 @@
 import Image from "next/image";
 import { Link2 } from "lucide-react";
 
-// TODO: Replace with your own project screenshots (Figma URLs expire 2026-04-17)
-const CARD_IMG =
-  "https://www.figma.com/api/mcp/asset/60030e48-5e90-4b93-a6bf-700d3e9f4fa2";
+const CARD_IMG = "/images/extra-works-card.png";
 
 interface PlaygroundItem {
   title: string;
@@ -59,7 +57,6 @@ function ProductCard({ item }: { item: PlaygroundItem }) {
             alt={item.title}
             fill
             className="object-cover"
-            unoptimized
           />
         </div>
       </div>

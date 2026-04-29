@@ -1,8 +1,6 @@
 import Image from "next/image";
 
-// TODO: Replace each image with your own work screenshots (Figma URLs expire 2026-04-17)
-const PLACEHOLDER_IMG =
-  "https://www.figma.com/api/mcp/asset/2e9e803c-f22c-4622-b8a4-1fd1014aec0a";
+const PLACEHOLDER_IMG = "/images/works-cover.png";
 
 interface WorkItem {
   tags: string;
@@ -64,7 +62,7 @@ export default function Works() {
           >
             {/* Text */}
             <div className="flex flex-col gap-2 lg:flex-1">
-              <p className="font-brand font-medium text-[14px] text-[#0049c4] uppercase leading-[20px]">
+              <p className="font-brand font-medium text-[14px] text-[#e96f18] uppercase leading-[20px]">
                 {work.tags}
               </p>
               <div className="flex flex-col gap-3">
@@ -84,7 +82,6 @@ export default function Works() {
                 alt={work.imageAlt}
                 fill
                 className="object-cover"
-                unoptimized
               />
             </div>
           </a>

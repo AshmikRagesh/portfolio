@@ -1,8 +1,6 @@
 import Image from "next/image";
 
-// TODO: Replace with a permanent portrait asset (Figma URL expires ~7 days from 2026-04-09)
-const PORTRAIT_SRC =
-  "https://www.figma.com/api/mcp/asset/95d75a7c-dfb2-4409-86f7-b250fe5e5b2c";
+const PORTRAIT_SRC = "/images/portrait.png";
 
 export default function Hero() {
   return (
@@ -28,7 +26,6 @@ export default function Hero() {
           width={542}
           height={542}
           className="absolute left-[-4%] top-[-2.71%] w-[108%] max-w-none"
-          unoptimized
         />
       </div>
     </section>
