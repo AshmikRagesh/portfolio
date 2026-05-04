@@ -18,13 +18,13 @@ export default function Hero() {
         </p>
       </div>
 
-      {/* Portrait */}
+      {/* Portrait — three-panel wide illustration */}
       <Image
         src={PORTRAIT_SRC}
         alt="Portrait of Ashmik Ragesh"
-        width={296}
-        height={528}
-        className="w-[220px] h-auto md:w-[260px] lg:w-[296px]"
+        width={1268}
+        height={538}
+        className="w-full max-w-[900px] h-auto"
       />
     </section>
   );
