@@ -24,12 +24,24 @@ function NavTimer() {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => setElapsed((t) => t + 1), 1000);
+    // Persist start time in sessionStorage — survives page navigation,
+    // cleared automatically when the tab is closed.
+    const key = "ash_visit_start";
+    const stored = sessionStorage.getItem(key);
+    const startTime = stored ? parseInt(stored, 10) : Date.now();
+    if (!stored) sessionStorage.setItem(key, String(startTime));
+
+    setElapsed(Math.floor((Date.now() - startTime) / 1000));
+
+    const id = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
+
     return () => clearInterval(id);
   }, []);
 
   return (
-    <div className="group relative shrink-0 cursor-default select-none">
+    <Link href="/" aria-label="Home" className="group relative shrink-0 select-none">
       {/* Fixed-width block so the tooltip anchor never shifts */}
       <span className="font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px] tabular-nums block w-[72px] md:w-[82px] lg:w-[94px]">
         {formatTime(elapsed)}
@@ -44,7 +56,7 @@ function NavTimer() {
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
