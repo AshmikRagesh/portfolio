@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useChatDrawer } from "@/context/ChatContext";
 
 const TICK_COUNT = 80; // 80 × 50px = 4000px track
 
 export default function PixelRuler() {
   const { isOpen } = useChatDrawer();
+  const pathname = usePathname();
+  if (pathname.startsWith("/works/")) return null;
   const lineRef = useRef<HTMLDivElement>(null);
   const labelsRef = useRef<(HTMLSpanElement | null)[]>([]);
   const isDragging = useRef(false);
