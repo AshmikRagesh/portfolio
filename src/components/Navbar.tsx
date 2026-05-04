@@ -38,14 +38,7 @@ function NavTimer() {
       {/* Tooltip — centered on the fixed-width container */}
       <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
         <div className="flex items-center gap-[6px] bg-[#172b4d] rounded px-2 py-[6px] whitespace-nowrap">
-          <Image
-            src="/icons/clock-filled.png"
-            alt=""
-            width={14}
-            height={14}
-            className="shrink-0"
-            style={{ filter: "brightness(0) invert(1)" }}
-          />
+          <img src="/icons/clock-filled.svg" alt="" width={14} height={14} className="shrink-0" />
           <span className="font-brand font-medium text-[12px] text-white tracking-[-0.06px]">
             Measuring your curiosity
           </span>
