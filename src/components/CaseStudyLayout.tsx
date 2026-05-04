@@ -57,10 +57,10 @@ export default function CaseStudyLayout({
 
   return (
     <>
-    <div className="flex min-h-screen pt-[80px]">
+    <div className="flex min-h-screen pt-[84px]">
 
       {/* ── Sticky sidebar (desktop only) ── */}
-      <aside className="hidden lg:flex flex-col w-[260px] xl:w-[300px] shrink-0 sticky top-[80px] self-start h-[calc(100vh-80px)] pl-[100px] pr-8 py-10 overflow-y-auto">
+      <aside className="hidden lg:flex flex-col w-[260px] xl:w-[300px] shrink-0 sticky top-[84px] self-start h-[calc(100vh-84px)] pl-[100px] pr-8 py-10 overflow-y-auto">
         {/* Back button */}
         <Link
           href={backHref}
@@ -92,7 +92,7 @@ export default function CaseStudyLayout({
       <main className="flex-1 min-w-0">
 
         {/* Mobile sticky nav — section tabs only (back is in the navbar) */}
-        <div className="lg:hidden sticky top-[80px] z-30 bg-white border-b border-[#e8eaed]">
+        <div className="lg:hidden sticky top-[84px] z-30 bg-white border-b border-[#e8eaed]">
           <div className="flex overflow-x-auto gap-6 px-5 py-2 scrollbar-hide">
             {sections.map(({ id, label }) => (
               <button

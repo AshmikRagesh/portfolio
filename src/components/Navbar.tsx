@@ -36,7 +36,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-[28px] left-0 h-[80px] z-50 bg-background border-b border-[#c8ccd4] transition-[right,box-shadow] duration-300 ease-in-out ${
+      className={`fixed top-[28px] left-0 h-[56px] z-50 bg-background border-b border-[#c8ccd4] transition-[right,box-shadow] duration-300 ease-in-out ${
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
       } ${isOpen ? "lg:right-[400px] right-0" : "right-0"}`}
     >
