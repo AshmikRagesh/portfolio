@@ -18,24 +18,16 @@ export default function Hero() {
         </p>
       </div>
 
-      {/* Mobile: crop to center character */}
-      <div className="md:hidden relative w-full h-[460px] overflow-hidden">
+      {/* Portrait */}
+      <div className="relative overflow-hidden w-[80%] aspect-[502/514] md:w-[502px] md:h-[514px] md:aspect-auto lg:w-[502px] lg:h-[514px]">
         <Image
           src={PORTRAIT_SRC}
           alt="Portrait of Ashmik Ragesh"
-          fill
-          className="object-cover object-center"
+          width={542}
+          height={542}
+          className="absolute left-[-4%] top-[-2.71%] w-[108%] max-w-none"
         />
       </div>
-
-      {/* Tablet/desktop: full three-panel illustration */}
-      <Image
-        src={PORTRAIT_SRC}
-        alt="Portrait of Ashmik Ragesh"
-        width={1268}
-        height={538}
-        className="hidden md:block w-full h-auto"
-      />
     </section>
   );
 }
