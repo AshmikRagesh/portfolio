@@ -5,7 +5,8 @@ import { useEffect, useRef } from "react";
 const TICK_COUNT = 80; // 80 × 50px = 4000px track
 
 export default function PixelRuler() {
-  const trackRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
+  const labelsRef = useRef<(HTMLSpanElement | null)[]>([]);
 
   useEffect(() => {
     let rafId: number;
@@ -14,13 +15,20 @@ export default function PixelRuler() {
       const maxScroll =
         document.documentElement.scrollHeight - window.innerHeight;
       const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-      // At 100% scroll, right edge of viewport aligns with 1000 on the ruler.
-      // On wide viewports (>1000px) the full 0-1000 range is always visible; no shift needed.
-      const maxTranslate = Math.min(0, -(1000 - window.innerWidth));
-      const translateX = progress * maxTranslate;
-      if (trackRef.current) {
-        trackRef.current.style.transform = `translateX(${translateX}px)`;
+      const progressX = progress * window.innerWidth;
+
+      // Move the progress needle
+      if (lineRef.current) {
+        lineRef.current.style.left = `${progressX}px`;
       }
+
+      // Highlight the nearest major tick label (every 100px = labelIndex step)
+      const activeIndex = Math.round(progressX / 100);
+      labelsRef.current.forEach((el, i) => {
+        if (!el) return;
+        el.style.color =
+          i === activeIndex ? "rgba(0,0,0,0.65)" : "rgb(170,171,171)";
+      });
     };
 
     const onScroll = () => {
@@ -39,10 +47,10 @@ export default function PixelRuler() {
   }, []);
 
   return (
-    <div className="fixed top-[80px] left-0 right-0 h-[20px] overflow-hidden border-b border-black/20 bg-background z-[49]">
+    <div className="fixed top-0 left-0 right-0 h-[28px] overflow-hidden border-b border-black/20 bg-background z-[51]">
+      {/* Tick track — fixed, no translation */}
       <div
-        ref={trackRef}
-        className="flex items-start will-change-transform h-full"
+        className="flex items-start h-full"
         style={{ width: `${TICK_COUNT * 50}px` }}
       >
         {Array.from({ length: TICK_COUNT }, (_, i) => {
@@ -53,16 +61,17 @@ export default function PixelRuler() {
               className="relative shrink-0"
               style={{
                 width: 1,
-                height: isMajor ? 6 : 5,
+                height: isMajor ? 8 : 6,
                 backgroundColor: "rgb(170, 171, 171)",
                 marginRight: 49,
               }}
             >
               {isMajor && (
                 <span
+                  ref={(el) => { labelsRef.current[i / 2] = el; }}
                   className="absolute whitespace-nowrap leading-none"
                   style={{
-                    top: 8,
+                    top: 10,
                     left: "50%",
                     transform: "translateX(-50%)",
                     fontSize: 9,
@@ -76,6 +85,13 @@ export default function PixelRuler() {
           );
         })}
       </div>
+
+      {/* Scroll progress needle */}
+      <div
+        ref={lineRef}
+        className="absolute top-0 h-full pointer-events-none will-change-[left]"
+        style={{ left: 0, width: 1, backgroundColor: "rgba(0,0,0,0.35)" }}
+      />
     </div>
   );
 }
