@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutGrid, CirclePlay, CircleUser, ArrowLeft } from "lucide-react";
+import { Menu, X, LayoutGrid, CirclePlay, CircleUser, ArrowLeft, Clock } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import { useChatDrawer } from "@/context/ChatContext";
 
@@ -12,6 +12,39 @@ const navLinks = [
   { label: "Playground", href: "#playground", Icon: CirclePlay },
   { label: "About", href: "#about", Icon: CircleUser },
 ];
+
+function formatTime(s: number) {
+  const m = Math.floor(s / 60).toString().padStart(2, "0");
+  const sec = (s % 60).toString().padStart(2, "0");
+  return `${m}:${sec}`;
+}
+
+function NavTimer() {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setElapsed((t) => t + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="group relative shrink-0 cursor-default select-none">
+      <span className="font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px] tabular-nums">
+        {formatTime(elapsed)}
+      </span>
+
+      {/* Tooltip */}
+      <div className="absolute top-full left-0 mt-2 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <div className="flex items-center gap-2 bg-[#172b4d] rounded px-2 py-2 whitespace-nowrap">
+          <Clock size={14} strokeWidth={1.5} className="text-white shrink-0" />
+          <span className="font-brand font-medium text-[12px] text-white tracking-[-0.06px]">
+            Measuring your curiosity
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -52,18 +85,12 @@ export default function Navbar() {
               <ArrowLeft size={14} strokeWidth={2} />
               Back
             </Link>
-            <Link href="/" aria-label="Home" className="hidden md:block shrink-0">
-              <span className="font-heading italic font-normal md:text-[32px] lg:text-[36px] text-heading md:tracking-[-0.32px] lg:tracking-[-0.36px] md:leading-[44px]">
-                Ash
-              </span>
-            </Link>
+            <div className="hidden md:block">
+              <NavTimer />
+            </div>
           </>
         ) : (
-          <Link href="/" aria-label="Home" className="shrink-0">
-            <span className="font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px]">
-              Ash
-            </span>
-          </Link>
+          <NavTimer />
         )}
 
         {/* Desktop + tablet: nav links + CTA */}
