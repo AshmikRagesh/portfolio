@@ -54,7 +54,7 @@ function Overview() {
       id="overview"
       className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[40px] lg:py-[80px]"
     >
-      <div className="flex flex-col gap-10 w-full max-w-[780px]">
+      <div className="flex flex-col gap-10 w-full">
         {/* Date annotation */}
         <div className="flex flex-col gap-5">
           <div className="-rotate-3 w-fit">
@@ -140,7 +140,7 @@ function MyRole() {
     >
       <div className="flex flex-col gap-12 w-full md:gap-14 lg:gap-[48px]">
         {/* Role columns */}
-        <div className="grid grid-cols-2 gap-x-8 gap-y-10 w-full max-w-[780px] md:gap-x-[48px] lg:grid-cols-4 lg:gap-x-[64px]">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 w-full md:gap-x-[48px] lg:grid-cols-4 lg:gap-x-[64px]">
           {columns.map(({ heading, content }) => (
             <div key={heading} className="flex flex-col gap-3">
               <h2 className="font-heading font-normal text-[20px] leading-[1.2] tracking-[-0.8px] text-[#091624] md:text-[22px] md:tracking-[-0.88px] lg:text-[24px] lg:tracking-[-0.96px]">
@@ -154,7 +154,7 @@ function MyRole() {
         </div>
 
         {/* Understanding the tool */}
-        <div className="flex flex-col gap-6 w-full max-w-[780px] md:gap-[24px]">
+        <div className="flex flex-col gap-6 w-full md:gap-[24px]">
           <div className="flex flex-col gap-4 md:gap-[24px]">
             <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
               Understanding the tool
@@ -193,7 +193,7 @@ function Background() {
       id="background"
       className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[40px] lg:py-[80px]"
     >
-      <div className="flex flex-col gap-10 w-full max-w-[780px] md:gap-[48px]">
+      <div className="flex flex-col gap-10 w-full md:gap-[48px]">
         {/* Text block */}
         <div className="flex flex-col gap-5 w-full md:gap-[24px]">
           {/* Tag + heading — 12px gap between them */}
@@ -254,7 +254,7 @@ function TheProblem() {
       id="the-problem"
       className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[40px] lg:py-[80px]"
     >
-      <div className="flex flex-col gap-10 w-full max-w-[780px] md:gap-[48px]">
+      <div className="flex flex-col gap-10 w-full md:gap-[48px]">
         {/* Text block */}
         <div className="flex flex-col gap-5 w-full md:gap-[24px]">
           {/* Tag + heading — 12px gap */}
@@ -398,7 +398,7 @@ function Challenges() {
       id="challenges"
       className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[40px] lg:py-[80px]"
     >
-      <div className="flex flex-col gap-10 w-full max-w-[780px] md:gap-[48px]">
+      <div className="flex flex-col gap-10 w-full md:gap-[48px]">
         {/* Header block */}
         <div className="flex flex-col gap-5 md:gap-[24px]">
           <div className="flex flex-col gap-3">
@@ -462,7 +462,7 @@ function Process() {
       id="process"
       className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[40px] lg:py-[80px]"
     >
-      <div className="flex flex-col gap-10 w-full max-w-[780px] md:gap-[80px]">
+      <div className="flex flex-col gap-10 w-full md:gap-[80px]">
         {/* Header block */}
         <div className="flex flex-col gap-5 md:gap-[24px]">
           <div className="flex flex-col gap-3">
@@ -652,7 +652,7 @@ function Solution() {
       id="solution"
       className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[40px] lg:py-[80px]"
     >
-      <div className="flex flex-col gap-10 w-full max-w-[780px] md:gap-[80px]">
+      <div className="flex flex-col gap-10 w-full md:gap-[80px]">
         {/* Header block */}
         <div className="flex flex-col gap-5 md:gap-[24px]">
           <div className="flex flex-col gap-3">
@@ -762,7 +762,7 @@ function Impact() {
       id="impact"
       className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[40px] lg:py-[80px]"
     >
-      <div className="flex flex-col gap-10 w-full max-w-[780px] md:gap-[48px]">
+      <div className="flex flex-col gap-10 w-full md:gap-[48px]">
         {/* Header block */}
         <div className="flex flex-col gap-5 md:gap-[24px]">
           <div className="flex flex-col gap-3">
@@ -833,7 +833,7 @@ function Reflection() {
       id="reflection"
       className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[40px] lg:py-[80px]"
     >
-      <div className="flex flex-col gap-5 w-full max-w-[780px] md:gap-[24px]">
+      <div className="flex flex-col gap-5 w-full md:gap-[24px]">
         {/* Tag + heading */}
         <div className="flex flex-col gap-3">
           <div className="-rotate-3 w-fit">
