@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { ChatProvider, useChatDrawer } from "@/context/ChatContext";
 import ChatDrawer from "@/components/ChatDrawer";
 import Navbar from "@/components/Navbar";
+import PixelRuler from "@/components/PixelRuler";
 
 function Inner({ children }: { children: ReactNode }) {
   const { isOpen, close } = useChatDrawer();
@@ -20,6 +21,7 @@ function Inner({ children }: { children: ReactNode }) {
       />
 
       <Navbar />
+      <PixelRuler />
 
       {/* Content shifts left when chat drawer opens on desktop */}
       <div
