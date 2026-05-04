@@ -8,17 +8,38 @@ export default function PixelRuler() {
   const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let rafId: number;
+
     const sync = () => {
+      const maxScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      // At 100% scroll, right edge of viewport aligns with 1000 on the ruler.
+      // On wide viewports (>1000px) the full 0-1000 range is always visible; no shift needed.
+      const maxTranslate = Math.min(0, -(1000 - window.innerWidth));
+      const translateX = progress * maxTranslate;
       if (trackRef.current) {
-        trackRef.current.style.transform = `translateX(${-window.scrollX}px)`;
+        trackRef.current.style.transform = `translateX(${translateX}px)`;
       }
     };
-    window.addEventListener("scroll", sync, { passive: true });
-    return () => window.removeEventListener("scroll", sync);
+
+    const onScroll = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(sync);
+    };
+
+    sync();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", sync, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", sync);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
-    <div className="fixed top-[80px] left-0 right-0 h-[40px] overflow-hidden border-b border-black/20 bg-background z-[49]">
+    <div className="fixed top-[80px] left-0 right-0 h-[20px] overflow-hidden border-b border-black/20 bg-background z-[49]">
       <div
         ref={trackRef}
         className="flex items-start will-change-transform h-full"
@@ -32,7 +53,7 @@ export default function PixelRuler() {
               className="relative shrink-0"
               style={{
                 width: 1,
-                height: isMajor ? 12 : 10,
+                height: isMajor ? 6 : 5,
                 backgroundColor: "rgb(170, 171, 171)",
                 marginRight: 49,
               }}
@@ -41,10 +62,10 @@ export default function PixelRuler() {
                 <span
                   className="absolute whitespace-nowrap leading-none"
                   style={{
-                    top: 18,
+                    top: 8,
                     left: "50%",
                     transform: "translateX(-50%)",
-                    fontSize: 10,
+                    fontSize: 9,
                     color: "rgb(170, 171, 171)",
                   }}
                 >
