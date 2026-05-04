@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutGrid, CirclePlay, CircleUser, ArrowLeft, Clock } from "lucide-react";
+import Image from "next/image";
+import { Menu, X, LayoutGrid, CirclePlay, CircleUser, ArrowLeft } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import { useChatDrawer } from "@/context/ChatContext";
 
@@ -29,14 +30,21 @@ function NavTimer() {
 
   return (
     <div className="group relative shrink-0 cursor-default select-none">
-      <span className="font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px] tabular-nums">
+      {/* Fixed-width block so the tooltip anchor never shifts */}
+      <span className="font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px] tabular-nums block w-[72px] md:w-[82px] lg:w-[94px]">
         {formatTime(elapsed)}
       </span>
 
-      {/* Tooltip */}
+      {/* Tooltip — centered on the fixed-width container */}
       <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-        <div className="flex items-center gap-2 bg-[#172b4d] rounded px-2 py-2 whitespace-nowrap">
-          <Clock size={14} strokeWidth={1.5} className="text-white shrink-0" />
+        <div className="flex items-center gap-[6px] bg-[#172b4d] rounded px-2 py-[6px] whitespace-nowrap">
+          <Image
+            src="/icons/clock-filled.png"
+            alt=""
+            width={14}
+            height={14}
+            className="shrink-0 invert"
+          />
           <span className="font-brand font-medium text-[12px] text-white tracking-[-0.06px]">
             Measuring your curiosity
           </span>
