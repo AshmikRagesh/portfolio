@@ -24,7 +24,7 @@ export default function Hero() {
         alt="Portrait of Ashmik Ragesh"
         width={1268}
         height={538}
-        className="w-full max-w-[900px] h-auto"
+        className="w-full h-auto"
       />
     </section>
   );
