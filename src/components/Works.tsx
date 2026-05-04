@@ -78,17 +78,14 @@ function WorkCard({ work }: { work: WorkItem }) {
   return (
     <Wrapper
       href={work.href as string}
-      className="group flex flex-col gap-6 bg-white border border-[#c8ccd4] rounded-[20px] shadow-[0px_1px_12px_rgba(0,0,0,0.06)] pt-5 px-5 pb-10 transition-shadow duration-300 hover:shadow-[0px_4px_24px_rgba(0,0,0,0.12)] cursor-pointer"
+      className="group flex flex-col gap-6 bg-white border border-[#c8ccd4] rounded-[20px] shadow-[0px_1px_12px_rgba(0,0,0,0.06)] pt-5 px-5 pb-10 min-h-[514px] cursor-pointer transition-shadow duration-300 hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)]"
     >
-      {/* Number + Image */}
-      <div className="flex flex-col gap-3 items-end">
-        {/* Number */}
+      {/* Number + Image — image grows to fill remaining height */}
+      <div className="flex flex-col gap-3 items-end flex-1 min-h-0">
         <span className="font-brand font-medium text-[14px] uppercase text-[#172b4d] leading-[20px] shrink-0">
           {work.number}
         </span>
-
-        {/* Image */}
-        <div className="relative w-full h-[260px] rounded-[16px] overflow-hidden">
+        <div className="relative flex-1 w-full min-h-0 rounded-[16px] overflow-hidden">
           <Image
             src={work.image}
             alt={work.imageAlt}
@@ -98,11 +95,10 @@ function WorkCard({ work }: { work: WorkItem }) {
         </div>
       </div>
 
-      {/* Content */}
+      {/* Content — fixed at bottom */}
       <div className="flex flex-col gap-3 shrink-0">
         {/* Tags + Title */}
         <div className="flex flex-col gap-2">
-          {/* Tags */}
           <div className="flex flex-wrap gap-2">
             {work.tags.map((tag) => (
               <span
@@ -113,8 +109,6 @@ function WorkCard({ work }: { work: WorkItem }) {
               </span>
             ))}
           </div>
-
-          {/* Title */}
           <h3 className="font-heading font-normal text-[30px] leading-[1.18] tracking-[-0.6px] text-black">
             {work.title}
           </h3>
@@ -155,9 +149,9 @@ export default function Works() {
   return (
     <section
       id="works"
-      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:py-[80px]"
+      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:py-[60px]"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-[20px] md:gap-[40px] lg:gap-[60px]">
         {works.map((work) => (
           <WorkCard key={work.number} work={work} />
         ))}
