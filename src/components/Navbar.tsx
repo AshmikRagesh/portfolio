@@ -34,7 +34,7 @@ function NavTimer() {
       </span>
 
       {/* Tooltip */}
-      <div className="absolute top-full left-0 mt-2 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
         <div className="flex items-center gap-2 bg-[#172b4d] rounded px-2 py-2 whitespace-nowrap">
           <Clock size={14} strokeWidth={1.5} className="text-white shrink-0" />
           <span className="font-brand font-medium text-[12px] text-white tracking-[-0.06px]">
