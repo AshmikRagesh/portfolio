@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode } from "react";
-import { usePathname } from "next/navigation";
 import { ChatProvider, useChatDrawer } from "@/context/ChatContext";
 import ChatDrawer from "@/components/ChatDrawer";
 import Navbar from "@/components/Navbar";
@@ -9,7 +8,6 @@ import PixelRuler from "@/components/PixelRuler";
 
 function Inner({ children }: { children: ReactNode }) {
   const { isOpen, close } = useChatDrawer();
-  const pathname = usePathname();
 
   return (
     <>
@@ -23,7 +21,7 @@ function Inner({ children }: { children: ReactNode }) {
       />
 
       <Navbar />
-      {pathname === "/" && <PixelRuler />}
+      <PixelRuler />
 
       {/* Content shifts left when chat drawer opens on desktop */}
       <div
