@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useChatDrawer } from "@/context/ChatContext";
 
 const TICK_COUNT = 80; // 80 × 50px = 4000px track
 
 export default function PixelRuler() {
+  const { isOpen } = useChatDrawer();
   const lineRef = useRef<HTMLDivElement>(null);
   const labelsRef = useRef<(HTMLSpanElement | null)[]>([]);
 
@@ -17,17 +19,15 @@ export default function PixelRuler() {
       const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
       const progressX = progress * window.innerWidth;
 
-      // Move the progress needle
       if (lineRef.current) {
         lineRef.current.style.left = `${progressX}px`;
       }
 
-      // Highlight the nearest major tick label (every 100px = labelIndex step)
       const activeIndex = Math.round(progressX / 100);
       labelsRef.current.forEach((el, i) => {
         if (!el) return;
         el.style.color =
-          i === activeIndex ? "rgba(0,0,0,0.65)" : "rgb(170,171,171)";
+          i === activeIndex ? "rgba(0,0,0,0.85)" : "rgb(170,171,171)";
       });
     };
 
@@ -47,7 +47,11 @@ export default function PixelRuler() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-[28px] overflow-hidden border-b border-black/20 bg-background z-[51]">
+    <div
+      className={`fixed top-0 left-0 h-[28px] overflow-hidden border-b border-black/20 bg-background z-[51] transition-[right] duration-300 ease-in-out ${
+        isOpen ? "lg:right-[400px] right-0" : "right-0"
+      }`}
+    >
       {/* Tick track — fixed, no translation */}
       <div
         className="flex items-start h-full"
@@ -90,7 +94,7 @@ export default function PixelRuler() {
       <div
         ref={lineRef}
         className="absolute top-0 h-full pointer-events-none will-change-[left]"
-        style={{ left: 0, width: 1, backgroundColor: "rgba(0,0,0,0.35)" }}
+        style={{ left: 0, width: 2, backgroundColor: "rgba(0,0,0,0.55)" }}
       />
     </div>
   );
