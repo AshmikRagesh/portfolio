@@ -43,7 +43,8 @@ function NavTimer() {
             alt=""
             width={14}
             height={14}
-            className="shrink-0 invert"
+            className="shrink-0"
+            style={{ filter: "brightness(0) invert(1)" }}
           />
           <span className="font-brand font-medium text-[12px] text-white tracking-[-0.06px]">
             Measuring your curiosity
