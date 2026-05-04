@@ -52,7 +52,7 @@ function Overview() {
   return (
     <section
       id="overview"
-      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[100px] lg:py-[80px]"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[180px] lg:py-[80px]"
     >
       <div className="flex flex-col gap-10 w-full">
         {/* Date annotation */}
@@ -136,7 +136,7 @@ function MyRole() {
   return (
     <section
       id="my-role"
-      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[100px] lg:py-[80px]"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[180px] lg:py-[80px]"
     >
       <div className="flex flex-col gap-12 w-full md:gap-14 lg:gap-[48px]">
         {/* Role columns */}
@@ -191,7 +191,7 @@ function Background() {
   return (
     <section
       id="background"
-      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[100px] lg:py-[80px]"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[180px] lg:py-[80px]"
     >
       <div className="flex flex-col gap-10 w-full md:gap-[48px]">
         {/* Text block */}
@@ -252,7 +252,7 @@ function TheProblem() {
   return (
     <section
       id="the-problem"
-      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[100px] lg:py-[80px]"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[180px] lg:py-[80px]"
     >
       <div className="flex flex-col gap-10 w-full md:gap-[48px]">
         {/* Text block */}
@@ -396,7 +396,7 @@ function Challenges() {
   return (
     <section
       id="challenges"
-      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[100px] lg:py-[80px]"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[180px] lg:py-[80px]"
     >
       <div className="flex flex-col gap-10 w-full md:gap-[48px]">
         {/* Header block */}
@@ -460,7 +460,7 @@ function Process() {
   return (
     <section
       id="process"
-      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[100px] lg:py-[80px]"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[180px] lg:py-[80px]"
     >
       <div className="flex flex-col gap-10 w-full md:gap-[80px]">
         {/* Header block */}
@@ -650,7 +650,7 @@ function Solution() {
   return (
     <section
       id="solution"
-      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[100px] lg:py-[80px]"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[180px] lg:py-[80px]"
     >
       <div className="flex flex-col gap-10 w-full md:gap-[80px]">
         {/* Header block */}
@@ -760,7 +760,7 @@ function Impact() {
   return (
     <section
       id="impact"
-      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[100px] lg:py-[80px]"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[180px] lg:py-[80px]"
     >
       <div className="flex flex-col gap-10 w-full md:gap-[48px]">
         {/* Header block */}
@@ -831,7 +831,7 @@ function Reflection() {
   return (
     <section
       id="reflection"
-      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[100px] lg:py-[80px]"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[180px] lg:py-[80px]"
     >
       <div className="flex flex-col gap-5 w-full md:gap-[24px]">
         {/* Tag + heading */}
