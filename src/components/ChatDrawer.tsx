@@ -142,8 +142,8 @@ export default function ChatDrawer() {
           : "translate-y-full lg:translate-y-0 lg:translate-x-full"}
       `}
     >
-      {/* ── Header ── same 76px height as the Navbar on desktop */}
-      <div className="shrink-0 flex items-center justify-between h-[80px] px-5 border-b border-[#c8ccd4] bg-[#f5f7f8]">
+      {/* ── Header ── matches ruler (28px) + navbar (68px) = 96px */}
+      <div className="shrink-0 flex items-center justify-between h-[96px] px-5 border-b border-[#c8ccd4] bg-[#f5f7f8]">
         <div className="flex items-center gap-2">
           {/* GT Alpina Regular (not italic) per Figma */}
           <span className="font-heading text-[20px] text-heading leading-[32px] tracking-[-0.2px] whitespace-nowrap">
