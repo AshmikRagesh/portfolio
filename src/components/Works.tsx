@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 interface WorkItem {
   number: string;
@@ -10,7 +9,7 @@ interface WorkItem {
   description: string;
   image: string;
   imageAlt: string;
-  tags: { label: string; style: string }[];
+  tags: string[];
   role: string;
   team: string;
   timeframe: string;
@@ -19,64 +18,52 @@ interface WorkItem {
 
 const works: WorkItem[] = [
   {
-    number: "NO. 01",
+    number: "NO:01",
     title: "Artemis Reservations",
     description:
       "Streamlining the reservations module in Artemis 3.0—introducing auto‑save, in‑app notifications, and categorised flights.",
     image: "/images/works-cover.png",
     imageAlt: "Artemis 3.0 Reservations Module preview",
-    tags: [
-      { label: "UX DESIGN", style: "border border-[#c9b99a] text-[#7a6a57]" },
-      { label: "SHIPPED", style: "border border-[#9abf9a] text-[#3d6e3d]" },
-    ],
+    tags: ["UX DESIGN", "SHIPPED"],
     role: "Lead Product Designer",
     team: "2 Engineers, 1 PM",
     timeframe: "4 months",
     href: "/works/artemis-reservations",
   },
   {
-    number: "NO. 02",
+    number: "NO:02",
     title: "Artemis Design System",
     description:
       "Conceptualised and built the Artemis design system from the ground up—tokens, components, and documentation.",
     image: "/images/works-cover.png",
     imageAlt: "Artemis Design System preview",
-    tags: [
-      { label: "DESIGN SYSTEM", style: "border border-[#c9b99a] text-[#7a6a57]" },
-      { label: "IN PROGRESS", style: "border border-[#b9a97a] text-[#7a5f1e]" },
-    ],
+    tags: ["DESIGN SYSTEM", "IN PROGRESS"],
     role: "Lead Product Designer",
     team: "1 Engineer, 1 PM",
     timeframe: "6 months",
     href: "#",
   },
   {
-    number: "NO. 03",
+    number: "NO:03",
     title: "AI Trip Planning",
     description:
       "Designed an AI-powered itinerary builder that lets travelers create personalised trips in under 2 minutes.",
     image: "/images/works-cover.png",
     imageAlt: "AI Trip Planning preview",
-    tags: [
-      { label: "SIDE PROJECT", style: "border border-[#c9b99a] text-[#7a6a57]" },
-      { label: "SHIPPED", style: "border border-[#9abf9a] text-[#3d6e3d]" },
-    ],
+    tags: ["SIDE PROJECT", "SHIPPED"],
     role: "Solo Designer",
     team: "Just me",
     timeframe: "2 months",
     href: "#",
   },
   {
-    number: "NO. 04",
+    number: "NO:04",
     title: "Travel Agent Dashboard",
     description:
       "Redesigned the agent-facing dashboard to surface key booking signals and reduce context-switching.",
     image: "/images/works-cover.png",
     imageAlt: "Travel Agent Dashboard preview",
-    tags: [
-      { label: "PRODUCT DESIGN", style: "border border-[#c9b99a] text-[#7a6a57]" },
-      { label: "SHIPPED", style: "border border-[#9abf9a] text-[#3d6e3d]" },
-    ],
+    tags: ["PRODUCT DESIGN", "SHIPPED"],
     role: "Product Designer",
     team: "3 Engineers, 1 PM",
     timeframe: "3 months",
@@ -91,74 +78,72 @@ function WorkCard({ work }: { work: WorkItem }) {
   return (
     <Wrapper
       href={work.href as string}
-      className="group relative bg-[#f0ebe3] rounded-[20px] overflow-hidden flex flex-col"
+      className="group flex flex-col gap-6 bg-white border border-[#c8ccd4] rounded-[20px] shadow-[0px_1px_12px_rgba(0,0,0,0.06)] pt-5 px-5 pb-10 transition-shadow duration-300 hover:shadow-[0px_4px_24px_rgba(0,0,0,0.12)] cursor-pointer"
     >
-      {/* Number — floats over image top-right */}
-      <span className="absolute top-4 right-4 font-mono text-[11px] font-medium text-[#b5a99a] z-10 tracking-[0.6px] select-none">
-        {work.number}
-      </span>
+      {/* Number + Image */}
+      <div className="flex flex-col gap-3 items-end">
+        {/* Number */}
+        <span className="font-brand font-medium text-[14px] uppercase text-[#172b4d] leading-[20px] shrink-0">
+          {work.number}
+        </span>
 
-      {/* Image */}
-      <div className="relative h-[260px] sm:h-[280px] w-full overflow-hidden shrink-0">
-        <Image
-          src={work.image}
-          alt={work.imageAlt}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-        />
-
-        {/* Hover overlay */}
-        {isLink && (
-          <div className="absolute inset-0 bg-[#091624]/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-            <span className="flex items-center gap-2 bg-[#e96f18] text-white font-brand font-medium text-[12px] uppercase tracking-[1px] px-5 py-[10px] rounded-full">
-              View Case Study
-              <ArrowRight size={13} strokeWidth={2} />
-            </span>
-          </div>
-        )}
+        {/* Image */}
+        <div className="relative w-full h-[260px] rounded-[16px] overflow-hidden">
+          <Image
+            src={work.image}
+            alt={work.imageAlt}
+            fill
+            className="object-cover"
+          />
+        </div>
       </div>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 px-5 pt-[18px] pb-5">
-        {/* Title + tags */}
-        <div className="flex items-start justify-between gap-3 mb-[10px]">
-          <h3 className="font-heading italic font-normal text-[22px] leading-[1.15] tracking-[-0.44px] text-[#1a1208]">
-            {work.title}
-          </h3>
-          <div className="flex flex-wrap gap-[6px] shrink-0 pt-[2px]">
+      <div className="flex flex-col gap-3 shrink-0">
+        {/* Tags + Title */}
+        <div className="flex flex-col gap-2">
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2">
             {work.tags.map((tag) => (
               <span
-                key={tag.label}
-                className={`font-brand font-medium text-[10px] tracking-[0.5px] uppercase px-[8px] py-[4px] rounded-full bg-transparent ${tag.style}`}
+                key={tag}
+                className="bg-[#e2ecff] text-[#091624] font-brand font-medium text-[12px] uppercase leading-[20px] px-2 py-1 rounded-[4px]"
               >
-                {tag.label}
+                {tag}
               </span>
             ))}
           </div>
+
+          {/* Title */}
+          <h3 className="font-heading font-normal text-[30px] leading-[1.18] tracking-[-0.6px] text-black">
+            {work.title}
+          </h3>
         </div>
 
         {/* Description */}
-        <p className="font-body text-[14px] leading-[1.55] text-[#7a6a57]">
+        <p className="font-body font-normal text-[18px] leading-[24px] text-[#717379]">
           {work.description}
         </p>
 
-        {/* Hover reveal: role / team / timeframe */}
-        <div className="overflow-hidden max-h-0 opacity-0 group-hover:max-h-[160px] group-hover:opacity-100 transition-all duration-300 ease-in-out">
-          <div className="mt-4 pt-4 border-t border-[#d9cfc4] flex flex-col gap-[10px]">
-            {[
-              { label: "Role", value: work.role },
-              { label: "Team", value: work.team },
-              { label: "Timeframe", value: work.timeframe },
-            ].map(({ label, value }) => (
-              <div key={label} className="flex items-center justify-between">
-                <span className="font-brand text-[10px] font-medium uppercase tracking-[0.8px] text-[#b5a99a]">
-                  {label}
-                </span>
-                <span className="font-body text-[13px] text-[#5a4a37]">
-                  {value}
-                </span>
-              </div>
-            ))}
+        {/* Hover-reveal: Role / Team / Timeframe */}
+        <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+          <div className="overflow-hidden">
+            <div className="pt-4 border-t border-[#e8eaed] flex flex-col gap-3">
+              {[
+                { label: "Role", value: work.role },
+                { label: "Team", value: work.team },
+                { label: "Timeframe", value: work.timeframe },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex items-center justify-between">
+                  <span className="font-brand font-medium text-[11px] uppercase tracking-[0.8px] text-[#9ca3af]">
+                    {label}
+                  </span>
+                  <span className="font-body text-[14px] text-[#354454]">
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -172,7 +157,7 @@ export default function Works() {
       id="works"
       className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:py-[80px]"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {works.map((work) => (
           <WorkCard key={work.number} work={work} />
         ))}
