@@ -3,16 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 
-interface WorkItem {
+export interface WorkItem {
   number: string;
   title: string;
   description: string;
   image: string;
   imageAlt: string;
   tags: string[];
-  role: string;
-  team: string;
-  timeframe: string;
+  role?: string;
+  team?: string;
+  timeframe?: string;
   href: string;
   rotate: "left" | "right";
 }
@@ -107,7 +107,7 @@ const works: WorkItem[] = [
 const leftWorks = works.filter((w) => w.rotate === "left");
 const rightWorks = works.filter((w) => w.rotate === "right");
 
-function WorkCard({ work }: { work: WorkItem }) {
+export function WorkCard({ work }: { work: WorkItem }) {
   const isLink = work.href !== "#";
   const Wrapper = isLink ? Link : "div";
   const rotateClass = work.rotate === "left" ? "-rotate-1" : "rotate-1";
@@ -164,26 +164,30 @@ function WorkCard({ work }: { work: WorkItem }) {
             </p>
 
             {/* Hover-reveal: Role / Team / Timeframe */}
-            <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
-              <div className="overflow-hidden">
-                <div className="pt-4 border-t border-[#e8eaed] flex flex-col gap-3">
-                  {[
-                    { label: "Role", value: work.role },
-                    { label: "Team", value: work.team },
-                    { label: "Timeframe", value: work.timeframe },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="flex items-center justify-between">
-                      <span className="font-brand font-medium text-[11px] uppercase tracking-[0.8px] text-[#9ca3af]">
-                        {label}
-                      </span>
-                      <span className="font-body text-[14px] text-[#354454]">
-                        {value}
-                      </span>
-                    </div>
-                  ))}
+            {(work.role || work.team || work.timeframe) && (
+              <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
+                <div className="overflow-hidden">
+                  <div className="pt-4 border-t border-[#e8eaed] flex flex-col gap-3">
+                    {[
+                      { label: "Role", value: work.role },
+                      { label: "Team", value: work.team },
+                      { label: "Timeframe", value: work.timeframe },
+                    ]
+                      .filter(({ value }) => value)
+                      .map(({ label, value }) => (
+                        <div key={label} className="flex items-center justify-between">
+                          <span className="font-brand font-medium text-[11px] uppercase tracking-[0.8px] text-[#9ca3af]">
+                            {label}
+                          </span>
+                          <span className="font-body text-[14px] text-[#354454]">
+                            {value}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </Wrapper>
       </div>
