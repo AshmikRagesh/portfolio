@@ -60,7 +60,7 @@ export default function CaseStudyLayout({
     <div className="flex min-h-screen pt-[68px]">
 
       {/* ── Sticky sidebar (desktop only) ── */}
-      <aside className="hidden lg:flex flex-col w-[260px] xl:w-[300px] shrink-0 sticky top-[68px] self-start h-[calc(100vh-68px)] pl-[100px] pr-8 py-10 overflow-y-auto">
+      <aside className="hidden lg:flex flex-col w-[320px] xl:w-[380px] shrink-0 sticky top-[68px] self-start h-[calc(100vh-68px)] pl-[100px] pr-6 py-10 overflow-y-auto">
         {/* Back / Home link */}
         <Link
           href={backHref}
@@ -72,7 +72,7 @@ export default function CaseStudyLayout({
 
         {/* TABLE OF CONTENTS card */}
         <div className="bg-[#f4f5f6] rounded-[12px] p-3">
-          <p className="font-brand font-medium text-[10px] uppercase tracking-[2px] text-[#9ca3af] px-2 mb-3">
+          <p className="font-brand font-medium text-[10px] uppercase tracking-[2px] text-[#9ca3af] px-2 mb-3 whitespace-nowrap">
             Table of Contents
           </p>
           <nav className="flex flex-col gap-[2px]">
