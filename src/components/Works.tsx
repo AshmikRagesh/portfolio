@@ -20,40 +20,40 @@ export interface WorkItem {
 const works: WorkItem[] = [
   {
     number: "NO:01",
-    title: "Artemis Reservations",
+    title: "Creating and maintaining the Artemis Design System for Enchanting Travels",
     description:
-      "Streamlining the reservations module in Artemis 3.0—introducing auto‑save, in‑app notifications, and categorised flights.",
+      "Building accessible digital products is tough. Right now, it requires product designers to dive deep into guidelines, run extensive user testing, and manually audit every component.",
     image: "/images/works-cover.png",
-    imageAlt: "Artemis 3.0 Reservations Module preview",
-    tags: ["UX DESIGN", "SHIPPED"],
+    imageAlt: "Artemis Design System preview",
+    tags: ["AI", "Product Design", "Research"],
     role: "Lead Product Designer",
     team: "2 Engineers, 1 PM",
-    timeframe: "4 months",
+    timeframe: "6 months",
     href: "/works/artemis-reservations",
     rotate: "left",
   },
   {
     number: "NO:02",
-    title: "Artemis Design System",
+    title: "Streamlining the reservations module in Artemis 3.0 for Enchanting Travels",
     description:
-      "Conceptualised and built the Artemis design system from the ground up—tokens, components, and documentation.",
+      "Introducing auto‑save, in‑app notifications, and categorised flights—reducing booking errors and cutting task completion time by 35%.",
     image: "/images/works-cover.png",
-    imageAlt: "Artemis Design System preview",
-    tags: ["DESIGN SYSTEM", "IN PROGRESS"],
+    imageAlt: "Artemis Reservations preview",
+    tags: ["UX Design", "Shipped"],
     role: "Lead Product Designer",
-    team: "1 Engineer, 1 PM",
-    timeframe: "6 months",
+    team: "2 Engineers, 1 PM",
+    timeframe: "4 months",
     href: "#",
     rotate: "right",
   },
   {
     number: "NO:03",
-    title: "AI Trip Planning",
+    title: "Designing an AI-powered itinerary builder for modern travellers",
     description:
-      "Designed an AI-powered itinerary builder that lets travelers create personalised trips in under 2 minutes.",
+      "Lets travelers create fully personalised trips in under 2 minutes—combining real-time availability, smart suggestions, and a zero-friction booking flow.",
     image: "/images/works-cover.png",
     imageAlt: "AI Trip Planning preview",
-    tags: ["SIDE PROJECT", "SHIPPED"],
+    tags: ["Side Project", "Shipped"],
     role: "Solo Designer",
     team: "Just me",
     timeframe: "2 months",
@@ -155,47 +155,48 @@ export default function Works() {
   return (
     <section
       id="works"
-      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:pt-[100px] lg:pb-[60px]"
+      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[200px] lg:pt-[100px] lg:pb-[60px]"
     >
-      <div className="flex flex-col gap-[60px] lg:gap-[80px]">
+      <div className="flex flex-col gap-[8px]">
         {works.map((work, i) => {
           const isLink = work.href !== "#";
           const Wrapper = isLink ? Link : "div";
           const imageRight = i % 2 === 0;
 
           return (
-            <Wrapper
-              key={work.number}
-              href={work.href as string}
-              className={`group flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-[64px] ${
-                !imageRight ? "lg:flex-row-reverse" : ""
-              }`}
-            >
-              {/* Text */}
-              <div className="flex flex-col gap-2 lg:flex-1">
-                <p className="font-brand font-normal text-[14px] uppercase text-[#0049c4] leading-[20px]">
-                  {work.tags.join(", ")}
-                </p>
-                <div className="flex flex-col gap-3">
-                  <h3 className="font-heading font-normal text-[28px] leading-[1.18] tracking-[-0.56px] text-black lg:text-[36px] lg:tracking-[-0.72px] group-hover:opacity-70 transition-opacity duration-200">
-                    {work.title}
-                  </h3>
-                  <p className="font-body font-normal text-[16px] leading-[24px] text-[#717379] lg:text-[20px] lg:leading-[26px]">
-                    {work.description}
+            <div key={work.number} className="group rounded-[24px] transition-all duration-300 ease-out hover:bg-[#f5f8ff] hover:shadow-[0_8px_40px_rgba(0,73,196,0.07)] hover:-translate-y-[2px]">
+              <Wrapper
+                href={work.href as string}
+                className={`flex flex-col gap-8 p-6 lg:flex-row lg:items-center lg:gap-[64px] lg:p-10 ${
+                  !imageRight ? "lg:flex-row-reverse" : ""
+                }`}
+              >
+                {/* Text */}
+                <div className="flex flex-col gap-[8px] lg:flex-1">
+                  <p className="font-brand font-normal text-[14px] uppercase text-[#0049c4] leading-[20px]">
+                    {work.tags.join(", ")}
                   </p>
+                  <div className="flex flex-col gap-[12px]">
+                    <h3 className="font-heading font-normal text-[26px] leading-[1.18] tracking-[-0.56px] text-black lg:text-[36px] lg:tracking-[-0.72px] transition-opacity duration-200 group-hover:opacity-70">
+                      {work.title}
+                    </h3>
+                    <p className="font-body font-normal text-[16px] leading-[24px] text-[#717379] lg:text-[20px] lg:leading-[26px]">
+                      {work.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Image */}
-              <div className="relative w-full h-[260px] rounded-[16px] overflow-hidden lg:flex-1 lg:h-[432px]">
-                <Image
-                  src={work.image}
-                  alt={work.imageAlt}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                />
-              </div>
-            </Wrapper>
+                {/* Image */}
+                <div className="relative w-full h-[240px] rounded-[16px] overflow-hidden lg:flex-1 lg:h-[380px]">
+                  <Image
+                    src={work.image}
+                    alt={work.imageAlt}
+                    fill
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                  />
+                </div>
+              </Wrapper>
+            </div>
           );
         })}
       </div>
