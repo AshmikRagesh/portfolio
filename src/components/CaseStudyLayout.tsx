@@ -71,7 +71,7 @@ export default function CaseStudyLayout({
         </Link>
 
         {/* TABLE OF CONTENTS card */}
-        <div className="bg-[#f4f5f6] border border-[#e8eaed] rounded-[12px] p-3">
+        <div className="bg-[#f8f9fa] border border-[#edf0f3] rounded-[12px] p-3">
           <p className="font-brand font-medium text-[10px] uppercase tracking-[2px] text-[#354454] px-2 mb-3 whitespace-nowrap">
             Table of Contents
           </p>
@@ -82,7 +82,7 @@ export default function CaseStudyLayout({
                 onClick={() => scrollTo(id)}
                 className={`text-left w-full flex items-baseline gap-[8px] px-2 py-[7px] rounded-[8px] transition-colors duration-150 ${
                   activeId === id
-                    ? "bg-[#e2ecff] text-[#172b4d]"
+                    ? "bg-[#e2ecff] text-[#0049c4]"
                     : "text-[#6b7280] hover:text-[#172b4d]"
                 }`}
               >
