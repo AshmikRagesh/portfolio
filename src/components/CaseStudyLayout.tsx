@@ -60,19 +60,19 @@ export default function CaseStudyLayout({
     <div className="flex min-h-screen pt-[68px]">
 
       {/* ── Sticky sidebar (desktop only) ── */}
-      <aside className="hidden lg:flex flex-col w-[320px] xl:w-[380px] shrink-0 sticky top-[68px] self-start h-[calc(100vh-68px)] pl-[100px] pr-6 py-10 overflow-y-auto">
+      <aside className="hidden lg:flex flex-col w-[272px] xl:w-[323px] shrink-0 sticky top-[68px] self-start h-[calc(100vh-68px)] pl-[100px] pr-4 py-10 overflow-y-auto">
         {/* Back / Home link */}
         <Link
           href={backHref}
-          className="flex items-center gap-2 font-brand text-[12px] font-medium uppercase tracking-[1.5px] text-[#9ca3af] hover:text-[#091624] transition-colors duration-150 mb-8"
+          className="flex items-center gap-2 font-brand text-[12px] font-medium uppercase tracking-[1.5px] text-[#6b7280] hover:text-[#091624] transition-colors duration-150 mb-8"
         >
           <ArrowLeft size={12} strokeWidth={2} />
           Home
         </Link>
 
         {/* TABLE OF CONTENTS card */}
-        <div className="bg-[#f4f5f6] rounded-[12px] p-3">
-          <p className="font-brand font-medium text-[10px] uppercase tracking-[2px] text-[#9ca3af] px-2 mb-3 whitespace-nowrap">
+        <div className="bg-[#f4f5f6] border border-[#e8eaed] rounded-[12px] p-3">
+          <p className="font-brand font-medium text-[10px] uppercase tracking-[2px] text-[#354454] px-2 mb-3 whitespace-nowrap">
             Table of Contents
           </p>
           <nav className="flex flex-col gap-[2px]">
@@ -82,14 +82,14 @@ export default function CaseStudyLayout({
                 onClick={() => scrollTo(id)}
                 className={`text-left w-full flex items-baseline gap-[8px] px-2 py-[7px] rounded-[8px] transition-colors duration-150 ${
                   activeId === id
-                    ? "bg-[#e4e6ea] text-[#172b4d]"
-                    : "text-[#9ca3af] hover:text-[#172b4d]"
+                    ? "bg-[#e2ecff] text-[#172b4d]"
+                    : "text-[#6b7280] hover:text-[#172b4d]"
                 }`}
               >
-                <span className="font-brand font-medium text-[11px] shrink-0 leading-none">
+                <span className={`font-brand font-medium text-[11px] shrink-0 leading-none ${activeId === id ? "text-[#0049c4]" : "text-[#9ca3af]"}`}>
                   {String(i + 1).padStart(2, "0")}.
                 </span>
-                <span className="font-body text-[15px] leading-[1.4]">
+                <span className="font-body text-[14px] leading-[1.4]">
                   {label}
                 </span>
               </button>
@@ -100,7 +100,7 @@ export default function CaseStudyLayout({
         {/* Back to top — pinned to bottom */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="flex items-center gap-2 font-brand text-[12px] font-medium uppercase tracking-[1.5px] text-[#9ca3af] hover:text-[#091624] transition-colors duration-150 mt-auto"
+          className="flex items-center gap-2 font-brand text-[12px] font-medium uppercase tracking-[1.5px] text-[#6b7280] hover:text-[#091624] transition-colors duration-150 mt-auto"
         >
           <ArrowUp size={12} strokeWidth={2} />
           Back to top
