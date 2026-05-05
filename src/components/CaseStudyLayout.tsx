@@ -78,12 +78,11 @@ export default function CaseStudyLayout({
               <button
                 key={id}
                 onClick={() => scrollTo(id)}
-                className={`text-left w-full flex items-baseline gap-[8px] px-2 py-[7px] rounded-[8px] transition-all duration-200 hover:translate-x-[3px] ${
+                className={`text-left w-full flex items-baseline gap-[8px] px-2 py-[7px] rounded-[8px] transition-colors duration-150 ease-in-out ${
                   activeId === id
                     ? "bg-[#e2ecff] text-[#0049c4]"
                     : "text-[#6b7280] hover:text-[#172b4d] hover:bg-[#f0f4ff]"
                 }`}
-                style={{ transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
               >
                 <span className="font-body text-[13px] shrink-0 leading-none">
                   {String(i + 1).padStart(2, "0")}.

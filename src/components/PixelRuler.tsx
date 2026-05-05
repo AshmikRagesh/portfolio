@@ -9,7 +9,6 @@ const TICK_COUNT = 80; // 80 × 50px = 4000px track
 export default function PixelRuler() {
   const { isOpen } = useChatDrawer();
   const pathname = usePathname();
-  if (pathname.startsWith("/works/")) return null;
   const lineRef = useRef<HTMLDivElement>(null);
   const labelsRef = useRef<(HTMLSpanElement | null)[]>([]);
   const isDragging = useRef(false);
@@ -21,7 +20,6 @@ export default function PixelRuler() {
     const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
     const progressX = progress * window.innerWidth;
 
-    // Center the 20px hit-area div on progressX
     if (lineRef.current) {
       lineRef.current.style.left = `${progressX - 10}px`;
     }
@@ -41,7 +39,6 @@ export default function PixelRuler() {
     });
   };
 
-  // Scroll listener
   useEffect(() => {
     let rafId: number;
     const onScroll = () => {
@@ -59,7 +56,6 @@ export default function PixelRuler() {
     };
   }, []);
 
-  // Drag logic: dragging the needle scrolls the page
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
       if (!isDragging.current) return;
@@ -84,6 +80,9 @@ export default function PixelRuler() {
     };
   }, []);
 
+  // Early return AFTER all hooks
+  if (pathname.startsWith("/works/")) return null;
+
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
     document.body.style.userSelect = "none";
@@ -97,7 +96,6 @@ export default function PixelRuler() {
         isOpen ? "lg:right-[400px] right-0" : "right-0"
       }`}
     >
-      {/* Tick track — fixed, no translation */}
       <div
         className="flex items-start h-full"
         style={{ width: `${TICK_COUNT * 50}px` }}
@@ -135,19 +133,16 @@ export default function PixelRuler() {
         })}
       </div>
 
-      {/* Draggable needle — 20px wide hit area centered on progress position */}
       <div
         ref={lineRef}
         onMouseDown={handleMouseDown}
         className="group absolute top-0 h-full cursor-ew-resize select-none"
         style={{ left: -10, width: 20 }}
       >
-        {/* 1.5px visible line, centered in hit area */}
         <div
           className="absolute top-0 h-full bg-black/35 group-hover:bg-black/60 transition-colors duration-150"
           style={{ left: "50%", width: 1.5, transform: "translateX(-50%)" }}
         />
-        {/* Scrollbar-style thumb pill — appears on hover */}
         <div
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/30 group-hover:bg-black/50 opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-150"
           style={{ width: 5, height: 18 }}

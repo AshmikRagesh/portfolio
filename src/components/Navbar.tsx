@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
 import { Menu, X, LayoutGrid, CirclePlay, CircleUser, ArrowLeft } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import { useChatDrawer } from "@/context/ChatContext";
