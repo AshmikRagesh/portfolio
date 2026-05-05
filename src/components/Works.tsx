@@ -195,23 +195,23 @@ export default function Works() {
       className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:pt-[100px] lg:pb-[60px] overflow-x-hidden"
     >
       {/* Mobile: single column */}
-      <div className="flex flex-col gap-[30px] lg:hidden">
+      <div className="flex flex-col gap-[60px] lg:hidden">
         {works.map((work) => (
           <WorkCard key={work.number} work={work} />
         ))}
       </div>
 
       {/* Desktop: two staggered tilted columns, centered */}
-      <div className="hidden lg:flex gap-[30px] items-start max-w-[900px] mx-auto">
+      <div className="hidden lg:flex gap-[60px] items-start max-w-[1035px] mx-auto">
         {/* Left column — tilt -1°, starts at top */}
-        <div className="flex-1 flex flex-col gap-[30px]">
+        <div className="flex-1 flex flex-col gap-[60px]">
           {leftWorks.map((work) => (
             <WorkCard key={work.number} work={work} />
           ))}
         </div>
 
         {/* Right column — tilt +1°, offset 60px down */}
-        <div className="flex-1 flex flex-col gap-[30px] pt-[60px]">
+        <div className="flex-1 flex flex-col gap-[60px] pt-[60px]">
           {rightWorks.map((work) => (
             <WorkCard key={work.number} work={work} />
           ))}
