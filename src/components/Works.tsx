@@ -155,7 +155,7 @@ export default function Works() {
   return (
     <section
       id="works"
-      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[200px] lg:pt-[100px] lg:pb-[60px]"
+      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[140px] lg:pt-[100px] lg:pb-[60px]"
     >
       <div className="flex flex-col gap-[8px]">
         {works.map((work, i) => {
@@ -164,7 +164,7 @@ export default function Works() {
           const imageRight = i % 2 === 0;
 
           return (
-            <div key={work.number} className="group rounded-[24px] transition-all duration-300 ease-out hover:bg-[#f5f8ff] hover:shadow-[0_8px_40px_rgba(0,73,196,0.07)] hover:-translate-y-[2px]">
+            <div key={work.number} className="group rounded-[24px] border border-transparent transition-all duration-300 ease-out hover:bg-[#eef3ff] hover:border-[#c7d9ff] hover:shadow-[0_12px_40px_rgba(0,73,196,0.12)] hover:-translate-y-[2px]">
               <Wrapper
                 href={work.href as string}
                 className={`flex flex-col gap-8 p-6 lg:flex-row lg:items-center lg:gap-[64px] lg:p-10 ${
@@ -177,10 +177,10 @@ export default function Works() {
                     {work.tags.join(", ")}
                   </p>
                   <div className="flex flex-col gap-[12px]">
-                    <h3 className="font-heading font-normal text-[26px] leading-[1.18] tracking-[-0.56px] text-black lg:text-[36px] lg:tracking-[-0.72px] transition-opacity duration-200 group-hover:opacity-70">
+                    <h3 className="font-heading font-normal text-[22px] leading-[1.18] tracking-[-0.44px] text-black lg:text-[28px] lg:tracking-[-0.56px] transition-opacity duration-200 group-hover:opacity-70">
                       {work.title}
                     </h3>
-                    <p className="font-body font-normal text-[16px] leading-[24px] text-[#717379] lg:text-[20px] lg:leading-[26px]">
+                    <p className="font-body font-normal text-[14px] leading-[22px] text-[#717379] lg:text-[16px] lg:leading-[24px]">
                       {work.description}
                     </p>
                   </div>
