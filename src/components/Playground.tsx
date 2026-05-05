@@ -1,124 +1,91 @@
 import Image from "next/image";
-import { Link2 } from "lucide-react";
 
-const CARD_IMG = "/images/extra-works-card.png";
+const PLACEHOLDER = "/images/extra-works-card.png";
 
-interface PlaygroundItem {
+interface ExtraWork {
+  tags: string;
   title: string;
   description: string;
   image: string;
-  buttonLabel: string;
+  imageAlt: string;
   href: string;
+  imageRight: boolean;
 }
 
-const items: PlaygroundItem[] = [
+const items: ExtraWork[] = [
   {
-    title: "Best of Figma",
-    description: "Grab your free mix-and-match illustration pack!",
-    image: CARD_IMG,
-    buttonLabel: "Check Figma",
+    tags: "AI, Product Design, Research",
+    title: "AI Will Revolutionize Accessibility",
+    description:
+      "Building accessible digital products is tough. Right now, it requires product designers to dive deep into guidelines, run extensive user testing, and manually audit every component.",
+    image: PLACEHOLDER,
+    imageAlt: "AI Accessibility project preview",
     href: "#",
+    imageRight: true,
   },
   {
-    title: "Best of Figma",
-    description: "Grab your free mix-and-match illustration pack!",
-    image: CARD_IMG,
-    buttonLabel: "Check Figma",
+    tags: "Design Systems, Component Library",
+    title: "Building with Design Systems at Scale",
+    description:
+      "Designing for scale means building systems, not screens. I explore how design tokens, component libraries, and documentation workflows unlock team velocity.",
+    image: PLACEHOLDER,
+    imageAlt: "Design Systems project preview",
     href: "#",
+    imageRight: false,
   },
 ];
-
-function ProductCard({ item }: { item: PlaygroundItem }) {
-  return (
-    <div className="group flex flex-col w-full max-w-[318px]">
-      {/*
-        Deck — all inner elements use percentages of the card width so
-        the fan scales proportionally on any screen size.
-        aspect-ratio preserves the deck height.
-        mb-[-21.07%] = -67px at 318px → pulls the container up so it
-        overlaps the bottom of the deck (matching the Figma design).
-      */}
-      <div
-        className="relative w-full mb-[-21.07%]"
-        style={{ aspectRatio: "318 / 270" }}
-      >
-        {/* Orange — back card, lifts left on hover */}
-        <div className="absolute left-0 top-0 w-[92.4%] h-full flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.34,2.0,0.64,1)] group-hover:-translate-y-4 group-hover:-translate-x-1 will-change-transform">
-          <div className="w-[90.7%] h-[88.5%] bg-[#f75923] rounded-[14px] -rotate-[7.06deg]" />
-        </div>
-        {/* Blue — middle card, lifts right on hover */}
-        <div className="absolute top-[3.3%] left-[9.1%] w-[90.3%] h-[96.7%] flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.34,2.0,0.64,1)] group-hover:-translate-y-5 group-hover:translate-x-1 will-change-transform">
-          <div className="w-[92%] h-[89.9%] bg-[#1f88f9] rounded-[14px] rotate-6" />
-        </div>
-        {/* Screenshot — top card, subtle lift on hover */}
-        <div className="absolute top-[11.7%] left-[9.1%] w-[84.4%] h-[88.2%] rounded-[14px] overflow-hidden transition-transform duration-500 ease-[cubic-bezier(0.34,2.0,0.64,1)] group-hover:-translate-y-3 will-change-transform">
-          <Image
-            src={item.image}
-            alt={item.title}
-            fill
-            className="object-cover"
-          />
-        </div>
-      </div>
-
-      {/*
-        Container — renders on top of the deck (z-10).
-        Rounded top corners are tight (4px); rounded bottom corners are large (24px).
-        Does NOT move on hover.
-      */}
-      <div
-        className="relative z-10 flex flex-col gap-8 p-6 bg-background border border-[#c8ccd4]
-          rounded-tl-[4px] rounded-tr-[4px] rounded-bl-[24px] rounded-br-[24px]
-          shadow-[0px_-14px_30.8px_-3.25px_rgba(25,41,105,0.09),0px_-4.468px_9.829px_-2.438px_rgba(25,41,105,0.14),0px_-1.69px_3.718px_-1.625px_rgba(25,41,105,0.15),0px_-0.557px_1.226px_-0.813px_rgba(25,41,105,0.16)]"
-      >
-        {/* Inner top-edge highlight */}
-        <div className="absolute inset-0 rounded-[inherit] shadow-[inset_0px_1px_0px_0px_rgba(9,13,51,0.1)] pointer-events-none" />
-
-        {/* Text */}
-        <div className="flex flex-col gap-2">
-          <h3 className="font-heading font-medium text-[26px] leading-[1.18] tracking-[-0.3px] text-heading">
-            {item.title}
-          </h3>
-          <p className="font-body font-normal text-[16px] leading-[22px] text-[rgba(9,13,51,0.7)]">
-            {item.description}
-          </p>
-        </div>
-
-        {/* CTA */}
-        <a
-          href={item.href}
-          className="flex items-center justify-center gap-2 bg-[#172b4d] text-background font-brand font-medium text-[18px] tracking-[-0.09px] h-[50px] rounded-[10px] w-full transition-colors duration-200 hover:bg-[#0049c4]"
-        >
-          <Link2 size={22} strokeWidth={1.5} />
-          {item.buttonLabel}
-        </a>
-      </div>
-    </div>
-  );
-}
 
 export default function Playground() {
   return (
     <section
       id="playground"
-      className="bg-background flex flex-col items-center gap-16 px-6 pt-16 pb-12 md:gap-20 md:px-10 md:pt-20 md:pb-16 lg:gap-[100px] lg:px-[240px] lg:pt-[100px] lg:pb-[60px]"
+      className="bg-background flex flex-col gap-[120px] items-center px-[20px] pt-[60px] pb-[60px] md:px-[60px] lg:px-[120px] lg:pt-[100px] lg:pb-[60px]"
     >
       {/* Header */}
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h2 className="font-heading font-normal text-[26px] leading-[1.22] tracking-[-0.26px] text-heading md:text-[30px] lg:text-[36px] lg:leading-[44px] lg:tracking-[-0.36px]">
+      <div className="flex flex-col items-center gap-[14px] text-center">
+        <h2 className="font-heading font-normal text-[30px] leading-[1.2] tracking-[-0.38px] text-[#091624] md:text-[34px] lg:text-[38px] lg:leading-[42px]">
           Take a look at my latest stuff
         </h2>
-        <p className="font-body text-[15px] leading-[24px] tracking-[-0.5px] text-muted max-w-[320px] md:max-w-[420px] lg:text-[18px] lg:leading-[26px] lg:tracking-[-0.9px] lg:max-w-[510px]">
-          I help startups turn big ideas into designs that actually work.
-          Whether you need an MVP that converts or a pitch deck that closes
-          funding, I focus on results over pretty pixels.
+        <p className="font-body font-normal text-[16px] leading-[24px] tracking-[-0.5px] text-[#717379] max-w-[520px] lg:text-[20px] lg:leading-[28px] lg:tracking-[-0.9px] lg:max-w-[653px]">
+          I've been creating some exciting projects lately; check out my latest works!
         </p>
       </div>
 
-      {/* Cards */}
-      <div className="flex flex-col items-center gap-20 md:flex-row md:justify-center md:items-start md:gap-10 lg:gap-[60px]">
-        {items.map((item, i) => (
-          <ProductCard key={i} item={item} />
+      {/* Alternating rows */}
+      <div className="flex flex-col gap-[60px] w-full lg:gap-[80px]">
+        {items.map((item) => (
+          <a
+            key={item.title}
+            href={item.href}
+            className={`group flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-[64px] ${
+              !item.imageRight ? "lg:flex-row-reverse" : ""
+            }`}
+          >
+            {/* Text */}
+            <div className="flex flex-col gap-2 lg:flex-1">
+              <p className="font-brand font-normal text-[14px] uppercase text-[#0049c4] leading-[20px]">
+                {item.tags}
+              </p>
+              <div className="flex flex-col gap-3">
+                <h3 className="font-heading font-normal text-[28px] leading-[1.18] tracking-[-0.56px] text-black md:text-[32px] lg:text-[36px] lg:tracking-[-0.72px] group-hover:opacity-70 transition-opacity duration-200">
+                  {item.title}
+                </h3>
+                <p className="font-body font-normal text-[16px] leading-[24px] text-[#717379] lg:text-[20px] lg:leading-[26px]">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+
+            {/* Image */}
+            <div className="relative w-full h-[260px] rounded-[16px] overflow-hidden lg:flex-1 lg:h-[432px]">
+              <Image
+                src={item.image}
+                alt={item.imageAlt}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+              />
+            </div>
+          </a>
         ))}
       </div>
     </section>
