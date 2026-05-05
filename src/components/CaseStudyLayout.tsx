@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowUp } from "lucide-react";
 import Footer from "@/components/Footer";
 
 export interface CaseStudySection {
@@ -61,31 +61,50 @@ export default function CaseStudyLayout({
 
       {/* ── Sticky sidebar (desktop only) ── */}
       <aside className="hidden lg:flex flex-col w-[260px] xl:w-[300px] shrink-0 sticky top-[68px] self-start h-[calc(100vh-68px)] pl-[100px] pr-8 py-10 overflow-y-auto">
-        {/* Back button */}
+        {/* Back / Home link */}
         <Link
           href={backHref}
-          className="flex items-center gap-2 font-brand text-[16px] font-medium uppercase tracking-[1px] text-[#9ca3af] hover:text-[#091624] transition-colors duration-150 mb-8"
+          className="flex items-center gap-2 font-brand text-[12px] font-medium uppercase tracking-[1.5px] text-[#9ca3af] hover:text-[#091624] transition-colors duration-150 mb-8"
         >
-          <ArrowLeft size={15} strokeWidth={2} />
-          Back
+          <ArrowLeft size={12} strokeWidth={2} />
+          Home
         </Link>
 
-        {/* Section nav */}
-        <nav className="flex flex-col">
-          {sections.map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={() => scrollTo(id)}
-              className={`text-left font-body font-normal text-[18px] leading-[1.5] py-1 transition-colors duration-150 ${
-                activeId === id
-                  ? "text-[#172b4d]"
-                  : "text-[#9ca3af] hover:text-[#0049c4]"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
+        {/* TABLE OF CONTENTS card */}
+        <div className="bg-[#f4f5f6] rounded-[12px] p-3">
+          <p className="font-brand font-medium text-[10px] uppercase tracking-[2px] text-[#9ca3af] px-2 mb-3">
+            Table of Contents
+          </p>
+          <nav className="flex flex-col gap-[2px]">
+            {sections.map(({ id, label }, i) => (
+              <button
+                key={id}
+                onClick={() => scrollTo(id)}
+                className={`text-left w-full flex items-baseline gap-[8px] px-2 py-[7px] rounded-[8px] transition-colors duration-150 ${
+                  activeId === id
+                    ? "bg-[#e4e6ea] text-[#172b4d]"
+                    : "text-[#9ca3af] hover:text-[#172b4d]"
+                }`}
+              >
+                <span className="font-brand font-medium text-[11px] shrink-0 leading-none">
+                  {String(i + 1).padStart(2, "0")}.
+                </span>
+                <span className="font-body text-[15px] leading-[1.4]">
+                  {label}
+                </span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Back to top — pinned to bottom */}
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="flex items-center gap-2 font-brand text-[12px] font-medium uppercase tracking-[1.5px] text-[#9ca3af] hover:text-[#091624] transition-colors duration-150 mt-auto"
+        >
+          <ArrowUp size={12} strokeWidth={2} />
+          Back to top
+        </button>
       </aside>
 
       {/* ── Main content ── */}
