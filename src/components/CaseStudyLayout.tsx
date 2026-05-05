@@ -64,29 +64,28 @@ export default function CaseStudyLayout({
         {/* Back / Home link */}
         <Link
           href={backHref}
-          className="flex items-center gap-2 font-brand text-[12px] font-medium uppercase tracking-[1.5px] text-[#6b7280] hover:text-[#091624] transition-colors duration-150 mb-8"
+          className="flex items-center gap-2 font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-[#6b7280] hover:text-[#091624] hover:-translate-x-[3px] transition-all duration-200 mb-8"
+          style={{ transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
         >
-          <ArrowLeft size={12} strokeWidth={2} />
+          <ArrowLeft size={13} strokeWidth={2} />
           Home
         </Link>
 
-        {/* TABLE OF CONTENTS card */}
+        {/* Nav card — no header */}
         <div className="bg-[#f8f9fa] border border-[#edf0f3] rounded-[12px] p-3">
-          <p className="font-brand font-medium text-[10px] uppercase tracking-[2px] text-[#354454] px-2 mb-3 whitespace-nowrap">
-            Table of Contents
-          </p>
           <nav className="flex flex-col gap-[2px]">
             {sections.map(({ id, label }, i) => (
               <button
                 key={id}
                 onClick={() => scrollTo(id)}
-                className={`text-left w-full flex items-baseline gap-[8px] px-2 py-[7px] rounded-[8px] transition-colors duration-150 ${
+                className={`text-left w-full flex items-baseline gap-[8px] px-2 py-[7px] rounded-[8px] transition-all duration-200 hover:translate-x-[3px] ${
                   activeId === id
                     ? "bg-[#e2ecff] text-[#0049c4]"
-                    : "text-[#6b7280] hover:text-[#172b4d]"
+                    : "text-[#6b7280] hover:text-[#172b4d] hover:bg-[#f0f4ff]"
                 }`}
+                style={{ transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
               >
-                <span className={`font-brand font-medium text-[11px] shrink-0 leading-none ${activeId === id ? "text-[#0049c4]" : "text-[#9ca3af]"}`}>
+                <span className="font-body text-[13px] shrink-0 leading-none">
                   {String(i + 1).padStart(2, "0")}.
                 </span>
                 <span className="font-body text-[14px] leading-[1.4]">
@@ -100,9 +99,10 @@ export default function CaseStudyLayout({
         {/* Back to top — pinned to bottom */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="flex items-center gap-2 font-brand text-[12px] font-medium uppercase tracking-[1.5px] text-[#6b7280] hover:text-[#091624] transition-colors duration-150 mt-auto"
+          className="flex items-center gap-2 font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-[#6b7280] hover:text-[#091624] hover:-translate-y-[3px] transition-all duration-200 mt-auto"
+          style={{ transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
         >
-          <ArrowUp size={12} strokeWidth={2} />
+          <ArrowUp size={13} strokeWidth={2} />
           Back to top
         </button>
       </aside>
