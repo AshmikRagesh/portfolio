@@ -74,6 +74,34 @@ const works: WorkItem[] = [
     href: "#",
     rotate: "right",
   },
+  {
+    number: "NO:05",
+    title: "Onboarding Redesign",
+    description:
+      "Simplified the traveler onboarding flow, cutting drop-off by 40% through progressive disclosure and inline validation.",
+    image: "/images/works-cover.png",
+    imageAlt: "Onboarding Redesign preview",
+    tags: ["UX DESIGN", "SHIPPED"],
+    role: "Product Designer",
+    team: "2 Engineers, 1 PM",
+    timeframe: "6 weeks",
+    href: "#",
+    rotate: "left",
+  },
+  {
+    number: "NO:06",
+    title: "Mobile App Exploration",
+    description:
+      "Explored a native mobile experience for travellers to manage bookings, documents, and itineraries on the go.",
+    image: "/images/works-cover.png",
+    imageAlt: "Mobile App Exploration preview",
+    tags: ["SIDE PROJECT", "CONCEPT"],
+    role: "Solo Designer",
+    team: "Just me",
+    timeframe: "1 month",
+    href: "#",
+    rotate: "right",
+  },
 ];
 
 const leftWorks = works.filter((w) => w.rotate === "left");
@@ -86,7 +114,6 @@ function WorkCard({ work }: { work: WorkItem }) {
 
   return (
     <div className="group">
-      {/* Rotation wrapper — straightens on hover */}
       <div
         className={`${rotateClass} group-hover:rotate-0 transition-transform duration-300 ease-in-out w-full`}
       >
@@ -94,7 +121,7 @@ function WorkCard({ work }: { work: WorkItem }) {
           href={work.href as string}
           className="flex flex-col gap-4 bg-white border border-[#c8ccd4] rounded-[20px] shadow-[0px_0px_6px_rgba(0,0,0,0.05)] pt-4 px-4 pb-6 transition-shadow duration-300 group-hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)] cursor-pointer"
         >
-          {/* Number + Image — fixed height so card stays compact */}
+          {/* Number + Image */}
           <div className="flex flex-col gap-3 items-end">
             <span className="font-brand font-medium text-[14px] uppercase text-[#172b4d] leading-[20px] shrink-0">
               {work.number}
@@ -109,23 +136,23 @@ function WorkCard({ work }: { work: WorkItem }) {
             </div>
           </div>
 
-          {/* Content — pinned to bottom */}
+          {/* Content */}
           <div className="flex flex-col gap-3 shrink-0">
-            {/* Tags + Title */}
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-wrap gap-2">
+            {/* Title + Tags on same row */}
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="font-heading font-normal text-[22px] leading-[1.18] tracking-[-0.44px] text-black">
+                {work.title}
+              </h3>
+              <div className="flex flex-wrap gap-1 shrink-0 pt-[3px]">
                 {work.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="bg-[#e2ecff] text-[#091624] font-brand font-medium text-[12px] uppercase leading-[20px] px-2 py-1 rounded-[4px]"
+                    className="bg-[#e2ecff] text-[#091624] font-brand font-medium text-[10px] uppercase leading-[20px] px-2 py-[2px] rounded-[4px] whitespace-nowrap"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
-              <h3 className="font-heading font-normal text-[22px] leading-[1.18] tracking-[-0.44px] text-black">
-                {work.title}
-              </h3>
             </div>
 
             {/* Description */}
@@ -167,24 +194,24 @@ export default function Works() {
       id="works"
       className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:pt-[100px] lg:pb-[60px] overflow-x-hidden"
     >
-      {/* Mobile: single column stack */}
-      <div className="flex flex-col gap-[12px] lg:hidden">
+      {/* Mobile: single column */}
+      <div className="flex flex-col gap-[30px] lg:hidden">
         {works.map((work) => (
           <WorkCard key={work.number} work={work} />
         ))}
       </div>
 
-      {/* Desktop: two staggered tilted columns */}
-      <div className="hidden lg:flex gap-[80px] items-start">
-        {/* Left column — starts at top, cards tilt -1° */}
-        <div className="flex-1 flex flex-col gap-[12px]">
+      {/* Desktop: two staggered tilted columns, centered */}
+      <div className="hidden lg:flex gap-[30px] items-start max-w-[900px] mx-auto">
+        {/* Left column — tilt -1°, starts at top */}
+        <div className="flex-1 flex flex-col gap-[30px]">
           {leftWorks.map((work) => (
             <WorkCard key={work.number} work={work} />
           ))}
         </div>
 
-        {/* Right column — offset 60px down, cards tilt +1° */}
-        <div className="flex-1 flex flex-col gap-[12px] pt-[60px]">
+        {/* Right column — tilt +1°, offset 60px down */}
+        <div className="flex-1 flex flex-col gap-[30px] pt-[60px]">
           {rightWorks.map((work) => (
             <WorkCard key={work.number} work={work} />
           ))}
