@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { X, Info, RotateCcw, CornerDownRight, ArrowUp } from "lucide-react";
 import { useChatDrawer } from "@/context/ChatContext";
 
@@ -85,6 +86,8 @@ function ChatInput({
 
 export default function ChatDrawer() {
   const { isOpen, close } = useChatDrawer();
+  const pathname = usePathname();
+  const isCaseStudy = pathname.startsWith("/works/");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -142,8 +145,8 @@ export default function ChatDrawer() {
           : "translate-y-full lg:translate-y-0 lg:translate-x-full"}
       `}
     >
-      {/* ── Header ── matches ruler (28px) + navbar (68px) = 96px */}
-      <div className="shrink-0 flex items-center justify-between h-[96px] px-5 border-b border-[#c8ccd4] bg-[#f5f7f8]">
+      {/* ── Header ── matches ruler+nav (96px) on home, nav only (68px) on case study */}
+      <div className={`shrink-0 flex items-center justify-between px-5 border-b border-[#c8ccd4] bg-[#f5f7f8] ${isCaseStudy ? "h-[68px]" : "h-[96px]"}`}>
         <div className="flex items-center gap-2">
           {/* GT Alpina Regular (not italic) per Figma */}
           <span className="font-heading text-[20px] text-heading leading-[32px] tracking-[-0.2px] whitespace-nowrap">
