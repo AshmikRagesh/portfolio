@@ -60,52 +60,8 @@ const works: WorkItem[] = [
     href: "#",
     rotate: "left",
   },
-  {
-    number: "NO:04",
-    title: "Travel Agent Dashboard",
-    description:
-      "Redesigned the agent-facing dashboard to surface key booking signals and reduce context-switching.",
-    image: "/images/works-cover.png",
-    imageAlt: "Travel Agent Dashboard preview",
-    tags: ["PRODUCT DESIGN", "SHIPPED"],
-    role: "Product Designer",
-    team: "3 Engineers, 1 PM",
-    timeframe: "3 months",
-    href: "#",
-    rotate: "right",
-  },
-  {
-    number: "NO:05",
-    title: "Onboarding Redesign",
-    description:
-      "Simplified the traveler onboarding flow, cutting drop-off by 40% through progressive disclosure and inline validation.",
-    image: "/images/works-cover.png",
-    imageAlt: "Onboarding Redesign preview",
-    tags: ["UX DESIGN", "SHIPPED"],
-    role: "Product Designer",
-    team: "2 Engineers, 1 PM",
-    timeframe: "6 weeks",
-    href: "#",
-    rotate: "left",
-  },
-  {
-    number: "NO:06",
-    title: "Mobile App Exploration",
-    description:
-      "Explored a native mobile experience for travellers to manage bookings, documents, and itineraries on the go.",
-    image: "/images/works-cover.png",
-    imageAlt: "Mobile App Exploration preview",
-    tags: ["SIDE PROJECT", "CONCEPT"],
-    role: "Solo Designer",
-    team: "Just me",
-    timeframe: "1 month",
-    href: "#",
-    rotate: "right",
-  },
 ];
 
-const leftWorks = works.filter((w) => w.rotate === "left");
-const rightWorks = works.filter((w) => w.rotate === "right");
 
 export function WorkCard({ work }: { work: WorkItem }) {
   const isLink = work.href !== "#";
@@ -199,30 +155,49 @@ export default function Works() {
   return (
     <section
       id="works"
-      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:pt-[100px] lg:pb-[60px] overflow-x-hidden"
+      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:pt-[100px] lg:pb-[60px]"
     >
-      {/* Mobile: single column */}
-      <div className="flex flex-col gap-[60px] lg:hidden">
-        {works.map((work) => (
-          <WorkCard key={work.number} work={work} />
-        ))}
-      </div>
+      <div className="flex flex-col gap-[60px] lg:gap-[80px]">
+        {works.map((work, i) => {
+          const isLink = work.href !== "#";
+          const Wrapper = isLink ? Link : "div";
+          const imageRight = i % 2 === 0;
 
-      {/* Desktop: two staggered tilted columns, centered */}
-      <div className="hidden lg:flex gap-[60px] items-start max-w-[1035px] mx-auto">
-        {/* Left column — tilt -1°, starts at top */}
-        <div className="flex-1 flex flex-col gap-[60px]">
-          {leftWorks.map((work) => (
-            <WorkCard key={work.number} work={work} />
-          ))}
-        </div>
+          return (
+            <Wrapper
+              key={work.number}
+              href={work.href as string}
+              className={`group flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-[64px] ${
+                !imageRight ? "lg:flex-row-reverse" : ""
+              }`}
+            >
+              {/* Text */}
+              <div className="flex flex-col gap-2 lg:flex-1">
+                <p className="font-brand font-normal text-[14px] uppercase text-[#0049c4] leading-[20px]">
+                  {work.tags.join(", ")}
+                </p>
+                <div className="flex flex-col gap-3">
+                  <h3 className="font-heading font-normal text-[28px] leading-[1.18] tracking-[-0.56px] text-black lg:text-[36px] lg:tracking-[-0.72px] group-hover:opacity-70 transition-opacity duration-200">
+                    {work.title}
+                  </h3>
+                  <p className="font-body font-normal text-[16px] leading-[24px] text-[#717379] lg:text-[20px] lg:leading-[26px]">
+                    {work.description}
+                  </p>
+                </div>
+              </div>
 
-        {/* Right column — tilt +1°, offset 60px down */}
-        <div className="flex-1 flex flex-col gap-[60px] pt-[60px]">
-          {rightWorks.map((work) => (
-            <WorkCard key={work.number} work={work} />
-          ))}
-        </div>
+              {/* Image */}
+              <div className="relative w-full h-[260px] rounded-[16px] overflow-hidden lg:flex-1 lg:h-[432px]">
+                <Image
+                  src={work.image}
+                  alt={work.imageAlt}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                />
+              </div>
+            </Wrapper>
+          );
+        })}
       </div>
     </section>
   );
