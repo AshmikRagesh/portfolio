@@ -92,14 +92,14 @@ function WorkCard({ work }: { work: WorkItem }) {
       >
         <Wrapper
           href={work.href as string}
-          className="flex flex-col gap-4 bg-white border border-[#c8ccd4] rounded-[20px] shadow-[0px_0px_6px_rgba(0,0,0,0.05)] pt-4 px-4 pb-6 min-h-[340px] transition-shadow duration-300 group-hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)] cursor-pointer"
+          className="flex flex-col gap-4 bg-white border border-[#c8ccd4] rounded-[20px] shadow-[0px_0px_6px_rgba(0,0,0,0.05)] pt-4 px-4 pb-6 transition-shadow duration-300 group-hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)] cursor-pointer"
         >
-          {/* Number + Image — image fills remaining height */}
-          <div className="flex flex-col gap-3 items-end flex-1 min-h-0">
+          {/* Number + Image — fixed height so card stays compact */}
+          <div className="flex flex-col gap-3 items-end">
             <span className="font-brand font-medium text-[14px] uppercase text-[#172b4d] leading-[20px] shrink-0">
               {work.number}
             </span>
-            <div className="relative flex-1 w-full min-h-0 rounded-[16px] overflow-hidden">
+            <div className="relative h-[180px] w-full rounded-[16px] overflow-hidden shrink-0">
               <Image
                 src={work.image}
                 alt={work.imageAlt}
@@ -168,7 +168,7 @@ export default function Works() {
       className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:pt-[100px] lg:pb-[60px] overflow-x-hidden"
     >
       {/* Mobile: single column stack */}
-      <div className="flex flex-col gap-[20px] lg:hidden">
+      <div className="flex flex-col gap-[12px] lg:hidden">
         {works.map((work) => (
           <WorkCard key={work.number} work={work} />
         ))}
@@ -177,14 +177,14 @@ export default function Works() {
       {/* Desktop: two staggered tilted columns */}
       <div className="hidden lg:flex gap-[80px] items-start">
         {/* Left column — starts at top, cards tilt -1° */}
-        <div className="flex-1 flex flex-col gap-[20px]">
+        <div className="flex-1 flex flex-col gap-[12px]">
           {leftWorks.map((work) => (
             <WorkCard key={work.number} work={work} />
           ))}
         </div>
 
         {/* Right column — offset 60px down, cards tilt +1° */}
-        <div className="flex-1 flex flex-col gap-[20px] pt-[60px]">
+        <div className="flex-1 flex flex-col gap-[12px] pt-[60px]">
           {rightWorks.map((work) => (
             <WorkCard key={work.number} work={work} />
           ))}
