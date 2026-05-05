@@ -13,6 +13,9 @@ const items: WorkItem[] = [
     imageAlt: "AI Accessibility project preview",
     href: "#",
     rotate: "left",
+    role: "Solo Designer",
+    team: "Just me",
+    timeframe: "Ongoing",
   },
   {
     number: "NO:02",
@@ -24,6 +27,9 @@ const items: WorkItem[] = [
     imageAlt: "Design Systems project preview",
     href: "#",
     rotate: "right",
+    role: "Solo Designer",
+    team: "Just me",
+    timeframe: "Ongoing",
   },
 ];
 
