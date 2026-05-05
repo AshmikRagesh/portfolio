@@ -119,7 +119,7 @@ function WorkCard({ work }: { work: WorkItem }) {
       >
         <Wrapper
           href={work.href as string}
-          className="relative flex flex-col gap-4 bg-white border border-[#c8ccd4] rounded-[20px] shadow-[0px_0px_6px_rgba(0,0,0,0.05)] pt-4 px-4 pb-6 transition-shadow duration-300 group-hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)] cursor-pointer"
+          className="relative flex flex-col gap-4 bg-[#fbfbfb] border border-[#c8ccd4] rounded-[20px] shadow-[0px_0px_6px_rgba(0,0,0,0.05)] pt-4 px-4 pb-6 transition-shadow duration-300 group-hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)] cursor-pointer"
         >
           {/* Punch hole */}
           <div className="absolute top-[14px] left-[14px] w-[16px] h-[16px] rounded-full border border-[#c8ccd4] bg-background" />
@@ -150,7 +150,7 @@ function WorkCard({ work }: { work: WorkItem }) {
                 {work.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="bg-[#e2ecff] text-[#091624] font-brand font-medium text-[10px] uppercase leading-[20px] px-2 py-[2px] rounded-[4px] whitespace-nowrap"
+                    className="bg-[#cde4ff] text-[#091624] font-brand font-medium text-[10px] uppercase leading-[20px] px-2 py-[2px] rounded-[4px] whitespace-nowrap"
                   >
                     {tag}
                   </span>
