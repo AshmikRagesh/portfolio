@@ -164,7 +164,7 @@ export default function Works() {
           const imageRight = i % 2 === 0;
 
           return (
-            <div key={work.number} className="group rounded-[24px] border border-transparent transition-all duration-300 ease-out hover:bg-[#eef3ff] hover:border-[#c7d9ff] hover:shadow-[0_12px_40px_rgba(0,73,196,0.12)] hover:-translate-y-[2px]">
+            <div key={work.number} className="group rounded-[24px] transition-all duration-300 ease-out hover:bg-[#f7f7f7]">
               <Wrapper
                 href={work.href as string}
                 className={`flex flex-col gap-8 p-6 lg:flex-row lg:items-center lg:gap-[64px] lg:p-10 ${
@@ -187,7 +187,7 @@ export default function Works() {
                 </div>
 
                 {/* Image */}
-                <div className="relative w-full h-[240px] rounded-[16px] overflow-hidden lg:flex-1 lg:h-[380px]">
+                <div className="relative w-full h-[240px] rounded-[16px] overflow-hidden lg:flex-1 lg:h-[380px] border-2 border-transparent group-hover:border-[#172b4d] transition-[border-color] duration-300 ease-out">
                   <Image
                     src={work.image}
                     alt={work.imageAlt}
