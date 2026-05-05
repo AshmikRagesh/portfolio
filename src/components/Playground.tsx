@@ -1,19 +1,8 @@
-import Image from "next/image";
+import { WorkCard, WorkCardItem } from "@/components/WorkCard";
 
 const PLACEHOLDER = "/images/extra-works-card.png";
 
-interface PlaygroundItem {
-  number: string;
-  tags: string[];
-  title: string;
-  description: string;
-  image: string;
-  imageAlt: string;
-  href: string;
-  rotate: "left" | "right";
-}
-
-const items: PlaygroundItem[] = [
+const items: WorkCardItem[] = [
   {
     number: "NO:01",
     tags: ["AI", "Product Design", "Research"],
@@ -38,60 +27,6 @@ const items: PlaygroundItem[] = [
   },
 ];
 
-function PlaygroundCard({ item }: { item: PlaygroundItem }) {
-  const rotateClass = item.rotate === "left" ? "-rotate-1" : "rotate-1";
-
-  return (
-    <div className="group">
-      <div
-        className={`${rotateClass} group-hover:rotate-0 transition-transform duration-300 ease-in-out w-full`}
-      >
-        <a
-          href={item.href}
-          className="flex flex-col gap-6 bg-[#f8f8f8] border border-[#c8ccd4] rounded-[20px] shadow-[0px_0px_6px_rgba(0,0,0,0.05)] pt-5 px-5 pb-10 transition-shadow duration-300 group-hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)] cursor-pointer"
-        >
-          {/* Number + Image */}
-          <div className="flex flex-col gap-3 items-end">
-            <span className="font-brand font-medium text-[14px] uppercase text-[#172b4d] leading-[20px] shrink-0">
-              {item.number}
-            </span>
-            <div className="relative h-[220px] w-full rounded-[16px] overflow-hidden lg:h-[260px]">
-              <Image
-                src={item.image}
-                alt={item.imageAlt}
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-start justify-between gap-3">
-              <h3 className="font-heading font-normal text-[24px] leading-[1.18] tracking-[-0.6px] text-black lg:text-[30px]">
-                {item.title}
-              </h3>
-              <div className="flex flex-wrap gap-1 shrink-0 pt-[3px]">
-                {item.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="bg-[#cde4ff] text-[#091624] font-brand font-medium text-[10px] uppercase leading-[20px] px-2 py-[2px] rounded-[4px] whitespace-nowrap"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <p className="font-body font-normal text-[16px] leading-[24px] text-[#717379] lg:text-[18px]">
-              {item.description}
-            </p>
-          </div>
-        </a>
-      </div>
-    </div>
-  );
-}
-
 const leftItems = items.filter((i) => i.rotate === "left");
 const rightItems = items.filter((i) => i.rotate === "right");
 
@@ -114,7 +49,7 @@ export default function Playground() {
       {/* Mobile: single column */}
       <div className="flex flex-col gap-[60px] lg:hidden w-full">
         {items.map((item) => (
-          <PlaygroundCard key={item.number} item={item} />
+          <WorkCard key={item.number} work={item} />
         ))}
       </div>
 
@@ -122,12 +57,12 @@ export default function Playground() {
       <div className="hidden lg:flex gap-[80px] items-start w-full">
         <div className="flex-1 flex flex-col gap-[60px]">
           {leftItems.map((item) => (
-            <PlaygroundCard key={item.number} item={item} />
+            <WorkCard key={item.number} work={item} />
           ))}
         </div>
         <div className="flex-1 flex flex-col gap-[60px] pt-[60px]">
           {rightItems.map((item) => (
-            <PlaygroundCard key={item.number} item={item} />
+            <WorkCard key={item.number} work={item} />
           ))}
         </div>
       </div>
