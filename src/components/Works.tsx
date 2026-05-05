@@ -92,7 +92,7 @@ function WorkCard({ work }: { work: WorkItem }) {
       >
         <Wrapper
           href={work.href as string}
-          className="flex flex-col gap-6 bg-white border border-[#c8ccd4] rounded-[20px] shadow-[0px_0px_6px_rgba(0,0,0,0.05)] pt-5 px-5 pb-10 min-h-[514px] transition-shadow duration-300 group-hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)] cursor-pointer"
+          className="flex flex-col gap-4 bg-white border border-[#c8ccd4] rounded-[20px] shadow-[0px_0px_6px_rgba(0,0,0,0.05)] pt-4 px-4 pb-6 min-h-[340px] transition-shadow duration-300 group-hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)] cursor-pointer"
         >
           {/* Number + Image — image fills remaining height */}
           <div className="flex flex-col gap-3 items-end flex-1 min-h-0">
@@ -123,13 +123,13 @@ function WorkCard({ work }: { work: WorkItem }) {
                   </span>
                 ))}
               </div>
-              <h3 className="font-heading font-normal text-[30px] leading-[1.18] tracking-[-0.6px] text-black">
+              <h3 className="font-heading font-normal text-[22px] leading-[1.18] tracking-[-0.44px] text-black">
                 {work.title}
               </h3>
             </div>
 
             {/* Description */}
-            <p className="font-body font-normal text-[18px] leading-[24px] text-[#717379]">
+            <p className="font-body font-normal text-[14px] leading-[20px] text-[#717379]">
               {work.description}
             </p>
 
@@ -168,7 +168,7 @@ export default function Works() {
       className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:pt-[100px] lg:pb-[60px] overflow-x-hidden"
     >
       {/* Mobile: single column stack */}
-      <div className="flex flex-col gap-[30px] lg:hidden">
+      <div className="flex flex-col gap-[20px] lg:hidden">
         {works.map((work) => (
           <WorkCard key={work.number} work={work} />
         ))}
@@ -177,14 +177,14 @@ export default function Works() {
       {/* Desktop: two staggered tilted columns */}
       <div className="hidden lg:flex gap-[80px] items-start">
         {/* Left column — starts at top, cards tilt -1° */}
-        <div className="flex-1 flex flex-col gap-[30px]">
+        <div className="flex-1 flex flex-col gap-[20px]">
           {leftWorks.map((work) => (
             <WorkCard key={work.number} work={work} />
           ))}
         </div>
 
         {/* Right column — offset 60px down, cards tilt +1° */}
-        <div className="flex-1 flex flex-col gap-[30px] pt-[60px]">
+        <div className="flex-1 flex flex-col gap-[20px] pt-[60px]">
           {rightWorks.map((work) => (
             <WorkCard key={work.number} work={work} />
           ))}
