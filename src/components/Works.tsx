@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 export interface WorkItem {
   number: string;
@@ -152,11 +153,26 @@ export function WorkCard({ work }: { work: WorkItem }) {
 }
 
 export default function Works() {
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   return (
     <section
       id="works"
       className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[140px] lg:pt-[100px] lg:pb-[60px]"
     >
+      {/* Custom cursor label */}
+      {hoveredIndex !== null && (
+        <div
+          className="fixed z-50 pointer-events-none transition-opacity duration-150"
+          style={{ left: cursorPos.x, top: cursorPos.y, transform: "translate(-50%, calc(-100% - 12px))" }}
+        >
+          <span className="block bg-[#172b4d] text-white font-brand font-medium text-[12px] tracking-[0.2px] px-4 py-[7px] rounded-full whitespace-nowrap shadow-[0_4px_16px_rgba(0,0,0,0.2)]">
+            Read case study
+          </span>
+        </div>
+      )}
+
       <div className="flex flex-col gap-[8px]">
         {works.map((work, i) => {
           const isLink = work.href !== "#";
@@ -164,7 +180,13 @@ export default function Works() {
           const imageRight = i % 2 === 0;
 
           return (
-            <div key={work.number} className="group rounded-[24px] transition-all duration-300 ease-out hover:bg-[#f7f7f7]">
+            <div
+              key={work.number}
+              className={`group rounded-[24px] transition-all duration-300 ease-out hover:bg-[#f7f7f7] ${isLink ? "cursor-none" : ""}`}
+              onMouseMove={(e) => { if (isLink) setCursorPos({ x: e.clientX, y: e.clientY }); }}
+              onMouseEnter={() => { if (isLink) setHoveredIndex(i); }}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
               <Wrapper
                 href={work.href as string}
                 className={`flex flex-col gap-8 p-6 lg:flex-row lg:items-center lg:gap-[64px] lg:p-10 ${
@@ -194,13 +216,6 @@ export default function Works() {
                     fill
                     className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                   />
-                  {isLink && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <span className="opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out bg-[#172b4d] text-white font-brand font-medium text-[13px] tracking-[0.2px] px-4 py-2 rounded-full whitespace-nowrap">
-                        Read case study
-                      </span>
-                    </div>
-                  )}
                 </div>
               </Wrapper>
             </div>
