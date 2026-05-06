@@ -194,6 +194,13 @@ export default function Works() {
                     fill
                     className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                   />
+                  {isLink && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <span className="opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out bg-[#172b4d] text-white font-brand font-medium text-[13px] tracking-[0.2px] px-4 py-2 rounded-full whitespace-nowrap">
+                        Read case study
+                      </span>
+                    </div>
+                  )}
                 </div>
               </Wrapper>
             </div>
