@@ -163,12 +163,14 @@ export default function Works() {
           <div key={group.year} className="flex gap-[32px] lg:gap-[80px]">
 
             {/* Year column — sticky on desktop */}
-            <div className="hidden lg:flex w-[160px] shrink-0 relative">
-              {/* Vertical trail line */}
-              <div className="absolute left-[3px] top-0 bottom-0 w-[1px] bg-[#ebebeb]" />
-
+            <div className="hidden lg:flex w-[160px] shrink-0">
               <div className="sticky top-[200px] self-start flex items-center gap-3 z-10">
-                <div className="w-[7px] h-[7px] rounded-full bg-background ring-[1.5px] ring-[#c8ccd4] shrink-0" />
+                {/* Dot with short trail lines above and below */}
+                <div className="flex flex-col items-center gap-0">
+                  <div className="w-[1px] h-[24px] bg-[#e5e5e5]" />
+                  <div className="w-[7px] h-[7px] rounded-full bg-background ring-[1.5px] ring-[#c8ccd4] shrink-0" />
+                  <div className="w-[1px] h-[24px] bg-[#e5e5e5]" />
+                </div>
                 <span className="font-heading font-normal text-[64px] leading-none tracking-[-1.5px] text-[#e5e7eb] select-none">
                   {group.year}
                 </span>
