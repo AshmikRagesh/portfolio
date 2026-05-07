@@ -29,6 +29,7 @@ const socialLinks = [
 export default function Footer() {
   const cardRef = useRef<HTMLDivElement>(null);
   const [glowProgress, setGlowProgress] = useState(0);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const el = cardRef.current;
@@ -41,14 +42,17 @@ export default function Footer() {
     );
     io.observe(el);
 
-    // Scroll-linked glow: spreads 0→1 over the full footer height entering the viewport
+    // rAF-throttled scroll handler for smooth glow tracking
     const onScroll = () => {
-      const { top } = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const footerH = el.offsetHeight;
-      // 0 when footer top is at viewport bottom, 1 when footer bottom is at viewport bottom
-      const p = Math.max(0, Math.min(1, (vh - top) / footerH));
-      setGlowProgress(p);
+      if (rafRef.current !== null) return;
+      rafRef.current = requestAnimationFrame(() => {
+        const { top } = el.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const footerH = el.offsetHeight;
+        const p = Math.max(0, Math.min(1, (vh - top) / footerH));
+        setGlowProgress(p);
+        rafRef.current = null;
+      });
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -71,14 +75,15 @@ export default function Footer() {
             opacity: glowProgress,
             transform: `scaleX(${0.3 + glowProgress * 0.7}) scaleY(${0.15 + glowProgress * 0.85})`,
             transformOrigin: "50% 100%",
-            transition: "opacity 0.15s ease-out, transform 0.2s ease-out",
+            transition: "opacity 0.08s linear, transform 0.1s linear",
+            willChange: "transform, opacity",
           }}
         >
           {/* Inner — breathing pulse animation, isolated so it can't override the scroll transform above */}
           <div
             className="absolute inset-0"
             style={{
-              background: "radial-gradient(ellipse 75% 100% at 50% 100%, rgba(162, 89, 255, 0.6) 0%, rgba(137, 91, 231, 0.22) 50%, transparent 72%)",
+              background: "radial-gradient(ellipse 75% 100% at 50% 100%, rgba(162, 89, 255, 0.28) 0%, rgba(137, 91, 231, 0.08) 55%, transparent 72%)",
               animation: glowProgress > 0.15 ? "glow-breathe 3.5s ease-in-out infinite" : "none",
             }}
           />
