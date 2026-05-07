@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next/image"; // used for telephone illustration
 
 const socialLinks = [
   {
@@ -6,33 +6,21 @@ const socialLinks = [
     href: "https://discord.com/users/ashmikragesh",
     bg: "#67c23a",
     tiltClass: "hover:-rotate-6",
-    icon: (
-      <div className="relative w-[18px] h-[18px] md:w-[25px] md:h-[25px]">
-        <Image src="/icons/social-discord.png" alt="Discord" fill className="object-contain" />
-      </div>
-    ),
+    icon: <img src="/icons/social-discord.svg" alt="Discord" className="w-[18px] h-[18px] md:w-[25px] md:h-[25px]" />,
   },
   {
     label: "LinkedIn",
     href: "https://linkedin.com/in/ashmikragesh",
     bg: "#1f88f9",
     tiltClass: "hover:rotate-6",
-    icon: (
-      <div className="relative w-[18px] h-[18px] md:w-[25px] md:h-[25px]">
-        <Image src="/icons/social-linkedin.png" alt="LinkedIn" fill className="object-contain" />
-      </div>
-    ),
+    icon: <img src="/icons/social-linkedin.svg" alt="LinkedIn" className="w-[18px] h-[18px] md:w-[25px] md:h-[25px]" />,
   },
   {
     label: "Twitter / X",
     href: "https://twitter.com/ashmikragesh",
     bg: "#091624",
     tiltClass: "hover:-rotate-3",
-    icon: (
-      <div className="relative w-[18px] h-[18px] md:w-[25px] md:h-[25px]">
-        <Image src="/icons/social-x.png" alt="Twitter / X" fill className="object-contain" />
-      </div>
-    ),
+    icon: <img src="/icons/social-x.svg" alt="Twitter / X" className="w-[18px] h-[18px] md:w-[25px] md:h-[25px]" />,
   },
 ];
 
