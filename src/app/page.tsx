@@ -7,9 +7,11 @@ import ReelPlayer from "@/components/ReelPlayer";
 export default function Home() {
   return (
     <>
-      <Hero />
-      <Works />
-      <Playground />
+      <div className="relative z-10 bg-background">
+        <Hero />
+        <Works />
+        <Playground />
+      </div>
       <Footer />
       <ReelPlayer />
     </>
