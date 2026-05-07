@@ -27,8 +27,12 @@
 
 /* Footer glow breathing pulse */
 @keyframes glow-breathe {
-  0%, 100% { transform: scaleX(1)    scaleY(1);    opacity: 1; }
-  50%       { transform: scaleX(1.06) scaleY(1.08); opacity: 0.82; }
+  0%   { transform: scaleX(1)    scaleY(1);    opacity: 1;    }
+  40%  { transform: scaleX(1.10) scaleY(1.14); opacity: 0.80; }
+  55%  { transform: scaleX(1.06) scaleY(1.09); opacity: 0.88; }
+  68%  { transform: scaleX(1.09) scaleY(1.12); opacity: 0.83; }
+  80%  { transform: scaleX(1.04) scaleY(1.06); opacity: 0.92; }
+  100% { transform: scaleX(1)    scaleY(1);    opacity: 1;    }
 }
 
 /*
