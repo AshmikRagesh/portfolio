@@ -41,12 +41,13 @@ export default function Footer() {
     );
     io.observe(el);
 
-    // Scroll-linked glow: 0 when footer hasn't entered, 1 when it's well in view
+    // Scroll-linked glow: spreads 0→1 over the full footer height entering the viewport
     const onScroll = () => {
       const { top } = el.getBoundingClientRect();
       const vh = window.innerHeight;
-      // Progress: 0 at top=vh (just entering), 1 at top=vh*0.2 (well in view)
-      const p = Math.max(0, Math.min(1, (vh - top) / (vh * 0.8)));
+      const footerH = el.offsetHeight;
+      // 0 when footer top is at viewport bottom, 1 when footer bottom is at viewport bottom
+      const p = Math.max(0, Math.min(1, (vh - top) / footerH));
       setGlowProgress(p);
     };
 
