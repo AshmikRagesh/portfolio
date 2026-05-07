@@ -143,7 +143,7 @@ export default function Works() {
   return (
     <section
       id="works"
-      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:pl-[120px] lg:pr-[140px] lg:pt-[100px] lg:pb-[120px]"
+      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:pl-[120px] lg:pr-[160px] lg:pt-[100px] lg:pb-[120px]"
     >
       {/* Custom cursor */}
       {activeWork && (
