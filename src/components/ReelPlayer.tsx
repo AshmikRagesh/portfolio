@@ -115,7 +115,7 @@ export default function ReelPlayer() {
 
       {/* ── Expanded overlay ── */}
       {expanded && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#060d18] px-4 py-10">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-primary px-4 py-10">
           {/* Full-width flex row: video column (flex-1, centered) + right column (close + nav) */}
           <div
             className="flex items-center w-full h-full"
@@ -147,7 +147,7 @@ export default function ReelPlayer() {
               {/* View Case Study — standalone button with its own rounding */}
               <Link
                 href={reel.projectHref}
-                className="flex items-center justify-center gap-2 bg-blackcurrant hover:bg-blackcurrant transition-colors h-[50px] px-4 rounded-[10px] text-white font-brand font-medium text-[15px] tracking-[-0.07px]"
+                className="flex items-center justify-center gap-2 bg-blackcurrant hover:bg-grape transition-colors duration-200 h-[50px] px-4 rounded-[10px] text-white font-brand font-medium text-[15px] tracking-[-0.07px]"
                 style={{ width: "var(--vw)" }}
               >
                 View Case Study
@@ -170,14 +170,14 @@ export default function ReelPlayer() {
                 <button
                   onClick={() => go(-1)}
                   aria-label="Previous reel"
-                  className="flex items-center justify-center size-[46px] rounded-full bg-blackcurrant text-white hover:bg-blackcurrant transition-colors"
+                  className="flex items-center justify-center size-[46px] rounded-full bg-grape text-white hover:bg-[#6E1687] transition-colors duration-200"
                 >
                   <ArrowIcon size={18} />
                 </button>
                 <button
                   onClick={() => go(1)}
                   aria-label="Next reel"
-                  className="flex items-center justify-center size-[46px] rounded-full bg-blackcurrant text-white hover:bg-blackcurrant transition-colors"
+                  className="flex items-center justify-center size-[46px] rounded-full bg-grape text-white hover:bg-[#6E1687] transition-colors duration-200"
                 >
                   <ArrowIcon size={18} className="rotate-180" />
                 </button>
