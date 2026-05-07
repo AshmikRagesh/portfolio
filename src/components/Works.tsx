@@ -173,9 +173,12 @@ export default function Works() {
           <div key={group.year} className="flex gap-[32px] lg:gap-[80px]">
 
             {/* Year column — sticky on desktop */}
-            <div className="hidden lg:block w-[160px] shrink-0">
-              <div className="sticky top-[88px] flex items-center gap-3">
-                <div className="w-[7px] h-[7px] rounded-full bg-[#d1d5db] shrink-0" />
+            <div className="hidden lg:flex w-[160px] shrink-0 relative">
+              {/* Vertical trail line */}
+              <div className="absolute left-[3px] top-0 bottom-0 w-[1px] bg-[#ebebeb]" />
+
+              <div className="sticky top-[200px] self-start flex items-center gap-3 z-10">
+                <div className="w-[7px] h-[7px] rounded-full bg-background ring-[1.5px] ring-[#c8ccd4] shrink-0" />
                 <span className="font-heading font-normal text-[64px] leading-none tracking-[-1.5px] text-[#e5e7eb] select-none">
                   {group.year}
                 </span>
@@ -239,14 +242,6 @@ export default function Works() {
                         />
                       </div>
 
-                      {/* CTA */}
-                      {isLink && (
-                        <div className="mt-1 self-start">
-                          <span className="inline-flex items-center gap-2 bg-[#172b4d] text-white font-brand font-medium text-[13px] tracking-[0.1px] px-5 py-[9px] rounded-full transition-colors duration-200 group-hover:bg-[#0049c4]">
-                            Read case study →
-                          </span>
-                        </div>
-                      )}
                     </Wrapper>
                   </div>
                 );
