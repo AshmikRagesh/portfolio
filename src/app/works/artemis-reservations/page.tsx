@@ -10,15 +10,15 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS: CaseStudySection[] = [
-  { id: "overview",    label: "Overview"    },
-  { id: "my-role",     label: "My Role"     },
-  { id: "background",  label: "Background"  },
-  { id: "the-problem", label: "The Problem" },
-  { id: "challenges",  label: "Challenges"  },
-  { id: "process",     label: "Process"     },
-  { id: "solution",    label: "Solution"    },
-  { id: "impact",      label: "Impact"      },
-  { id: "reflection",  label: "Reflection"  },
+  { id: "overview",           label: "Overview"             },
+  { id: "my-role",            label: "My Role"              },
+  { id: "background",         label: "Background"           },
+  { id: "the-problem",        label: "The Problem"          },
+  { id: "challenges",         label: "Challenges"           },
+  { id: "process",            label: "Process"              },
+  { id: "solution",           label: "Solution"             },
+  { id: "impact",             label: "Impact"               },
+  { id: "reflection",         label: "Reflection"           },
 ];
 
 // TODO: Replace with permanent assets — Figma URLs expire ~7 days from 2026-04-17
@@ -39,7 +39,7 @@ const PROCESS_IMAGE_4 =
 const OVERVIEW_IMAGE =
   "https://www.figma.com/api/mcp/asset/bd222c70-fe17-447e-bf69-a7de8dca1c4c";
 const UNDERSTANDING_IMAGE =
-  "https://www.figma.com/api/mcp/asset/7f7dadbd-39fe-413c-8dfe-503a6cd98f61";
+  "https://www.figma.com/api/mcp/asset/09aab68c-6c20-48d4-9d57-ac9fc5dc5792";
 const BACKGROUND_IMAGE =
   "https://www.figma.com/api/mcp/asset/e06b7f2a-e27a-4f23-b0a6-87c3cd31de9e";
 const THE_PROBLEM_IMAGE =
@@ -58,18 +58,18 @@ function Overview() {
         {/* Date annotation */}
         <div className="flex flex-col gap-5">
           <div className="-rotate-3 w-fit">
-            <span className="font-handwriting text-[26px] leading-[32px] tracking-[-0.15px] text-[#0049c4] whitespace-nowrap md:text-[28px]">
+            <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.15px] text-grape whitespace-nowrap md:text-[24px]">
               {"< 08/11/2024 >"}
             </span>
           </div>
 
           {/* Title + subtitle */}
           <div className="flex flex-col gap-5">
-            <h1 className="font-heading font-normal text-[28px] leading-[1.2] tracking-[-1.12px] text-[#091624] md:text-[34px] md:tracking-[-1.36px] lg:text-[40px] lg:tracking-[-1.6px]">
+            <h1 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[40px] lg:tracking-[-1.6px]">
               Streamlining the Reservations Module in Artemis 3.0: Saving Time
               for Reservations Team
             </h1>
-            <p className="font-body font-normal text-[15px] leading-[1.5] text-[#717379] md:text-[17px] lg:text-[18px] lg:leading-[1.6]">
+            <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
               Migrated the legacy Bookings UI from Artemis 2.0 into Artemis
               3.0—introducing auto‑save, in‑app notifications, categorised
               flights, and &apos;On Request&apos; status—reducing booking edit
@@ -138,46 +138,53 @@ function MyRole() {
       id="my-role"
       className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[180px] lg:py-[80px]"
     >
-      <div className="flex flex-col gap-12 w-full md:gap-14 lg:gap-[48px]">
-        {/* Role columns */}
-        <div className="grid grid-cols-2 gap-x-8 gap-y-10 w-full md:gap-x-[48px] lg:grid-cols-4 lg:gap-x-[64px]">
-          {columns.map(({ heading, content }) => (
-            <div key={heading} className="flex flex-col gap-3">
-              <h2 className="font-heading font-normal text-[20px] leading-[1.2] tracking-[-0.8px] text-[#091624] md:text-[22px] md:tracking-[-0.88px] lg:text-[24px] lg:tracking-[-0.96px]">
-                {heading}
-              </h2>
-              <p className="font-body font-normal text-[14px] leading-[22px] text-[#717379] md:text-[16px] md:leading-[24px] lg:text-[18px] lg:leading-[28px]">
-                {content}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Understanding the tool */}
-        <div className="flex flex-col gap-6 w-full md:gap-[24px]">
-          <div className="flex flex-col gap-4 md:gap-[24px]">
-            <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
-              Understanding the tool
-            </h3>
-            <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[30px]">
-              Artemis is Enchanting Travels&apos; in-house planning and
-              operations platform, used to design, manage, and execute highly
-              customised trips across the world. Within it, the Reservations
-              module is where backend magic happens: vendor bookings are
-              confirmed, service details are tracked, and all trip-critical
-              logistics are stitched together.
+      <div className="grid grid-cols-2 gap-x-8 gap-y-10 w-full md:gap-x-[48px] lg:grid-cols-4 lg:gap-x-[100px]">
+        {columns.map(({ heading, content }) => (
+          <div key={heading} className="flex flex-col gap-3">
+            <h2 className="font-heading font-normal text-[16px] leading-[1.2] tracking-[-0.64px] text-heading md:text-[18px] md:tracking-[-0.72px] lg:text-[24px] lg:leading-[1.2] lg:tracking-[-0.96px]">
+              {heading}
+            </h2>
+            <p className="font-body font-normal text-[14px] leading-[20px] text-muted md:text-[16px] md:leading-[24px] lg:text-[18px] lg:leading-[28px]">
+              {content}
             </p>
           </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
-          <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]">
-            <Image
-              src={UNDERSTANDING_IMAGE}
-              alt="Artemis platform — Reservations module screenshot"
-              fill
-              className="object-cover"
-              unoptimized
-            />
-          </div>
+// ─────────────────────────────────────────────────────────────────────────────
+// Section: Understanding the tool
+// ─────────────────────────────────────────────────────────────────────────────
+function UnderstandingTheTool() {
+  return (
+    <section
+      id="understanding"
+      className="bg-white px-[20px] py-[60px] md:px-[60px] md:py-[80px] lg:pl-[80px] lg:pr-[180px] lg:py-[80px]"
+    >
+      <div className="flex flex-col gap-[48px] w-full">
+        <div className="flex flex-col gap-6 md:gap-[24px]">
+          <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
+            Understanding the tool
+          </h3>
+          <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
+            Artemis is Enchanting Travels&apos; in-house planning and operations
+            platform, used to design, manage, and execute highly customised trips
+            across the world. Within it, the Reservations module is where backend
+            magic happens: vendor bookings are confirmed, service details are
+            tracked, and all trip-critical logistics are stitched together.
+          </p>
+        </div>
+
+        <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]">
+          <Image
+            src={UNDERSTANDING_IMAGE}
+            alt="Artemis platform — Reservations module screenshot"
+            fill
+            className="object-cover"
+            unoptimized
+          />
         </div>
       </div>
     </section>
@@ -199,17 +206,17 @@ function Background() {
           {/* Tag + heading — 12px gap between them */}
           <div className="flex flex-col gap-3">
             <div className="-rotate-3 w-fit">
-              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-grape whitespace-nowrap">
                 {"< background >"}
               </span>
             </div>
 
-            <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
               Reservations Module: Core of Artemis
             </h3>
           </div>
 
-          <div className="flex flex-col gap-0 font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[30px]">
+          <div className="flex flex-col gap-0 font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
             <p>
               The Reservations module is the heartbeat of Artemis, our internal
               platform used daily by Travel Consultants and Reservations teams.
@@ -260,18 +267,18 @@ function TheProblem() {
           {/* Tag + heading — 12px gap */}
           <div className="flex flex-col gap-3">
             <div className="-rotate-3 w-fit">
-              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-grape whitespace-nowrap">
                 {"< The Problem >"}
               </span>
             </div>
 
-            <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
               A System That Relied Too Much on Manual Effort
             </h3>
           </div>
 
           {/* Body */}
-          <div className="flex flex-col gap-4 font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+          <div className="flex flex-col gap-4 font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
             <p>
               Core workflows depended heavily on manual intervention. Users had
               to remember to save changes, coordinate bookings over email, and
@@ -307,24 +314,24 @@ function TheProblem() {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"
-              className="shrink-0 text-[#0049c4] w-[24px] h-[24px] md:w-[26px] md:h-[26px] lg:w-[28px] lg:h-[28px]"
+              className="shrink-0 text-grape w-[24px] h-[24px] md:w-[26px] md:h-[26px] lg:w-[28px] lg:h-[28px]"
             >
               <path d="M3.12447 0.558316C3.07143 0.236284 2.79304 0 2.46667 0C2.14029 0 1.86191 0.236284 1.80886 0.558317C1.7422 0.963031 1.59581 1.2344 1.41034 1.41807C1.22421 1.60239 0.952683 1.74391 0.558317 1.80886C0.236284 1.86191 0 2.14029 0 2.46667C0 2.79304 0.236284 3.07143 0.558316 3.12447C0.963031 3.19113 1.2344 3.33753 1.41807 3.523C1.60239 3.70913 1.74391 3.98065 1.80886 4.37502C1.86191 4.69705 2.14029 4.93333 2.46667 4.93333C2.79304 4.93333 3.07143 4.69705 3.12447 4.37502C3.18943 3.98065 3.33095 3.70913 3.51527 3.523C3.69893 3.33753 3.9703 3.19113 4.37502 3.12447C4.69705 3.07143 4.93333 2.79304 4.93333 2.46667C4.93333 2.14029 4.69705 1.86191 4.37502 1.80886C3.9703 1.7422 3.69893 1.59581 3.51527 1.41034C3.33095 1.22421 3.18943 0.952683 3.12447 0.558316Z" fill="currentColor" />
               <path d="M7.92801 0.582612C7.88569 0.249599 7.60236 0 7.26667 0C6.93097 0 6.64764 0.249599 6.60532 0.582612C6.3906 2.27205 5.93473 3.48974 5.19313 4.34417C4.46151 5.1871 3.38414 5.75374 1.76332 6.00806C1.439 6.05895 1.2 6.33837 1.2 6.66667C1.2 6.99496 1.439 7.27439 1.76332 7.32527C3.38414 7.5796 4.46151 8.14623 5.19313 8.98916C5.93473 9.8436 6.3906 11.0613 6.60532 12.7507C6.64764 13.0837 6.93097 13.3333 7.26667 13.3333C7.60236 13.3333 7.88569 13.0837 7.92801 12.7507C8.14274 11.0613 8.59861 9.8436 9.3402 8.98916C10.0718 8.14623 11.1492 7.5796 12.77 7.32527C13.0943 7.27439 13.3333 6.99496 13.3333 6.66667C13.3333 6.33837 13.0943 6.05895 12.77 6.00806C11.0611 5.73991 9.98251 5.13747 9.27143 4.28439C8.54727 3.41563 8.13411 2.20418 7.92801 0.582612Z" fill="currentColor" />
               <path d="M2.66667 10.4333C2.66667 10.0651 2.36819 9.76667 2 9.76667C1.63181 9.76667 1.33333 10.0651 1.33333 10.4333V10.6667H1.1C0.73181 10.6667 0.433333 10.9651 0.433333 11.3333C0.433333 11.7015 0.73181 12 1.1 12H1.33333V12.2333C1.33333 12.6015 1.63181 12.9 2 12.9C2.36819 12.9 2.66667 12.6015 2.66667 12.2333V12H2.9C3.26819 12 3.56667 11.7015 3.56667 11.3333C3.56667 10.9651 3.26819 10.6667 2.9 10.6667H2.66667V10.4333Z" fill="currentColor" />
             </svg>
-            <h4 className="font-heading font-medium text-[18px] leading-[1.1] tracking-[-0.72px] text-[#091624] md:text-[22px] md:tracking-[-0.88px] lg:text-[26px] lg:tracking-[-1.04px]">
+            <h4 className="font-heading font-medium text-[18px] leading-[1.2] tracking-[-0.72px] text-heading md:text-[24px] md:tracking-[-0.96px] lg:text-[24px] lg:tracking-[-0.96px]">
               The Problem Statement
             </h4>
           </div>
 
           {/* Body */}
-          <p className="font-body font-normal text-[14px] leading-[1.6] md:text-[16px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
-            <span className="text-[#717379]">
+          <p className="font-body font-normal text-[14px] leading-[20px] md:text-[16px] md:leading-[24px] lg:text-[18px] lg:leading-[28px]">
+            <span className="text-muted">
               Artemis Reservations depended on manual coordination for
               high-stakes booking workflows.{" "}
             </span>
-            <span className="text-[#091624] underline decoration-solid [text-decoration-skip-ink:none]">
+            <span className="text-heading underline decoration-solid [text-decoration-skip-ink:none]">
               As operational complexity increased, this reliance on user
               intervention created inefficiencies, miscommunication, and
               avoidable risk. The system needed to shift from user-driven
@@ -343,7 +350,7 @@ function TheProblem() {
 const CHALLENGE_CARDS = [
   [
     {
-      icon: <Save size={26} className="text-[#0049c4]" strokeWidth={2} />,
+      icon: <Save size={26} className="text-grape" strokeWidth={2} />,
       title: "Manual Saves",
       description:
         "Edits weren't auto-saved, often leading to lost work and wasted time when consultants switched between screens.",
@@ -354,7 +361,7 @@ const CHALLENGE_CARDS = [
           viewBox="0 0 26 26"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="text-[#0049c4] shrink-0"
+          className="text-grape shrink-0"
           width={26}
           height={26}
           aria-hidden="true"
@@ -370,7 +377,7 @@ const CHALLENGE_CARDS = [
         "Outdated and overlapping UI elements made navigation unintuitive and slowed down task completion.",
     },
     {
-      icon: <CircleX size={26} className="text-[#0049c4]" strokeWidth={2} />,
+      icon: <CircleX size={26} className="text-grape" strokeWidth={2} />,
       title: "Unclear statuses",
       description:
         "Ambiguous booking and request statuses caused delays in confirmations and extra back-and-forth between teams.",
@@ -378,13 +385,13 @@ const CHALLENGE_CARDS = [
   ],
   [
     {
-      icon: <BellOff size={26} className="text-[#0049c4]" strokeWidth={2} />,
+      icon: <BellOff size={26} className="text-grape" strokeWidth={2} />,
       title: "No notifications",
       description:
         "Important updates—like vendor confirmations or cancellations—were missed due to the lack of real-time alerts.",
     },
     {
-      icon: <Workflow size={26} className="text-[#0049c4]" strokeWidth={2} />,
+      icon: <Workflow size={26} className="text-grape" strokeWidth={2} />,
       title: "Inefficient workflows",
       description:
         "Flight details and cancellation flows involved too many steps, creating inefficiencies in vendor coordination.",
@@ -403,15 +410,15 @@ function Challenges() {
         <div className="flex flex-col gap-5 md:gap-[24px]">
           <div className="flex flex-col gap-3">
             <div className="-rotate-3 w-fit">
-              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-grape whitespace-nowrap">
                 {"< Challenges >"}
               </span>
             </div>
-            <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
               Where the System Fell Short
             </h3>
           </div>
-          <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+          <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
             The Reservations module in Artemis 2.0 had become a daily friction
             point for users. Feedback from Reservations Consultants and Travel
             Consultants highlighted recurring pain areas.
@@ -436,10 +443,10 @@ function Challenges() {
                 >
                   <div className="shrink-0">{icon}</div>
                   <div className="flex flex-col gap-3">
-                    <h4 className="font-heading font-normal text-[18px] leading-[1.1] tracking-[-0.72px] text-[#091624] lg:text-[24px] lg:tracking-[-0.96px]">
+                    <h4 className="font-heading font-normal text-[18px] leading-[1.1] tracking-[-0.72px] text-heading lg:text-[24px] lg:tracking-[-0.96px]">
                       {title}
                     </h4>
-                    <p className="font-body font-normal text-[13px] leading-[1.6] text-[#717379] lg:text-[14px] lg:leading-[20px]">
+                    <p className="font-body font-normal text-[14px] leading-[20px] text-muted lg:text-[16px] lg:leading-[24px]">
                       {description}
                     </p>
                   </div>
@@ -467,15 +474,15 @@ function Process() {
         <div className="flex flex-col gap-5 md:gap-[24px]">
           <div className="flex flex-col gap-3">
             <div className="-rotate-3 w-fit">
-              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-grape whitespace-nowrap">
                 {"< Process >"}
               </span>
             </div>
-            <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
               From v0 Prototype to High-Fidelity Designs
             </h3>
           </div>
-          <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+          <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
             We shipped the improved booking workflow using a phased approach. We
             experimented with handing off the AI-generated v0 prototype directly
             to engineering, which seemed efficient since it was already
@@ -488,19 +495,19 @@ function Process() {
         <div className="flex flex-col gap-10 md:gap-[48px]">
           <div className="flex flex-col gap-5 md:gap-[24px]">
             <ol className="list-decimal">
-              <li className="ms-[36px] font-heading font-normal text-[20px] leading-[1.1] tracking-[-0.8px] text-[#091624] md:text-[22px] md:tracking-[-0.88px] lg:text-[24px] lg:tracking-[-0.96px]">
+              <li className="ms-[36px] font-heading font-normal text-[18px] leading-[1.2] tracking-[-0.72px] text-heading md:text-[24px] md:tracking-[-0.96px] lg:text-[24px] lg:tracking-[-0.96px]">
                 From v0 Prototype to High-Fidelity Designs
               </li>
             </ol>
 
-            <div className="flex flex-col gap-4 font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+            <div className="flex flex-col gap-4 font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
               <p>
                 Our first step was to build a functional low-fidelity prototype
                 using Vercel V0 — a code-first prototyping tool that allowed us
                 to move fast and test ideas early.
               </p>
               <div>
-                <p className="font-semibold text-[#091624]">Goals:</p>
+                <p className="font-semibold text-heading">Goals:</p>
                 <ul className="list-disc mt-1">
                   <li className="ms-[27px]">
                     Visualise the full booking flow end-to-end.
@@ -542,14 +549,14 @@ function Process() {
         <div className="flex flex-col gap-10 md:gap-[48px]">
           <div className="flex flex-col gap-5 md:gap-[24px]">
             <ol start={2} className="list-decimal">
-              <li className="ms-[36px] font-heading font-normal text-[20px] leading-[1.1] tracking-[-0.8px] text-[#091624] md:text-[22px] md:tracking-[-0.88px] lg:text-[24px] lg:tracking-[-0.96px]">
+              <li className="ms-[36px] font-heading font-normal text-[18px] leading-[1.2] tracking-[-0.72px] text-heading md:text-[24px] md:tracking-[-0.96px] lg:text-[24px] lg:tracking-[-0.96px]">
                 Iterative Feedback and Refinement
               </li>
             </ol>
 
-            <div className="flex flex-col gap-4 font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+            <div className="flex flex-col gap-4 font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
               <div>
-                <p className="font-medium text-[#091624]">Activities:</p>
+                <p className="font-medium text-heading">Activities:</p>
                 <ul className="list-disc mt-1">
                   <li className="ms-[27px]">
                     Conducted internal review sessions with ResCos, TCs, and
@@ -566,7 +573,7 @@ function Process() {
                 </ul>
               </div>
               <div>
-                <p className="font-semibold text-[#091624]">
+                <p className="font-semibold text-heading">
                   Key Design Adjustments:
                 </p>
                 <ul className="list-disc mt-1">
@@ -657,15 +664,15 @@ function Solution() {
         <div className="flex flex-col gap-5 md:gap-[24px]">
           <div className="flex flex-col gap-3">
             <div className="-rotate-3 w-fit">
-              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-grape whitespace-nowrap">
                 {"< Solution >"}
               </span>
             </div>
-            <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
               Redesigning Bookings to Enable Speed, Clarity &amp; Confidence
             </h3>
           </div>
-          <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+          <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
             Our redesign focused on directly addressing the five major user challenges identified
             through interviews and observation. Each solution was anchored in simplifying core
             workflows while preserving familiar patterns to minimise relearning effort.
@@ -677,11 +684,11 @@ function Solution() {
           <div key={num} className="flex flex-col gap-10 md:gap-[48px]">
             <div className="flex flex-col gap-5 md:gap-[24px]">
               <ol start={num} className="list-decimal">
-                <li className="ms-[36px] font-heading font-normal text-[20px] leading-[1.1] tracking-[-0.8px] text-[#091624] md:text-[22px] md:tracking-[-0.88px] lg:text-[24px] lg:tracking-[-0.96px]">
+                <li className="ms-[36px] font-heading font-normal text-[18px] leading-[1.2] tracking-[-0.72px] text-heading md:text-[24px] md:tracking-[-0.96px] lg:text-[24px] lg:tracking-[-0.96px]">
                   {title}
                 </li>
               </ol>
-              <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+              <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
                 {body}
               </p>
             </div>
@@ -696,7 +703,7 @@ function Solution() {
                   unoptimized
                 />
               </div>
-              <p className="font-body font-normal text-[15px] leading-[1.6] text-[#4caf50] text-center uppercase md:text-[17px] lg:text-[18px] lg:leading-[28px]">
+              <p className="font-body font-normal text-[12px] leading-[20px] text-[#4caf50] text-center uppercase md:text-[14px] md:leading-[20px] lg:text-[14px] lg:leading-[20px]">
                 {impact}
               </p>
             </div>
@@ -767,15 +774,15 @@ function Impact() {
         <div className="flex flex-col gap-5 md:gap-[24px]">
           <div className="flex flex-col gap-3">
             <div className="-rotate-3 w-fit">
-              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+              <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-grape whitespace-nowrap">
                 {"< Impact >"}
               </span>
             </div>
-            <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
               Measuring the Outcomes That Mattered
             </h3>
           </div>
-          <p className="font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+          <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
             The redesigned Bookings module in Artemis 3.0 delivered measurable improvements across
             both user experience and operational efficiency.
           </p>
@@ -783,7 +790,7 @@ function Impact() {
 
         {/* Metric cards */}
         <div className="flex flex-col gap-5 md:gap-[24px]">
-          <h4 className="font-heading font-normal text-[20px] leading-[1.1] tracking-[-0.8px] text-[#091624] md:text-[22px] md:tracking-[-0.88px] lg:text-[24px] lg:tracking-[-0.96px]">
+          <h4 className="font-heading font-normal text-[18px] leading-[1.2] tracking-[-0.72px] text-heading md:text-[24px] md:tracking-[-0.96px] lg:text-[24px] lg:tracking-[-0.96px]">
             Quantitative Outcomes
           </h4>
 
@@ -806,10 +813,10 @@ function Impact() {
                       <TrendUpArrow />
                     </div>
                     <div className="flex flex-col gap-3">
-                      <p className="font-body font-normal text-[14px] leading-[1.5] text-[#354454] lg:text-[16px] lg:leading-[24px]">
+                      <p className="font-body font-normal text-[14px] leading-[1.5] text-secondary lg:text-[16px] lg:leading-[24px]">
                         {label}
                       </p>
-                      <h4 className="font-heading font-medium text-[44px] leading-[1.1] tracking-[-1.76px] text-[#091624]">
+                      <h4 className="font-heading font-medium text-[44px] leading-[1.1] tracking-[-1.76px] text-heading">
                         {stat}
                       </h4>
                     </div>
@@ -837,17 +844,17 @@ function Reflection() {
         {/* Tag + heading */}
         <div className="flex flex-col gap-3">
           <div className="-rotate-3 w-fit">
-            <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-[#0049c4] whitespace-nowrap">
+            <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.12px] text-grape whitespace-nowrap">
               {"< Reflection >"}
             </span>
           </div>
-          <h3 className="font-heading font-normal text-[24px] leading-[1.19] tracking-[-0.96px] text-[#091624] md:text-[28px] md:tracking-[-1.12px] lg:text-[32px] lg:tracking-[-1.28px]">
+          <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
             What I learned
           </h3>
         </div>
 
         {/* Body */}
-        <div className="flex flex-col gap-4 font-body font-normal text-[15px] leading-[1.6] text-[#717379] md:text-[17px] md:leading-[1.65] lg:text-[18px] lg:leading-[28px]">
+        <div className="flex flex-col gap-4 font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
           <p>
             Redesigning the Reservations module reinforced the importance of deep workflow
             empathy — understanding not just what users do, but why they do it that way.
@@ -876,6 +883,7 @@ export default function ArtemisReservationsPage() {
     <CaseStudyLayout sections={SECTIONS} backHref="/#works">
       <Overview />
       <MyRole />
+      <UnderstandingTheTool />
       <Background />
       <TheProblem />
       <Challenges />

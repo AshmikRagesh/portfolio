@@ -88,7 +88,7 @@ export default function ReelPlayer() {
         onKeyDown={(e) => e.key === "Enter" && setExpanded(true)}
       >
         {/* Navy bezel frame */}
-        <div className="bg-[#172b4d] p-[4px] rounded-[8px] shadow-[0_8px_32px_rgba(0,0,0,0.32)]">
+        <div className="bg-blackcurrant p-[4px] rounded-[8px] shadow-[0_8px_32px_rgba(0,0,0,0.32)]">
           <div className="relative w-[102px] h-[180px] rounded-[6px] overflow-hidden bg-black">
             <iframe
               key={index}
@@ -147,7 +147,7 @@ export default function ReelPlayer() {
               {/* View Case Study — standalone button with its own rounding */}
               <Link
                 href={reel.projectHref}
-                className="flex items-center justify-center gap-2 bg-[#354454] hover:bg-[#3f5065] transition-colors h-[50px] px-4 rounded-[10px] text-white font-brand font-medium text-[15px] tracking-[-0.07px]"
+                className="flex items-center justify-center gap-2 bg-blackcurrant hover:bg-blackcurrant transition-colors h-[50px] px-4 rounded-[10px] text-white font-brand font-medium text-[15px] tracking-[-0.07px]"
                 style={{ width: "var(--vw)" }}
               >
                 View Case Study
@@ -170,14 +170,14 @@ export default function ReelPlayer() {
                 <button
                   onClick={() => go(-1)}
                   aria-label="Previous reel"
-                  className="flex items-center justify-center size-[46px] rounded-full bg-[#354454] text-white hover:bg-[#3f5065] transition-colors"
+                  className="flex items-center justify-center size-[46px] rounded-full bg-blackcurrant text-white hover:bg-blackcurrant transition-colors"
                 >
                   <ArrowIcon size={18} />
                 </button>
                 <button
                   onClick={() => go(1)}
                   aria-label="Next reel"
-                  className="flex items-center justify-center size-[46px] rounded-full bg-[#354454] text-white hover:bg-[#3f5065] transition-colors"
+                  className="flex items-center justify-center size-[46px] rounded-full bg-blackcurrant text-white hover:bg-blackcurrant transition-colors"
                 >
                   <ArrowIcon size={18} className="rotate-180" />
                 </button>

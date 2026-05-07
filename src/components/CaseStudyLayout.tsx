@@ -64,7 +64,7 @@ export default function CaseStudyLayout({
         {/* Back / Home link */}
         <Link
           href={backHref}
-          className="flex items-center gap-2 font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-[#6b7280] hover:text-[#091624] hover:-translate-x-[3px] transition-all duration-200 mb-8"
+          className="flex items-center gap-2 font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-muted hover:text-heading hover:-translate-x-[3px] transition-all duration-200 mb-8"
           style={{ transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
         >
           <ArrowLeft size={13} strokeWidth={2} />
@@ -80,8 +80,8 @@ export default function CaseStudyLayout({
                 onClick={() => scrollTo(id)}
                 className={`text-left w-full flex items-baseline gap-[8px] px-2 py-[7px] rounded-[8px] transition-colors duration-150 ease-in-out ${
                   activeId === id
-                    ? "bg-[#e2ecff] text-[#0049c4]"
-                    : "text-[#6b7280] hover:text-[#172b4d] hover:bg-[#f0f4ff]"
+                    ? "bg-lilac/30 text-grape"
+                    : "text-muted hover:text-heading hover:bg-lilac/20"
                 }`}
               >
                 <span className="font-body text-[13px] shrink-0 leading-none">
@@ -98,7 +98,7 @@ export default function CaseStudyLayout({
         {/* Back to top — pinned to bottom */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="flex items-center gap-2 font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-[#6b7280] hover:text-[#091624] hover:-translate-y-[3px] transition-all duration-200 mt-auto"
+          className="flex items-center gap-2 font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-muted hover:text-heading hover:-translate-y-[3px] transition-all duration-200 mt-auto"
           style={{ transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
         >
           <ArrowUp size={13} strokeWidth={2} />
@@ -118,8 +118,8 @@ export default function CaseStudyLayout({
                 onClick={() => scrollTo(id)}
                 className={`shrink-0 font-body text-[15px] py-1.5 border-b-2 transition-colors duration-150 whitespace-nowrap ${
                   activeId === id
-                    ? "border-[#172b4d] text-[#172b4d]"
-                    : "border-transparent text-[#9ca3af] hover:text-[#0049c4]"
+                    ? "border-grape text-grape"
+                    : "border-transparent text-muted hover:text-grape"
                 }`}
               >
                 {label}

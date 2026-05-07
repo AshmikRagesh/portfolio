@@ -28,7 +28,7 @@ export default function PixelRuler() {
     labelsRef.current.forEach((el, i) => {
       if (!el) return;
       if (i === activeIndex) {
-        el.style.color = "#091624";
+        el.style.color = "#1e0525";
         el.style.fontWeight = "600";
         el.style.fontSize = "10px";
       } else {
