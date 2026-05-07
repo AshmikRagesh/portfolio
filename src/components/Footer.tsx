@@ -72,7 +72,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={label}
-              className={`size-[57px] rounded-full border border-[#f2f2f2] flex items-center justify-center shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] ${tiltClass}`}
+              className={`size-[44px] md:size-[57px] rounded-full border border-[#f2f2f2] flex items-center justify-center shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] ${tiltClass}`}
               style={{
                 background: bg,
                 marginRight: i < socialLinks.length - 1 ? "-4px" : 0,
