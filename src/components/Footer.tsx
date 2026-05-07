@@ -42,7 +42,7 @@ export default function Footer() {
       <div className="bg-primary relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 rounded-[24px] overflow-hidden md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[240px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px] lg:rounded-[40px]">
 
         {/* Telephone illustration — desktop only */}
-        <div className="hidden lg:block absolute top-0 right-0 w-[420px] h-[680px] pointer-events-none select-none">
+        <div className="hidden lg:block absolute top-0 right-0 w-[315px] h-[510px] pointer-events-none select-none">
           <Image
             src="/images/footer-telephone.png"
             alt=""
