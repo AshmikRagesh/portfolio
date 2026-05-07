@@ -136,9 +136,9 @@ export default function Navbar() {
               className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100"
               style={{ transition: "opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)" }}
             >
-              <div className="absolute inset-0 pointer-events-none" style={{ borderRadius: "50%", background: "#8c5fb9", filter: "blur(20px)" }} />
-              <div className="absolute left-0 right-0 pointer-events-none" style={{ top: "10%", height: "50px", borderRadius: "50%", background: "rgba(255, 205, 255, 0.8)", filter: "blur(20px)" }} />
-              <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: "30px", borderRadius: "50%", background: "#ffb49d", filter: "blur(20px)" }} />
+              <div className="absolute inset-0 pointer-events-none" style={{ borderRadius: "50%", background: "#6E1687", filter: "blur(20px)" }} />
+              <div className="absolute left-0 right-0 pointer-events-none" style={{ top: "10%", height: "50px", borderRadius: "50%", background: "rgba(180, 60, 220, 0.7)", filter: "blur(20px)" }} />
+              <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: "30px", borderRadius: "50%", background: "#9B20B8", filter: "blur(20px)" }} />
             </div>
             <span className="relative z-10 flex items-center gap-2">
               <SparkleAiIcon size={16} />
@@ -160,9 +160,9 @@ export default function Navbar() {
               className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100"
               style={{ transition: "opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)" }}
             >
-              <div className="absolute inset-0 pointer-events-none" style={{ borderRadius: "50%", background: "#8c5fb9", filter: "blur(20px)" }} />
-              <div className="absolute left-0 right-0 pointer-events-none" style={{ top: "10%", height: "50px", borderRadius: "50%", background: "rgba(255, 205, 255, 0.8)", filter: "blur(20px)" }} />
-              <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: "30px", borderRadius: "50%", background: "#ffb49d", filter: "blur(20px)" }} />
+              <div className="absolute inset-0 pointer-events-none" style={{ borderRadius: "50%", background: "#6E1687", filter: "blur(20px)" }} />
+              <div className="absolute left-0 right-0 pointer-events-none" style={{ top: "10%", height: "50px", borderRadius: "50%", background: "rgba(180, 60, 220, 0.7)", filter: "blur(20px)" }} />
+              <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: "30px", borderRadius: "50%", background: "#9B20B8", filter: "blur(20px)" }} />
             </div>
             <span className="relative z-10 flex items-center gap-2">
               <SparkleAiIcon size={16} />
@@ -211,9 +211,9 @@ export default function Navbar() {
                 className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100"
                 style={{ transition: "opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)" }}
               >
-                <div className="absolute inset-0 pointer-events-none" style={{ borderRadius: "50%", background: "#8c5fb9", filter: "blur(20px)" }} />
-                <div className="absolute left-0 right-0 pointer-events-none" style={{ top: "10%", height: "50px", borderRadius: "50%", background: "rgba(255, 205, 255, 0.8)", filter: "blur(20px)" }} />
-                <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: "30px", borderRadius: "50%", background: "#ffb49d", filter: "blur(20px)" }} />
+                <div className="absolute inset-0 pointer-events-none" style={{ borderRadius: "50%", background: "#6E1687", filter: "blur(20px)" }} />
+                <div className="absolute left-0 right-0 pointer-events-none" style={{ top: "10%", height: "50px", borderRadius: "50%", background: "rgba(180, 60, 220, 0.7)", filter: "blur(20px)" }} />
+                <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: "30px", borderRadius: "50%", background: "#9B20B8", filter: "blur(20px)" }} />
               </div>
               <span className="relative z-10 flex items-center gap-2">
                 <SparkleAiIcon size={16} />
