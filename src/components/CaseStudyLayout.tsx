@@ -80,7 +80,7 @@ export default function CaseStudyLayout({
                 onClick={() => scrollTo(id)}
                 className={`text-left w-full flex items-baseline gap-[8px] px-2 py-[7px] rounded-[8px] transition-colors duration-150 ease-in-out ${
                   activeId === id
-                    ? "bg-lilac/30 text-grape"
+                    ? "bg-lilac/30 text-heading"
                     : "text-muted hover:text-heading hover:bg-lilac/20"
                 }`}
               >
@@ -118,7 +118,7 @@ export default function CaseStudyLayout({
                 onClick={() => scrollTo(id)}
                 className={`shrink-0 font-body text-[15px] py-1.5 border-b-2 transition-colors duration-150 whitespace-nowrap ${
                   activeId === id
-                    ? "border-grape text-grape"
+                    ? "border-grape text-heading"
                     : "border-transparent text-muted hover:text-grape"
                 }`}
               >
