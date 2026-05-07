@@ -29,7 +29,9 @@ const socialLinks = [
 export default function Footer() {
   const cardRef = useRef<HTMLDivElement>(null);
   const [glowProgress, setGlowProgress] = useState(0);
+  const [glowVisible, setGlowVisible] = useState(false);
   const rafRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const el = cardRef.current;
@@ -42,7 +44,6 @@ export default function Footer() {
     );
     io.observe(el);
 
-    // rAF-throttled scroll handler for smooth glow tracking
     const onScroll = () => {
       if (rafRef.current !== null) return;
       rafRef.current = requestAnimationFrame(() => {
@@ -51,6 +52,18 @@ export default function Footer() {
         const footerH = el.offsetHeight;
         const p = Math.max(0, Math.min(1, (vh - top) / footerH));
         setGlowProgress(p);
+
+        if (p >= 0.5) {
+          // Start 500ms delay before showing glow
+          if (!timerRef.current) {
+            timerRef.current = setTimeout(() => setGlowVisible(true), 500);
+          }
+        } else {
+          // Scrolled away — cancel timer and hide immediately
+          if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
+          setGlowVisible(false);
+        }
+
         rafRef.current = null;
       });
     };
@@ -61,6 +74,7 @@ export default function Footer() {
     return () => {
       io.disconnect();
       window.removeEventListener("scroll", onScroll);
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, []);
 
@@ -72,10 +86,12 @@ export default function Footer() {
         <div
           className="absolute bottom-0 left-0 right-0 h-[340px] pointer-events-none"
           style={{
-            opacity: glowProgress,
+            opacity: glowVisible ? glowProgress : 0,
             transform: `scaleX(${0.3 + glowProgress * 0.7}) scaleY(${0.15 + glowProgress * 0.85})`,
             transformOrigin: "50% 100%",
-            transition: "opacity 0.08s linear, transform 0.1s linear",
+            transition: glowVisible
+              ? "opacity 0.6s ease-in, transform 0.1s linear"
+              : "opacity 0.2s ease-out, transform 0.1s linear",
             willChange: "transform, opacity",
           }}
         >
@@ -84,7 +100,7 @@ export default function Footer() {
             className="absolute inset-0"
             style={{
               background: "radial-gradient(ellipse 75% 100% at 50% 100%, rgba(162, 89, 255, 0.28) 0%, rgba(137, 91, 231, 0.08) 55%, transparent 72%)",
-              animation: glowProgress > 0.15 ? "glow-breathe 3.5s ease-in-out infinite" : "none",
+              animation: glowVisible ? "glow-breathe 3.5s ease-in-out infinite" : "none",
             }}
           />
         </div>
