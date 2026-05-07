@@ -57,7 +57,7 @@ export default function CaseStudyLayout({
 
   return (
     <>
-    <div className="flex min-h-screen pt-[68px]">
+    <div className="relative z-10 bg-background flex min-h-screen pt-[68px]">
 
       {/* ── Sticky sidebar (desktop only) ── */}
       <aside className="hidden lg:flex flex-col w-[272px] xl:w-[323px] shrink-0 sticky top-[68px] self-start h-[calc(100vh-68px)] pl-[100px] pr-4 py-10 overflow-y-auto">

@@ -7,9 +7,12 @@ import ReelPlayer from "@/components/ReelPlayer";
 export default function Home() {
   return (
     <>
-      <Hero />
-      <Works />
-      <Playground />
+      {/* Content layers — each sticky so they stack and slide over the footer below */}
+      <div className="relative z-10 bg-background">
+        <Hero />
+        <Works />
+        <Playground />
+      </div>
       <Footer />
       <ReelPlayer />
     </>

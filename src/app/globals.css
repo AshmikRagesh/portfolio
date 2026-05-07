@@ -12,6 +12,19 @@
   }
 }
 
+/* Footer scroll-reveal: card translates up from 60px as it enters viewport */
+@keyframes footer-rise {
+  from { transform: translateY(60px); opacity: 0.6; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.footer-card {
+  animation: footer-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-play-state: paused;
+}
+.footer-card.in-view {
+  animation-play-state: running;
+}
+
 /*
   GT Alpina Trial — place font files in public/fonts/:
     GTAlpinaTrial-Regular.woff2

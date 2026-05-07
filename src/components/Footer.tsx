@@ -1,4 +1,6 @@
+"use client";
 import Image from "next/image"; // used for telephone illustration
+import { useEffect, useRef } from "react";
 
 const socialLinks = [
   {
@@ -25,9 +27,22 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) el.classList.add("in-view"); },
+      { threshold: 0.08 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <footer className="sticky bottom-0 z-10 bg-background p-4 md:p-6 lg:p-[40px]">
-      <div className="bg-primary relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 rounded-[24px] overflow-hidden md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[240px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px] lg:rounded-[40px]">
+    <footer className="bg-background p-4 md:p-6 lg:p-[40px]">
+      <div ref={cardRef} className="footer-card bg-primary relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 rounded-[24px] overflow-hidden md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[240px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px] lg:rounded-[40px]">
 
         {/* Telephone illustration — desktop only */}
         <div className="hidden lg:block absolute top-0 right-0 w-[315px] h-[510px] pointer-events-none select-none">
