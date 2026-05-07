@@ -26,7 +26,7 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="sticky bottom-0 bg-background p-4 md:p-6 lg:p-[40px]">
+    <footer className="sticky bottom-0 z-10 bg-background p-4 md:p-6 lg:p-[40px]">
       <div className="bg-primary relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 rounded-[24px] overflow-hidden md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[240px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px] lg:rounded-[40px]">
 
         {/* Telephone illustration — desktop only */}
