@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
+// ── Exported for Playground ───────────────────────────────────────────────────
 export interface WorkItem {
   number: string;
   title: string;
@@ -18,52 +19,6 @@ export interface WorkItem {
   rotate: "left" | "right";
 }
 
-const works: WorkItem[] = [
-  {
-    number: "NO:01",
-    title: "Creating and maintaining the Artemis Design System for Enchanting Travels",
-    description:
-      "Building accessible digital products is tough. Right now, it requires product designers to dive deep into guidelines, run extensive user testing, and manually audit every component.",
-    image: "/images/works-cover.png",
-    imageAlt: "Artemis Design System preview",
-    tags: ["AI", "Product Design", "Research"],
-    role: "Lead Product Designer",
-    team: "2 Engineers, 1 PM",
-    timeframe: "6 months",
-    href: "/works/artemis-reservations",
-    rotate: "left",
-  },
-  {
-    number: "NO:02",
-    title: "Streamlining the reservations module in Artemis 3.0 for Enchanting Travels",
-    description:
-      "Introducing auto‑save, in‑app notifications, and categorised flights—reducing booking errors and cutting task completion time by 35%.",
-    image: "/images/works-cover.png",
-    imageAlt: "Artemis Reservations preview",
-    tags: ["UX Design", "Shipped"],
-    role: "Lead Product Designer",
-    team: "2 Engineers, 1 PM",
-    timeframe: "4 months",
-    href: "#",
-    rotate: "right",
-  },
-  {
-    number: "NO:03",
-    title: "Designing an AI-powered itinerary builder for modern travellers",
-    description:
-      "Lets travelers create fully personalised trips in under 2 minutes—combining real-time availability, smart suggestions, and a zero-friction booking flow.",
-    image: "/images/works-cover.png",
-    imageAlt: "AI Trip Planning preview",
-    tags: ["Side Project", "Shipped"],
-    role: "Solo Designer",
-    team: "Just me",
-    timeframe: "2 months",
-    href: "#",
-    rotate: "left",
-  },
-];
-
-
 export function WorkCard({ work }: { work: WorkItem }) {
   const isLink = work.href !== "#";
   const Wrapper = isLink ? Link : "div";
@@ -71,74 +26,38 @@ export function WorkCard({ work }: { work: WorkItem }) {
 
   return (
     <div className="group">
-      <div
-        className={`${rotateClass} group-hover:rotate-0 transition-transform duration-300 ease-in-out w-full`}
-      >
+      <div className={`${rotateClass} group-hover:rotate-0 transition-transform duration-300 ease-in-out w-full`}>
         <Wrapper
           href={work.href as string}
           className="relative flex flex-col gap-4 bg-[#fbfbfb] border border-[#c8ccd4] rounded-[20px] shadow-[0px_0px_6px_rgba(0,0,0,0.05)] pt-4 px-4 pb-6 transition-shadow duration-300 group-hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)] cursor-pointer"
         >
-          {/* Punch hole */}
           <div className="absolute top-[14px] left-[14px] w-[16px] h-[16px] rounded-full border border-[#c8ccd4] bg-background" />
-
-          {/* Number + Image */}
           <div className="flex flex-col gap-3 items-end">
-            <span className="font-brand font-medium text-[14px] uppercase text-[#172b4d] leading-[20px] shrink-0">
-              {work.number}
-            </span>
+            <span className="font-brand font-medium text-[14px] uppercase text-[#172b4d] leading-[20px] shrink-0">{work.number}</span>
             <div className="relative h-[180px] w-full rounded-[16px] overflow-hidden shrink-0">
-              <Image
-                src={work.image}
-                alt={work.imageAlt}
-                fill
-                className="object-cover"
-              />
+              <Image src={work.image} alt={work.imageAlt} fill className="object-cover" />
             </div>
           </div>
-
-          {/* Content */}
           <div className="flex flex-col gap-3 shrink-0">
-            {/* Title + Tags on same row */}
             <div className="flex items-start justify-between gap-3">
-              <h3 className="font-heading font-normal text-[22px] leading-[1.18] tracking-[-0.44px] text-black">
-                {work.title}
-              </h3>
+              <h3 className="font-heading font-normal text-[22px] leading-[1.18] tracking-[-0.44px] text-black">{work.title}</h3>
               <div className="flex flex-wrap gap-1 shrink-0 pt-[3px]">
                 {work.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="bg-[#cde4ff] text-[#091624] font-brand font-medium text-[10px] uppercase leading-[20px] px-2 py-[2px] rounded-[4px] whitespace-nowrap"
-                  >
-                    {tag}
-                  </span>
+                  <span key={tag} className="bg-[#cde4ff] text-[#091624] font-brand font-medium text-[10px] uppercase leading-[20px] px-2 py-[2px] rounded-[4px] whitespace-nowrap">{tag}</span>
                 ))}
               </div>
             </div>
-
-            {/* Description */}
-            <p className="font-body font-normal text-[14px] leading-[20px] text-[#717379]">
-              {work.description}
-            </p>
-
-            {/* Hover-reveal: Role / Team / Timeframe */}
+            <p className="font-body font-normal text-[14px] leading-[20px] text-[#717379]">{work.description}</p>
             {(work.role || work.team || work.timeframe) && (
               <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
                 <div className="overflow-hidden">
                   <div className="pt-4 border-t border-[#e8eaed] flex flex-col gap-3">
-                    {[
-                      { label: "Role", value: work.role },
-                      { label: "Team", value: work.team },
-                      { label: "Timeframe", value: work.timeframe },
-                    ]
+                    {[{ label: "Role", value: work.role }, { label: "Team", value: work.team }, { label: "Timeframe", value: work.timeframe }]
                       .filter(({ value }) => value)
                       .map(({ label, value }) => (
                         <div key={label} className="flex items-center justify-between">
-                          <span className="font-brand font-medium text-[11px] uppercase tracking-[0.8px] text-[#9ca3af]">
-                            {label}
-                          </span>
-                          <span className="font-body text-[14px] text-[#354454]">
-                            {value}
-                          </span>
+                          <span className="font-brand font-medium text-[11px] uppercase tracking-[0.8px] text-[#9ca3af]">{label}</span>
+                          <span className="font-body text-[14px] text-[#354454]">{value}</span>
                         </div>
                       ))}
                   </div>
@@ -152,75 +71,189 @@ export function WorkCard({ work }: { work: WorkItem }) {
   );
 }
 
+// ── Timeline works data ───────────────────────────────────────────────────────
+interface TimelineWork {
+  title: string;
+  description: string;
+  image: string;
+  imageAlt: string;
+  href: string;
+  tags: string[];
+}
+
+interface YearGroup {
+  year: string;
+  works: TimelineWork[];
+}
+
+const timelineGroups: YearGroup[] = [
+  {
+    year: "2025",
+    works: [
+      {
+        title: "Creating and maintaining the Artemis Design System for Enchanting Travels",
+        description:
+          "Building accessible digital products is tough. It requires product designers to dive deep into guidelines, run extensive user testing, and manually audit every component. We fixed that.",
+        image: "/images/works-cover.png",
+        imageAlt: "Artemis Design System preview",
+        href: "/works/artemis-reservations",
+        tags: ["Design System", "Shipped"],
+      },
+      {
+        title: "Streamlining the reservations module in Artemis 3.0",
+        description:
+          "Introducing auto‑save, in‑app notifications, and categorised flights—reducing booking errors and cutting task completion time by 35%.",
+        image: "/images/works-cover.png",
+        imageAlt: "Artemis Reservations preview",
+        href: "#",
+        tags: ["UX Design", "Shipped"],
+      },
+    ],
+  },
+  {
+    year: "2024",
+    works: [
+      {
+        title: "Designing an AI-powered itinerary builder for modern travellers",
+        description:
+          "Lets travelers create fully personalised trips in under 2 minutes—combining real-time availability, smart suggestions, and a zero-friction booking flow.",
+        image: "/images/works-cover.png",
+        imageAlt: "AI Trip Planning preview",
+        href: "#",
+        tags: ["Side Project", "Shipped"],
+      },
+      {
+        title: "Redesigning the travel agent dashboard to surface key booking signals",
+        description:
+          "Reduced context-switching by 40% by consolidating fragmented views into a single, scannable workspace built around how agents actually think.",
+        image: "/images/works-cover.png",
+        imageAlt: "Travel Agent Dashboard preview",
+        href: "#",
+        tags: ["Product Design", "Shipped"],
+      },
+    ],
+  },
+];
+
+// ── Works section ─────────────────────────────────────────────────────────────
 export default function Works() {
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [activeWork, setActiveWork] = useState<string | null>(null);
 
   return (
     <section
       id="works"
-      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[140px] lg:pt-[100px] lg:pb-[60px]"
+      className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:pt-[100px] lg:pb-[120px]"
     >
-      {/* Custom cursor label */}
-      {hoveredIndex !== null && (
+      {/* Custom cursor */}
+      {activeWork && (
         <div
-          className="fixed z-50 pointer-events-none transition-opacity duration-150"
-          style={{ left: cursorPos.x, top: cursorPos.y, transform: "translate(-50%, calc(-100% - 12px))" }}
+          className="fixed z-50 pointer-events-none"
+          style={{ left: cursorPos.x, top: cursorPos.y, transform: "translate(-50%, calc(-100% - 14px))" }}
         >
-          <span className="block bg-[#172b4d] text-white font-brand font-medium text-[12px] tracking-[0.2px] px-4 py-[7px] rounded-full whitespace-nowrap shadow-[0_4px_16px_rgba(0,0,0,0.2)]">
+          <span className="block bg-[#172b4d] text-white font-brand font-medium text-[12px] tracking-[0.2px] px-4 py-[7px] rounded-full whitespace-nowrap shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
             Read case study
           </span>
         </div>
       )}
 
-      <div className="flex flex-col gap-[8px]">
-        {works.map((work, i) => {
-          const isLink = work.href !== "#";
-          const Wrapper = isLink ? Link : "div";
-          const imageRight = i % 2 === 0;
+      {/* Section header */}
+      <div className="mb-[60px] lg:mb-[80px]">
+        <h2 className="font-heading font-normal text-[36px] leading-[1.15] tracking-[-0.72px] text-[#091624] lg:text-[54px] lg:tracking-[-1.08px]">
+          Some recent work
+        </h2>
+        <p className="font-body text-[15px] text-[#9ca3af] mt-1 lg:text-[16px]">
+          (from full-time product design roles)
+        </p>
+      </div>
 
-          return (
-            <div
-              key={work.number}
-              className={`group rounded-[24px] transition-all duration-300 ease-out hover:bg-[#f7f7f7] ${isLink ? "cursor-none" : ""}`}
-              onMouseMove={(e) => { if (isLink) setCursorPos({ x: e.clientX, y: e.clientY }); }}
-              onMouseEnter={() => { if (isLink) setHoveredIndex(i); }}
-              onMouseLeave={() => setHoveredIndex(null)}
-            >
-              <Wrapper
-                href={work.href as string}
-                className={`flex flex-col gap-8 p-6 lg:flex-row lg:items-center lg:gap-[64px] lg:p-10 ${
-                  !imageRight ? "lg:flex-row-reverse" : ""
-                }`}
-              >
-                {/* Text */}
-                <div className="flex flex-col gap-[8px] lg:flex-1">
-                  <p className="font-brand font-normal text-[14px] uppercase text-[#0049c4] leading-[20px]">
-                    {work.tags.join(", ")}
-                  </p>
-                  <div className="flex flex-col gap-[12px]">
-                    <h3 className="font-heading font-normal text-[22px] leading-[1.18] tracking-[-0.44px] text-black lg:text-[28px] lg:tracking-[-0.56px] transition-opacity duration-200 group-hover:opacity-70">
-                      {work.title}
-                    </h3>
-                    <p className="font-body font-normal text-[14px] leading-[22px] text-[#717379] lg:text-[16px] lg:leading-[24px]">
-                      {work.description}
-                    </p>
-                  </div>
-                </div>
+      {/* Timeline */}
+      <div className="flex flex-col gap-[80px] lg:gap-[120px]">
+        {timelineGroups.map((group) => (
+          <div key={group.year} className="flex gap-[32px] lg:gap-[80px]">
 
-                {/* Image */}
-                <div className="relative w-full h-[240px] rounded-[16px] overflow-hidden lg:flex-1 lg:h-[380px] border-2 border-transparent group-hover:border-[#172b4d] transition-[border-color] duration-300 ease-out">
-                  <Image
-                    src={work.image}
-                    alt={work.imageAlt}
-                    fill
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                  />
-                </div>
-              </Wrapper>
+            {/* Year column — sticky on desktop */}
+            <div className="hidden lg:block w-[160px] shrink-0">
+              <div className="sticky top-[88px] flex items-center gap-3">
+                <div className="w-[7px] h-[7px] rounded-full bg-[#d1d5db] shrink-0" />
+                <span className="font-heading font-normal text-[64px] leading-none tracking-[-1.5px] text-[#e5e7eb] select-none">
+                  {group.year}
+                </span>
+              </div>
             </div>
-          );
-        })}
+
+            {/* Projects */}
+            <div className="flex flex-col gap-[70px] lg:gap-[100px] flex-1">
+
+              {/* Mobile: year label */}
+              <div className="flex items-center gap-2 lg:hidden">
+                <div className="w-[6px] h-[6px] rounded-full bg-[#d1d5db]" />
+                <span className="font-heading font-normal text-[40px] leading-none tracking-[-0.8px] text-[#e5e7eb] select-none">
+                  {group.year}
+                </span>
+              </div>
+
+              {group.works.map((work) => {
+                const isLink = work.href !== "#";
+                const Wrapper = isLink ? Link : "div";
+
+                return (
+                  <div
+                    key={work.title}
+                    className={isLink ? "cursor-none" : ""}
+                    onMouseMove={(e) => { if (isLink) setCursorPos({ x: e.clientX, y: e.clientY }); }}
+                    onMouseEnter={() => { if (isLink) setActiveWork(work.title); }}
+                    onMouseLeave={() => setActiveWork(null)}
+                  >
+                    <Wrapper href={work.href as string} className="group flex flex-col gap-5">
+
+                      {/* Tags */}
+                      <div className="flex items-center gap-3">
+                        {work.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="font-brand font-medium text-[11px] uppercase tracking-[0.8px] text-[#0049c4]"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Title */}
+                      <h3 className="font-heading font-normal text-[26px] leading-[1.18] tracking-[-0.52px] text-[#091624] transition-opacity duration-200 group-hover:opacity-60 lg:text-[38px] lg:tracking-[-0.76px]">
+                        {work.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="font-body font-normal text-[15px] leading-[26px] text-[#717379] lg:text-[17px] lg:leading-[28px]">
+                        {work.description}
+                      </p>
+
+                      {/* Image */}
+                      <div className="relative w-full h-[260px] rounded-[20px] overflow-hidden mt-2 lg:h-[480px]">
+                        <Image
+                          src={work.image}
+                          alt={work.imageAlt}
+                          fill
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                        />
+                      </div>
+
+                      {/* CTA */}
+                      {isLink && (
+                        <div className="mt-1 self-start">
+                          <span className="inline-flex items-center gap-2 bg-[#172b4d] text-white font-brand font-medium text-[13px] tracking-[0.1px] px-5 py-[9px] rounded-full transition-colors duration-200 group-hover:bg-[#0049c4]">
+                            Read case study →
+                          </span>
+                        </div>
+                      )}
+                    </Wrapper>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
