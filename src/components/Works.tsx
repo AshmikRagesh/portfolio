@@ -142,8 +142,6 @@ const timelineGroups: YearGroup[] = [
 
 // ── Works section ─────────────────────────────────────────────────────────────
 export default function Works() {
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [activeWork, setActiveWork] = useState<string | null>(null);
   const groupRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [trailHeights, setTrailHeights] = useState<number[]>(timelineGroups.map(() => 0));
 
@@ -168,17 +166,6 @@ export default function Works() {
       id="works"
       className="bg-background px-[20px] py-[60px] md:px-[60px] lg:pl-[120px] lg:pr-[200px] lg:pt-[100px] lg:pb-[120px]"
     >
-      {/* Custom cursor */}
-      {activeWork && (
-        <div
-          className="fixed z-50 pointer-events-none"
-          style={{ left: cursorPos.x, top: cursorPos.y, transform: "translate(-50%, calc(-100% - 14px))" }}
-        >
-          <span className="block bg-blackcurrant text-white font-brand font-medium text-[12px] tracking-[0.2px] px-4 py-[7px] rounded-full whitespace-nowrap shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
-            Read case study
-          </span>
-        </div>
-      )}
 
       {/* Timeline */}
       <div className="flex flex-col gap-[80px] lg:gap-[120px]">
@@ -227,10 +214,6 @@ export default function Works() {
                 return (
                   <div
                     key={work.title}
-                    className={isLink ? "cursor-none" : ""}
-                    onMouseMove={(e) => { if (isLink) setCursorPos({ x: e.clientX, y: e.clientY }); }}
-                    onMouseEnter={() => { if (isLink) setActiveWork(work.title); }}
-                    onMouseLeave={() => setActiveWork(null)}
                   >
                     <Wrapper href={work.href as string} className="group flex flex-col gap-0 bg-background rounded-[24px] p-5 lg:p-8 border border-transparent hover:border-[#e8eaed] transition-all duration-500 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
 
