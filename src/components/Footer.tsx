@@ -28,34 +28,51 @@ const socialLinks = [
 
 export default function Footer() {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
+  const [glowProgress, setGlowProgress] = useState(0);
 
   useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add("in-view");
-          setInView(true);
-        }
-      },
+
+    // Trigger the card-rise animation once
+    const io = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) el.classList.add("in-view"); },
       { threshold: 0.08 }
     );
-    observer.observe(el);
-    return () => observer.disconnect();
+    io.observe(el);
+
+    // Scroll-linked glow: 0 when footer hasn't entered, 1 when it's well in view
+    const onScroll = () => {
+      const { top } = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // Progress: 0 at top=vh (just entering), 1 at top=vh*0.2 (well in view)
+      const p = Math.max(0, Math.min(1, (vh - top) / (vh * 0.8)));
+      setGlowProgress(p);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   return (
     <footer className="bg-background p-4 md:p-6 lg:p-[40px]">
       <div ref={cardRef} className="footer-card bg-primary relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 rounded-[24px] overflow-hidden md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[240px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px] lg:rounded-[40px]">
 
-        {/* Bottom aurora glow — fades in when footer enters viewport */}
+        {/* Scroll-driven bottom glow — grows as footer enters, shrinks as it leaves */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-[320px] pointer-events-none transition-opacity duration-[1400ms] ease-in-out"
+          className="absolute bottom-0 left-0 right-0 h-[340px] pointer-events-none"
           style={{
-            opacity: inView ? 1 : 0,
-            background: "radial-gradient(ellipse 70% 100% at 50% 100%, rgba(162, 89, 255, 0.55) 0%, rgba(137, 91, 231, 0.18) 50%, transparent 72%)",
+            opacity: glowProgress,
+            transform: `scaleX(${0.35 + glowProgress * 0.65}) scaleY(${0.2 + glowProgress * 0.8})`,
+            transformOrigin: "50% 100%",
+            transition: "opacity 0.18s ease-out, transform 0.22s ease-out",
+            animation: glowProgress > 0.15 ? "glow-breathe 3.5s ease-in-out infinite" : "none",
+            background: "radial-gradient(ellipse 75% 100% at 50% 100%, rgba(162, 89, 255, 0.6) 0%, rgba(137, 91, 231, 0.22) 50%, transparent 72%)",
           }}
         />
 
