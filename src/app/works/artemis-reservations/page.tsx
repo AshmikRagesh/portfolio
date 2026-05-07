@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Save, CircleX, BellOff, Workflow } from "lucide-react";
+import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 
 export const metadata: Metadata = {
@@ -306,28 +307,18 @@ function TheProblem() {
         </div>
 
         {/* Problem Statement callout */}
-        <div className="flex flex-col gap-5 rounded-[8px] border-[1.5px] border-[#166ecd] bg-[rgba(31,136,249,0.05)] p-[24px] md:gap-[20px]">
+        <div className="flex flex-col gap-5 rounded-[8px] border-[1.5px] border-heading bg-[rgba(137,91,231,0.05)] p-[24px] md:gap-[20px]">
           {/* Heading row */}
           <div className="flex items-center gap-2 w-full">
-            <svg
-              viewBox="0 0 13.3333 13.3333"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-              className="shrink-0 text-grape w-[24px] h-[24px] md:w-[26px] md:h-[26px] lg:w-[28px] lg:h-[28px]"
-            >
-              <path d="M3.12447 0.558316C3.07143 0.236284 2.79304 0 2.46667 0C2.14029 0 1.86191 0.236284 1.80886 0.558317C1.7422 0.963031 1.59581 1.2344 1.41034 1.41807C1.22421 1.60239 0.952683 1.74391 0.558317 1.80886C0.236284 1.86191 0 2.14029 0 2.46667C0 2.79304 0.236284 3.07143 0.558316 3.12447C0.963031 3.19113 1.2344 3.33753 1.41807 3.523C1.60239 3.70913 1.74391 3.98065 1.80886 4.37502C1.86191 4.69705 2.14029 4.93333 2.46667 4.93333C2.79304 4.93333 3.07143 4.69705 3.12447 4.37502C3.18943 3.98065 3.33095 3.70913 3.51527 3.523C3.69893 3.33753 3.9703 3.19113 4.37502 3.12447C4.69705 3.07143 4.93333 2.79304 4.93333 2.46667C4.93333 2.14029 4.69705 1.86191 4.37502 1.80886C3.9703 1.7422 3.69893 1.59581 3.51527 1.41034C3.33095 1.22421 3.18943 0.952683 3.12447 0.558316Z" fill="currentColor" />
-              <path d="M7.92801 0.582612C7.88569 0.249599 7.60236 0 7.26667 0C6.93097 0 6.64764 0.249599 6.60532 0.582612C6.3906 2.27205 5.93473 3.48974 5.19313 4.34417C4.46151 5.1871 3.38414 5.75374 1.76332 6.00806C1.439 6.05895 1.2 6.33837 1.2 6.66667C1.2 6.99496 1.439 7.27439 1.76332 7.32527C3.38414 7.5796 4.46151 8.14623 5.19313 8.98916C5.93473 9.8436 6.3906 11.0613 6.60532 12.7507C6.64764 13.0837 6.93097 13.3333 7.26667 13.3333C7.60236 13.3333 7.88569 13.0837 7.92801 12.7507C8.14274 11.0613 8.59861 9.8436 9.3402 8.98916C10.0718 8.14623 11.1492 7.5796 12.77 7.32527C13.0943 7.27439 13.3333 6.99496 13.3333 6.66667C13.3333 6.33837 13.0943 6.05895 12.77 6.00806C11.0611 5.73991 9.98251 5.13747 9.27143 4.28439C8.54727 3.41563 8.13411 2.20418 7.92801 0.582612Z" fill="currentColor" />
-              <path d="M2.66667 10.4333C2.66667 10.0651 2.36819 9.76667 2 9.76667C1.63181 9.76667 1.33333 10.0651 1.33333 10.4333V10.6667H1.1C0.73181 10.6667 0.433333 10.9651 0.433333 11.3333C0.433333 11.7015 0.73181 12 1.1 12H1.33333V12.2333C1.33333 12.6015 1.63181 12.9 2 12.9C2.36819 12.9 2.66667 12.6015 2.66667 12.2333V12H2.9C3.26819 12 3.56667 11.7015 3.56667 11.3333C3.56667 10.9651 3.26819 10.6667 2.9 10.6667H2.66667V10.4333Z" fill="currentColor" />
-            </svg>
-            <h4 className="font-heading font-medium text-[18px] leading-[1.2] tracking-[-0.72px] text-heading md:text-[24px] md:tracking-[-0.96px] lg:text-[24px] lg:tracking-[-0.96px]">
+            <SparkleAiIcon size={26} className="shrink-0 text-heading" />
+            <h4 className="font-heading font-normal text-[24px] leading-[1.1] tracking-[-0.96px] text-heading">
               The Problem Statement
             </h4>
           </div>
 
           {/* Body */}
-          <p className="font-body font-normal text-[14px] leading-[20px] md:text-[16px] md:leading-[24px] lg:text-[18px] lg:leading-[28px]">
-            <span className="text-muted">
+          <p className="font-body font-normal text-[16px] leading-[24px] md:text-[18px] md:leading-[28px]">
+            <span className="text-secondary">
               Artemis Reservations depended on manual coordination for
               high-stakes booking workflows.{" "}
             </span>
