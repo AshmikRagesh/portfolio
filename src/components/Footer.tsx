@@ -63,18 +63,25 @@ export default function Footer() {
     <footer className="bg-background p-4 md:p-6 lg:p-[40px]">
       <div ref={cardRef} className="footer-card bg-primary relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 rounded-[24px] overflow-hidden md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[240px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px] lg:rounded-[40px]">
 
-        {/* Scroll-driven bottom glow — grows as footer enters, shrinks as it leaves */}
+        {/* Scroll-driven wrapper — controls size and opacity from scroll */}
         <div
           className="absolute bottom-0 left-0 right-0 h-[340px] pointer-events-none"
           style={{
             opacity: glowProgress,
-            transform: `scaleX(${0.35 + glowProgress * 0.65}) scaleY(${0.2 + glowProgress * 0.8})`,
+            transform: `scaleX(${0.3 + glowProgress * 0.7}) scaleY(${0.15 + glowProgress * 0.85})`,
             transformOrigin: "50% 100%",
-            transition: "opacity 0.18s ease-out, transform 0.22s ease-out",
-            animation: glowProgress > 0.15 ? "glow-breathe 3.5s ease-in-out infinite" : "none",
-            background: "radial-gradient(ellipse 75% 100% at 50% 100%, rgba(162, 89, 255, 0.6) 0%, rgba(137, 91, 231, 0.22) 50%, transparent 72%)",
+            transition: "opacity 0.15s ease-out, transform 0.2s ease-out",
           }}
-        />
+        >
+          {/* Inner — breathing pulse animation, isolated so it can't override the scroll transform above */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: "radial-gradient(ellipse 75% 100% at 50% 100%, rgba(162, 89, 255, 0.6) 0%, rgba(137, 91, 231, 0.22) 50%, transparent 72%)",
+              animation: glowProgress > 0.15 ? "glow-breathe 3.5s ease-in-out infinite" : "none",
+            }}
+          />
+        </div>
 
         {/* Telephone illustration — desktop only */}
         <div className="hidden lg:block absolute top-0 right-0 w-[315px] h-[510px] pointer-events-none select-none">
