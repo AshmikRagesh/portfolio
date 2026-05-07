@@ -157,16 +157,6 @@ export default function Works() {
         </div>
       )}
 
-      {/* Section header */}
-      <div className="mb-[60px] lg:mb-[80px]">
-        <h2 className="font-heading font-normal text-[36px] leading-[1.15] tracking-[-0.72px] text-[#091624] lg:text-[54px] lg:tracking-[-1.08px]">
-          Some recent work
-        </h2>
-        <p className="font-body text-[15px] text-[#9ca3af] mt-1 lg:text-[16px]">
-          (from full-time product design roles)
-        </p>
-      </div>
-
       {/* Timeline */}
       <div className="flex flex-col gap-[80px] lg:gap-[120px]">
         {timelineGroups.map((group) => (
@@ -208,10 +198,10 @@ export default function Works() {
                     onMouseEnter={() => { if (isLink) setActiveWork(work.title); }}
                     onMouseLeave={() => setActiveWork(null)}
                   >
-                    <Wrapper href={work.href as string} className="group flex flex-col gap-5">
+                    <Wrapper href={work.href as string} className="group flex flex-col gap-0">
 
                       {/* Tags */}
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 mb-[8px]">
                         {work.tags.map((tag) => (
                           <span
                             key={tag}
@@ -223,7 +213,7 @@ export default function Works() {
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-heading font-normal text-[26px] leading-[1.18] tracking-[-0.52px] text-[#091624] transition-opacity duration-200 group-hover:opacity-60 lg:text-[38px] lg:tracking-[-0.76px]">
+                      <h3 className="font-heading font-normal text-[26px] leading-[1.18] tracking-[-0.52px] text-[#091624] transition-opacity duration-200 group-hover:opacity-60 lg:text-[38px] lg:tracking-[-0.76px] mb-[12px]">
                         {work.title}
                       </h3>
 
