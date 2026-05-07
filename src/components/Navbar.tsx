@@ -128,22 +128,12 @@ export default function Navbar() {
           <button
             type="button"
             onClick={toggleChat}
-            className={`group relative overflow-hidden flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] h-[42px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
-                isOpen ? "bg-grape" : "bg-blackcurrant hover:bg-grape"
+            className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] h-[42px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
+                isOpen ? "bg-[#6E1687]" : "bg-blackcurrant hover:bg-[#6E1687]"
               }`}
           >
-            <div
-              className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100"
-              style={{ transition: "opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)" }}
-            >
-              <div className="absolute inset-0 pointer-events-none" style={{ borderRadius: "50%", background: "#6E1687", filter: "blur(20px)" }} />
-              <div className="absolute left-0 right-0 pointer-events-none" style={{ top: "10%", height: "50px", borderRadius: "50%", background: "rgba(180, 60, 220, 0.7)", filter: "blur(20px)" }} />
-              <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: "30px", borderRadius: "50%", background: "#9B20B8", filter: "blur(20px)" }} />
-            </div>
-            <span className="relative z-10 flex items-center gap-2">
-              <SparkleAiIcon size={16} />
-              ASH LLM
-            </span>
+            <SparkleAiIcon size={16} />
+            ASH LLM
           </button>
         </div>
 
@@ -152,22 +142,12 @@ export default function Navbar() {
           <button
             type="button"
             onClick={toggleChat}
-            className={`group relative overflow-hidden flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
-              isOpen ? "bg-grape" : "bg-blackcurrant hover:bg-grape"
+            className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
+              isOpen ? "bg-[#6E1687]" : "bg-blackcurrant hover:bg-[#6E1687]"
             }`}
           >
-            <div
-              className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100"
-              style={{ transition: "opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)" }}
-            >
-              <div className="absolute inset-0 pointer-events-none" style={{ borderRadius: "50%", background: "#6E1687", filter: "blur(20px)" }} />
-              <div className="absolute left-0 right-0 pointer-events-none" style={{ top: "10%", height: "50px", borderRadius: "50%", background: "rgba(180, 60, 220, 0.7)", filter: "blur(20px)" }} />
-              <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: "30px", borderRadius: "50%", background: "#9B20B8", filter: "blur(20px)" }} />
-            </div>
-            <span className="relative z-10 flex items-center gap-2">
-              <SparkleAiIcon size={16} />
-              ASH LLM
-            </span>
+            <SparkleAiIcon size={16} />
+            ASH LLM
           </button>
           <button
             className="flex items-center justify-center w-[38px] self-stretch rounded-full border-[0.5px] border-[#c8ccd4] bg-[rgba(30,5,37,0.08)] p-[4px] text-heading"
@@ -203,22 +183,12 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => { toggleChat(); setMenuOpen(false); }}
-              className={`group relative overflow-hidden w-full flex items-center justify-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[10px] rounded-[10px] transition-colors duration-200 cursor-pointer ${
-                isOpen ? "bg-grape" : "bg-blackcurrant hover:bg-grape"
+              className={`w-full flex items-center justify-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[10px] rounded-[10px] transition-colors duration-200 cursor-pointer ${
+                isOpen ? "bg-[#6E1687]" : "bg-blackcurrant hover:bg-[#6E1687]"
               }`}
             >
-              <div
-                className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100"
-                style={{ transition: "opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)" }}
-              >
-                <div className="absolute inset-0 pointer-events-none" style={{ borderRadius: "50%", background: "#6E1687", filter: "blur(20px)" }} />
-                <div className="absolute left-0 right-0 pointer-events-none" style={{ top: "10%", height: "50px", borderRadius: "50%", background: "rgba(180, 60, 220, 0.7)", filter: "blur(20px)" }} />
-                <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: "30px", borderRadius: "50%", background: "#9B20B8", filter: "blur(20px)" }} />
-              </div>
-              <span className="relative z-10 flex items-center gap-2">
-                <SparkleAiIcon size={16} />
-                ASH LLM
-              </span>
+              <SparkleAiIcon size={16} />
+              ASH LLM
             </button>
             <a
               href="/resume"
