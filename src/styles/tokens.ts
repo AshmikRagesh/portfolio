@@ -3,7 +3,7 @@ export const tokens = {
     primary:      "#1e0525",  // Midnight — dark hero/footer bg
     blackcurrant: "#32073e",  // CTA buttons, dark card bg
     grape:        "#895be7",  // Interactive accent, hover states
-    secondary:    "#6E1687",  // Secondary body text
+    secondary:    "#524555",  // Secondary body text
     background:   "#FFFFFF",  // Page background
     text:         "#1e0525",  // Primary text
     heading:      "#1e0525",  // Headings H1–H6
