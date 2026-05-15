@@ -1,7 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "mcp__claude_ai_Figma__get_design_context"
+      "mcp__claude_ai_Figma__get_design_context",
+      "Bash(npx tsc:*)",
+      "Bash(node:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)",
+      "Bash(curl -s http://localhost:3001)",
+      "Bash(git commit -m ' *)",
+      "WebFetch(domain:meganyap.me)",
+      "Bash(curl -s \"https://www.figma.com/api/mcp/asset/22927432-6372-48c0-a652-66574f18b3d7\" -o /Users/ashmikragesh/my-portfolio/public/images/extra-works-card.png)",
+      "Bash(git revert *)",
+      "Bash(git config *)",
+      "Bash(echo \"Config set: $\\(git config user.name\\) <$\\(git config user.email\\)>\")",
+      "mcp__Claude_Preview__preview_start"
     ]
   }
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Roboto_Slab, Inter, Nanum_Pen_Script } from "next/font/google";
+import { Geist_Mono, Roboto_Slab, Nanum_Pen_Script } from "next/font/google";
 import GlobalLayout from "@/components/GlobalLayout";
 import "./globals.css";
 
@@ -21,12 +21,6 @@ const nanumPen = Nanum_Pen_Script({
   weight: ["400"],
 });
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-ui",
-  weight: ["400", "500", "600", "700"],
-});
-
 export const metadata: Metadata = {
   title: "Ashmik Ragesh",
   description: "Creator that designs for creators.",
@@ -40,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistMono.variable} ${robotoSlab.variable} ${inter.variable} ${nanumPen.variable} bg-background text-text-base antialiased`}
+        className={`${geistMono.variable} ${robotoSlab.variable} ${nanumPen.variable} bg-background text-text-base antialiased`}
       >
         <GlobalLayout>{children}</GlobalLayout>
       </body>

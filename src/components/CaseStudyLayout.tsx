@@ -95,11 +95,17 @@ export default function CaseStudyLayout({
           </nav>
         </div>
 
-        {/* Back to top — pinned to bottom */}
+        {/* Back to top — pinned to bottom, hidden while in Overview, fades + slides in afterwards */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="flex items-center gap-2 font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-muted hover:text-heading hover:-translate-y-[3px] transition-all duration-200 mt-auto"
+          className={`flex items-center gap-2 font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-muted hover:text-heading hover:-translate-y-[3px] mt-auto transition-all duration-300 ${
+            activeId !== sections[0]?.id
+              ? "opacity-100 translate-y-0 pointer-events-auto"
+              : "opacity-0 translate-y-2 pointer-events-none"
+          }`}
           style={{ transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
+          aria-hidden={activeId === sections[0]?.id}
+          tabIndex={activeId === sections[0]?.id ? -1 : 0}
         >
           <ArrowUp size={13} strokeWidth={2} />
           Back to top

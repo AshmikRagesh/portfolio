@@ -129,7 +129,7 @@ export default function Navbar() {
             type="button"
             onClick={toggleChat}
             className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] h-[42px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
-                isOpen ? "bg-[#6E1687]" : "bg-blackcurrant hover:bg-[#6E1687]"
+                isOpen ? "bg-[#9D136A]" : "bg-blackcurrant hover:bg-[#9D136A]"
               }`}
           >
             <SparkleAiIcon size={16} />
@@ -143,7 +143,7 @@ export default function Navbar() {
             type="button"
             onClick={toggleChat}
             className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
-              isOpen ? "bg-[#6E1687]" : "bg-blackcurrant hover:bg-[#6E1687]"
+              isOpen ? "bg-[#9D136A]" : "bg-blackcurrant hover:bg-[#9D136A]"
             }`}
           >
             <SparkleAiIcon size={16} />
@@ -184,7 +184,7 @@ export default function Navbar() {
               type="button"
               onClick={() => { toggleChat(); setMenuOpen(false); }}
               className={`w-full flex items-center justify-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[10px] rounded-[10px] transition-colors duration-200 cursor-pointer ${
-                isOpen ? "bg-[#6E1687]" : "bg-blackcurrant hover:bg-[#6E1687]"
+                isOpen ? "bg-[#9D136A]" : "bg-blackcurrant hover:bg-[#9D136A]"
               }`}
             >
               <SparkleAiIcon size={16} />

@@ -99,7 +99,7 @@ export default function Footer() {
           <div
             className="absolute inset-0"
             style={{
-              background: "radial-gradient(ellipse 75% 100% at 50% 100%, rgba(162, 89, 255, 0.32) 0%, rgba(137, 91, 231, 0.12) 55%, transparent 72%)",
+              background: "radial-gradient(ellipse 75% 100% at 50% 100%, rgba(157, 19, 106, 0.18) 0%, rgba(157, 19, 106, 0.06) 55%, transparent 72%)",
               filter: "blur(32px)",
               animation: glowVisible ? "glow-breathe 3.2s ease-in-out infinite" : "none",
             }}

@@ -10,21 +10,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: tokens.colors.primary,
-        secondary: tokens.colors.secondary,
-        background: tokens.colors.background,
-        "text-base": tokens.colors.text,
-        heading: tokens.colors.heading,
-        muted: tokens.colors.muted,
-        accent: tokens.colors.accent,
+        primary:      tokens.colors.primary,
+        blackcurrant: tokens.colors.blackcurrant,
+        grape:        tokens.colors.grape,
+        secondary:    tokens.colors.secondary,
+        background:   tokens.colors.background,
+        "text-base":  tokens.colors.text,
+        heading:      tokens.colors.heading,
+        muted:        tokens.colors.muted,
+        accent:       tokens.colors.accent,
+        lilac:        tokens.colors.lilac,
+        pink:         tokens.colors.pink,
+        vanilla:      tokens.colors.vanilla,
       },
       fontFamily: {
         brand: [...tokens.fontFamily.brand],
         body: [...tokens.fontFamily.body],
         heading: [...tokens.fontFamily.heading],
-        ui: [...tokens.fontFamily.ui],
         handwriting: ["var(--font-handwriting)", "cursive"],
       },
+      // Cast: tokens.fontSize is `as const` (readonly), Tailwind expects mutable.
+      fontSize: tokens.fontSize as unknown as Record<
+        string,
+        [string, { lineHeight: string; letterSpacing?: string }]
+      >,
       borderRadius: {
         sm: tokens.borderRadius.sm,
         md: tokens.borderRadius.md,

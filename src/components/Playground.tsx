@@ -44,10 +44,10 @@ export default function Playground() {
     >
       {/* Header */}
       <div className="flex flex-col items-center gap-[14px] text-center">
-        <h2 className="font-heading font-normal text-[30px] leading-[1.2] tracking-[-0.38px] text-[#091624] md:text-[34px] lg:text-[38px] lg:leading-[42px]">
+        <h2 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.38px] text-heading md:text-[28px] lg:text-[32px] lg:leading-[40px]">
           Take a look at my latest stuff
         </h2>
-        <p className="font-body font-normal text-[16px] leading-[24px] tracking-[-0.5px] text-[#717379] max-w-[520px] lg:text-[20px] lg:leading-[28px] lg:tracking-[-0.9px] lg:max-w-[653px]">
+        <p className="font-body font-normal text-[16px] leading-[24px] tracking-[-0.5px] text-muted max-w-[520px] lg:text-[20px] lg:leading-[28px] lg:tracking-[-0.9px] lg:max-w-[653px]">
           I&apos;ve been creating some exciting projects lately; check out my latest works!
         </p>
       </div>

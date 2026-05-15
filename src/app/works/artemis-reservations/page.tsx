@@ -47,6 +47,26 @@ const THE_PROBLEM_IMAGE =
   "https://www.figma.com/api/mcp/asset/15b081d5-d594-4d46-9077-b5aed89ad07f";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Shared class strings (typography scale: Scale B / Expressive)
+// ─────────────────────────────────────────────────────────────────────────────
+const H1_CLASS    = "font-heading font-normal text-h1 md:text-h1-md lg:text-h1-lg text-heading";
+const H2_CLASS    = "font-heading font-normal text-h2 md:text-h2-md lg:text-h2-lg text-heading";
+const H3_CLASS    = "font-heading font-normal text-h3 md:text-h3-md lg:text-h3-lg text-heading";
+const H4_CLASS    = "font-heading font-normal text-h4 md:text-h4-md lg:text-h4-lg text-heading";
+const LEAD_CLASS  = "font-body font-normal text-lead md:text-lead-md lg:text-lead-lg text-muted";
+const BODY_CLASS  = "font-body font-normal text-body md:text-body-md lg:text-body-lg text-muted";
+
+// Numbered H3 (Process/Solution step titles). Pass num + title.
+function NumberedH3({ num, title }: { num: number; title: string }) {
+  return (
+    <h3 className={`${H3_CLASS} flex gap-[12px]`}>
+      <span aria-hidden="true">{num}.</span>
+      <span>{title}</span>
+    </h3>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Section: Overview  (text + contained image)
 // ─────────────────────────────────────────────────────────────────────────────
 function Overview() {
@@ -59,22 +79,22 @@ function Overview() {
         {/* Date annotation */}
         <div className="flex flex-col gap-5">
           <div className="-rotate-3 w-fit">
-            <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.15px] text-grape whitespace-nowrap md:text-[24px]">
+            <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.15px] text-grape whitespace-nowrap">
               {"< 08/11/2024 >"}
             </span>
           </div>
 
           {/* Title + subtitle */}
           <div className="flex flex-col gap-5">
-            <h1 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[40px] lg:tracking-[-1.6px]">
-              Streamlining the Reservations Module in Artemis 3.0: Saving Time
-              for Reservations Team
+            <h1 className={H1_CLASS}>
+              Giving the Reservations team back their time in Artemis 3.0
             </h1>
-            <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
-              Migrated the legacy Bookings UI from Artemis 2.0 into Artemis
-              3.0—introducing auto‑save, in‑app notifications, categorised
-              flights, and &apos;On Request&apos; status—reducing booking edit
-              time by ~25% and eliminating manual saves.
+            <p className={LEAD_CLASS}>
+              Redesigned the Reservations Bookings flow in Artemis 3.0 —
+              cutting task time by 35% and eliminating data-loss incidents for
+              the Reservations team. Replaced manual saves, ambiguous statuses,
+              and repetitive bulk-update flows with auto-save, in-app alerts,
+              and a streamlined modal-based workflow.
             </p>
           </div>
         </div>
@@ -142,12 +162,8 @@ function MyRole() {
       <div className="grid grid-cols-2 gap-x-8 gap-y-10 w-full md:gap-x-[48px] lg:grid-cols-4 lg:gap-x-[100px]">
         {columns.map(({ heading, content }) => (
           <div key={heading} className="flex flex-col gap-3">
-            <h2 className="font-heading font-normal text-[16px] leading-[1.2] tracking-[-0.64px] text-heading md:text-[18px] md:tracking-[-0.72px] lg:text-[24px] lg:leading-[1.2] lg:tracking-[-0.96px]">
-              {heading}
-            </h2>
-            <p className="font-body font-normal text-[14px] leading-[20px] text-muted md:text-[16px] md:leading-[24px] lg:text-[18px] lg:leading-[28px]">
-              {content}
-            </p>
+            <h4 className={H4_CLASS}>{heading}</h4>
+            <p className={BODY_CLASS}>{content}</p>
           </div>
         ))}
       </div>
@@ -166,10 +182,8 @@ function UnderstandingTheTool() {
     >
       <div className="flex flex-col gap-[48px] w-full">
         <div className="flex flex-col gap-6 md:gap-[24px]">
-          <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
-            Understanding the tool
-          </h3>
-          <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
+          <h2 className={H2_CLASS}>Understanding the tool</h2>
+          <p className={LEAD_CLASS}>
             Artemis is Enchanting Travels&apos; in-house planning and operations
             platform, used to design, manage, and execute highly customised trips
             across the world. Within it, the Reservations module is where backend
@@ -212,12 +226,10 @@ function Background() {
               </span>
             </div>
 
-            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
-              Reservations Module: Core of Artemis
-            </h3>
+            <h2 className={H2_CLASS}>Reservations Module: Core of Artemis</h2>
           </div>
 
-          <div className="flex flex-col gap-0 font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
+          <div className={`flex flex-col gap-0 ${LEAD_CLASS}`}>
             <p>
               The Reservations module is the heartbeat of Artemis, our internal
               platform used daily by Travel Consultants and Reservations teams.
@@ -273,13 +285,11 @@ function TheProblem() {
               </span>
             </div>
 
-            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
-              A System That Relied Too Much on Manual Effort
-            </h3>
+            <h2 className={H2_CLASS}>A System That Relied Too Much on Manual Effort</h2>
           </div>
 
           {/* Body */}
-          <div className="flex flex-col gap-4 font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
+          <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
             <p>
               Core workflows depended heavily on manual intervention. Users had
               to remember to save changes, coordinate bookings over email, and
@@ -311,13 +321,11 @@ function TheProblem() {
           {/* Heading row */}
           <div className="flex items-center gap-2 w-full">
             <SparkleAiIcon size={26} className="shrink-0 text-heading" />
-            <h4 className="font-heading font-normal text-[24px] leading-[1.1] tracking-[-0.96px] text-heading">
-              The Problem Statement
-            </h4>
+            <h3 className={H3_CLASS}>The Problem Statement</h3>
           </div>
 
           {/* Body */}
-          <p className="font-body font-normal text-[16px] leading-[24px] md:text-[18px] md:leading-[28px]">
+          <p className="font-body font-normal text-lead md:text-lead-md lg:text-lead-lg">
             <span className="text-secondary">
               Artemis Reservations depended on manual coordination for
               high-stakes booking workflows.{" "}
@@ -405,11 +413,9 @@ function Challenges() {
                 {"< Challenges >"}
               </span>
             </div>
-            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
-              Where the System Fell Short
-            </h3>
+            <h2 className={H2_CLASS}>Where the System Fell Short</h2>
           </div>
-          <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
+          <p className={LEAD_CLASS}>
             The Reservations module in Artemis 2.0 had become a daily friction
             point for users. Feedback from Reservations Consultants and Travel
             Consultants highlighted recurring pain areas.
@@ -434,12 +440,8 @@ function Challenges() {
                 >
                   <div className="shrink-0">{icon}</div>
                   <div className="flex flex-col gap-3">
-                    <h4 className="font-heading font-normal text-[18px] leading-[1.1] tracking-[-0.72px] text-heading lg:text-[24px] lg:tracking-[-0.96px]">
-                      {title}
-                    </h4>
-                    <p className="font-body font-normal text-[14px] leading-[20px] text-muted lg:text-[16px] lg:leading-[24px]">
-                      {description}
-                    </p>
+                    <h4 className={H4_CLASS}>{title}</h4>
+                    <p className={BODY_CLASS}>{description}</p>
                   </div>
                 </div>
               ))}
@@ -469,11 +471,9 @@ function Process() {
                 {"< Process >"}
               </span>
             </div>
-            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
-              From v0 Prototype to High-Fidelity Designs
-            </h3>
+            <h2 className={H2_CLASS}>From v0 Prototype to High-Fidelity Designs</h2>
           </div>
-          <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
+          <p className={LEAD_CLASS}>
             We shipped the improved booking workflow using a phased approach. We
             experimented with handing off the AI-generated v0 prototype directly
             to engineering, which seemed efficient since it was already
@@ -485,13 +485,9 @@ function Process() {
         {/* Step 1 */}
         <div className="flex flex-col gap-10 md:gap-[48px]">
           <div className="flex flex-col gap-5 md:gap-[24px]">
-            <ol className="list-decimal">
-              <li className="ms-[36px] font-heading font-normal text-[18px] leading-[1.2] tracking-[-0.72px] text-heading md:text-[24px] md:tracking-[-0.96px] lg:text-[24px] lg:tracking-[-0.96px]">
-                From v0 Prototype to High-Fidelity Designs
-              </li>
-            </ol>
+            <NumberedH3 num={1} title="From v0 Prototype to High-Fidelity Designs" />
 
-            <div className="flex flex-col gap-4 font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
+            <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
               <p>
                 Our first step was to build a functional low-fidelity prototype
                 using Vercel V0 — a code-first prototyping tool that allowed us
@@ -539,15 +535,11 @@ function Process() {
         {/* Step 2 */}
         <div className="flex flex-col gap-10 md:gap-[48px]">
           <div className="flex flex-col gap-5 md:gap-[24px]">
-            <ol start={2} className="list-decimal">
-              <li className="ms-[36px] font-heading font-normal text-[18px] leading-[1.2] tracking-[-0.72px] text-heading md:text-[24px] md:tracking-[-0.96px] lg:text-[24px] lg:tracking-[-0.96px]">
-                Iterative Feedback and Refinement
-              </li>
-            </ol>
+            <NumberedH3 num={2} title="Iterative Feedback and Refinement" />
 
-            <div className="flex flex-col gap-4 font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
+            <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
               <div>
-                <p className="font-medium text-heading">Activities:</p>
+                <p className="font-semibold text-heading">Activities:</p>
                 <ul className="list-disc mt-1">
                   <li className="ms-[27px]">
                     Conducted internal review sessions with ResCos, TCs, and
@@ -659,11 +651,11 @@ function Solution() {
                 {"< Solution >"}
               </span>
             </div>
-            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
+            <h2 className={H2_CLASS}>
               Redesigning Bookings to Enable Speed, Clarity &amp; Confidence
-            </h3>
+            </h2>
           </div>
-          <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
+          <p className={LEAD_CLASS}>
             Our redesign focused on directly addressing the five major user challenges identified
             through interviews and observation. Each solution was anchored in simplifying core
             workflows while preserving familiar patterns to minimise relearning effort.
@@ -674,14 +666,8 @@ function Solution() {
         {SOLUTION_ITEMS.map(({ num, title, body, impact }) => (
           <div key={num} className="flex flex-col gap-10 md:gap-[48px]">
             <div className="flex flex-col gap-5 md:gap-[24px]">
-              <ol start={num} className="list-decimal">
-                <li className="ms-[36px] font-heading font-normal text-[18px] leading-[1.2] tracking-[-0.72px] text-heading md:text-[24px] md:tracking-[-0.96px] lg:text-[24px] lg:tracking-[-0.96px]">
-                  {title}
-                </li>
-              </ol>
-              <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
-                {body}
-              </p>
+              <NumberedH3 num={num} title={title} />
+              <p className={LEAD_CLASS}>{body}</p>
             </div>
 
             <div className="flex flex-col gap-5 md:gap-[24px]">
@@ -694,7 +680,7 @@ function Solution() {
                   unoptimized
                 />
               </div>
-              <p className="font-body font-normal text-[12px] leading-[20px] text-[#4caf50] text-center uppercase md:text-[14px] md:leading-[20px] lg:text-[14px] lg:leading-[20px]">
+              <p className="font-body font-normal text-caption md:text-caption-md lg:text-caption-lg text-[#4caf50] text-center uppercase">
                 {impact}
               </p>
             </div>
@@ -769,11 +755,9 @@ function Impact() {
                 {"< Impact >"}
               </span>
             </div>
-            <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
-              Measuring the Outcomes That Mattered
-            </h3>
+            <h2 className={H2_CLASS}>Measuring the Outcomes That Mattered</h2>
           </div>
-          <p className="font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
+          <p className={LEAD_CLASS}>
             The redesigned Bookings module in Artemis 3.0 delivered measurable improvements across
             both user experience and operational efficiency.
           </p>
@@ -781,9 +765,7 @@ function Impact() {
 
         {/* Metric cards */}
         <div className="flex flex-col gap-5 md:gap-[24px]">
-          <h4 className="font-heading font-normal text-[18px] leading-[1.2] tracking-[-0.72px] text-heading md:text-[24px] md:tracking-[-0.96px] lg:text-[24px] lg:tracking-[-0.96px]">
-            Quantitative Outcomes
-          </h4>
+          <h3 className={H3_CLASS}>Quantitative Outcomes</h3>
 
           <div className="flex flex-col gap-4 md:gap-[24px]">
             {METRIC_ROWS.map((row, rowIdx) => (
@@ -804,12 +786,12 @@ function Impact() {
                       <TrendUpArrow />
                     </div>
                     <div className="flex flex-col gap-3">
-                      <p className="font-body font-normal text-[14px] leading-[1.5] text-secondary lg:text-[16px] lg:leading-[24px]">
+                      <p className="font-body font-normal text-body md:text-body-md lg:text-body-lg text-secondary">
                         {label}
                       </p>
-                      <h4 className="font-heading font-medium text-[44px] leading-[1.1] tracking-[-1.76px] text-heading">
+                      <span className="font-heading font-medium text-stat md:text-stat-md lg:text-stat-lg text-heading">
                         {stat}
-                      </h4>
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -839,13 +821,11 @@ function Reflection() {
               {"< Reflection >"}
             </span>
           </div>
-          <h3 className="font-heading font-normal text-[24px] leading-[1.2] tracking-[-0.96px] text-heading md:text-[30px] md:tracking-[-1.2px] lg:text-[30px] lg:tracking-[-1.2px]">
-            What I learned
-          </h3>
+          <h2 className={H2_CLASS}>What I learned</h2>
         </div>
 
         {/* Body */}
-        <div className="flex flex-col gap-4 font-body font-normal text-[16px] leading-[24px] text-muted md:text-[18px] md:leading-[28px] lg:text-[18px] lg:leading-[28px]">
+        <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
           <p>
             Redesigning the Reservations module reinforced the importance of deep workflow
             empathy — understanding not just what users do, but why they do it that way.
