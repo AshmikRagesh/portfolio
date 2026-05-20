@@ -3,8 +3,11 @@
   "configurations": [
     {
       "name": "portfolio",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy; PATH=/opt/homebrew/bin:$PATH npm run dev"
+      ],
       "port": 3000
     }
   ]
