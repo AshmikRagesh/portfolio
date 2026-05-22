@@ -1,17 +1,34 @@
 export const tokens = {
   colors: {
-    primary:      "#1e0525",  // Midnight — dark hero/footer bg
-    blackcurrant: "#32073e",  // CTA buttons, dark card bg
-    grape:        "#9D136A",  // Interactive accent, hover states
-    secondary:    "#524555",  // Secondary body text
-    background:   "#FFFFFF",  // Page background
-    text:         "#1e0525",  // Primary text
-    heading:      "#1e0525",  // Headings H1–H6
-    muted:        "#8e8292",  // Labels, captions, tags
-    accent:       "#9D136A",  // Grape — links, interactive
-    lilac:        "#d0b8ff",  // Light purple accents
-    pink:         "#f8c2f7",  // Soft bg tints, gradients
-    vanilla:      "#ece5d8",  // Warm off-white surface
+    // ── Brand ─────────────────────────────────────────────────────────
+    primary:        "#32073e",  // Blackcurrant — CTAs, badges, tags, shipped pill
+    midnight:       "#1e0525",  // Deep dark — footer, reel hero, modal bg
+    grape:          "#9D136A",  // Interactive accent, hover, handwritten tags
+    "grape-light":  "#F9E4FF",  // Soft purple — light accents, active nav (was lilac)
+
+    // ── Text ──────────────────────────────────────────────────────────
+    text:           "#1e0525",  // Primary body text
+    heading:        "#1e0525",  // Headings H1–H6
+    secondary:      "#524555",  // Secondary body text
+    muted:          "#8e8292",  // Labels, captions, eyebrows
+
+    // ── Surfaces ──────────────────────────────────────────────────────
+    background:     "#FFFFFF",  // Page background
+    surface:        "#f8f9fa",  // Light cards, sidebar bg
+    placeholder:    "#f0f0f0",  // Image placeholder bg
+    vanilla:        "#ece5d8",  // Warm alternative surface
+
+    // ── Lines / borders ───────────────────────────────────────────────
+    "line-soft":    "#edf0f3",  // Subtle dividers
+    line:           "#c8ccd4",  // Image borders, stronger dividers
+
+    // ── Soft accents ──────────────────────────────────────────────────
+    pink:           "#f8c2f7",  // Soft pink tints
+
+    // ── Status ────────────────────────────────────────────────────────
+    success:        "#0E9A49",  // Positive — pros, trend arrows
+    "success-bg":   "#e7f8f2",  // Light success bg (Impact metric cards)
+    warning:        "#c5444a",  // Negative — cons, alerts
   },
   fontFamily: {
     // Geist Mono — nav links, CTA chips (loaded via next/font/google in layout.tsx)

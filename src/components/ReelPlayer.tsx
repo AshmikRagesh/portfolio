@@ -88,7 +88,7 @@ export default function ReelPlayer() {
         onKeyDown={(e) => e.key === "Enter" && setExpanded(true)}
       >
         {/* Navy bezel frame */}
-        <div className="bg-blackcurrant p-[4px] rounded-[8px] shadow-[0_8px_32px_rgba(0,0,0,0.32)]">
+        <div className="bg-primary p-[4px] rounded-[8px] shadow-[0_8px_32px_rgba(0,0,0,0.32)]">
           <div className="relative w-[102px] h-[180px] rounded-[6px] overflow-hidden bg-black">
             <iframe
               key={index}
@@ -115,7 +115,7 @@ export default function ReelPlayer() {
 
       {/* ── Expanded overlay ── */}
       {expanded && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-primary px-4 py-10">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-midnight px-4 py-10">
           {/* Full-width flex row: video column (flex-1, centered) + right column (close + nav) */}
           <div
             className="flex items-center w-full h-full"

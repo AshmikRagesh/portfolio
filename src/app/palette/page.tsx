@@ -39,12 +39,12 @@ const groups = [...new Set(swatches.map((s) => s.group))];
 export default function PalettePage() {
   return (
     <div className="min-h-screen bg-white p-10 font-sans">
-      <h1 className="text-2xl font-bold mb-1 text-[#1e0525]">Colour Palette</h1>
-      <p className="text-sm text-[#8e8292] mb-10">All colours used in the portfolio site</p>
+      <h1 className="text-2xl font-bold mb-1 text-midnight">Colour Palette</h1>
+      <p className="text-sm text-muted mb-10">All colours used in the portfolio site</p>
 
       {groups.map((group) => (
         <div key={group} className="mb-10">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-[#8e8292] mb-4">{group}</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-muted mb-4">{group}</h2>
           <div className="flex flex-wrap gap-4">
             {swatches.filter((s) => s.group === group).map((s) => (
               <div key={s.name} className="flex flex-col gap-2 w-[160px]">
@@ -53,9 +53,9 @@ export default function PalettePage() {
                   style={{ background: s.bg }}
                 />
                 <div>
-                  <p className="text-[13px] font-semibold text-[#1e0525]">{s.name}</p>
-                  <p className="text-[12px] text-[#8e8292] font-mono">{s.bg}</p>
-                  <p className="text-[11px] text-[#8e8292] mt-0.5 leading-tight">{s.label}</p>
+                  <p className="text-[13px] font-semibold text-midnight">{s.name}</p>
+                  <p className="text-[12px] text-muted font-mono">{s.bg}</p>
+                  <p className="text-[11px] text-muted mt-0.5 leading-tight">{s.label}</p>
                 </div>
               </div>
             ))}
@@ -64,18 +64,18 @@ export default function PalettePage() {
       ))}
 
       <div className="mb-10">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-[#8e8292] mb-4">Hover State Pairs</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted mb-4">Hover State Pairs</h2>
         <div className="flex flex-col gap-4">
           {hoverPairs.map((p) => (
             <div key={p.label} className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-[48px] h-[48px] rounded-[8px] border border-black/8 shadow-sm" style={{ background: p.base }} />
-                <span className="text-[#8e8292] text-lg">→</span>
+                <span className="text-muted text-lg">→</span>
                 <div className="w-[48px] h-[48px] rounded-[8px] border border-black/8 shadow-sm" style={{ background: p.hover.split(" ")[0] }} />
               </div>
               <div>
-                <p className="text-[13px] font-semibold text-[#1e0525]">{p.label}</p>
-                <p className="text-[11px] text-[#8e8292] font-mono">{p.base} → {p.hover}</p>
+                <p className="text-[13px] font-semibold text-midnight">{p.label}</p>
+                <p className="text-[11px] text-muted font-mono">{p.base} → {p.hover}</p>
               </div>
             </div>
           ))}

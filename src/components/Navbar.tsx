@@ -48,7 +48,7 @@ function NavTimer() {
 
       {/* Tooltip — centered on the fixed-width container */}
       <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-        <div className="flex items-center gap-[6px] bg-blackcurrant rounded px-2 py-[6px] whitespace-nowrap">
+        <div className="flex items-center gap-[6px] bg-primary rounded px-2 py-[6px] whitespace-nowrap">
           <img src="/icons/clock-filled.svg" alt="" width={14} height={14} className="shrink-0" />
           <span className="font-brand font-medium text-[12px] text-white tracking-[-0.06px]">
             Measuring your curiosity
@@ -82,7 +82,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed ${isCaseStudy ? "top-0" : "top-[28px]"} left-0 h-[68px] z-50 bg-background border-b border-[#c8ccd4] transition-[right,box-shadow] duration-300 ease-in-out ${
+      className={`fixed ${isCaseStudy ? "top-0" : "top-[28px]"} left-0 h-[68px] z-50 bg-background border-b border-line transition-[right,box-shadow] duration-300 ease-in-out ${
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
       } ${isOpen ? "lg:right-[400px] right-0" : "right-0"}`}
     >
@@ -129,7 +129,7 @@ export default function Navbar() {
             type="button"
             onClick={toggleChat}
             className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] h-[42px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
-                isOpen ? "bg-[#9D136A]" : "bg-blackcurrant hover:bg-[#9D136A]"
+                isOpen ? "bg-grape" : "bg-primary hover:bg-grape"
               }`}
           >
             <SparkleAiIcon size={16} />
@@ -143,14 +143,14 @@ export default function Navbar() {
             type="button"
             onClick={toggleChat}
             className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
-              isOpen ? "bg-[#9D136A]" : "bg-blackcurrant hover:bg-[#9D136A]"
+              isOpen ? "bg-grape" : "bg-primary hover:bg-grape"
             }`}
           >
             <SparkleAiIcon size={16} />
             ASH LLM
           </button>
           <button
-            className="flex items-center justify-center w-[38px] self-stretch rounded-full border-[0.5px] border-[#c8ccd4] bg-[rgba(30,5,37,0.08)] p-[4px] text-heading"
+            className="flex items-center justify-center w-[38px] self-stretch rounded-full border-[0.5px] border-line bg-[rgba(30,5,37,0.08)] p-[4px] text-heading"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
           >
@@ -161,11 +161,11 @@ export default function Navbar() {
 
       {/* Mobile drawer */}
       {menuOpen && (
-        <div className="md:hidden bg-background border-b border-[#c8ccd4]">
+        <div className="md:hidden bg-background border-b border-line">
           {/* Nav items — each with a bottom divider */}
           <ul>
             {navLinks.map(({ label, href, Icon }) => (
-              <li key={label} className="border-b border-[#e8eaed]">
+              <li key={label} className="border-b border-line-soft">
                 <a
                   href={href}
                   className="flex items-center gap-3 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] px-[20px] py-5 transition-colors duration-200 hover:text-black"
@@ -184,7 +184,7 @@ export default function Navbar() {
               type="button"
               onClick={() => { toggleChat(); setMenuOpen(false); }}
               className={`w-full flex items-center justify-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[10px] rounded-[10px] transition-colors duration-200 cursor-pointer ${
-                isOpen ? "bg-[#9D136A]" : "bg-blackcurrant hover:bg-[#9D136A]"
+                isOpen ? "bg-grape" : "bg-primary hover:bg-grape"
               }`}
             >
               <SparkleAiIcon size={16} />
@@ -192,7 +192,7 @@ export default function Navbar() {
             </button>
             <a
               href="/resume"
-              className="w-full flex items-center justify-center font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[10px] rounded-[10px] border border-[#c8ccd4] text-secondary hover:border-secondary transition-colors duration-200"
+              className="w-full flex items-center justify-center font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[10px] rounded-[10px] border border-line text-secondary hover:border-secondary transition-colors duration-200"
             >
               Resume
             </a>

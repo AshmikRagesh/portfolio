@@ -72,7 +72,7 @@ export default function CaseStudyLayout({
         </Link>
 
         {/* Nav card — no header */}
-        <div className="bg-[#f8f9fa] border border-[#edf0f3] rounded-[12px] p-3">
+        <div className="bg-surface border border-line-soft rounded-[12px] p-3">
           <nav className="flex flex-col gap-[2px]">
             {sections.map(({ id, label }, i) => (
               <button
@@ -80,8 +80,8 @@ export default function CaseStudyLayout({
                 onClick={() => scrollTo(id)}
                 className={`text-left w-full flex items-baseline gap-[8px] px-2 py-[7px] rounded-[8px] transition-colors duration-150 ease-in-out ${
                   activeId === id
-                    ? "bg-lilac/30 text-heading"
-                    : "text-muted hover:text-heading hover:bg-lilac/20"
+                    ? "bg-grape-light text-heading"
+                    : "text-muted hover:text-heading hover:bg-grape-light/50"
                 }`}
               >
                 <span className="font-body text-[13px] shrink-0 leading-none">
@@ -116,7 +116,7 @@ export default function CaseStudyLayout({
       <main className="flex-1 min-w-0">
 
         {/* Mobile sticky nav — section tabs only (back is in the navbar) */}
-        <div className="lg:hidden sticky top-[68px] z-30 bg-white border-b border-[#e8eaed]">
+        <div className="lg:hidden sticky top-[68px] z-30 bg-white border-b border-line-soft">
           <div className="flex overflow-x-auto gap-6 px-5 py-2 scrollbar-hide">
             {sections.map(({ id, label }) => (
               <button

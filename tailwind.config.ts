@@ -10,18 +10,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary:      tokens.colors.primary,
-        blackcurrant: tokens.colors.blackcurrant,
-        grape:        tokens.colors.grape,
-        secondary:    tokens.colors.secondary,
-        background:   tokens.colors.background,
-        "text-base":  tokens.colors.text,
-        heading:      tokens.colors.heading,
-        muted:        tokens.colors.muted,
-        accent:       tokens.colors.accent,
-        lilac:        tokens.colors.lilac,
-        pink:         tokens.colors.pink,
-        vanilla:      tokens.colors.vanilla,
+        // Brand
+        primary:       tokens.colors.primary,
+        midnight:      tokens.colors.midnight,
+        grape:         tokens.colors.grape,
+        "grape-light": tokens.colors["grape-light"],
+        // Text
+        "text-base":   tokens.colors.text,
+        heading:       tokens.colors.heading,
+        secondary:     tokens.colors.secondary,
+        muted:         tokens.colors.muted,
+        // Surfaces
+        background:    tokens.colors.background,
+        surface:       tokens.colors.surface,
+        placeholder:   tokens.colors.placeholder,
+        vanilla:       tokens.colors.vanilla,
+        // Lines
+        "line-soft":   tokens.colors["line-soft"],
+        line:          tokens.colors.line,
+        // Soft accents
+        pink:          tokens.colors.pink,
+        // Status
+        success:       tokens.colors.success,
+        "success-bg":  tokens.colors["success-bg"],
+        warning:       tokens.colors.warning,
       },
       fontFamily: {
         brand: [...tokens.fontFamily.brand],

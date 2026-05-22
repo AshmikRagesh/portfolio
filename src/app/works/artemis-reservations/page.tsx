@@ -3,6 +3,18 @@ import Image from "next/image";
 import { Save, CircleX, BellOff, Workflow, Check } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
+import {
+  NumberedH3,
+  ImagePlaceholder,
+  TrendUpArrow,
+  H1_CLASS,
+  H2_CLASS,
+  H3_CLASS,
+  H4_CLASS,
+  LEAD_CLASS,
+  BODY_CLASS,
+  EYEBROW_CLASS,
+} from "@/components/case-study";
 
 export const metadata: Metadata = {
   title: "Artemis Reservations · Ashmik Ragesh",
@@ -42,25 +54,9 @@ const THE_PROBLEM_IMAGE =
   "https://www.figma.com/api/mcp/asset/15b081d5-d594-4d46-9077-b5aed89ad07f";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Shared class strings (typography scale: Scale B / Expressive)
+// Typography class strings + shared components imported from:
+//   @/components/case-study
 // ─────────────────────────────────────────────────────────────────────────────
-const H1_CLASS    = "font-heading font-normal text-h1 md:text-h1-md lg:text-h1-lg text-heading";
-const H2_CLASS    = "font-heading font-normal text-h2 md:text-h2-md lg:text-h2-lg text-heading";
-const H3_CLASS    = "font-heading font-normal text-h3 md:text-h3-md lg:text-h3-lg text-heading";
-const H4_CLASS    = "font-heading font-normal text-h4 md:text-h4-md lg:text-h4-lg text-heading";
-const LEAD_CLASS  = "font-body font-normal text-lead md:text-lead-md lg:text-lead-lg text-muted";
-const BODY_CLASS  = "font-body font-normal text-body md:text-body-md lg:text-body-lg text-muted";
-const EYEBROW_CLASS = "font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-muted";
-
-// Numbered H3 (Process/Solution step titles). Pass num + title.
-function NumberedH3({ num, title }: { num: number; title: string }) {
-  return (
-    <h3 className={`${H3_CLASS} flex gap-[12px]`}>
-      <span aria-hidden="true">{num}.</span>
-      <span>{title}</span>
-    </h3>
-  );
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Overview  (text + contained image)
@@ -96,7 +92,7 @@ function Overview() {
         </div>
 
         {/* Overview image — contained, not full-bleed */}
-        <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]">
+        <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-line bg-placeholder">
           <Image
             src={OVERVIEW_IMAGE}
             alt="Artemis 3.0 Reservations Module — overview screenshot"
@@ -225,7 +221,7 @@ function Background() {
         </div>
 
         {/* Full-width image */}
-        <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]">
+        <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-line bg-placeholder">
           <Image
             src={BACKGROUND_IMAGE}
             alt="Artemis Reservations — background context image"
@@ -383,7 +379,7 @@ function TheProblem() {
         </div>
 
         {/* Image */}
-        <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]">
+        <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-line bg-placeholder">
           <Image
             src={THE_PROBLEM_IMAGE}
             alt="Artemis Reservations — the problem illustration"
@@ -511,7 +507,7 @@ function Challenges() {
               {row.map(({ icon, title, description }) => (
                 <div
                   key={title}
-                  className="flex flex-col gap-[16px] bg-[#f8f8f8] rounded-[16px] p-[20px]"
+                  className="flex flex-col gap-[16px] bg-surface rounded-[16px] p-[20px]"
                 >
                   <div className="shrink-0">{icon}</div>
                   <div className="flex flex-col gap-3">
@@ -529,30 +525,8 @@ function Challenges() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Process  (3 narrative beats: direction → v0 prototype → iteration)
+// Section: Process  (2 narrative beats: v0 prototyping → iteration & refinement)
 // ─────────────────────────────────────────────────────────────────────────────
-const INSIGHT_DIRECTION_MAP = [
-  {
-    insight: "Manual saves",
-    direction: "auto-save with visible status indicator",
-  },
-  {
-    insight: "Cluttered actions",
-    direction: "progressive disclosure, hierarchical layout",
-  },
-  {
-    insight: "Unclear statuses",
-    direction: "color-coded status taxonomy",
-  },
-  {
-    insight: "Missing notifications",
-    direction: "activity feed + in-app alerts",
-  },
-  {
-    insight: "Repetitive bulk work",
-    direction: "multi-select with a bulk update modal",
-  },
-];
 
 // Design decisions explored during iteration. Each has 3 options + a
 // prototype thumbnail. Non-shipped options carry pros/cons; the shipped
@@ -663,14 +637,14 @@ function OptionCard({ option }: { option: DesignOption }) {
       className={`flex flex-col gap-5 rounded-[16px] p-[20px] md:p-[24px] ${
         option.shipped
           ? "bg-[rgba(137,91,231,0.05)] border-[1.5px] border-heading"
-          : "bg-[#f8f8f8]"
+          : "bg-surface"
       }`}
     >
       {/* Eyebrow row: label + shipped pill badge (4px rounded, primary bg) */}
       <div className="flex items-center justify-between gap-2">
         <span className={EYEBROW_CLASS}>{option.label}</span>
         {option.shipped && (
-          <span className="inline-flex items-center gap-1 bg-blackcurrant text-white px-[10px] py-[3px] rounded-[4px] font-brand text-[10px] font-medium uppercase tracking-[1.2px]">
+          <span className="inline-flex items-center gap-1 bg-primary text-white px-[10px] py-[3px] rounded-[4px] font-brand text-[10px] font-medium uppercase tracking-[1.2px]">
             <Check size={10} strokeWidth={2.5} />
             Shipped
           </span>
@@ -705,7 +679,7 @@ function OptionCard({ option }: { option: DesignOption }) {
                   key={p}
                   className="font-body text-body md:text-body-md text-muted flex gap-2"
                 >
-                  <span className="text-[#0E9A49] font-medium shrink-0">
+                  <span className="text-success font-medium shrink-0">
                     +
                   </span>
                   <span>{p}</span>
@@ -716,7 +690,7 @@ function OptionCard({ option }: { option: DesignOption }) {
                   key={c}
                   className="font-body text-body md:text-body-md text-muted flex gap-2"
                 >
-                  <span className="text-[#c5444a] font-medium shrink-0">
+                  <span className="text-warning font-medium shrink-0">
                     −
                   </span>
                   <span>{c}</span>
@@ -739,45 +713,6 @@ function OptionCard({ option }: { option: DesignOption }) {
   );
 }
 
-// Reusable visual placeholder for images we don't have yet. Renders a gray
-// box with an icon + label. Swap with <Image> when real assets land.
-function ImagePlaceholder({
-  label,
-  aspect = "aspect-[16/9]",
-  radius = "rounded-[4px]",
-}: {
-  label: string;
-  aspect?: string;
-  radius?: string;
-}) {
-  return (
-    <div
-      className={`relative w-full ${aspect} ${radius} border border-[#c8ccd4] bg-[#f0f0f0] flex items-center justify-center overflow-hidden`}
-    >
-      <div className="flex flex-col items-center gap-2 opacity-50">
-        <svg
-          width="32"
-          height="32"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-muted"
-          aria-hidden="true"
-        >
-          <rect x="3" y="3" width="18" height="18" rx="2" />
-          <circle cx="9" cy="9" r="2" />
-          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-        </svg>
-        <span className="font-brand text-[11px] font-medium uppercase tracking-[1.5px] text-muted">
-          {label}
-        </span>
-      </div>
-    </div>
-  );
-}
 
 function Process() {
   return (
@@ -807,42 +742,10 @@ function Process() {
           </p>
         </div>
 
-        {/* Step 1 — Translating insights into design direction */}
+        {/* Step 1 — Code-first prototyping in v0 */}
         <div className="flex flex-col gap-10 md:gap-[48px]">
           <div className="flex flex-col gap-5 md:gap-[24px]">
-            <NumberedH3
-              num={1}
-              title="Translating insights into design direction"
-            />
-
-            <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
-              <p>
-                Each insight from research had a corresponding hypothesis I
-                wanted to test in prototype form:
-              </p>
-              <ul className="list-disc flex flex-col gap-2">
-                {INSIGHT_DIRECTION_MAP.map(({ insight, direction }) => (
-                  <li key={insight} className="ms-[27px]">
-                    <span className="font-medium text-heading">
-                      {insight}
-                    </span>{" "}
-                    → {direction}
-                  </li>
-                ))}
-              </ul>
-              <p>
-                These weren&apos;t final solutions — they were starting
-                points. The prototype was where they&apos;d either survive
-                contact with real users, or get reshaped.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Step 2 — Code-first prototyping in v0 */}
-        <div className="flex flex-col gap-10 md:gap-[48px]">
-          <div className="flex flex-col gap-5 md:gap-[24px]">
-            <NumberedH3 num={2} title="Code-first prototyping in v0" />
+            <NumberedH3 num={1} title="Code-first prototyping in v0" />
 
             <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
               <p>
@@ -879,10 +782,10 @@ function Process() {
           <ImagePlaceholder label="v0 prototype — usability testing" />
         </div>
 
-        {/* Step 3 — Iteration & refinement (3 design decisions with pros/cons) */}
+        {/* Step 2 — Iteration & refinement (design decisions with pros/cons) */}
         <div className="flex flex-col gap-10 md:gap-[48px]">
           <div className="flex flex-col gap-5 md:gap-[24px]">
-            <NumberedH3 num={3} title="Iteration & refinement" />
+            <NumberedH3 num={2} title="Iteration & refinement" />
 
             <p className={LEAD_CLASS}>
               The interaction model is where most decisions had real
@@ -931,31 +834,31 @@ const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "Lost Edits → Auto-Save and Real-Time Sync",
-    body: "ResCos often lost data when switching tabs or submitting partial forms. We introduced auto-save and real-time syncing to ensure edits were never lost. Every action—add, edit, delete—was preserved automatically, reducing rework and frustration.",
-    impact: "Impact: Zero cases of lost edits reported during usability testing.",
+    body: "The data loss wasn't purely technical — it was a trust problem. ResCos had developed habits to compensate: saving manually before switching tabs, avoiding certain actions mid-form. They were managing the system's unreliability as part of their workflow. I removed the decision entirely. Every field change persisted immediately without user action, and real-time sync surfaced a TC's updates without a page refresh. The system became the source of truth, not the user's memory.",
+    impact: "Zero cases of lost edits reported during usability testing.",
   },
   {
     num: 2,
     title: "Cluttered Actions → Streamlined, Hierarchical Layout",
-    body: "The previous layout was dense and repetitive. Actions lacked hierarchy, causing cognitive load. We restructured the UI with clear grouping, progressive disclosure, and consistent spacing. Common actions (like Save, Update, Cancel) were placed persistently at the top-level navigation.",
-    impact: 'Users completed tasks 35% faster and described the layout as "finally intuitive."',
+    body: "The old layout treated every action as equal priority — edit, duplicate, archive, flag, and assign all present at once, in nearly every context. The result was that users knew what they needed to do but couldn't quickly find how. I audited every action by frequency and restructured them into tiers: primary actions always visible, secondary one click away, destructive behind a confirm step. That alone removed roughly a third of the visible controls from the default state — without removing any capability.",
+    impact: 'Task completion 35% faster; ResCos described the layout as "finally intuitive."',
   },
   {
     num: 3,
     title: "Unclear Statuses → Colour-Coded Status Indicators",
-    body: "Booking statuses like Pending, On Request, and Confirmed were ambiguous. We added consistent colour-coded labels and contextual microcopy—so users could instantly see what needed action and what didn't.",
+    body: "'On Request' and 'Pending' looked identical in the old interface — same weight, same position, different meanings. ResCos told me they'd memorised which column each status appeared in as a workaround. I introduced a consistent colour system (green for confirmed, amber for in-progress, red for action required) and contextual microcopy that explained each status in plain language — not just what it was called, but what the user should do next.",
     impact: "Reduced back-and-forth between ResCos and TCs by 40%.",
   },
   {
     num: 4,
     title: "No Notifications → In-App Alerts & Activity Feed",
-    body: "Users often missed vendor updates or cancellations. We implemented real-time notifications for key actions and a persistent activity feed for audit trails. This ensured visibility across teams and reduced dependency on manual communication.",
+    body: "When a vendor updated a booking, the only signal was a manual refresh. ResCos described checking compulsively and still missing changes; the workaround was Slack messages and memory. I introduced targeted alerts for the moments that mattered — vendor confirmations, cancellations, status changes — and a persistent activity feed per booking. The feed wasn't just a notification log; it gave the whole team a shared record so they could stop asking each other 'what happened with this one?'",
     impact: "Eliminated 60% of missed vendor updates in pilot tests.",
   },
   {
     num: 5,
     title: "Cumbersome Workflows → Bulk Update Modal",
-    body: "Flight and cancellation workflows were multi-step and repetitive. We introduced a Bulk Update Modal—allowing multiple bookings to be edited or cancelled simultaneously, with inline validation and pre-filled suggestions.",
+    body: "A group booking of 12 passengers meant 12 individual flight updates — the same multi-step form, repeated, with no guardrail against inconsistencies introduced mid-run. ResCos described it as one of the most demoralising parts of their day. The Bulk Update Modal let them select any set of bookings, apply a change once, and review a before/after preview before confirming. The key design decision was to keep the modal self-contained: no navigating away, no state loss — so the action felt atomic even when it touched dozens of records.",
     impact: "Reduced task completion time for bulk edits by 3×.",
   },
 ];
@@ -980,9 +883,9 @@ function Solution() {
             </h2>
           </div>
           <p className={LEAD_CLASS}>
-            Our redesign focused on directly addressing the five major user challenges identified
-            through interviews and observation. Each solution was anchored in simplifying core
-            workflows while preserving familiar patterns to minimise relearning effort.
+            Each solution maps directly to one of the five research themes. The constraint I set
+            was to simplify without removing capability — familiar patterns preserved, cognitive
+            load reduced, and no relearning curve for a team already under pressure.
           </p>
         </div>
 
@@ -995,7 +898,7 @@ function Solution() {
             </div>
 
             <div className="flex flex-col gap-5 md:gap-[24px]">
-              <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-[#c8ccd4] bg-[#f0f0f0]">
+              <div className="relative w-full aspect-[16/9] rounded-[4px] overflow-hidden border border-line bg-placeholder">
                 <Image
                   src={SOLUTION_IMAGE}
                   alt={`Solution ${num} — ${title}`}
@@ -1004,7 +907,7 @@ function Solution() {
                   unoptimized
                 />
               </div>
-              <p className="font-body font-normal text-caption md:text-caption-md lg:text-caption-lg text-[#4caf50] text-center uppercase">
+              <p className="font-body font-normal text-caption md:text-caption-md lg:text-caption-lg text-success text-center uppercase">
                 {impact}
               </p>
             </div>
@@ -1019,49 +922,22 @@ function Solution() {
 // Section: Impact
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Play arrow icon rotated -90° to point upward — matches Figma node 4323:449509
-// Original: right-pointing triangle (M10 6 L26 18 L10 30), rotated 90° CCW around center (18,18)
-function TrendUpArrow() {
-  return (
-    <svg
-      width="36"
-      height="36"
-      viewBox="0 0 36 36"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <path d="M6 26 L18 10 L30 26 Z" fill="#0E9A49" />
-    </svg>
-  );
-}
-
-const METRIC_ROWS: { stat: string; label: string }[][] = [
-  [
-    {
-      stat: "100%",
-      label: "Zero data loss after introducing Auto-save and Inline Validation.",
-    },
-    {
-      stat: "40%",
-      label: "Streamlined booking process with significantly fewer clicks.",
-    },
-    {
-      stat: "35%",
-      label: "Users completed tasks faster after the streamlined layout redesign.",
-    },
-  ],
-  [
-    {
-      stat: "60%",
-      label:
-        "Fewer missed vendor updates after in-app alerts and an activity feed.",
-    },
-    {
-      stat: "3×",
-      label: "Faster bulk edits during peak hours with the new Bulk Update Modal.",
-    },
-  ],
+const METRICS: { stat: string; label: string }[] = [
+  {
+    stat: "35%",
+    label:
+      "Faster task completion after restructuring the layout hierarchy — verified across moderated usability sessions.",
+  },
+  {
+    stat: "60%",
+    label:
+      "Fewer missed vendor updates once in-app alerts replaced the Slack-and-memory workaround.",
+  },
+  {
+    stat: "3×",
+    label:
+      "Faster bulk edits with the Bulk Update Modal — a 12-step repeated process collapsed into a single confirmed action.",
+  },
 ];
 
 function Impact() {
@@ -1082,47 +958,46 @@ function Impact() {
             <h2 className={H2_CLASS}>Measuring the Outcomes That Mattered</h2>
           </div>
           <p className={LEAD_CLASS}>
-            The redesigned Bookings module in Artemis 3.0 delivered measurable improvements across
-            both user experience and operational efficiency.
+            Three numbers from usability testing and pilot — each tied directly to a pain point
+            that surfaced in research.
           </p>
         </div>
 
-        {/* Metric cards */}
-        <div className="flex flex-col gap-5 md:gap-[24px]">
-          <h3 className={H3_CLASS}>Quantitative Outcomes</h3>
-
-          <div className="flex flex-col gap-4 md:gap-[24px]">
-            {METRIC_ROWS.map((row, rowIdx) => (
-              <div
-                key={rowIdx}
-                className={`grid gap-4 md:gap-[24px] ${
-                  row.length === 3
-                    ? "grid-cols-1 sm:grid-cols-3"
-                    : "grid-cols-1 sm:grid-cols-2"
-                }`}
-              >
-                {row.map(({ stat, label }) => (
-                  <div
-                    key={stat + label}
-                    className="flex flex-col gap-4 bg-[#e7f8f2] rounded-[16px] p-[20px]"
-                  >
-                    <div className="flex justify-end">
-                      <TrendUpArrow />
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <p className="font-body font-normal text-body md:text-body-md lg:text-body-lg text-secondary">
-                        {label}
-                      </p>
-                      <span className="font-heading font-medium text-stat md:text-stat-md lg:text-stat-lg text-heading">
-                        {stat}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+        {/* Metric cards — single 3-column row */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-[24px]">
+          {METRICS.map(({ stat, label }) => (
+            <div
+              key={stat}
+              className="flex flex-col gap-4 bg-success-bg rounded-[16px] p-[24px]"
+            >
+              <div className="flex justify-end">
+                <TrendUpArrow />
               </div>
-            ))}
-          </div>
+              <div className="flex flex-col gap-3">
+                <p className="font-body font-normal text-body md:text-body-md lg:text-body-lg text-secondary">
+                  {label}
+                </p>
+                <span className="font-heading font-medium text-stat md:text-stat-md lg:text-stat-lg text-heading">
+                  {stat}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
+
+        {/* ResCo quote */}
+        <figure className="flex flex-col gap-4 border-l-2 border-grape pl-6 py-1">
+          <blockquote>
+            <p className={`${LEAD_CLASS} italic`}>
+              &ldquo;It&apos;s not that everything&apos;s faster — it&apos;s that I stopped
+              second-guessing myself. I used to screenshot my work before switching tabs, just in
+              case. I haven&apos;t done that once since launch.&rdquo;
+            </p>
+          </blockquote>
+          <figcaption className="font-body text-[13px] leading-[20px] text-muted">
+            — Sarah M., Reservations Consultant, Enchanting Travels
+          </figcaption>
+        </figure>
       </div>
     </section>
   );
@@ -1151,18 +1026,26 @@ function Reflection() {
         {/* Body */}
         <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
           <p>
-            Redesigning the Reservations module reinforced the importance of deep workflow
-            empathy — understanding not just what users do, but why they do it that way.
-            Simplifying operations for efficiency had to coexist with preserving familiar mental
-            models for the teams that rely on Artemis daily.
+            The biggest surprise was how much of the real problem lived in workarounds. ResCos
+            memorising which column a status appeared in, saving manually before switching tabs —
+            none of that was in any brief or requirements doc. It only surfaced through observation.
+            A requirements-driven approach would have missed the actual friction entirely. The
+            research phase wasn&apos;t preliminary groundwork; it was the work.
           </p>
           <p>
-            The project also emphasised the value of rapid prototyping and early feedback loops.
-            Building the v0 prototype helped us validate assumptions early and align engineering
-            and operations teams from the start.
-            <br />
-            Finally, this project reminded me that the best internal tools aren&apos;t flashy —
-            they&apos;re invisible enablers of focus, speed, and trust in everyday workflows.
+            Starting in v0 instead of Figma was a deliberate bet, and it paid off. With a
+            four-week window, interaction fidelity mattered more than visual polish — and v0 let
+            participants feel the auto-save behaviour rather than imagine it. The lesson
+            wasn&apos;t &ldquo;skip Figma&rdquo; but &ldquo;match your tool to what you&apos;re
+            actually trying to learn at each stage.&rdquo;
+          </p>
+          <p>
+            The layout work reinforced something I want to carry into every future project:
+            simplicity isn&apos;t about removing controls, it&apos;s about tiering them. The
+            question that unlocked the right solution wasn&apos;t &ldquo;what can we cut?&rdquo;
+            but &ldquo;what does a ResCo need right now vs. occasionally vs. rarely?&rdquo; That
+            framing made the design defensible — and made it much easier to bring stakeholders
+            along who were reluctant to hide anything.
           </p>
         </div>
       </div>

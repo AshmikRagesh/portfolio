@@ -40,7 +40,7 @@ export default function About() {
             </p>
             <Link
               href="#"
-              className="self-start bg-blackcurrant text-white font-brand font-medium text-[13px] tracking-[0.2px] px-5 py-[10px] rounded-full transition-colors duration-200 hover:bg-grape whitespace-nowrap"
+              className="self-start bg-primary text-white font-brand font-medium text-[13px] tracking-[0.2px] px-5 py-[10px] rounded-full transition-colors duration-200 hover:bg-grape whitespace-nowrap"
             >
               Learn more about Ashmik
             </Link>
