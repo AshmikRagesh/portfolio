@@ -29,9 +29,9 @@ export function WorkCard({ work }: { work: WorkItem }) {
       <div className={`${rotateClass} group-hover:rotate-0 transition-transform duration-300 ease-in-out w-full`}>
         <Wrapper
           href={work.href as string}
-          className="relative flex flex-col gap-4 bg-background border border-[#c8ccd4] rounded-[20px] shadow-[0px_0px_6px_rgba(0,0,0,0.05)] pt-4 px-4 pb-6 transition-shadow duration-300 group-hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)] cursor-pointer"
+          className="relative flex flex-col gap-4 bg-background border border-line rounded-[20px] shadow-[0px_0px_6px_rgba(0,0,0,0.05)] pt-4 px-4 pb-6 transition-shadow duration-300 group-hover:shadow-[0px_4px_24px_rgba(0,0,0,0.1)] cursor-pointer"
         >
-          <div className="absolute top-[14px] left-[14px] w-[16px] h-[16px] rounded-full border border-[#c8ccd4] bg-background" />
+          <div className="absolute top-[14px] left-[14px] w-[16px] h-[16px] rounded-full border border-line bg-background" />
           <div className="flex flex-col gap-3 items-end">
             <span className="font-brand font-medium text-[14px] uppercase text-heading leading-[20px] shrink-0">{work.number}</span>
             <div className="relative h-[180px] w-full rounded-[16px] overflow-hidden shrink-0">
@@ -43,7 +43,7 @@ export function WorkCard({ work }: { work: WorkItem }) {
               <h3 className="font-heading font-normal text-[22px] leading-[1.18] tracking-[-0.44px] text-heading">{work.title}</h3>
               <div className="flex flex-wrap gap-1 shrink-0 pt-[3px]">
                 {work.tags.map((tag) => (
-                  <span key={tag} className="bg-lilac text-heading font-brand font-medium text-[10px] uppercase leading-[20px] px-2 py-[2px] rounded-[4px] whitespace-nowrap">{tag}</span>
+                  <span key={tag} className="bg-grape-light text-heading font-brand font-medium text-[10px] uppercase leading-[20px] px-2 py-[2px] rounded-[4px] whitespace-nowrap">{tag}</span>
                 ))}
               </div>
             </div>
@@ -51,7 +51,7 @@ export function WorkCard({ work }: { work: WorkItem }) {
             {(work.role || work.team || work.timeframe) && (
               <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-in-out">
                 <div className="overflow-hidden">
-                  <div className="pt-4 border-t border-[#e8eaed] flex flex-col gap-3">
+                  <div className="pt-4 border-t border-line-soft flex flex-col gap-3">
                     {[{ label: "Role", value: work.role }, { label: "Team", value: work.team }, { label: "Timeframe", value: work.timeframe }]
                       .filter(({ value }) => value)
                       .map(({ label, value }) => (
@@ -96,7 +96,7 @@ const timelineGroups: YearGroup[] = [
           "Building accessible digital products is tough. It requires product designers to dive deep into guidelines, run extensive user testing, and manually audit every component. We fixed that.",
         image: "/images/works-cover.png",
         imageAlt: "Artemis Design System preview",
-        href: "/works/artemis-reservations",
+        href: "/works/artemis-design-system",
         tags: ["Design System", "Shipped"],
       },
       {
@@ -105,7 +105,7 @@ const timelineGroups: YearGroup[] = [
           "Introducing auto‑save, in‑app notifications, and categorised flights—reducing booking errors and cutting task completion time by 35%.",
         image: "/images/works-cover.png",
         imageAlt: "Artemis Reservations preview",
-        href: "#",
+        href: "/works/artemis-reservations",
         tags: ["UX Design", "Shipped"],
       },
     ],
@@ -188,7 +188,7 @@ export default function Works() {
                       background: "linear-gradient(to bottom, rgba(137, 91, 231, 0.5), transparent)",
                     }}
                   />
-                  <div className="w-[11px] h-[11px] rounded-full bg-background ring-[1.5px] ring-[#c8ccd4] shrink-0" />
+                  <div className="w-[11px] h-[11px] rounded-full bg-background ring-[1.5px] ring-line shrink-0" />
                 </div>
                 <span className="font-heading font-medium text-[44px] leading-none tracking-[-1px] text-[#e8eaed] select-none">
                   {group.year}
@@ -201,7 +201,7 @@ export default function Works() {
 
               {/* Mobile: year label */}
               <div className="flex items-center gap-2 lg:hidden">
-                <div className="w-[6px] h-[6px] rounded-full bg-[#c8ccd4]" />
+                <div className="w-[6px] h-[6px] rounded-full bg-line" />
                 <span className="font-heading font-normal text-[40px] leading-none tracking-[-0.8px] text-[#e8eaed] select-none">
                   {group.year}
                 </span>
@@ -215,14 +215,14 @@ export default function Works() {
                   <div
                     key={work.title}
                   >
-                    <Wrapper href={work.href as string} className="group flex flex-col gap-0 bg-background rounded-[24px] p-5 lg:p-8 border border-transparent hover:border-[#e8eaed] transition-all duration-500 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+                    <Wrapper href={work.href as string} className="group flex flex-col gap-0 bg-background rounded-[24px] p-5 lg:p-8 border border-transparent hover:border-line-soft transition-all duration-500 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
 
                       {/* Tags */}
                       <div className="flex items-center gap-3 mb-[8px]">
                         {work.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="font-brand font-medium text-[11px] uppercase tracking-[0.8px] text-accent"
+                            className="font-brand font-medium text-[11px] uppercase tracking-[0.8px] text-grape"
                           >
                             {tag}
                           </span>
