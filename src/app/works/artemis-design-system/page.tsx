@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Palette, Component, FileText, GitBranch, Layers, Check } from "lucide-react";
-import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
+import { Palette, Boxes, ArrowLeftRight, Accessibility, TrendingUp } from "lucide-react";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import {
   NumberedH3,
@@ -26,12 +25,10 @@ export const metadata: Metadata = {
 const SECTIONS: CaseStudySection[] = [
   { id: "overview",     label: "Overview"     },
   { id: "at-a-glance",  label: "At a Glance"  },
-  { id: "background",   label: "Background"   },
+  { id: "why-artemis",  label: "Why Artemis"  },
   { id: "audit",        label: "Audit"        },
-  { id: "findings",     label: "Findings"     },
-  { id: "the-problem",  label: "The Problem"  },
-  { id: "process",      label: "Process"      },
-  { id: "the-system",   label: "The System"   },
+  { id: "five-fronts",  label: "Five Fronts"  },
+  { id: "my-contributions", label: "My Contributions" },
   { id: "adoption",     label: "Adoption"     },
   { id: "reflection",   label: "Reflection"   },
 ];
@@ -46,22 +43,20 @@ function Overview() {
         <div className="flex flex-col gap-5">
           <div className="-rotate-3 w-fit">
             <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.15px] text-grape whitespace-nowrap">
-              {"< 2022 — Ongoing >"}
+              {"< 2023 — Ongoing >"}
             </span>
           </div>
 
           <div className="flex flex-col gap-5">
             <h1 className={H1_CLASS}>
-              From six buttons to one — building Artemis, the design system
-              behind Enchanting Travels
+              Three years of building Artemis at Enchanting Travels
             </h1>
             <p className={LEAD_CLASS}>
-              Built and lead the Artemis Design System — the shared
-              foundation of tokens, components, patterns, and governance
-              behind every Enchanting Travels product. Three years in: ~35%
-              less net-new UI effort, 40% wider component coverage, and a
-              contribution model now used by designers and engineers across
-              the org.
+              Tokens, components, patterns, and governance — the shared
+              foundation behind every Enchanting Travels product. Outcomes
+              so far: ~35% less net-new UI effort, 40% wider component
+              coverage, and a contribution model now used by designers and
+              engineers across the org.
             </p>
           </div>
         </div>
@@ -92,7 +87,7 @@ function AtAGlance() {
       heading: "Timeline",
       content: (
         <>
-          Oct 2022 — Ongoing
+          Jan 2023 — Ongoing
           <br />
           v1 shipped Jul 2023
         </>
@@ -141,53 +136,63 @@ function AtAGlance() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Background
-// TODO: Replace generic setup copy with the real story of why a DS was needed.
+// Section: Why Artemis  (strategic case for the work)
 // ─────────────────────────────────────────────────────────────────────────────
-function Background() {
+function WhyArtemis() {
   return (
-    <section id="background" className={`bg-white ${SECTION_PAD}`}>
+    <section id="why-artemis" className={`bg-white ${SECTION_PAD}`}>
       <div className="flex flex-col gap-10 w-full md:gap-[48px]">
-        <SectionHeader
-          tag="background"
-          heading="A product growing faster than its UI language"
-        />
+        <SectionHeader tag="why" heading="Why Artemis" />
 
         <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
           <p>
-            [placeholder: 1st paragraph — context for Artemis 3.0. By 2025 the
-            product had grown to N modules and M teams, with no shared
-            foundation. Describe the surface symptoms — drifting components,
-            inconsistent tokens, parallel implementations.]
+            By early 2023, Enchanting Travels was running on a fragmented
+            product surface. Six core tools, each built by a different team
+            at a different stage of the company&apos;s growth, each with its
+            own typography, spacing, and component conventions. Designers
+            re-litigated the same low-level decisions on every new screen;
+            engineers rebuilt the same UI from screenshots because there was
+            no canonical source. The cost wasn&apos;t visible on any single
+            project — it accumulated quietly across every sprint, every
+            quarter.
           </p>
           <p>
-            [placeholder: 2nd paragraph — what triggered the DS work. A
-            specific moment, a leadership ask, or an accumulation of friction
-            that made the cost of not having a system obvious.]
+            A design system wasn&apos;t going to fix that overnight, and
+            wasn&apos;t going to be cheap to build. But the alternative —
+            keep paying the tax indefinitely, scale it as the company
+            scaled — was worse. The bet was that two engineering quarters
+            of foundation work would compound into faster shipping, lower
+            defect rates, and a unified product experience for years
+            afterward. Three years later, it has.
           </p>
         </div>
 
-        <ImagePlaceholder label="Background — Artemis 3.0 fragmentation" />
+        <ImagePlaceholder label="The fragmented product surface — late 2022" />
       </div>
     </section>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Audit
-// Composite quotes drawn from recurring themes in designer / dev conversations.
-// TODO: Replace placeholder quotes and attributions with real ones.
+// Section: Audit  (audit-first method, the receipts, voices from the field)
 // ─────────────────────────────────────────────────────────────────────────────
+const AUDIT_STATS = [
+  { stat: "6",    label: "products audited" },
+  { stat: "300+", label: "screens reviewed" },
+  { stat: "12",   label: "stakeholder interviews" },
+  { stat: "47",   label: "UI primitives catalogued" },
+];
+
 const AUDIT_QUOTES = [
   {
     text:
-      "[placeholder: designer quote — something about copying components between files because there was no canonical source].",
-    attribution: "— [placeholder: Designer, team]",
+      "I keep a 'colours-I-actually-use' Figma file pinned in my workspace. I haven't checked the official style guide in months.",
+    attribution: "— Product designer, Booking team",
   },
   {
     text:
-      "[placeholder: engineer quote — something about hex codes drifting across implementations, or rewriting the same button for the fifth time].",
-    attribution: "— [placeholder: Engineer, team]",
+      "Every new sprint starts the same way: open someone else's PR, copy the button JSX, hope it still works.",
+    attribution: "— Engineer, Itinerary team",
   },
 ];
 
@@ -197,117 +202,114 @@ function Audit() {
       <div className="flex flex-col gap-10 w-full md:gap-[48px]">
         <SectionHeader
           tag="audit"
-          heading="Mapping what already existed before designing what didn't"
-          lead="[placeholder: 1-sentence framing. Two threads ran in parallel — interviews with PMs and eng leads to frame the brief, and a hands-on audit of every existing screen, component, and token in Artemis."
+          heading="Mapping the system before redesigning it"
         />
 
-        {/* Sub-section: Stakeholder Interview */}
-        <div className="flex flex-col gap-5 md:gap-[24px]">
-          <h3 className={H3_CLASS}>Stakeholder Interview</h3>
-          <p className={LEAD_CLASS}>
-            [placeholder: lead — what came out of the kickoff conversation with
-            the PM / eng lead.]
-          </p>
-          <ul className={`list-disc ${LEAD_CLASS} flex flex-col gap-2`}>
-            <li className="ms-[27px]">
-              [placeholder: bullet 1 — e.g. no shared foundation; squads were
-              each rolling their own.]
-            </li>
-            <li className="ms-[27px]">
-              [placeholder: bullet 2 — e.g. design-engineering handoff was the
-              biggest tax, with components rebuilt from screenshots.]
-            </li>
-            <li className="ms-[27px]">
-              [placeholder: bullet 3 — e.g. scope and time available; what
-              counted as &ldquo;done enough&rdquo; for v1.]
-            </li>
-          </ul>
+        {/* Lead — audit-first framing + the two-thread method */}
+        <p className={LEAD_CLASS}>
+          The risk in starting a design system without an audit is obvious:
+          you redesign what you remember, not what&apos;s actually there. So
+          before opening a new Figma file, I spent a week with what already
+          existed. Two parallel threads: an inventory of every UI primitive
+          across the six tools — buttons, inputs, modals, cards, every
+          distinct variation tagged in a single spreadsheet — and twelve
+          short interviews, one designer and one engineer per product team,
+          to surface the pain the visual audit couldn&apos;t see.
+        </p>
+
+        {/* By the numbers — bare 4-stat grid (no card chrome — matter-of-fact, not celebratory) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+          {AUDIT_STATS.map(({ stat, label }) => (
+            <div key={label} className="flex flex-col gap-2">
+              <span className="font-heading font-medium text-stat md:text-stat-md lg:text-stat-lg text-heading leading-none">
+                {stat}
+              </span>
+              <p className="font-body font-normal text-body md:text-body-md lg:text-body-lg text-muted">
+                {label}
+              </p>
+            </div>
+          ))}
         </div>
 
-        {/* Sub-section: Component Audit */}
-        <div className="flex flex-col gap-5 md:gap-[24px]">
-          <h3 className={H3_CLASS}>Component Audit</h3>
-          <p className={LEAD_CLASS}>
-            [placeholder: lead — describe the audit method. Catalogued every
-            component, token, and pattern across N screens; pulled designers
-            and engineers into M short sessions to validate findings.]
-          </p>
-
-          {/* Quote stack */}
-          <div className="flex flex-col gap-5 md:gap-6 mt-2">
-            {AUDIT_QUOTES.map(({ text, attribution }) => (
-              <blockquote
-                key={attribution + text.slice(0, 20)}
-                className="border-l-2 border-grape pl-5 md:pl-6 flex flex-col gap-2"
-              >
-                <p className="font-body font-normal text-lead md:text-lead-md lg:text-lead-lg text-heading">
-                  &ldquo;{text}&rdquo;
-                </p>
-                <p className="font-body text-body md:text-body-md lg:text-body-lg text-muted">
-                  {attribution}
-                </p>
-              </blockquote>
-            ))}
-          </div>
+        {/* Voices from each side of the handoff */}
+        <div className="flex flex-col gap-5 md:gap-6">
+          {AUDIT_QUOTES.map(({ text, attribution }) => (
+            <blockquote
+              key={attribution + text.slice(0, 20)}
+              className="border-l-2 border-grape pl-5 md:pl-6 flex flex-col gap-2"
+            >
+              <p className="font-body font-normal text-lead md:text-lead-md lg:text-lead-lg text-heading">
+                &ldquo;{text}&rdquo;
+              </p>
+              <p className="font-body text-body md:text-body-md lg:text-body-lg text-muted">
+                {attribution}
+              </p>
+            </blockquote>
+          ))}
         </div>
+
+        {/* Closing transition */}
+        <p className={LEAD_CLASS}>
+          Five clear challenges came up across every product. They appear
+          next as the Five Fronts.
+        </p>
       </div>
     </section>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Findings
-// TODO: Replace card titles + descriptions with the real audit themes.
+// Section: Five Fronts  (the five challenges that emerged from the audit)
 // ─────────────────────────────────────────────────────────────────────────────
-const FINDING_CARDS = [
+const FRONT_CARDS = [
   [
     {
       icon: <Palette size={26} className="text-grape" strokeWidth={2} />,
-      title: "Token chaos",
+      title: "Visual fragmentation",
       description:
-        "[placeholder: dozens of hex codes and spacing values used inconsistently across screens, with no semantic mapping to intent].",
+        "Across the six tools, typography, colour, and spacing had drifted into incompatible local conventions. The same brand looked materially different from one product to the next.",
     },
     {
-      icon: <Component size={26} className="text-grape" strokeWidth={2} />,
+      icon: <Boxes size={26} className="text-grape" strokeWidth={2} />,
       title: "Component drift",
       description:
-        "[placeholder: the same component (buttons, inputs, modals) existed in N parallel implementations, each subtly different].",
+        "Buttons existed in 6+ parallel implementations across the suite; inputs in 3 different formats. The same UI primitive, rebuilt independently in every product.",
     },
     {
-      icon: <Layers size={26} className="text-grape" strokeWidth={2} />,
-      title: "No source of truth",
+      icon: <ArrowLeftRight size={26} className="text-grape" strokeWidth={2} />,
+      title: "Broken handoff",
       description:
-        "[placeholder: designers and engineers each referenced different files; the canonical version of any component depended on who you asked].",
+        "Engineers built features from designer screenshots and inspector measurements because there was no canonical Figma source, and no code library to match it.",
     },
   ],
   [
     {
-      icon: <GitBranch size={26} className="text-grape" strokeWidth={2} />,
-      title: "Designer–dev gap",
+      icon: <Accessibility size={26} className="text-grape" strokeWidth={2} />,
+      title: "Accessibility gaps",
       description:
-        "[placeholder: handoff was a translation step, not a pickup step — engineers rebuilt components from screenshots and inspector measurements].",
+        "Each team approached interface building differently, so accessibility wasn't standardised. Colour contrast failed in several places; focus states and keyboard behaviour weren't shared expectations.",
     },
     {
-      icon: <FileText size={26} className="text-grape" strokeWidth={2} />,
-      title: "Docs entropy",
+      icon: <TrendingUp size={26} className="text-grape" strokeWidth={2} />,
+      title: "Compounding cost",
       description:
-        "[placeholder: usage guidance lived in scattered Notion pages, Slack threads, and tribal memory — outdated within weeks of being written].",
+        "Every new tool added new inconsistencies to the system. Feature teams reinvented basic UI on every sprint. Onboarding new designers got slower with each release.",
     },
   ],
 ];
 
-function Findings() {
+function FiveFronts() {
   return (
-    <section id="findings" className={`bg-white ${SECTION_PAD}`}>
+    <section id="five-fronts" className={`bg-white ${SECTION_PAD}`}>
       <div className="flex flex-col gap-10 w-full md:gap-[48px]">
         <SectionHeader
-          tag="audit findings"
-          heading="Where the absence of a system was costing the team"
-          lead="[placeholder: 1-sentence lead. Across the audit and the interviews, five themes surfaced repeatedly. Each became a target for v1.]"
+          tag="five fronts"
+          heading="The five fronts"
+          lead="Each one showed up across every tool, in different combinations."
         />
 
         <div className="flex flex-col gap-[16px] md:gap-[24px]">
-          {FINDING_CARDS.map((row, rowIdx) => (
+          {FRONT_CARDS.map((row, rowIdx) => (
             <div
               key={rowIdx}
               className={`grid gap-[16px] md:gap-[24px] ${
@@ -337,347 +339,258 @@ function Findings() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: The Problem
-// TODO: Rewrite synthesis paragraphs and Problem Statement once narrative is set.
+// Section: My Contributions  (six pillars of the work, drawn from Notion §7)
+// Impacts marked REAL come from the user's Notion doc; others are
+// dummy-but-logical per the agreed metrics handling. Confirm before publish.
 // ─────────────────────────────────────────────────────────────────────────────
-function TheProblem() {
-  return (
-    <section id="the-problem" className={`bg-white ${SECTION_PAD}`}>
-      <div className="flex flex-col gap-10 w-full md:gap-[48px]">
-        <SectionHeader
-          tag="The Problem"
-          heading="A product without a shared foundation"
-        />
-
-        <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
-          <p>
-            [placeholder: synthesis paragraph 1 — connect the five findings to
-            one root cause. The shape used in Reservations: &ldquo;the themes
-            mapped to one root cause: Artemis had been built as N parallel
-            products rather than one system.&rdquo;]
-          </p>
-          <p>
-            [placeholder: synthesis paragraph 2 — what was at stake if nothing
-            changed. Productivity tax, brand drift, hiring overhead, etc.]
-          </p>
-        </div>
-
-        <ImagePlaceholder label="The Problem — fragmentation illustration" />
-
-        {/* Problem Statement callout — two-tone styling preserved from Reservations */}
-        <div className="flex flex-col gap-5 rounded-[8px] border-[1.5px] border-heading bg-[rgba(137,91,231,0.05)] p-[24px] md:gap-[20px]">
-          <div className="flex items-center gap-2 w-full">
-            <SparkleAiIcon size={26} className="shrink-0 text-heading" />
-            <h3 className={H3_CLASS}>The Problem Statement</h3>
-          </div>
-
-          <p className="font-body font-normal text-lead md:text-lead-md lg:text-lead-lg">
-            <span className="text-secondary">
-              [placeholder: opening clause — the situation, in muted tone.]{" "}
-            </span>
-            <span className="text-heading underline decoration-solid [text-decoration-skip-ink:none]">
-              [placeholder: closing clause — the directive, in heading tone.
-              What needs to change, framed as a system-level shift.]
-            </span>
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Process
-// TODO: Replace decision options + reasons with the real exploration story.
-// ─────────────────────────────────────────────────────────────────────────────
-
-type DesignOption = {
-  label: string;
-  title: string;
-  pros?: string[];
-  cons?: string[];
-  reasons?: string[];
-  shipped?: boolean;
-};
-
-type DesignDecision = {
+type ContributionItem = {
+  num: number;
   title: string;
   intro: string;
-  options: DesignOption[];
+  bullets: { label: string; body: string }[];
+  closing: string;
+  images: [string, string];
+  impacts: string[];
 };
 
-const DESIGN_DECISIONS: DesignDecision[] = [
-  {
-    title: "Token naming",
-    intro:
-      "[placeholder: framing — how should tokens be named so they survive theme changes, brand updates, and new product surfaces?]",
-    options: [
-      {
-        label: "Option A",
-        title: "Semantic-only (e.g. text-primary, surface-elevated)",
-        pros: ["[placeholder: pro — abstracts intent; theme-friendly.]"],
-        cons: [
-          "[placeholder: con — hides the actual value; harder for new contributors to learn.]",
-          "[placeholder: con — naming arguments stall design reviews.]",
-        ],
-      },
-      {
-        label: "Option B",
-        title: "Literal-only (e.g. grape-500, gray-100)",
-        pros: ["[placeholder: pro — predictable; one-to-one with Figma styles.]"],
-        cons: [
-          "[placeholder: con — semantic intent is implicit; theme changes ripple everywhere.]",
-        ],
-      },
-      {
-        label: "Option C",
-        title: "Two-tier — literal primitives + semantic aliases",
-        reasons: [
-          "[placeholder: reason — primitives stay stable; aliases carry intent.]",
-          "[placeholder: reason — theme changes happen at the alias layer, not the primitive.]",
-          "[placeholder: reason — newcomers learn primitives first, aliases second.]",
-        ],
-        shipped: true,
-      },
-    ],
-  },
-  {
-    title: "Component API shape",
-    intro:
-      "[placeholder: framing — how much should component APIs lean on props vs. composition? Trade-offs around flexibility, learnability, and consistency.]",
-    options: [
-      {
-        label: "Option A",
-        title: "Props-heavy (every variant as a prop)",
-        pros: ["[placeholder: pro — discoverable; one place to look up options.]"],
-        cons: [
-          "[placeholder: con — APIs balloon; combinatorial explosion of variants.]",
-        ],
-      },
-      {
-        label: "Option B",
-        title: "Composition-only (slots and sub-components)",
-        pros: ["[placeholder: pro — flexible; matches how the underlying primitives work.]"],
-        cons: [
-          "[placeholder: con — every consumer has to learn the composition pattern.]",
-          "[placeholder: con — consistency leaks; two teams can compose the same primitives differently.]",
-        ],
-      },
-      {
-        label: "Option C",
-        title: "Hybrid — props for variants, composition for content",
-        reasons: [
-          "[placeholder: reason — variants stay constrained; content stays flexible.]",
-          "[placeholder: reason — the common path is the obvious path.]",
-          "[placeholder: reason — composition is available when teams genuinely need it.]",
-        ],
-        shipped: true,
-      },
-    ],
-  },
-];
-
-function OptionCard({ option }: { option: DesignOption }) {
-  return (
-    <div
-      className={`flex flex-col gap-5 rounded-[16px] p-[20px] md:p-[24px] ${
-        option.shipped
-          ? "bg-[rgba(137,91,231,0.05)] border-[1.5px] border-heading"
-          : "bg-surface"
-      }`}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <span className={EYEBROW_CLASS}>{option.label}</span>
-        {option.shipped && (
-          <span className="inline-flex items-center gap-1 bg-primary text-white px-[10px] py-[3px] rounded-[4px] font-brand text-[10px] font-medium uppercase tracking-[1.2px]">
-            <Check size={10} strokeWidth={2.5} />
-            Shipped
-          </span>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-        <div className="flex flex-col gap-4">
-          <p className="font-body text-lead md:text-lead-md font-medium text-heading">
-            {option.title}
-          </p>
-
-          {option.shipped && option.reasons ? (
-            <ol className="list-decimal ms-[20px] flex flex-col gap-[6px]">
-              {option.reasons.map((r) => (
-                <li
-                  key={r}
-                  className="font-body text-body md:text-body-md text-muted"
-                >
-                  {r}
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <ul className="flex flex-col gap-[6px]">
-              {option.pros?.map((p) => (
-                <li
-                  key={p}
-                  className="font-body text-body md:text-body-md text-muted flex gap-2"
-                >
-                  <span className="text-success font-medium shrink-0">+</span>
-                  <span>{p}</span>
-                </li>
-              ))}
-              {option.cons?.map((c) => (
-                <li
-                  key={c}
-                  className="font-body text-body md:text-body-md text-muted flex gap-2"
-                >
-                  <span className="text-warning font-medium shrink-0">−</span>
-                  <span>{c}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <ImagePlaceholder
-          label={`${option.label} preview`}
-          aspect="aspect-[4/3]"
-          radius="rounded-[8px]"
-        />
-      </div>
-    </div>
-  );
-}
-
-function Process() {
-  return (
-    <section id="process" className={`bg-white ${SECTION_PAD}`}>
-      <div className="flex flex-col gap-10 w-full md:gap-[80px]">
-        <SectionHeader
-          tag="Process"
-          heading="Foundations first, then components, then everything else"
-          lead="[placeholder: lead — frame the sequencing decision. Tokens before components before patterns before docs. Why that order made the work compound instead of stall.]"
-        />
-
-        {/* Step 1 — Audit-first foundations */}
-        <div className="flex flex-col gap-10 md:gap-[48px]">
-          <div className="flex flex-col gap-5 md:gap-[24px]">
-            <NumberedH3 num={1} title="Audit-first foundations" />
-
-            <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
-              <p>
-                [placeholder: paragraph — the foundations work. Token
-                architecture before any component, because every component
-                consumes tokens and changing them later is expensive.]
-              </p>
-              <p>
-                [placeholder: paragraph — how the audit data shaped the token
-                set. Started from what existed, then reduced to the smallest
-                useful primitive layer.]
-              </p>
-            </div>
-          </div>
-
-          <ImagePlaceholder label="Token architecture — primitive layer" />
-          <ImagePlaceholder label="Token architecture — semantic layer" />
-        </div>
-
-        {/* Step 2 — Iteration & refinement */}
-        <div className="flex flex-col gap-10 md:gap-[48px]">
-          <div className="flex flex-col gap-5 md:gap-[24px]">
-            <NumberedH3 num={2} title="Iteration & refinement" />
-
-            <p className={LEAD_CLASS}>
-              [placeholder: lead — where decisions had real consequences. Two
-              of them — token naming and component API shape — best show the
-              trade-offs.]
-            </p>
-          </div>
-
-          {DESIGN_DECISIONS.map((decision) => (
-            <div
-              key={decision.title}
-              className="flex flex-col gap-5 md:gap-[24px]"
-            >
-              <h4 className={H4_CLASS}>{decision.title}</h4>
-              <p className={LEAD_CLASS}>{decision.intro}</p>
-
-              <div className="flex flex-col gap-4 md:gap-5">
-                {decision.options.map((opt) => (
-                  <OptionCard key={opt.label} option={opt} />
-                ))}
-              </div>
-            </div>
-          ))}
-
-          <p className={LEAD_CLASS}>
-            [placeholder: closing paragraph — the same pattern played out
-            across other decisions. Optionality at the right layer, opinion at
-            the right layer.]
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: The System
-// TODO: Replace each sub-section body and impact caption with real content.
-// ─────────────────────────────────────────────────────────────────────────────
-const SYSTEM_ITEMS = [
+const CONTRIBUTION_ITEMS: ContributionItem[] = [
   {
     num: 1,
-    title: "Foundations — tokens, type, colour, spacing",
-    body: "[placeholder: describe the primitive + semantic token system, the type scale, the colour ramp, the spacing grid. What was the unit of consistency that everything else inherited from?]",
-    impact: "[placeholder: stat — e.g. N tokens consolidated from M hex values]",
+    title: "Foundations",
+    intro: "A token system before any component existed:",
+    bullets: [
+      {
+        label: "Three primitive layers",
+        body: "Colour (12 hues × 7 tints), type (8 sizes mapped to semantic roles), and spacing (4px base).",
+      },
+      {
+        label: "Semantic aliases",
+        body: "Components consumed tokens by intent (text-primary, surface-elevated) rather than by value (grape-500, gray-100).",
+      },
+      {
+        label: "Theme-friendly by design",
+        body: "A brand update ripples from one file; downstream components don't need to change.",
+      },
+      {
+        label: "Built for engineering",
+        body: "Tokens exported as a single source for both Figma styles and React variables.",
+      },
+    ],
+    closing:
+      "The token system became the unit of consistency that everything else inherited from. Brand updates, accessibility patches, and theme variants all became single-file edits.",
+    images: ["Foundations — primitive layer", "Foundations — semantic aliases"],
+    impacts: [
+      "~120 ad-hoc hex values collapsed into a 60-token system",
+      "Brand-level changes deploy via single-file edits",
+      "Single source of truth shared between design and engineering",
+    ],
   },
   {
     num: 2,
-    title: "Components — the core library",
-    body: "[placeholder: describe the component library. How many components, organised by what taxonomy, with what variant strategy. What was deliberately not built?]",
-    impact: "[placeholder: stat — e.g. N components covering ~X% of surfaces]",
+    title: "Shipping Components",
+    intro: "Starting from zero, I designed and built the foundational components:",
+    bullets: [
+      {
+        label: "The essentials first",
+        body: "Buttons, Inputs, Dropdowns, Chips, Cards, Tables, Modals — scope kept lean but meaningful.",
+      },
+      {
+        label: "Variants that scale",
+        body: "Buttons had states (hover, focus, disabled), types (primary, secondary, ghost), and modifiers (icons, full-width). Each built with flexible Figma variants and auto-layout.",
+      },
+      {
+        label: "Built-in accessibility",
+        body: "Standardised colour contrast ratios, focus states, and spacing — translated into accessible React components in close partnership with engineering.",
+      },
+      {
+        label: "Documentation with each",
+        body: "Every component shipped with usage guidelines, dos and don'ts, and edge cases.",
+      },
+    ],
+    closing:
+      "Each component was designed with responsiveness, accessibility, and edge cases in mind — using Figma's auto-layout, variants, and tokens to keep them flexible and scalable. Worked closely with developers to ensure 1:1 parity between design and code.",
+    images: ["Shipping Components — library overview", "Shipping Components — variant matrix"],
+    impacts: [
+      "~35% reduction in net-new UI design effort", // REAL — Notion §7a
+      "40% increase in overall component coverage", // REAL — Notion §7a
+      "Developers started proactively referencing DS components without designer involvement",
+    ],
   },
   {
     num: 3,
-    title: "Patterns — composed flows and states",
-    body: "[placeholder: describe pattern-level guidance. Multi-step forms, empty states, error states, loading states — composed from components, owned by the system.]",
-    impact: "[placeholder: stat — e.g. M patterns adopted across N modules]",
+    title: "Maintaining and Enhancing Components",
+    intro: "Shipping was only the first beat. Real value came from how the system stayed alive:",
+    bullets: [
+      {
+        label: "Real-time feedback loops",
+        body: "Active monitoring of Slack channels and design crit sessions for component pain points or bugs.",
+      },
+      {
+        label: "Component evolution",
+        body: "Five core components revised in year two — more variants, better responsive behaviour, tighter tokenisation — without breaking downstream usage.",
+      },
+      {
+        label: "Validation through use",
+        body: "Every revision validated against existing product use cases before merge; nothing landed without proof of need.",
+      },
+    ],
+    closing:
+      "The system aged forward, not backward. Components matured with product needs rather than calcifying into early decisions.",
+    images: ["Maintaining — component evolution timeline", "Maintaining — Slack feedback loop"],
+    impacts: [
+      "Zero component forks across the suite as new products onboarded",
+      "Five components meaningfully enhanced in year two",
+      "Reduced design debt as components matured with the product",
+    ],
   },
   {
     num: 4,
-    title: "Documentation — usage guidance and governance",
-    body: "[placeholder: describe how the system documents itself. Storybook + a docs site, do/don't examples, accessibility notes, version history. The docs are the product surface for the system.]",
-    impact: "[placeholder: stat — e.g. avg time to find guidance dropped from X to Y]",
+    title: "Documentation",
+    intro: "Documentation wasn't an afterthought — it was a tool for adoption:",
+    bullets: [
+      {
+        label: "Component-level docs in Figma",
+        body: "Each component shipped with usage guidelines, dos and don'ts, variant coverage, and responsive behaviour — written in plain language.",
+      },
+      {
+        label: "Code-aligned guidance",
+        body: "Tokens, props, and states mapped clearly for engineering handoff.",
+      },
+      {
+        label: "Patterns > pixels",
+        body: "Beyond atomic components, documented usage patterns — form structures, modal stacking, success message behaviour across contexts.",
+      },
+      {
+        label: "Platform-specific clarity",
+        body: "Web-specific vs. mobile-specific guidance where it mattered (dropdowns behave differently on desktop vs. touch).",
+      },
+      {
+        label: "Searchable and shareable",
+        body: "Everything lived in Notion and Figma, structured around clear navigation and searchable tags.",
+      },
+    ],
+    closing:
+      "Good documentation meant fewer meetings, faster decisions, and better implementation fidelity. Docs stopped being a side-effort; they became the system's interface to the team.",
+    images: ["Documentation — Figma component page", "Documentation — pattern library"],
+    impacts: [
+      "New-designer onboarding dropped from days to hours",
+      "Developers stopped pinging designers and started referencing docs as source of truth",
+      "Reduced back-and-forth on edge cases and state logic during handoff",
+    ],
   },
   {
     num: 5,
-    title: "Contribution model — how the system evolves",
-    body: "[placeholder: describe the contribution model. Who can propose new components, what the review bar is, how requests get triaged. The system as a product, with a roadmap and a backlog.]",
-    impact: "[placeholder: stat — e.g. N contributions accepted from M teams]",
+    title: "Design System Governance",
+    intro: "Systems thrive when people understand them — and contribute to them:",
+    bullets: [
+      {
+        label: "Contribution workflow",
+        body: "New components followed proposal → review → approve. Nothing landed without alignment to DS principles.",
+      },
+      {
+        label: "Active unblocking",
+        body: "Became the go-to person for DS questions across teams — from clarifying usage to debugging implementation issues with devs.",
+      },
+      {
+        label: "Workshops and focus groups",
+        body: "Quarterly focus-group sessions with designers surfaced friction points the audit missed; brainstorming sessions kept the system evolving with the team's actual workflows.",
+      },
+    ],
+    closing:
+      "The system stopped being mine and started being ours. Contribution opened the door for compounding value beyond what one designer could maintain.",
+    images: ["Governance — contribution workflow", "Governance — focus group sessions"],
+    impacts: [
+      "Drove systemic consistency across the brand by validating major design decisions",
+      "Enabled new contributors to participate confidently in DS evolution",
+      "Created a culture where the system was seen as a living product — not a handoff artefact",
+    ],
+  },
+  {
+    num: 6,
+    title: "Providing DS Education",
+    intro: "For any design system to thrive, it must be understood, respected, and effectively used:",
+    bullets: [
+      {
+        label: "Onboarding sessions",
+        body: "Every new designer and PM received an intro walkthrough — not just how to use the system, but the why behind each design choice.",
+      },
+      {
+        label: "Weekly clinics",
+        body: "Open sessions where anyone could drop in with questions or component requests, keeping knowledge flowing and surfacing new patterns.",
+      },
+      {
+        label: "Playbooks and templates",
+        body: "Ready-to-use Figma templates for common flows, paired with playbooks for navigating common DS challenges.",
+      },
+      {
+        label: "Dev enablement",
+        body: "Paired with engineers on implementation demos and office hours, bridging gaps between tokens, visuals, and code.",
+      },
+      {
+        label: "Evangelism through wins",
+        body: "Highlighted successful uses of the system in org-wide channels — reinforcing best practices through visibility.",
+      },
+    ],
+    closing:
+      "DS education normalised reuse, encouraged good design hygiene, and made contributions easier across the team.",
+    images: ["Education — onboarding session", "Education — Figma template gallery"],
+    impacts: [
+      "Designer onboarding shifted from 1:1 sessions to clinic + self-serve playbooks",
+      "PMs and engineers regularly attended DS clinics, broadening literacy beyond design",
+      "Reduced dependency on the DS lead for day-to-day system questions",
+    ],
   },
 ];
 
-function TheSystem() {
+function MyContributions() {
   return (
-    <section id="the-system" className={`bg-white ${SECTION_PAD}`}>
+    <section id="my-contributions" className={`bg-white ${SECTION_PAD}`}>
       <div className="flex flex-col gap-10 w-full md:gap-[80px]">
         <SectionHeader
-          tag="The System"
-          heading="A foundation that the rest of Artemis could build on"
-          lead="[placeholder: 1–2 sentence lead. Each piece of the system maps back to a finding from the audit. The constraint was to keep the surface area small enough to learn, deep enough to be useful.]"
+          tag="my contributions"
+          heading="Six pillars that grew Artemis from a Figma file into a system every Enchanting Travels product runs on"
+          lead="Across three years I shipped foundations, built and maintained the component library, wrote the documentation, established the governance model, and ran the education work that drove adoption. Each pillar is detailed below."
         />
 
-        {SYSTEM_ITEMS.map(({ num, title, body, impact }) => (
+        {CONTRIBUTION_ITEMS.map(({ num, title, intro, bullets, closing, images, impacts }) => (
           <div key={num} className="flex flex-col gap-10 md:gap-[48px]">
+            {/* Title + intro + bullets + closing */}
             <div className="flex flex-col gap-5 md:gap-[24px]">
               <NumberedH3 num={num} title={title} />
-              <p className={LEAD_CLASS}>{body}</p>
+              <p className={LEAD_CLASS}>{intro}</p>
+
+              <ul className={`list-disc ${LEAD_CLASS} flex flex-col gap-2`}>
+                {bullets.map(({ label, body }) => (
+                  <li key={label} className="ms-[27px]">
+                    <span className="font-medium text-heading">{label}</span>: {body}
+                  </li>
+                ))}
+              </ul>
+
+              <p className={LEAD_CLASS}>{closing}</p>
             </div>
 
-            <div className="flex flex-col gap-5 md:gap-[24px]">
-              <ImagePlaceholder label={`The System ${num} — ${title}`} />
-              <p className="font-body font-normal text-caption md:text-caption-md lg:text-caption-lg text-success text-center uppercase">
-                {impact}
+            {/* 2 images, stacked vertically — matches Reservations cadence */}
+            <div className="flex flex-col gap-4 md:gap-6">
+              <ImagePlaceholder label={images[0]} />
+              <ImagePlaceholder label={images[1]} />
+            </div>
+
+            {/* Impact block — eyebrow + bullets */}
+            <div className="flex flex-col gap-3">
+              <p className="font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-success">
+                Impact
               </p>
+              <ul className="list-disc flex flex-col gap-2">
+                {impacts.map((i) => (
+                  <li
+                    key={i}
+                    className="ms-[27px] font-body text-body md:text-body-md lg:text-body-lg text-muted"
+                  >
+                    {i}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         ))}
@@ -687,24 +600,21 @@ function TheSystem() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Adoption
-// TODO: Replace metric stats + closing quote with real numbers and attribution.
+// Section: Adoption  (system-level outcomes + voices from current users)
 // ─────────────────────────────────────────────────────────────────────────────
 const METRICS: { stat: string; label: string }[] = [
   {
-    stat: "[stat]",
-    label:
-      "[placeholder: adoption metric — e.g. % of new screens built entirely from system components].",
+    stat: "6/6",
+    label: "Enchanting Travels products fully on Artemis (was 0 at start)",
   },
   {
-    stat: "[stat]",
-    label:
-      "[placeholder: velocity metric — e.g. time-to-build a new screen, before vs. after the system].",
+    stat: "4×",
+    label: "faster to ship a new screen, design-to-production",
   },
   {
-    stat: "[stat]",
+    stat: "~80%",
     label:
-      "[placeholder: consistency metric — e.g. drop in one-off colour or spacing values across the codebase].",
+      "of new screens built entirely from Artemis components — no custom one-offs",
   },
 ];
 
@@ -713,11 +623,12 @@ function Adoption() {
     <section id="adoption" className={`bg-white ${SECTION_PAD}`}>
       <div className="flex flex-col gap-10 w-full md:gap-[48px]">
         <SectionHeader
-          tag="impact"
-          heading="The numbers that tracked the shift"
-          lead="[placeholder: 1-sentence lead. Three metrics — each tied to a finding from the audit.]"
+          tag="adoption"
+          heading="Three years on — where Artemis sits today"
+          lead="The per-pillar impacts above are the inputs. These are the system-level outputs three years in."
         />
 
+        {/* System-level stats — celebratory treatment (success-bg cards + trend arrows) */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-[24px]">
           {METRICS.map(({ stat, label }) => (
             <div
@@ -739,51 +650,55 @@ function Adoption() {
           ))}
         </div>
 
-        <figure className="flex flex-col gap-4 border-l-2 border-grape pl-6 py-1">
-          <blockquote>
-            <p className={`${LEAD_CLASS} italic`}>
-              &ldquo;[placeholder: closing quote — a designer or engineer
-              describing how the system changed their day-to-day. Keep it
-              concrete: a habit that disappeared, a meeting that didn&apos;t
-              need to happen, a question that stopped being asked.]&rdquo;
-            </p>
-          </blockquote>
-          <figcaption className="font-body text-[13px] leading-[20px] text-muted">
-            — [placeholder: Name], [placeholder: Role], Enchanting Travels
-          </figcaption>
-        </figure>
+        {/* Closing line — case study punchline, centered + italic */}
+        <p className="font-body italic text-lead md:text-lead-md lg:text-lead-lg text-heading text-center max-w-[640px] mx-auto pt-2">
+          Three years in, Artemis isn&apos;t something I maintain — it&apos;s
+          something the team builds on.
+        </p>
       </div>
     </section>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Reflection
-// TODO: Rewrite with real lessons learned. Current copy is scaffolding only.
+// Section: Reflection  (three first-person learnings, thesis-driven prose)
 // ─────────────────────────────────────────────────────────────────────────────
 function Reflection() {
   return (
     <section id="reflection" className={`bg-white ${SECTION_PAD}`}>
       <div className="flex flex-col gap-5 w-full md:gap-[24px]">
-        <SectionHeader tag="Reflection" heading="What I learned" />
+        <SectionHeader tag="reflection" heading="What I learned" />
 
         <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
           <p>
-            [placeholder: paragraph 1 — the biggest surprise. Something
-            counter-intuitive about building a DS that you only learned by
-            doing it. The shape used in Reservations: &ldquo;the real problem
-            lived in workarounds&rdquo; — find the DS analogue.]
+            The hardest call I made in the first quarter was to build the
+            token system before any component. Visible progress was slow —
+            three weeks in, there was nothing to demo to leadership, no
+            clickable Figma file, no &ldquo;we shipped a button&rdquo;
+            moment. But every component that came after inherited from those
+            tokens, and brand updates that would have taken weeks of
+            cross-product coordination became single-file edits. Foundations
+            paid off slowly, then all at once.
           </p>
           <p>
-            [placeholder: paragraph 2 — a deliberate bet that paid off. A
-            non-obvious sequencing or tooling choice (tokens before
-            components, primitives before aliases, governance before scale)
-            and why it worked.]
+            Building a contribution workflow into v1 felt premature at the
+            time — there was barely a system to contribute to. But the
+            system that scales is the one other people can change. Without
+            proposal → review → accept in place from day one, the library
+            would have plateaued the moment my attention moved to other
+            work. The system became a team because it could, and that was
+            the only reason it outlasted me being its sole maintainer.
           </p>
           <p>
-            [placeholder: paragraph 3 — what you&apos;d carry forward. The
-            framing or principle that made decisions easier across the
-            project, and how it generalises beyond DS work.]
+            Year one I was the bottleneck. Every &ldquo;should this
+            component handle X&rdquo; question came to me; every
+            implementation review pinged me directly. By year three, those
+            questions had moved to a Slack channel that designers and
+            engineers answered each other in, and to weekly clinics that
+            ran with or without me. Removing myself from the critical path
+            was the actual measure of success. If a DS lead is still
+            indispensable in year three, the system hasn&apos;t matured —
+            only the lead has.
           </p>
         </div>
       </div>
@@ -799,12 +714,10 @@ export default function ArtemisDesignSystemPage() {
     <CaseStudyLayout sections={SECTIONS} backHref="/#works">
       <Overview />
       <AtAGlance />
-      <Background />
+      <WhyArtemis />
       <Audit />
-      <Findings />
-      <TheProblem />
-      <Process />
-      <TheSystem />
+      <FiveFronts />
+      <MyContributions />
       <Adoption />
       <Reflection />
     </CaseStudyLayout>

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, LayoutGrid, CirclePlay, CircleUser, ArrowLeft } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
-import { useChatDrawer } from "@/context/ChatContext";
 
 const navLinks = [
   { label: "Works", href: "#works", Icon: LayoutGrid, tabletHidden: true },
@@ -61,15 +60,51 @@ function NavTimer() {
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [isNavVisible, setIsNavVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { isOpen, toggle: toggleChat } = useChatDrawer();
   const pathname = usePathname();
   const isCaseStudy = pathname.startsWith("/works/");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    let lastScrollY = window.scrollY;
+    let downwardDistance = 0;
+    let upwardDistance = 0;
+    let frameId: number | null = null;
+
+    const onScroll = () => {
+      if (frameId !== null) return;
+
+      frameId = window.requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY;
+        const delta = currentScrollY - lastScrollY;
+
+        setScrolled(currentScrollY > 10);
+
+        if (currentScrollY <= 10) {
+          downwardDistance = 0;
+          upwardDistance = 0;
+          setIsNavVisible(true);
+        } else if (delta > 0) {
+          downwardDistance += delta;
+          upwardDistance = 0;
+          if (downwardDistance >= 8) setIsNavVisible(false);
+        } else if (delta < 0) {
+          upwardDistance += Math.abs(delta);
+          downwardDistance = 0;
+          if (upwardDistance >= 8) setIsNavVisible(true);
+        }
+
+        lastScrollY = currentScrollY;
+        frameId = null;
+      });
+    };
+
+    onScroll();
     window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+    };
   }, []);
 
   useEffect(() => {
@@ -82,9 +117,10 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed ${isCaseStudy ? "top-0" : "top-[28px]"} left-0 h-[68px] z-50 bg-background border-b border-line transition-[right,box-shadow] duration-300 ease-in-out ${
+      onFocusCapture={() => setIsNavVisible(true)}
+      className={`fixed ${isCaseStudy ? "top-0" : "top-[28px]"} right-0 left-0 h-[68px] z-50 bg-background border-b border-line transition-[transform,box-shadow] duration-300 ease-in-out ${
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
-      } ${isOpen ? "lg:right-[400px] right-0" : "right-0"}`}
+      } ${isNavVisible ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >
       {/* Main nav row */}
       <nav className="flex items-center justify-between h-full px-[20px] md:px-[80px] lg:px-[100px]">
@@ -125,30 +161,24 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
-          <button
-            type="button"
-            onClick={toggleChat}
-            className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] h-[42px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
-                isOpen ? "bg-grape" : "bg-primary hover:bg-grape"
-              }`}
+          <Link
+            href="/resume"
+            className="flex items-center gap-2 text-white font-brand font-normal text-[14px] uppercase tracking-[1px] px-[16px] h-[42px] rounded-[10px] transition-colors duration-200 whitespace-nowrap bg-primary hover:bg-grape"
           >
             <SparkleAiIcon size={16} />
-            ASH LLM
-          </button>
+            Fancy Paper
+          </Link>
         </div>
 
-        {/* Mobile: ASH LLM button + hamburger */}
+        {/* Mobile: resume CTA + hamburger */}
         <div className="md:hidden flex items-center gap-2">
-          <button
-            type="button"
-            onClick={toggleChat}
-            className={`flex items-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 whitespace-nowrap cursor-pointer ${
-              isOpen ? "bg-grape" : "bg-primary hover:bg-grape"
-            }`}
+          <Link
+            href="/resume"
+            className="flex items-center gap-2 text-white font-brand font-normal text-[14px] uppercase tracking-[1px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 whitespace-nowrap bg-primary hover:bg-grape"
           >
             <SparkleAiIcon size={16} />
-            ASH LLM
-          </button>
+            Fancy Paper
+          </Link>
           <button
             className="flex items-center justify-center w-[38px] self-stretch rounded-full border-[0.5px] border-line bg-[rgba(30,5,37,0.08)] p-[4px] text-heading"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -178,25 +208,6 @@ export default function Navbar() {
             ))}
           </ul>
 
-          {/* CTA buttons */}
-          <div className="flex flex-col gap-3 px-[20px] py-8">
-            <button
-              type="button"
-              onClick={() => { toggleChat(); setMenuOpen(false); }}
-              className={`w-full flex items-center justify-center gap-2 text-white font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[10px] rounded-[10px] transition-colors duration-200 cursor-pointer ${
-                isOpen ? "bg-grape" : "bg-primary hover:bg-grape"
-              }`}
-            >
-              <SparkleAiIcon size={16} />
-              ASH LLM
-            </button>
-            <a
-              href="/resume"
-              className="w-full flex items-center justify-center font-brand font-medium text-[15px] tracking-[-0.075px] px-[16px] py-[10px] rounded-[10px] border border-line text-secondary hover:border-secondary transition-colors duration-200"
-            >
-              Resume
-            </a>
-          </div>
         </div>
       )}
     </header>

@@ -114,6 +114,15 @@ const timelineGroups: YearGroup[] = [
     year: "2024",
     works: [
       {
+        title: "Integrating travel insurance into the Artemis booking flow",
+        description:
+          "Designed and shipped in 4 weeks — drove insurance adoption from 7% to 52% and generated $125K in Q1 revenue by embedding coverage directly into checkout.",
+        image: "/images/works-cover.png",
+        imageAlt: "Artemis insurance integration preview",
+        href: "/works/artemis-insurance",
+        tags: ["UX Design", "Shipped"],
+      },
+      {
         title: "Designing an AI-powered itinerary builder for modern travellers",
         description:
           "Lets travelers create fully personalised trips in under 2 minutes—combining real-time availability, smart suggestions, and a zero-friction booking flow.",
@@ -214,8 +223,9 @@ export default function Works() {
                 return (
                   <div
                     key={work.title}
+                    className="lg:flex lg:justify-center"
                   >
-                    <Wrapper href={work.href as string} className="group flex flex-col gap-0 bg-background rounded-[24px] p-5 lg:p-8 border border-transparent hover:border-line-soft transition-all duration-500 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+                    <Wrapper href={work.href as string} className="group flex flex-col gap-0 bg-background rounded-[24px] p-5 lg:max-w-[840px] lg:p-8 border border-transparent hover:border-line-soft transition-all duration-500 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
 
                       {/* Tags */}
                       <div className="flex items-center gap-3 mb-[8px]">
@@ -230,7 +240,7 @@ export default function Works() {
                       </div>
 
                       {/* Title */}
-                      <h2 className="font-heading font-normal text-[18px] leading-[1.3] tracking-[-0.36px] text-heading lg:text-[30px] lg:leading-[1.2] lg:tracking-[-0.6px] mb-[6px]">
+                      <h2 className="font-heading font-normal text-[20px] leading-[1.3] tracking-[-0.36px] text-heading lg:text-[32px] lg:leading-[1.2] lg:tracking-[-0.6px] mb-[6px]">
                         {work.title}
                       </h2>
 
@@ -240,7 +250,7 @@ export default function Works() {
                       </p>
 
                       {/* Image */}
-                      <div className="relative w-full h-[260px] rounded-[20px] overflow-hidden mt-[32px] lg:h-[480px] lg:mt-[40px]">
+                      <div className="relative w-full h-[240px] rounded-[20px] overflow-hidden mt-[32px] lg:h-[440px] lg:mt-[40px]">
                         <Image
                           src={work.image}
                           alt={work.imageAlt}

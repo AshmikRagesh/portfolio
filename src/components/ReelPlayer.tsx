@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { X, Maximize2 } from "lucide-react";
-import { useChatDrawer } from "@/context/ChatContext";
 
 // Figma arrow/arrow-up icon — points up by default; rotate-90 = right, rotate-180 = down
 function ArrowIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
@@ -50,7 +49,6 @@ export default function ReelPlayer() {
   const [index, setIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const { isOpen: chatOpen } = useChatDrawer();
 
   // Lock body scroll when expanded
   useEffect(() => {
@@ -70,12 +68,7 @@ export default function ReelPlayer() {
         role="button"
         tabIndex={0}
         aria-label="Expand reel"
-        className={`
-          fixed bottom-8 z-[45] cursor-pointer select-none
-          transition-[right] duration-300 ease-in-out
-          right-[20px] md:right-[80px] lg:right-[100px]
-          ${chatOpen ? "lg:!right-[500px]" : ""}
-        `}
+        className="fixed right-[20px] bottom-8 z-[45] cursor-pointer select-none md:right-[80px] lg:right-[100px]"
         style={{
           transform: hovered ? "scale(1.13)" : "scale(1)",
           transition: hovered

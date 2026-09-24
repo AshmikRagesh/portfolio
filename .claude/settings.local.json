@@ -61,7 +61,9 @@
       "Bash(npm run *)",
       "mcp__080e06ac-7375-4b25-8802-ca4e8ae5450c__notion-fetch",
       "WebSearch",
-      "WebFetch(domain:www.adhamdannaway.com)"
+      "WebFetch(domain:www.adhamdannaway.com)",
+      "WebFetch(domain:chatgpt.com)",
+      "Bash(xxd)"
     ]
   }
 }

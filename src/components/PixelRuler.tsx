@@ -2,12 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { useChatDrawer } from "@/context/ChatContext";
 
 const TICK_COUNT = 80; // 80 × 50px = 4000px track
 
 export default function PixelRuler() {
-  const { isOpen } = useChatDrawer();
   const pathname = usePathname();
   const lineRef = useRef<HTMLDivElement>(null);
   const labelsRef = useRef<(HTMLSpanElement | null)[]>([]);
@@ -91,11 +89,7 @@ export default function PixelRuler() {
   };
 
   return (
-    <div
-      className={`fixed top-0 left-0 h-[28px] overflow-hidden border-b border-black/20 bg-background z-[51] transition-[right] duration-300 ease-in-out ${
-        isOpen ? "lg:right-[400px] right-0" : "right-0"
-      }`}
-    >
+    <div className="fixed top-0 right-0 left-0 h-[28px] overflow-hidden border-b border-black/20 bg-background z-[51]">
       <div
         className="flex items-start h-full"
         style={{ width: `${TICK_COUNT * 50}px` }}
