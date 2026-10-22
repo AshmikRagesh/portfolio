@@ -994,7 +994,7 @@ function Impact() {
               case. I haven&apos;t done that once since launch.&rdquo;
             </p>
           </blockquote>
-          <figcaption className="font-body text-[13px] leading-[20px] text-muted">
+          <figcaption className="font-body text-[12px] leading-[16px] text-muted">
             — Sarah M., Reservations Consultant, Enchanting Travels
           </figcaption>
         </figure>

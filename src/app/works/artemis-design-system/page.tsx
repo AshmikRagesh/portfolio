@@ -7,12 +7,9 @@ import {
   SectionHeader,
   TrendUpArrow,
   H1_CLASS,
-  H2_CLASS,
-  H3_CLASS,
   H4_CLASS,
   LEAD_CLASS,
   BODY_CLASS,
-  EYEBROW_CLASS,
   SECTION_PAD,
 } from "@/components/case-study";
 
@@ -578,7 +575,7 @@ function MyContributions() {
 
             {/* Impact block — eyebrow + bullets */}
             <div className="flex flex-col gap-3">
-              <p className="font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-success">
+              <p className="font-brand text-[12px] font-medium uppercase tracking-[1px] text-success">
                 Impact
               </p>
               <ul className="list-disc flex flex-col gap-2">

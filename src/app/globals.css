@@ -12,6 +12,24 @@
   }
 }
 
+/* Shared page container — 1440px max with 20/80/100px gutters, so content is
+   1240px wide at desktop and lines up with the navbar. */
+@layer components {
+  /* Sections: same gutters as the navbar, but content stops at 1120px — at 1440 that leaves
+     160px each side while the navbar stays wide. */
+  .page-container {
+    @apply mx-auto w-full max-w-[1320px] px-[20px] md:px-[80px] lg:px-[100px];
+  }
+  /* Navbar: full 1240px content width at 1440 */
+  .nav-container {
+    @apply mx-auto w-full max-w-[1440px] px-[20px] md:px-[80px] lg:px-[100px];
+  }
+  /* Same gap between every section: 96 / 128 / 160px */
+  .section-spacing {
+    @apply pt-[96px] md:pt-[128px] lg:pt-[160px];
+  }
+}
+
 /* Footer scroll-reveal */
 @keyframes footer-rise {
   from { transform: translateY(60px); opacity: 0.6; }
@@ -25,22 +43,8 @@
   animation-play-state: running;
 }
 
-/* Footer glow breathing pulse */
-@keyframes glow-breathe {
-  0%   { transform: scaleX(1)    scaleY(1);    opacity: 1;    }
-  40%  { transform: scaleX(1.10) scaleY(1.14); opacity: 0.80; }
-  55%  { transform: scaleX(1.06) scaleY(1.09); opacity: 0.88; }
-  68%  { transform: scaleX(1.09) scaleY(1.12); opacity: 0.83; }
-  80%  { transform: scaleX(1.04) scaleY(1.06); opacity: 0.92; }
-  100% { transform: scaleX(1)    scaleY(1);    opacity: 1;    }
-}
-
 /*
-  GT Alpina Trial — place font files in public/fonts/:
-    GTAlpinaTrial-Regular.woff2
-    GTAlpinaTrial-RegularItalic.woff2
-    GTAlpinaTrial-Medium.woff2
-  Falls back to serif until files are present.
+  GT Alpina Trial — display headings. Files live in public/fonts/.
 */
 @font-face {
   font-family: "GT Alpina Trial";
@@ -64,4 +68,128 @@
   font-weight: 500;
   font-style: normal;
   font-display: swap;
+}
+
+/* ── Work card reveals ───────────────────────────────────────────────────────────
+   Open works: the first hover/focus drops the key onto the brass hook, where it then
+   stays; later hovers just swing it on the hook. NDA works: the rubber stamp presses down the first time the card is hovered
+   or focused — on scroll-in for touch screens — and then stays (NdaStamp sets
+   data-stamped on the card).
+   Touch screens and reduced motion show the end states with no animation. */
+
+/* Key — pivots where the ring's inner top edge rests on the wire (35.5px, 27.9px) */
+.key-hang {
+  transform-box: view-box;
+  transform-origin: 35.5px 27.9px;
+  opacity: 0;
+  transform: translate(10px, -18px) rotate(10deg);
+  transition: opacity 0.22s ease, transform 0.26s cubic-bezier(0.4, 0, 1, 1);
+}
+@keyframes key-drop {
+  0%   { opacity: 0; transform: translate(20px, -42px) rotate(26deg); animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.5); }
+  16%  { opacity: 1; }
+  30%  { transform: translate(7px, -12px) rotate(14deg); animation-timing-function: cubic-bezier(0.4, 0, 0.8, 0.6); } /* ring over the hook's tip */
+  38%  { transform: translate(1px, -3px) rotate(4deg); animation-timing-function: cubic-bezier(0.5, 0, 1, 1); }       /* slides down the wire */
+  44%  { transform: translate(0, 1.5px) rotate(-11deg); animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }   /* drops into the cup */
+  50%  { transform: translate(0, -0.5px) rotate(-13deg); animation-timing-function: ease-in-out; }
+  60%  { transform: translate(0, 0) rotate(8deg); animation-timing-function: ease-in-out; }
+  70%  { transform: rotate(-4.5deg); animation-timing-function: ease-in-out; }
+  80%  { transform: rotate(2.5deg); animation-timing-function: ease-in-out; }
+  90%  { transform: rotate(-1deg); animation-timing-function: ease-in-out; }
+  100% { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+}
+/* KeyTag sets data-key on the card:
+     dropping — first hover/focus: the key drops onto the hook (plays through even if the
+                cursor leaves), then becomes…
+     hung     — stays on the hook for good
+     swinging — every later hover/focus: a gentle swing on the hook, then back to hung */
+.group[data-key="dropping"] .key-hang,
+.group[data-key="hung"] .key-hang,
+.group[data-key="swinging"] .key-hang {
+  opacity: 1;
+  transform: none;
+}
+.group[data-key="dropping"] .key-hang {
+  animation: key-drop 1.6s linear both;
+}
+@keyframes key-swing {
+  0%   { transform: rotate(0deg); }
+  18%  { transform: rotate(8deg); }
+  40%  { transform: rotate(-6deg); }
+  60%  { transform: rotate(3.5deg); }
+  80%  { transform: rotate(-1.5deg); }
+  100% { transform: rotate(0deg); }
+}
+.group[data-key="swinging"] .key-hang {
+  animation: key-swing 1.2s ease-in-out;
+}
+
+/* Hook takes the key's weight at the moment it lands */
+.hook-jolt {
+  transform-box: view-box;
+  transform-origin: 30px 9px;
+}
+@keyframes hook-jolt {
+  0%, 43% { transform: rotate(0deg); }
+  47%     { transform: rotate(3deg); }
+  55%     { transform: rotate(-1.5deg); }
+  65%     { transform: rotate(0.6deg); }
+  75%, 100% { transform: rotate(0deg); }
+}
+.group[data-key="dropping"] .hook-jolt {
+  animation: hook-jolt 1.6s ease-out;
+}
+
+/* NDA stamp — presses down once (first hover/focus), then stays */
+.nda-stamp {
+  opacity: 0;
+  transform: scale(1.5) rotate(-6deg);
+}
+@keyframes stamp-press {
+  0%   { opacity: 0; transform: translate(-6px, -18px) scale(1.7) rotate(-4deg); filter: blur(2px); }
+  40%  { opacity: 0.35; transform: translate(-2px, -6px) scale(1.2) rotate(-9deg); filter: blur(1px); }
+  56%  { opacity: 1; transform: scale(0.94) rotate(-12deg); filter: blur(0); }   /* impact */
+  70%  { transform: scale(1.04) rotate(-12deg); }
+  84%  { transform: scale(0.99) rotate(-12deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-12deg); }
+}
+.group[data-stamped="true"] .nda-stamp {
+  animation: stamp-press 0.62s cubic-bezier(0.3, 0.7, 0.2, 1) both;
+}
+/* Image takes the hit at the moment of impact */
+@keyframes stamp-thud {
+  0%, 52% { transform: translateY(0); }
+  58%     { transform: translateY(2px); }
+  68%     { transform: translateY(-1px); }
+  100%    { transform: translateY(0); }
+}
+.group[data-stamped="true"] .stamp-thud {
+  animation: stamp-thud 0.62s ease-out;
+}
+
+
+@media (hover: none) {
+  .key-hang { opacity: 1; transform: none; }
+}
+
+/* Guestbook signature — ink draws in once the card scrolls into view */
+.signature path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.6, 0, 0.3, 1);
+}
+.signature[data-drawn="true"] path {
+  stroke-dashoffset: 0;
+}
+.signature[data-drawn="true"] path:nth-child(2) { transition-delay: 0.35s; }
+.signature[data-drawn="true"] path:nth-child(3) { transition-delay: 0.7s; }
+.signature[data-drawn="true"] path:nth-child(4) { transition-delay: 1.05s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .key-hang, .nda-stamp, .stamp-thud { transition: none; }
+  .group[data-key] .key-hang { animation: none !important; opacity: 1; transform: none; }
+  .group[data-key] .hook-jolt { animation: none; }
+  .group[data-stamped="true"] .nda-stamp { animation: none; opacity: 1; transform: rotate(-12deg); }
+  .group[data-stamped="true"] .stamp-thud { animation: none; }
+  .signature path { transition: none; stroke-dashoffset: 0; }
 }

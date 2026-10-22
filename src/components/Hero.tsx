@@ -4,17 +4,15 @@ const PORTRAIT_SRC = "/images/portrait-sketch.png";
 
 export default function Hero() {
   return (
-    <section className="bg-background flex flex-col items-center gap-[60px] px-[20px] pt-[140px] pb-[60px] md:px-[60px] md:pt-[140px] md:pb-[60px] lg:px-[240px] lg:pt-[144px] lg:pb-[60px]">
+    <section className="page-container bg-background flex flex-col items-center gap-[60px] pt-[140px] lg:pt-[144px]">
       {/* Text */}
       <div className="flex flex-col items-center gap-6 text-center w-full">
-        <h1 className="font-heading font-normal text-[36px] leading-[40px] tracking-[-0.36px] text-heading whitespace-normal md:text-[44px] md:leading-[48px] md:tracking-[-0.44px] lg:text-[48px] lg:leading-[52px] lg:tracking-[-0.48px] lg:whitespace-pre-wrap">
-          {`Hi, I'm `}
-          <em>Ashmik Ragesh</em>
-          {`,\ncreator that designs for creators.`}
+        <h1 className="font-heading font-normal text-[36px] leading-[40px] tracking-[-0.36px] text-heading whitespace-normal md:text-[44px] md:leading-[48px] md:tracking-[-0.44px] lg:text-[50px] lg:leading-[56px] lg:tracking-[-0.5px] lg:whitespace-pre-wrap">
+          {`Hey, I'm Ashmik Ragesh,\nDesign Engineer who ships with vision.`}
         </h1>
-        <p className="font-body font-normal text-[16px] leading-[24px] text-muted w-full md:text-[20px] md:leading-[32px] md:max-w-[653px] lg:text-[20px] lg:leading-[32px] lg:max-w-[653px]">
-          Designing for the world. I care about systems that scale and
-          the small details that make them feel human.
+        <p className="font-body font-normal text-[16px] leading-[24px] text-secondary w-full md:text-[20px] md:leading-[32px] md:max-w-[652px] lg:text-[20px] lg:leading-[32px] lg:max-w-[652px]">
+          I make data-heavy products easy to understand—and build working
+          prototypes so teams can try an idea before they commit to it.
         </p>
       </div>
 

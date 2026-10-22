@@ -16,7 +16,7 @@ export const LEAD_CLASS =
 export const BODY_CLASS =
   "font-body font-normal text-body md:text-body-md lg:text-body-lg text-muted";
 export const EYEBROW_CLASS =
-  "font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-muted";
+  "font-brand text-[12px] font-medium uppercase tracking-[1px] text-muted";
 
 // Consistent section padding applied to every full-width case study section.
 // bg-* is intentionally excluded — set it per-section.

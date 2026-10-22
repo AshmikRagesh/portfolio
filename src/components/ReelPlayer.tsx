@@ -140,7 +140,7 @@ export default function ReelPlayer() {
               {/* View Case Study — standalone button with its own rounding */}
               <Link
                 href={reel.projectHref}
-                className="flex items-center justify-center gap-2 bg-[#481B55] hover:bg-grape transition-colors duration-200 h-[50px] px-4 rounded-[10px] text-white font-brand font-medium text-[15px] tracking-[-0.07px]"
+                className="flex items-center justify-center gap-2 bg-[#481B55] hover:bg-grape transition-colors duration-200 h-[50px] px-4 rounded-[10px] text-white font-brand font-medium text-[14px] tracking-[0px]"
                 style={{ width: "var(--vw)" }}
               >
                 View Case Study

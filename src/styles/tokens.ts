@@ -8,7 +8,7 @@ export const tokens = {
 
     // ── Text ──────────────────────────────────────────────────────────
     text:           "#1e0525",  // Primary body text
-    heading:        "#1e0525",  // Headings H1–H6
+    heading:        "#32073e",  // Headings H1–H6 — same as primary
     secondary:      "#524555",  // Secondary body text
     muted:          "#8e8292",  // Labels, captions, eyebrows
 
@@ -33,9 +33,7 @@ export const tokens = {
   fontFamily: {
     // Geist Mono — nav links, CTA chips (loaded via next/font/google in layout.tsx)
     brand: ["var(--font-brand)", "monospace"],
-    // Roboto Slab — body / lead / captions (loaded via next/font/google in layout.tsx)
-    // Slab serif chosen for screen readability + harmonises with GT Alpina headings.
-    // Fallback: sans-serif (Roboto Slab's proportions are closer to a sans than to Times-like serifs).
+    // Roboto Slab — body / lead / captions, and the page default (loaded via next/font/google in layout.tsx)
     body: ["var(--font-body)", "sans-serif"],
     // GT Alpina Trial — display headings (loaded via @font-face in globals.css)
     // Local font files in public/fonts/: GT-Alpina-Standard-{Regular,Medium,Regular-Italic}-Trial.otf
@@ -69,20 +67,21 @@ export const tokens = {
     "h4-md":   ["20px", { lineHeight: "1.3",  letterSpacing: "-0.5px" }],
     "h4-lg":   ["22px", { lineHeight: "1.3",  letterSpacing: "-0.6px" }],
 
-    // Body — lead paragraphs (intro under headings)
-    lead:      ["16px", { lineHeight: "1.55" }],
-    "lead-md": ["18px", { lineHeight: "1.55" }],
-    "lead-lg": ["18px", { lineHeight: "1.55" }],
+    // Body (Geist) — explicit even px line heights, no tracking
+    // Lead paragraphs (intro under headings)
+    lead:      ["16px", { lineHeight: "26px" }],
+    "lead-md": ["18px", { lineHeight: "28px" }],
+    "lead-lg": ["18px", { lineHeight: "28px" }],
 
-    // Body — secondary / card content
-    body:      ["14px", { lineHeight: "1.5"  }],
-    "body-md": ["15px", { lineHeight: "1.5"  }],
-    "body-lg": ["16px", { lineHeight: "1.5"  }],
+    // Secondary / card content
+    body:      ["14px", { lineHeight: "22px" }],
+    "body-md": ["16px", { lineHeight: "26px" }],
+    "body-lg": ["16px", { lineHeight: "26px" }],
 
     // Captions, status labels
-    caption:      ["12px", { lineHeight: "1.4", letterSpacing: "0.5px" }],
-    "caption-md": ["13px", { lineHeight: "1.4", letterSpacing: "0.5px" }],
-    "caption-lg": ["14px", { lineHeight: "1.4", letterSpacing: "0.5px" }],
+    caption:      ["12px", { lineHeight: "16px" }],
+    "caption-md": ["12px", { lineHeight: "16px" }],
+    "caption-lg": ["14px", { lineHeight: "20px" }],
 
     // Display number (metric stats)
     stat:      ["48px", { lineHeight: "1", letterSpacing: "-2.4px" }],

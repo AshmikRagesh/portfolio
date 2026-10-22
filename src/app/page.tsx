@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 import Works from "@/components/Works";
-import Playground from "@/components/Playground";
+import Testimonials from "@/components/Testimonials";
+import TasteNotes from "@/components/TasteNotes";
 import Footer from "@/components/Footer";
 import ReelPlayer from "@/components/ReelPlayer";
 
@@ -11,7 +12,8 @@ export default function Home() {
       <div className="relative z-10 bg-background">
         <Hero />
         <Works />
-        <Playground />
+        <Testimonials />
+        <TasteNotes />
       </div>
       <Footer />
       <ReelPlayer />

@@ -3,12 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutGrid, CirclePlay, CircleUser, ArrowLeft } from "lucide-react";
+import { Menu, X, LayoutGrid, CircleUser, ArrowLeft } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 
 const navLinks = [
-  { label: "Works", href: "#works", Icon: LayoutGrid, tabletHidden: true },
-  { label: "Playground", href: "#playground", Icon: CirclePlay },
+  { label: "Works", href: "#works", Icon: LayoutGrid },
   { label: "About", href: "#about", Icon: CircleUser },
 ];
 
@@ -118,12 +117,12 @@ export default function Navbar() {
   return (
     <header
       onFocusCapture={() => setIsNavVisible(true)}
-      className={`fixed ${isCaseStudy ? "top-0" : "top-[28px]"} right-0 left-0 h-[68px] z-50 bg-background border-b border-line transition-[transform,box-shadow] duration-300 ease-in-out ${
+      className={`fixed ${isCaseStudy ? "top-0" : "top-[20px]"} right-0 left-0 h-[68px] z-50 bg-background border-b border-line transition-[transform,box-shadow] duration-300 ease-in-out ${
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
       } ${isNavVisible ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >
       {/* Main nav row */}
-      <nav className="flex items-center justify-between h-full px-[20px] md:px-[80px] lg:px-[100px]">
+      <nav className={`flex items-center justify-between h-full ${isCaseStudy ? "px-[20px] md:px-[80px] lg:px-[100px]" : "nav-container"}`}>
         {/* Mobile on case study pages: back button. Everything else: Ash logo */}
         {isCaseStudy ? (
           <>
@@ -145,8 +144,8 @@ export default function Navbar() {
         {/* Desktop + tablet: nav links + CTA */}
         <div className="hidden md:flex items-center gap-[20px]">
           <ul className="flex items-center gap-[24px]">
-            {navLinks.map(({ label, href, Icon, tabletHidden }) => (
-              <li key={label} className={tabletHidden ? "hidden lg:block" : undefined}>
+            {navLinks.map(({ label, href, Icon }) => (
+              <li key={label}>
                 <a
                   href={href}
                   className="group/tab flex items-center gap-2 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] transition-colors duration-200 hover:text-grape hover:underline hover:decoration-wavy"

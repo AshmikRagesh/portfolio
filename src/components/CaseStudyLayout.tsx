@@ -64,7 +64,7 @@ export default function CaseStudyLayout({
         {/* Back / Home link */}
         <Link
           href={backHref}
-          className="flex items-center gap-2 font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-muted hover:text-heading hover:-translate-x-[3px] transition-all duration-200 mb-8"
+          className="flex items-center gap-2 font-brand text-[12px] font-medium uppercase tracking-[1px] text-muted hover:text-heading hover:-translate-x-[3px] transition-all duration-200 mb-8"
           style={{ transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
         >
           <ArrowLeft size={13} strokeWidth={2} />
@@ -84,7 +84,7 @@ export default function CaseStudyLayout({
                     : "text-muted hover:text-heading hover:bg-grape-light/50"
                 }`}
               >
-                <span className="font-body text-[13px] shrink-0 leading-none">
+                <span className="font-body text-[12px] shrink-0 leading-none">
                   {String(i + 1).padStart(2, "0")}.
                 </span>
                 <span className="font-body text-[14px] leading-[1.4]">
@@ -98,7 +98,7 @@ export default function CaseStudyLayout({
         {/* Back to top — pinned to bottom, hidden while in Overview, fades + slides in afterwards */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className={`flex items-center gap-2 font-brand text-[13px] font-medium uppercase tracking-[1.5px] text-muted hover:text-heading hover:-translate-y-[3px] mt-auto transition-all duration-300 ${
+          className={`flex items-center gap-2 font-brand text-[12px] font-medium uppercase tracking-[1px] text-muted hover:text-heading hover:-translate-y-[3px] mt-auto transition-all duration-300 ${
             activeId !== sections[0]?.id
               ? "opacity-100 translate-y-0 pointer-events-auto"
               : "opacity-0 translate-y-2 pointer-events-none"
@@ -122,7 +122,7 @@ export default function CaseStudyLayout({
               <button
                 key={id}
                 onClick={() => scrollTo(id)}
-                className={`shrink-0 font-body text-[15px] py-1.5 border-b-2 transition-colors duration-150 whitespace-nowrap ${
+                className={`shrink-0 font-body text-[14px] py-1.5 border-b-2 transition-colors duration-150 whitespace-nowrap ${
                   activeId === id
                     ? "border-grape text-heading"
                     : "border-transparent text-muted hover:text-grape"
