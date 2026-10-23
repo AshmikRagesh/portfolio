@@ -320,7 +320,7 @@ export default function HostStates() {
               behaves like the object and speaks plainly, the way someone at a front desk would.
             </p>
             <div className="mt-[20px] flex flex-wrap gap-[8px]">
-              {["Navbar logo, 56px tall", "3 moods", "5 states", "Development-only page"].map((t) => (
+              {["Navbar logo, 56px tall", "3 moods", "6 states", "Development-only page"].map((t) => (
                 <span key={t} className="rounded-full bg-surface px-[12px] py-[4px] font-brand text-[12px] uppercase tracking-[1px] text-secondary">
                   {t}
                 </span>
@@ -347,9 +347,15 @@ export default function HostStates() {
                 ["Resting", "The default", "Idle mood. Hands hidden. Eyes follow the cursor.", "Any other state starts"],
                 [
                   "Hovered",
-                  "Pointer over the bell, keyboard focus, or a first tap on touch screens",
+                  "Pointer over the bell, or keyboard focus",
                   "Rings (with sound once the page has had a click), then both hands bring down the board with the live time",
-                  "Pointer leaves, focus moves, or 4 seconds after a tap",
+                  "Pointer leaves or focus moves",
+                ],
+                [
+                  "Tapped (touch screens)",
+                  "A tap on the bell — hover does nothing on touch. Also once by itself, right after the visit's first line",
+                  "Rings, then lowers the board. The bell doesn't navigate home on touch screens.",
+                  "Another tap, on the bell or the board",
                 ],
                 [
                   "Message",
@@ -426,11 +432,11 @@ export default function HostStates() {
 
           <Section id="copy" title="Copy" intro="Short, plain and factual — how a person at a front desk would actually say it. One thought per line, no dashes, no visit counts.">
             <Table
-              head={["When", "Line", "Without enough data"]}
+              head={["When", "Line", "Variant"]}
               rows={[
-                ["0:30", MILESTONES[0].say({ percentile: null }), "—"],
-                ["2:00", MILESTONES[1].say({ percentile: 72 }), MILESTONES[1].say({ percentile: null })],
-                ["5:00", MILESTONES[2].say({ percentile: 91 }), MILESTONES[2].say({ percentile: null })],
+                ["0:30", MILESTONES[0].say({ percentile: null }), `On touch screens: ${MILESTONES[0].say({ percentile: null, touch: true })}`],
+                ["2:00", MILESTONES[1].say({ percentile: 72 }), `Before ${MIN_RANK_SAMPLE} visitors: ${MILESTONES[1].say({ percentile: null })}`],
+                ["5:00", MILESTONES[2].say({ percentile: 91 }), `Before ${MIN_RANK_SAMPLE} visitors: ${MILESTONES[2].say({ percentile: null })}`],
                 ["Record", RECORD_LINES[0], "—"],
               ]}
             />
@@ -477,6 +483,7 @@ export default function HostStates() {
             <ul className="flex flex-col gap-[8px] font-body text-[14px] leading-[22px] text-secondary list-disc pl-[20px]">
               <li>The bell is a link home labelled &ldquo;Home — measuring your curiosity&rdquo;; the drawing itself is hidden from assistive tech.</li>
               <li>Keyboard focus on the bell lowers the board, the same as hover.</li>
+              <li>On touch screens the bell is a toggle: tap to show the board, tap again to put it away. It reports its state with <Code>aria-expanded</Code>.</li>
               <li>The board is a <Code>role=&quot;timer&quot;</Code> with a spoken label, e.g. &ldquo;Measuring your curiosity: 4m 16s&rdquo;.</li>
               <li>Tooltip lines are announced whole through a polite live region, not letter by letter.</li>
               <li>Reduced motion stops every animation; sound never plays before an interaction.</li>

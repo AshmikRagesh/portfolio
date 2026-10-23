@@ -163,7 +163,8 @@ export function useMilestoneBubble(record = false): Bubble {
 
     (async () => {
       const percentile = next?.rank ? await fetchPercentile(visitorId, stamp) : null;
-      const line = recordDue ? sayRecord() : next!.say({ percentile });
+      const touch = window.matchMedia("(hover: none)").matches;
+      const line = recordDue ? sayRecord() : next!.say({ percentile, touch });
       const timing = bubbleTiming(line);
       setMeta({ kind: recordDue ? "record" : "milestone", stamp, percentile, ...timing });
       setMessage(line);

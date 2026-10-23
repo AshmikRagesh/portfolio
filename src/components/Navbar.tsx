@@ -32,26 +32,52 @@ function usePreviewMood() {
   return preview;
 }
 
-// The logo: the front-desk bell. On hover (or a first tap on touch screens) it rings —
-// ding ding, out loud once the page has had a click — and both hands come down to
-// hold the timer board underneath it. It dozes while the
-// clock is paused, turns gold once this is the longest visit ever, and rings before
-// it says anything. The board is out of the layout and above everything on the page,
-// so nothing around it ever moves.
+/** True on screens with no hover (phones, tablets) — they get tap-to-toggle instead. */
+function useTouchScreen() {
+  const [touch, setTouch] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(hover: none)");
+    const update = () => setTouch(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  return touch;
+}
+
+// Shown once per visit on touch screens, right after the bell's first line, so people
+// who can't hover still find out the board is there
+const BOARD_SHOWN_KEY = "ash.curiosity.boardShown"; // sessionStorage
+
+// The logo: the front-desk bell. It dozes while the clock is paused, turns gold once
+// this is the longest visit ever, and rings before it says anything.
+//
+// The board, two ways:
+//   pointer   hover (or keyboard focus) rings it — ding ding, out loud once the page
+//             has had a click — and both hands bring the board down; it goes back up
+//             when the pointer leaves.
+//   touch     there's no hover, so nothing happens until a tap. A tap on the bell rings
+//             it and brings the board down; it stays until another tap on the bell or
+//             the board. The bell doesn't navigate home on touch screens. The board
+//             also comes down once by itself, after the first line of the visit.
+//
+// The board is out of the layout and above everything on the page, so nothing around
+// it ever moves.
 function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   const { activeSeconds, paused } = useCuriosity();
   const preview = usePreviewMood();
+  const touch = useTouchScreen();
   const [hovered, setHovered] = useState(false);
-  const [tapped, setTapped] = useState(false);
+  const [open, setOpen] = useState(false); // touch: board pinned down by a tap
   const [shift, setShift] = useState(0);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   const speaking = bubble.message !== null;
-  const holding = ((hovered || tapped) && !speaking) || preview === "holding";
+  const holding = (((hovered && !touch) || open) && !speaking) || preview === "holding";
   const champion = record || preview === "champion";
   const mood: HostMood = preview === "dozing" || (paused && !holding) ? "dozing" : champion ? "champion" : "idle";
 
-  // It rings like a desk bell: when it's hovered, and before it says anything
+  // It rings like a desk bell: when the board comes down, and before it says anything
   const [ding, setDing] = useState(0);
   useEffect(() => {
     if (holding || speaking) setDing((d) => d + 1);
@@ -70,21 +96,27 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
     setShift(Math.max(0, overflowLeft));
   }, [holding, gripMid, boardWidth]);
 
+  // Touch: once the bell's first line of the visit has been said, bring the board down
+  const wasSpeaking = useRef(false);
   useEffect(() => {
-    if (!tapped) return;
-    const id = window.setTimeout(() => setTapped(false), 4000);
-    return () => window.clearTimeout(id);
-  }, [tapped]);
+    const finished = wasSpeaking.current && !speaking;
+    wasSpeaking.current = speaking;
+    if (!touch || !finished) return;
+    try {
+      if (sessionStorage.getItem(BOARD_SHOWN_KEY)) return;
+      sessionStorage.setItem(BOARD_SHOWN_KEY, "1");
+    } catch {}
+    setOpen(true);
+  }, [speaking, touch]);
 
   useEffect(primeBell, []);
 
-  // Touch screens have no hover: the first tap rings and shows the board, a second tap goes home
-  const onClick = (e: React.MouseEvent) => {
-    if (window.matchMedia("(hover: none)").matches && !tapped) {
-      e.preventDefault();
-      setTapped(true);
-      ringBell();
-    }
+  // Touch: a tap on the bell or the board toggles the board. Pointer: the bell is a link home.
+  const toggle = (e: React.MouseEvent) => {
+    if (!touch) return;
+    e.preventDefault();
+    if (!open) ringBell();
+    setOpen((o) => !o);
   };
 
   return (
@@ -92,15 +124,22 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
       ref={wrapRef}
       className="relative shrink-0"
       onMouseEnter={() => {
+        if (touch) return; // phones fire mouseenter on tap — the tap handles it
         setHovered(true);
         ringBell();
       }}
       onMouseLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
+      onFocus={() => !touch && setHovered(true)}
       onBlur={() => setHovered(false)}
     >
       {/* Above the board, so the hands overlap the rings they hold it by */}
-      <Link href="/" aria-label="Home — measuring your curiosity" onClick={onClick} className="relative z-10 block select-none">
+      <Link
+        href="/"
+        aria-label={touch ? "Measuring your curiosity — show your time" : "Home — measuring your curiosity"}
+        aria-expanded={touch ? holding : undefined}
+        onClick={toggle}
+        className="relative z-10 block select-none"
+      >
         <HostCharacter
           mood={mood}
           holding={holding}
@@ -110,9 +149,9 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
         />
       </Link>
 
-      {/* Timer board — hangs from the hands, rings level with them */}
+      {/* Timer board — hangs from the hands, rings level with them. On touch, a tap puts it away. */}
       {holding && (
-        <div className="absolute" style={{ left: boardLeft, top: left.y + 6 }}>
+        <div className="absolute" style={{ left: boardLeft, top: left.y + 6 }} onClick={toggle}>
           <div className="host-board" style={{ "--grip-x": `${gripMid - boardLeft}px` } as React.CSSProperties}>
             <TimerBoard seconds={activeSeconds} champion={champion} grips={[left.x - boardLeft, right.x - boardLeft]} />
           </div>

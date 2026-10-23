@@ -13,6 +13,8 @@
 export interface MilestoneContext {
   /** Percentile out-stayed, or null if not asked for / not enough data yet. */
   percentile: number | null;
+  /** On a touch screen there's no hover, so lines that say "hover" say "tap" instead. */
+  touch?: boolean;
 }
 
 export interface Milestone {
@@ -31,6 +33,7 @@ function fill(line: string, { percentile }: MilestoneContext) {
 
 const LINES = {
   thirtySeconds: ["You've been here 30 seconds. Hover over me to see your time."],
+  thirtySecondsTouch: ["You've been here 30 seconds. Tap me to see your time."],
   twoMinutes: ["2 minutes. You've stayed longer than {p}% of people."],
   twoMinutesFallback: ["You've been here 2 minutes now."],
   fiveMinutes: ["5 minutes. Only {top}% of people stay this long."],
@@ -45,7 +48,7 @@ export const MILESTONES: Milestone[] = [
   {
     id: "30s",
     at: 30,
-    say: (c) => fill(pick(LINES.thirtySeconds), c),
+    say: (c) => fill(pick(c.touch ? LINES.thirtySecondsTouch : LINES.thirtySeconds), c),
   },
   {
     id: "2m",
