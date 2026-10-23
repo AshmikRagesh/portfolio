@@ -14,48 +14,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import Mailer, { MailerDefs, MAILER_SEEDS, type Tone } from "@/components/Mailer";
-import { TypeTag, DisciplineTag, type ProjectType, type Discipline } from "@/components/Tag";
-
-interface Note {
-  title: string;
-  summary: string;
-  date: string;
-  readTime: string;
-  tone: Tone;
-  type: ProjectType;
-  discipline: Discipline;
-  excerpt: string;
-  href: string;
-}
-
-// TODO: DUMMY CONTENT — placeholder notes and links. Replace with real Medium posts.
-const notes: Note[] = [
-  {
-    title: "Restraint is a feature",
-    summary: "Why the best interfaces I know feel like they left things out on purpose.",
-    date: "Sep 2026",
-    readTime: "8 min read",
-    tone: "yellow",
-    type: "Taste note",
-    discipline: "Product design",
-    excerpt:
-      "Every product I admire has a moment where someone said no — not to a bad idea, but to a good one that didn't belong. In data-heavy tools the temptation is always to show more: another column, another filter, another chart. The work is figuring out which three numbers someone actually needs before their coffee goes cold.",
-    href: "https://medium.com/@ashmikragesh",
-  },
-  {
-    title: "Prototype in the real material",
-    summary: "Figma shows what it looks like. Code shows what it's like to use.",
-    date: "Jun 2026",
-    readTime: "8 min read",
-    tone: "red",
-    type: "Taste note",
-    discipline: "Interaction design",
-    excerpt:
-      "Static mocks are great at answering 'what does it look like?' and terrible at 'what does it feel like?'. Timing, loading, real data that's longer than the placeholder — none of it shows up until you build it. So I build early, with production-aware prototypes, and teams get to feel an idea before they commit to it.",
-    href: "https://medium.com/@ashmikragesh",
-  },
-];
+import Link from "next/link";
+import Mailer, { MailerDefs, MAILER_SEEDS } from "@/components/Mailer";
+import { TypeTag, DisciplineTag } from "@/components/Tag";
+import { notes } from "@/content/notes";
 
 // Mailers lie at slightly different angles, like they were dropped on a table
 const TILTS = ["-rotate-[2deg]", "rotate-[1.6deg]"];
@@ -291,6 +253,11 @@ export default function TasteNotes() {
     return () => window.removeEventListener("keydown", onKey);
   }, [phase, close]);
 
+  // Following "Read the note" unmounts this with the page still locked
+  useEffect(() => () => {
+    document.body.style.overflow = "";
+  }, []);
+
   const note = active === null ? null : notes[active];
 
   return (
@@ -429,17 +396,15 @@ export default function TasteNotes() {
                     {note.excerpt}
                   </p>
 
-                  <a
-                    href={note.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href={`/notes/${note.slug}`}
                     className="mt-8 inline-flex h-14 items-center gap-2 rounded-full bg-[#0b0b0b] px-7 font-['Helvetica_Neue',Helvetica,Arial,sans-serif] text-[18px] font-medium tracking-[-0.2px] text-white shadow-[0_10px_24px_rgba(0,0,0,0.22),0_2px_4px_rgba(0,0,0,0.2)] transition-transform duration-200 hover:-translate-y-[2px] md:mt-10"
                   >
-                    Read on Medium
+                    Read the note
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M7 17 17 7M8 7h9v9" />
+                      <path d="M5 12h12M13 6l6 6-6 6" />
                     </svg>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
