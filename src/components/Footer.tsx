@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image"; // used for telephone illustration
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 
 const socialLinks = [
@@ -92,9 +93,14 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <p className="font-body font-normal text-[14px] leading-[22px] text-muted text-center relative z-10 md:text-[16px] md:leading-[24px]">
-          Designed + Coded with ❤︎ by Ashmik
-        </p>
+        <div className="flex flex-col items-center gap-2 relative z-10">
+          <p className="font-body font-normal text-[14px] leading-[22px] text-muted text-center md:text-[16px] md:leading-[24px]">
+            Designed + Coded with ❤︎ by Ashmik
+          </p>
+          <Link href="/curiosity" className="font-body text-[12px] leading-[16px] text-muted underline underline-offset-4 hover:text-white md:text-[14px] md:leading-[20px]">
+            What the bell measures
+          </Link>
+        </div>
 
       </div>
     </footer>
