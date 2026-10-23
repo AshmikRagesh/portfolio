@@ -233,17 +233,15 @@ function Anatomy() {
 
 const SWATCHES: [string, string, string][] = [
   ["Dome, lit", "#3e0d4b", "Blackcurrant enamel"],
-  ["Dome, shade", "#25052e", "The crescent on the right; arms"],
+  ["Midnight", "#1e0525", "Dome shade (the crescent on the right), arms, pupils, tooltip"],
   ["Grape", "#9D136A", "Base, plunger, hands, ring lines, Z's"],
   ["Grape, lit", "#c22a88", "Plunger cap"],
   ["Grape, shade", "#6e0e4b", "Base front, plunger collar"],
-  ["Pupil", "#1e0525", "Midnight"],
   ["Gold, lit", "#f2c75c", "Champion dome"],
   ["Gold, shade", "#c8952e", "Champion dome crescent"],
   ["Board, sand", "#d9c9a8", "Standard frame (gradient)"],
   ["Board, ivory", "#f8f1e3", "Standard face"],
   ["Clock window", "#1c1a1d", "Both boards"],
-  ["Tooltip", "#1e0525", "Midnight, white Geist text"],
 ];
 
 function Palette() {

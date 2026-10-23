@@ -51,8 +51,11 @@ const DING_MS = 900;
 const DOME = "M48 214 Q48 140 100 140 Q152 140 152 214 Z";
 const LIGHT = { x: -6, y: -7 }; // where the lit copy of the dome rests
 
+// Midnight — one dark for the dome's shade, the arms and the pupils (and the tooltip)
+const MIDNIGHT = "#1e0525";
+
 const FINISH = {
-  primary: { lit: "#3e0d4b", shade: "#25052e", ink: "#ffffff" },
+  primary: { lit: "#3e0d4b", shade: MIDNIGHT, ink: "#ffffff" },
   gold: { lit: "#f2c75c", shade: "#c8952e", ink: "#3a2406" },
 };
 const GRAPE = { lit: "#c22a88", mid: "#9D136A", shade: "#6e0e4b" };
@@ -202,7 +205,7 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
             y1={SHOULDERS[side].y}
             x2={REST[side].x}
             y2={REST[side].y}
-            stroke="#25052e"
+            stroke={MIDNIGHT}
             strokeWidth="8"
             strokeLinecap="round"
           />
@@ -272,8 +275,8 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
                   <ellipse cx="85" cy="176" rx="9" ry="11" fill="#fff" />
                   <ellipse cx="115" cy="176" rx="9" ry="11" fill="#fff" />
                   <g ref={pupilsRef}>
-                    <circle cx="87" cy="177" r="5.4" fill="#1e0525" />
-                    <circle cx="117" cy="177" r="5.4" fill="#1e0525" />
+                    <circle cx="87" cy="177" r="5.4" fill={MIDNIGHT} />
+                    <circle cx="117" cy="177" r="5.4" fill={MIDNIGHT} />
                     <circle cx="88.8" cy="174.6" r="1.9" fill="#fff" />
                     <circle cx="118.8" cy="174.6" r="1.9" fill="#fff" />
                   </g>
