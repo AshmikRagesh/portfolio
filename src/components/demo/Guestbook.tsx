@@ -41,7 +41,7 @@ export default function Guestbook() {
             <span className="mb-3 block font-brand text-[12px] uppercase leading-[16px] tracking-[2px] text-pink">Notes left by past guests</span>
             <h2
               id="guestbook-heading"
-              className="m-0 text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-white md:text-[44px] md:leading-[44px] lg:text-[48px] lg:leading-[50px]"
+              className="m-0 text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-white md:text-[44px] md:leading-[44px]"
             >
               The guestbook.
             </h2>

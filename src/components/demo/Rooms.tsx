@@ -105,7 +105,7 @@ export default function Rooms({ stamps, onStamp }: { stamps: string[]; onStamp: 
       <header className="mb-8 grid grid-cols-1 items-end gap-4 border-b border-line/60 pb-5 md:mb-10 md:grid-cols-[minmax(0,1fr)_320px] md:gap-12 lg:grid-cols-[minmax(0,1fr)_400px]">
         <h2
           id="rooms-heading"
-          className="m-0 text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[44px] lg:text-[48px] lg:leading-[50px]"
+          className="m-0 text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[44px]"
         >
           The rooms.
         </h2>

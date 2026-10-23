@@ -7,7 +7,7 @@ export default function Hero() {
     <section className="page-container bg-background flex flex-col items-center gap-[60px] pt-[140px] lg:pt-[144px]">
       {/* Text */}
       <div className="flex flex-col items-center gap-6 text-center w-full">
-        <h1 className="font-heading font-normal text-[36px] leading-[40px] tracking-[-0.36px] text-heading whitespace-normal md:text-[44px] md:leading-[48px] md:tracking-[-0.44px] lg:text-[50px] lg:leading-[56px] lg:tracking-[-0.5px] lg:whitespace-pre-wrap">
+        <h1 className="font-heading font-normal text-[36px] leading-[40px] tracking-[-0.36px] text-heading whitespace-normal md:text-[44px] md:leading-[48px] md:tracking-[-0.44px] lg:text-[48px] lg:leading-[56px] lg:tracking-[-0.48px] lg:whitespace-pre-wrap">
           {`Hey, I'm Ashmik Ragesh,\nDesign Engineer who ships with vision.`}
         </h1>
         <p className="font-body font-normal text-[16px] leading-[24px] text-secondary w-full md:text-[20px] md:leading-[32px] md:max-w-[652px] lg:text-[20px] lg:leading-[32px] lg:max-w-[652px]">

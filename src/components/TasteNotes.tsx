@@ -272,7 +272,7 @@ export default function TasteNotes() {
       <header className="mb-10 md:mb-14">
         <h2
           id="notes-heading"
-          className="m-0 text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[44px] lg:text-[48px] lg:leading-[50px]"
+          className="m-0 text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[44px]"
         >
           My taste notes.
         </h2>
