@@ -3,10 +3,11 @@ import type { Metadata } from "next";
 import HostStates from "@/components/host/HostStates";
 
 // ── /host-states ──────────────────────────────────────────────────────────────
-// A review sheet for the front-desk bell: every state it can be in, side by side,
-// live. Development only — it 404s in production.
+// The reference page for the front-desk bell: anatomy, palette, moods, states and
+// triggers, motion, copy, sound, usage and accessibility, with live scenes and a
+// playground. Development only — it 404s in production.
 
-export const metadata: Metadata = { title: "Host states", robots: { index: false } };
+export const metadata: Metadata = { title: "Front-desk bell", robots: { index: false } };
 
 export default function HostStatesPage() {
   if (process.env.NODE_ENV === "production") notFound();
