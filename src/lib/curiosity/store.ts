@@ -17,7 +17,7 @@
 // The sorted sets are what Phase 2 reads: rank and count on them give "you've
 // stayed longer than N% of visitors" in a single round trip.
 
-import type { CuriosityPayload } from "./config";
+import { MIN_RANK_SAMPLE, type CuriosityPayload, type RankResult } from "./config";
 
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -77,4 +77,39 @@ export async function recordVisit(p: CuriosityPayload) {
   // Count each visit once — SET NX on a marker means only the first report wins
   const [{ result }] = await pipeline([["SET", `${visitKey}:counted`, 1, "NX", "EX", VISIT_TTL_SECONDS]]);
   if (result === "OK") await pipeline([["INCR", "curiosity:visits"]]);
+}
+
+/**
+ * Where `seconds` would sit on the all-time board, measured against everyone else.
+ * The visitor's own stored score is left out — it lags behind their live clock and
+ * would otherwise count as someone they've "beaten".
+ */
+export async function rankFor(visitorId: string, seconds: number): Promise<RankResult> {
+  if (!storeConfigured) return { percentile: null, others: 0, leader: null };
+
+  const board = "curiosity:board:alltime";
+  const [{ result: total }, { result: below }, { result: own }, { result: top }] = await pipeline([
+    ["ZCARD", board],
+    ["ZCOUNT", board, "-inf", `(${seconds}`],
+    ["ZSCORE", board, visitorId],
+    // Top two, so the leader is still found when this visitor is the one on top
+    ["ZREVRANGE", board, 0, 1, "WITHSCORES"],
+  ]);
+
+  const ownScore = own === null ? null : Number(own);
+  const others = Number(total) - (ownScore === null ? 0 : 1);
+  const beaten = Number(below) - (ownScore !== null && ownScore < seconds ? 1 : 0);
+
+  // ZREVRANGE WITHSCORES comes back flat: [member, score, member, score]
+  const flat = top as string[];
+  let leader: number | null = null;
+  for (let i = 0; i < flat.length; i += 2) {
+    if (flat[i] !== visitorId) {
+      leader = Number(flat[i + 1]);
+      break;
+    }
+  }
+
+  const percentile = others < MIN_RANK_SAMPLE ? null : Math.floor((beaten / others) * 100);
+  return { percentile, others, leader };
 }

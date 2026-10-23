@@ -33,6 +33,8 @@ export const tokens = {
   fontFamily: {
     // Geist Mono — nav links, CTA chips (loaded via next/font/google in layout.tsx)
     brand: ["var(--font-brand)", "monospace"],
+    // Geist — plain UI sans, used for the host's tooltip (loaded via next/font/google in layout.tsx)
+    geist: ["var(--font-geist)", "sans-serif"],
     // Roboto Slab — body / lead / captions, and the page default (loaded via next/font/google in layout.tsx)
     body: ["var(--font-body)", "sans-serif"],
     // GT Alpina Trial — display headings (loaded via @font-face in globals.css)

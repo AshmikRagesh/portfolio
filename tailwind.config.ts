@@ -37,6 +37,7 @@ const config: Config = {
       },
       fontFamily: {
         brand: [...tokens.fontFamily.brand],
+        geist: [...tokens.fontFamily.geist],
         body: [...tokens.fontFamily.body],
         heading: [...tokens.fontFamily.heading],
         handwriting: ["var(--font-handwriting)", "cursive"],

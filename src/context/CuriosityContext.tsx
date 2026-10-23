@@ -27,6 +27,8 @@ import { loadSession, saveSession, type VisitorRecord, type VisitRecord } from "
 import { referrerHost, report, viewportBucket } from "@/lib/curiosity/report";
 
 interface CuriosityValue {
+  /** Anonymous ID for this browser — empty until the clock has loaded. */
+  visitorId: string;
   /** Active seconds this visit. */
   activeSeconds: number;
   /** Active seconds across every visit from this browser. */
@@ -38,6 +40,7 @@ interface CuriosityValue {
 }
 
 const CuriosityContext = createContext<CuriosityValue>({
+  visitorId: "",
   activeSeconds: 0,
   lifetimeSeconds: 0,
   visits: 0,
@@ -61,7 +64,7 @@ interface ClockState {
 }
 
 export function CuriosityProvider({ children }: { children: ReactNode }) {
-  const [value, setValue] = useState<CuriosityValue>({ activeSeconds: 0, lifetimeSeconds: 0, visits: 0, paused: false });
+  const [value, setValue] = useState<CuriosityValue>({ visitorId: "", activeSeconds: 0, lifetimeSeconds: 0, visits: 0, paused: false });
   const clock = useRef<ClockState | null>(null);
   const pathRef = useRef("/");
   const pathname = usePathname();
@@ -90,13 +93,14 @@ export function CuriosityProvider({ children }: { children: ReactNode }) {
       s.visitor.lifetimeMs = s.priorLifetimeMs + s.visit.activeMs;
       setValue((prev) => {
         const next = {
+          visitorId: s.visitor.id,
           activeSeconds: Math.floor(s.visit.activeMs / 1000),
           lifetimeSeconds: Math.floor(s.visitor.lifetimeMs / 1000),
           visits: s.visitor.visits,
           paused,
         };
         // Skip the re-render when nothing visible changed (e.g. every tick while paused)
-        return prev.activeSeconds === next.activeSeconds && prev.paused === next.paused && prev.visits === next.visits
+        return prev.activeSeconds === next.activeSeconds && prev.paused === next.paused && prev.visitorId === next.visitorId
           ? prev
           : next;
       });

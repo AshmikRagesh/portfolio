@@ -1,44 +1,124 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, LayoutGrid, CircleUser, ArrowLeft } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import { useCuriosity } from "@/context/CuriosityContext";
+import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/CuriosityBubble";
+import HostCharacter, { hostLayout, type HostMood } from "@/components/host/HostCharacter";
+import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
+import { useRecordHolder } from "@/components/host/useRecordHolder";
+import { primeBell, ringBell } from "@/components/host/bellSound";
 
 const navLinks = [
   { label: "Works", href: "#works", Icon: LayoutGrid },
   { label: "About", href: "#about", Icon: CircleUser },
 ];
 
-function formatTime(s: number) {
-  const m = Math.floor(s / 60).toString().padStart(2, "0");
-  const sec = (s % 60).toString().padStart(2, "0");
-  return `${m}:${sec}`;
+// Host size in the navbar — the 68px row leaves a little air above and below
+const HOST_HEIGHT = 56;
+const HOST = hostLayout(HOST_HEIGHT);
+// The board never comes closer than this to the edge of the screen
+const BOARD_EDGE = 12;
+
+// In development, `?mood=dozing|champion|holding` pins the host in that state for review
+function usePreviewMood() {
+  const [preview, setPreview] = useState<string | null>(null);
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production") setPreview(new URLSearchParams(window.location.search).get("mood"));
+  }, []);
+  return preview;
 }
 
-function NavTimer() {
-  // Active time only — pauses while the tab is hidden or the visitor is idle
+// The logo: the front-desk bell. On hover (or a first tap on touch screens) it rings —
+// ding ding, out loud once the page has had a click — and both hands come down to
+// hold the timer board underneath it. It dozes while the
+// clock is paused, turns gold once this is the longest visit ever, and rings before
+// it says anything. The board is out of the layout and above everything on the page,
+// so nothing around it ever moves.
+function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   const { activeSeconds, paused } = useCuriosity();
+  const preview = usePreviewMood();
+  const [hovered, setHovered] = useState(false);
+  const [tapped, setTapped] = useState(false);
+  const [shift, setShift] = useState(0);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  const speaking = bubble.message !== null;
+  const holding = ((hovered || tapped) && !speaking) || preview === "holding";
+  const champion = record || preview === "champion";
+  const mood: HostMood = preview === "dozing" || (paused && !holding) ? "dozing" : champion ? "champion" : "idle";
+
+  // It rings like a desk bell: when it's hovered, and before it says anything
+  const [ding, setDing] = useState(0);
+  useEffect(() => {
+    if (holding || speaking) setDing((d) => d + 1);
+  }, [holding, speaking]);
+
+  // The board hangs centred under the hands, nudged in if that would run off-screen
+  const [left, right] = HOST.hands;
+  const gripMid = (left.x + right.x) / 2;
+  const boardWidth = BOARD_WIDTH;
+  const boardLeft = gripMid - boardWidth / 2 + shift;
+
+  useLayoutEffect(() => {
+    if (!holding) return;
+    const hostLeft = wrapRef.current?.getBoundingClientRect().left ?? 0;
+    const overflowLeft = BOARD_EDGE - (hostLeft + gripMid - boardWidth / 2);
+    setShift(Math.max(0, overflowLeft));
+  }, [holding, gripMid, boardWidth]);
+
+  useEffect(() => {
+    if (!tapped) return;
+    const id = window.setTimeout(() => setTapped(false), 4000);
+    return () => window.clearTimeout(id);
+  }, [tapped]);
+
+  useEffect(primeBell, []);
+
+  // Touch screens have no hover: the first tap rings and shows the board, a second tap goes home
+  const onClick = (e: React.MouseEvent) => {
+    if (window.matchMedia("(hover: none)").matches && !tapped) {
+      e.preventDefault();
+      setTapped(true);
+      ringBell();
+    }
+  };
 
   return (
-    <Link href="/" aria-label="Home" className="group relative shrink-0 select-none">
-      {/* Fixed-width block so the tooltip anchor never shifts */}
-      <span className={`font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px] tabular-nums block w-[72px] md:w-[82px] lg:w-[94px] transition-colors duration-300 ${paused ? "text-muted" : "text-heading"}`}>
-        {formatTime(activeSeconds)}
-      </span>
+    <div
+      ref={wrapRef}
+      className="relative shrink-0"
+      onMouseEnter={() => {
+        setHovered(true);
+        ringBell();
+      }}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+    >
+      {/* Above the board, so the hands overlap the rings they hold it by */}
+      <Link href="/" aria-label="Home — measuring your curiosity" onClick={onClick} className="relative z-10 block select-none">
+        <HostCharacter
+          mood={mood}
+          holding={holding}
+          ding={ding}
+          className="block"
+          style={{ width: HOST.width, height: HOST_HEIGHT }}
+        />
+      </Link>
 
-      {/* Tooltip — centered on the fixed-width container */}
-      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-        <div className="flex items-center gap-[6px] bg-primary rounded px-2 py-[6px] whitespace-nowrap">
-          <img src="/icons/clock-filled.svg" alt="" width={14} height={14} className="shrink-0" />
-          <span className="font-brand font-medium text-[12px] text-white tracking-[-0.06px]">
-            {paused ? "Paused while you're away" : "Measuring your curiosity"}
-          </span>
+      {/* Timer board — hangs from the hands, rings level with them */}
+      {holding && (
+        <div className="absolute" style={{ left: boardLeft, top: left.y + 6 }}>
+          <div className="host-board" style={{ "--grip-x": `${gripMid - boardLeft}px` } as React.CSSProperties}>
+            <TimerBoard seconds={activeSeconds} champion={champion} grips={[left.x - boardLeft, right.x - boardLeft]} />
+          </div>
         </div>
-      </div>
-    </Link>
+      )}
+    </div>
   );
 }
 
@@ -48,6 +128,11 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const isCaseStudy = pathname.startsWith("/works/");
+  // A milestone line brings the navbar back into view for as long as it's up
+  const record = useRecordHolder();
+  const bubble = useMilestoneBubble(record);
+  const speaking = bubble.message !== null;
+  const showNav = isNavVisible || speaking;
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -104,10 +189,10 @@ export default function Navbar() {
       onFocusCapture={() => setIsNavVisible(true)}
       className={`fixed ${isCaseStudy ? "top-0" : "top-[20px]"} right-0 left-0 h-[68px] z-50 bg-background border-b border-line transition-[transform,box-shadow] duration-300 ease-in-out ${
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
-      } ${isNavVisible ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
+      } ${showNav ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >
       {/* Main nav row */}
-      <nav className={`flex items-center justify-between h-full ${isCaseStudy ? "px-[20px] md:px-[80px] lg:px-[100px]" : "nav-container"}`}>
+      <nav className={`relative flex items-center justify-between h-full ${isCaseStudy ? "px-[20px] md:px-[80px] lg:px-[100px]" : "nav-container"}`}>
         {/* Mobile on case study pages: back button. Everything else: Ash logo */}
         {isCaseStudy ? (
           <>
@@ -119,12 +204,18 @@ export default function Navbar() {
               Back
             </Link>
             <div className="hidden md:block">
-              <NavTimer />
+              <NavHost bubble={bubble} record={record} />
             </div>
           </>
         ) : (
-          <NavTimer />
+          <NavHost bubble={bubble} record={record} />
         )}
+
+        {/* Host tooltip — just under the bell, its pointer at the bell's centre. Out of
+            the layout and above everything on the page. */}
+        <div className="absolute z-[60] top-full mt-[4px] left-[20px] md:left-[80px] lg:left-[100px]">
+          <CuriosityBubble bubble={bubble} pointerFromMd={isCaseStudy} />
+        </div>
 
         {/* Desktop + tablet: nav links + CTA */}
         <div className="hidden md:flex items-center gap-[20px]">

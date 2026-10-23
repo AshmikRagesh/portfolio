@@ -46,3 +46,20 @@ export interface CuriosityPayload {
   /** True when this is the closing beacon rather than a heartbeat. */
   final: boolean;
 }
+
+/** Below this many other visitors, a percentile is noise — the UI says something else. */
+export const MIN_RANK_SAMPLE = 10;
+
+export const RANK_PATH = "/api/curiosity/rank";
+
+/** The record only counts once at least this many other visitors have had a go at it. */
+export const MIN_RECORD_FIELD = 3;
+
+export interface RankResult {
+  /** Share of other visitors this one has out-stayed, 0–100. Null when there's too little data. */
+  percentile: number | null;
+  /** How many other visitors are on the board. */
+  others: number;
+  /** The longest single visit by anyone else, in seconds — the record to beat. */
+  leader: number | null;
+}
