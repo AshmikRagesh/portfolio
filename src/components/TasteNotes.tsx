@@ -307,7 +307,7 @@ export default function TasteNotes() {
           id="notes-heading"
           className="m-0 text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[44px] lg:text-[48px] lg:leading-[50px]"
         >
-          My Taste Notes.
+          My taste notes.
         </h2>
       </header>
 
