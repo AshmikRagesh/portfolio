@@ -1,8 +1,8 @@
 // ── Mailer ────────────────────────────────────────────────────────────────────
 // A kraft mailer with a couple of sheets tucked in, printed on the front. Two tones,
-// every colour a token from the design system: pink printed in blackcurrant, and
-// grape printed in grape-light. The paper's form comes from the crumple lighting,
-// not from shading the colour.
+// each a single design-system colour, front and back alike: vanilla printed in the
+// secondary text colour, and grape printed in grape-light. The paper's form comes
+// from the crumple lighting, not from shading the colour.
 // It's a stack of layers, back to front:
 //
 //   back    the mailer's back panel. It runs a little lower and a touch wider than
@@ -23,8 +23,8 @@ export const MAILER_SEEDS = [3, 11];
 // Each tone: front/back kraft gradients, the crushed corner, crease shadow + highlight,
 // edge grime, and the ink it's printed in
 export const TONES = {
-  pink: { front: "mailer-kraft-pink", back: "mailer-kraft-pink-back", corner: "#f8c2f7", shade: "#1e0525", light: "#F9E4FF", grime: "#9D136A", ink: "#32073e", blend: "mix-blend-multiply" },
-  grape: { front: "mailer-kraft-grape", back: "mailer-kraft-grape-back", corner: "#9D136A", shade: "#1e0525", light: "#f8c2f7", grime: "#32073e", ink: "#F9E4FF", blend: "" },
+  vanilla: { front: "mailer-kraft-vanilla", back: "mailer-kraft-vanilla", corner: "#ece5d8", shade: "#524555", light: "#FFFFFF", grime: "#524555", ink: "#524555", blend: "mix-blend-multiply" },
+  grape: { front: "mailer-kraft-grape", back: "mailer-kraft-grape", corner: "#9D136A", shade: "#1e0525", light: "#f8c2f7", grime: "#1e0525", ink: "#F9E4FF", blend: "" },
 } as const;
 export type Tone = keyof typeof TONES;
 // Front panel outline (in the 300×430 box)
@@ -34,23 +34,12 @@ export function MailerDefs() {
   return (
     <svg aria-hidden="true" width="0" height="0" className="absolute">
       <defs>
-        {/* Pink kraft — front in pink, the back panel behind it in grape */}
-        <linearGradient id="mailer-kraft-pink" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f8c2f7" />
-          <stop offset="1" stopColor="#f8c2f7" />
+        {/* One flat colour per mailer, front and back panel alike */}
+        <linearGradient id="mailer-kraft-vanilla">
+          <stop offset="0" stopColor="#ece5d8" />
         </linearGradient>
-        <linearGradient id="mailer-kraft-pink-back" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="mailer-kraft-grape">
           <stop offset="0" stopColor="#9D136A" />
-          <stop offset="1" stopColor="#9D136A" />
-        </linearGradient>
-        {/* Grape kraft — front in grape, the back panel behind it in blackcurrant */}
-        <linearGradient id="mailer-kraft-grape" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#9D136A" />
-          <stop offset="1" stopColor="#9D136A" />
-        </linearGradient>
-        <linearGradient id="mailer-kraft-grape-back" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#32073e" />
-          <stop offset="1" stopColor="#32073e" />
         </linearGradient>
 
         {MAILER_SEEDS.map((seed) => (
@@ -101,7 +90,7 @@ function Crimp({ x1, x2, y, h, shade, light }: { x1: number; x2: number; y: numb
 
 export default function Mailer({
   seed,
-  tone = "pink",
+  tone = "vanilla",
   sheetRef,
   title,
   summary,

@@ -1,7 +1,7 @@
 "use client";
 
 // ── My Taste Notes ────────────────────────────────────────────────────────────
-// Two notes, each posted in a kraft mailer (see Mailer) — one yellow, one red. The
+// Two notes, each posted in a grape kraft mailer (see Mailer). The
 // mailers lie at slight angles; hovering one straightens it and nudges its sheets out.
 //
 // Opening a note is one continuous motion: the sheet slides out of the mailer's open

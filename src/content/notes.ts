@@ -36,7 +36,7 @@ export const notes: Note[] = [
     summary: "Why the best interfaces I know feel like they left things out on purpose.",
     date: "Sep 2026",
     readTime: "8 min read",
-    tone: "pink",
+    tone: "grape",
     type: "Taste note",
     discipline: "Product design",
     excerpt:
