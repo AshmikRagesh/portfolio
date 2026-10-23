@@ -1,6 +1,7 @@
 // ── Mailer ────────────────────────────────────────────────────────────────────
-// A kraft mailer with a couple of sheets tucked in, printed on the front. Two tones:
-// mustard yellow printed in red, and tomato red printed in yellow.
+// A kraft mailer with a couple of sheets tucked in, printed on the front. Two tones,
+// both out of the portfolio's palette: warm vanilla kraft printed in blackcurrant,
+// and grape kraft printed in the soft purple.
 // It's a stack of layers, back to front:
 //
 //   back    the mailer's back panel. It runs a little lower and a touch wider than
@@ -21,8 +22,8 @@ export const MAILER_SEEDS = [3, 11];
 // Each tone: front/back kraft gradients, the crushed corner, crease shadow + highlight,
 // edge grime, and the ink it's printed in
 export const TONES = {
-  yellow: { front: "mailer-kraft-yellow", back: "mailer-kraft-yellow-back", corner: "#f2bf42", shade: "#7a4d08", light: "#fff3c4", grime: "#9a6410", ink: "#c2261b", blend: "mix-blend-multiply" },
-  red: { front: "mailer-kraft-red", back: "mailer-kraft-red-back", corner: "#e6482e", shade: "#5a0f06", light: "#ffc8b4", grime: "#6e140a", ink: "#ffd23f", blend: "" },
+  vanilla: { front: "mailer-kraft-vanilla", back: "mailer-kraft-vanilla-back", corner: "#e4dac6", shade: "#1e0525", light: "#fdf8ee", grime: "#32073e", ink: "#32073e", blend: "mix-blend-multiply" },
+  grape: { front: "mailer-kraft-grape", back: "mailer-kraft-grape-back", corner: "#b02a7d", shade: "#1e0525", light: "#f8c2f7", grime: "#32073e", ink: "#F9E4FF", blend: "" },
 } as const;
 export type Tone = keyof typeof TONES;
 // Front panel outline (in the 300×430 box)
@@ -32,23 +33,25 @@ export function MailerDefs() {
   return (
     <svg aria-hidden="true" width="0" height="0" className="absolute">
       <defs>
-        <linearGradient id="mailer-kraft-yellow" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f7c94c" />
-          <stop offset="0.45" stopColor="#efb937" />
-          <stop offset="1" stopColor="#e2a52a" />
+        {/* Vanilla kraft — the warm surface token, deepened so it reads on white */}
+        <linearGradient id="mailer-kraft-vanilla" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#efe9dd" />
+          <stop offset="0.45" stopColor="#e3d9c8" />
+          <stop offset="1" stopColor="#d2c5ae" />
         </linearGradient>
-        <linearGradient id="mailer-kraft-yellow-back" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#d9992a" />
-          <stop offset="1" stopColor="#e7ab33" />
+        <linearGradient id="mailer-kraft-vanilla-back" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#c6b89f" />
+          <stop offset="1" stopColor="#dad0bc" />
         </linearGradient>
-        <linearGradient id="mailer-kraft-red" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f2583a" />
-          <stop offset="0.45" stopColor="#e2432a" />
-          <stop offset="1" stopColor="#c8331f" />
+        {/* Grape kraft — the interactive accent, as a dyed envelope */}
+        <linearGradient id="mailer-kraft-grape" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#ad1976" />
+          <stop offset="0.45" stopColor="#9D136A" />
+          <stop offset="1" stopColor="#7c0d53" />
         </linearGradient>
-        <linearGradient id="mailer-kraft-red-back" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#b52b19" />
-          <stop offset="1" stopColor="#cf3a24" />
+        <linearGradient id="mailer-kraft-grape-back" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#6c0a48" />
+          <stop offset="1" stopColor="#8b1060" />
         </linearGradient>
 
         {MAILER_SEEDS.map((seed) => (
@@ -99,7 +102,7 @@ function Crimp({ x1, x2, y, h, shade, light }: { x1: number; x2: number; y: numb
 
 export default function Mailer({
   seed,
-  tone = "yellow",
+  tone = "vanilla",
   sheetRef,
   title,
   summary,
@@ -118,7 +121,7 @@ export default function Mailer({
   const t = TONES[tone];
 
   return (
-    <div className="relative aspect-[300/430] w-full [filter:drop-shadow(0_2px_2px_rgba(70,44,6,0.22))_drop-shadow(0_18px_22px_rgba(70,44,6,0.16))]">
+    <div className="relative aspect-[300/430] w-full [filter:drop-shadow(0_2px_2px_rgba(30,5,37,0.22))_drop-shadow(0_18px_22px_rgba(30,5,37,0.16))]">
       {/* Back panel — shows below the front, and flares a touch at the bottom */}
       <svg viewBox="0 0 300 430" aria-hidden="true" className="absolute inset-0 h-full w-full overflow-visible">
         <path d="M8 300 H292 L297 412 Q298 428 284 428 L16 429 Q2 429 3 414 Z" fill={`url(#${t.back})`} filter={crumple} />
@@ -143,7 +146,7 @@ export default function Mailer({
       <svg
         viewBox="0 0 300 430"
         aria-hidden="true"
-        className="absolute inset-0 h-full w-full overflow-visible [filter:drop-shadow(0_3px_3px_rgba(60,36,4,0.28))]"
+        className="absolute inset-0 h-full w-full overflow-visible [filter:drop-shadow(0_3px_3px_rgba(30,5,37,0.28))]"
       >
         <path d={FRONT} fill={`url(#${t.front})`} filter={crumple} />
         {/* Edges darker and grimier than the middle, from handling */}
