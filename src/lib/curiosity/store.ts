@@ -14,6 +14,15 @@
 //   curiosity:lifetime               sorted set, visitorId → lifetime seconds
 //   curiosity:visits                 counter, visits seen (bumped once per visit)
 //
+// Tallies for the private stats page (no TTL, nothing that identifies a person):
+//   curiosity:durations              sorted set, visitId → active seconds (GT, like the boards)
+//   curiosity:recent                 sorted set, visitId → start time in ms; the stats page
+//                                    reads the newest visit hashes from here for exit pages
+//                                    (capped at RECENT_KEEP)
+//   curiosity:days                   hash, YYYY-MM-DD (UTC) → visits started that day
+//   curiosity:referrers              hash, referrer host or "direct" → visits
+//   curiosity:devices                hash, mobile | tablet | desktop → visits
+//
 // The sorted sets are what Phase 2 reads: rank and count on them give "you've
 // stayed longer than N% of visitors" in a single round trip.
 
@@ -22,12 +31,14 @@ import { MIN_RANK_SAMPLE, type CuriosityPayload, type RankResult } from "./confi
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 const VISIT_TTL_SECONDS = 60 * 60 * 24 * 90;
+/** How many of the newest visit IDs curiosity:recent holds. */
+export const RECENT_KEEP = 1000;
 
 export const storeConfigured = Boolean(REDIS_URL && TOKEN);
 
 type Command = (string | number)[];
 
-async function pipeline(commands: Command[]) {
+export async function pipeline(commands: Command[]) {
   const res = await fetch(`${REDIS_URL}/pipeline`, {
     method: "POST",
     headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
@@ -72,11 +83,22 @@ export async function recordVisit(p: CuriosityPayload) {
     ["ZADD", "curiosity:board:alltime", "GT", p.activeSeconds, p.visitorId],
     ["ZADD", `curiosity:board:${month}`, "GT", p.activeSeconds, p.visitorId],
     ["ZADD", "curiosity:lifetime", "GT", p.lifetimeSeconds, p.visitorId],
+    ["ZADD", "curiosity:durations", "GT", p.activeSeconds, p.visitId],
   ]);
 
   // Count each visit once — SET NX on a marker means only the first report wins
   const [{ result }] = await pipeline([["SET", `${visitKey}:counted`, 1, "NX", "EX", VISIT_TTL_SECONDS]]);
-  if (result === "OK") await pipeline([["INCR", "curiosity:visits"]]);
+  if (result === "OK") {
+    const now = Date.now();
+    await pipeline([
+      ["INCR", "curiosity:visits"],
+      ["ZADD", "curiosity:recent", now, p.visitId],
+      ["ZREMRANGEBYRANK", "curiosity:recent", 0, -(RECENT_KEEP + 1)],
+      ["HINCRBY", "curiosity:days", new Date(now).toISOString().slice(0, 10), 1],
+      ["HINCRBY", "curiosity:referrers", p.referrer || "direct", 1],
+      ["HINCRBY", "curiosity:devices", p.viewport, 1],
+    ]);
+  }
 }
 
 /**
