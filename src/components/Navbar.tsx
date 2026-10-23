@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, LayoutGrid, CircleUser, ArrowLeft } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
+import { useCuriosity } from "@/context/CuriosityContext";
 
 const navLinks = [
   { label: "Works", href: "#works", Icon: LayoutGrid },
@@ -18,30 +19,14 @@ function formatTime(s: number) {
 }
 
 function NavTimer() {
-  const [elapsed, setElapsed] = useState(0);
-
-  useEffect(() => {
-    // Persist start time in sessionStorage — survives page navigation,
-    // cleared automatically when the tab is closed.
-    const key = "ash_visit_start";
-    const stored = sessionStorage.getItem(key);
-    const startTime = stored ? parseInt(stored, 10) : Date.now();
-    if (!stored) sessionStorage.setItem(key, String(startTime));
-
-    setElapsed(Math.floor((Date.now() - startTime) / 1000));
-
-    const id = setInterval(() => {
-      setElapsed(Math.floor((Date.now() - startTime) / 1000));
-    }, 1000);
-
-    return () => clearInterval(id);
-  }, []);
+  // Active time only — pauses while the tab is hidden or the visitor is idle
+  const { activeSeconds, paused } = useCuriosity();
 
   return (
     <Link href="/" aria-label="Home" className="group relative shrink-0 select-none">
       {/* Fixed-width block so the tooltip anchor never shifts */}
-      <span className="font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] text-heading tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px] tabular-nums block w-[72px] md:w-[82px] lg:w-[94px]">
-        {formatTime(elapsed)}
+      <span className={`font-heading italic font-normal text-[30px] md:text-[32px] lg:text-[36px] tracking-[-0.3px] md:tracking-[-0.32px] lg:tracking-[-0.36px] leading-[38px] md:leading-[44px] tabular-nums block w-[72px] md:w-[82px] lg:w-[94px] transition-colors duration-300 ${paused ? "text-muted" : "text-heading"}`}>
+        {formatTime(activeSeconds)}
       </span>
 
       {/* Tooltip — centered on the fixed-width container */}
@@ -49,7 +34,7 @@ function NavTimer() {
         <div className="flex items-center gap-[6px] bg-primary rounded px-2 py-[6px] whitespace-nowrap">
           <img src="/icons/clock-filled.svg" alt="" width={14} height={14} className="shrink-0" />
           <span className="font-brand font-medium text-[12px] text-white tracking-[-0.06px]">
-            Measuring your curiosity
+            {paused ? "Paused while you're away" : "Measuring your curiosity"}
           </span>
         </div>
       </div>
