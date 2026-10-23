@@ -225,9 +225,18 @@ function useTypedLine(line: string | null) {
 
 /**
  * The tooltip itself. The pointer sits under the bell's centre; `pointerFromMd` hides
- * it on small screens for pages where the bell isn't shown there.
+ * it on small screens for pages where the bell isn't shown there. `align="center"`
+ * puts the pointer in the middle, for a tooltip centred under the bell by its parent.
  */
-export default function CuriosityBubble({ bubble, pointerFromMd = false }: { bubble: Bubble; pointerFromMd?: boolean }) {
+export default function CuriosityBubble({
+  bubble,
+  pointerFromMd = false,
+  align = "start",
+}: {
+  bubble: Bubble;
+  pointerFromMd?: boolean;
+  align?: "start" | "center";
+}) {
   if (!bubble.message) return null;
 
   return (
@@ -236,11 +245,12 @@ export default function CuriosityBubble({ bubble, pointerFromMd = false }: { bub
       onMouseLeave={bubble.resume}
       onClick={bubble.dismiss}
       className={`host-tip ${bubble.leaving ? "is-leaving" : ""} relative w-max max-w-[min(260px,calc(100vw-40px))] cursor-pointer`}
+      style={align === "center" ? { transformOrigin: "50% 0" } : undefined}
     >
       {/* Pointer, up to the bell */}
       <span
         aria-hidden="true"
-        className={`${pointerFromMd ? "hidden md:block" : "block"} absolute -top-[4px] left-[26px] w-[8px] h-[8px] rotate-45 rounded-[1px] bg-midnight`}
+        className={`${pointerFromMd ? "hidden md:block" : "block"} absolute -top-[4px] ${align === "center" ? "left-1/2 -ml-[4px]" : "left-[26px]"} w-[8px] h-[8px] rotate-45 rounded-[1px] bg-midnight`}
       />
       {/* The full line sizes the box (invisibly) so it doesn't grow as it types */}
       <p className="relative grid rounded-[8px] bg-midnight px-[12px] py-[8px] font-geist font-normal text-[14px] leading-[20px] text-white shadow-[0_8px_20px_rgba(30,5,37,0.22)]">

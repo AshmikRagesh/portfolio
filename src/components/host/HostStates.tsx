@@ -142,11 +142,12 @@ function Board({ seconds, champion = false }: { seconds: number; champion?: bool
   );
 }
 
+// Centred under the bell, pointer in the middle
 function Tip({ bubble }: { bubble: Bubble }) {
   const top = useContext(SceneTop);
   return (
-    <div className="absolute z-20" style={{ left: HOST_X, top: top + HOST_HEIGHT + 10 }}>
-      <CuriosityBubble bubble={bubble} />
+    <div className="absolute z-20 -translate-x-1/2" style={{ left: HOST_X + HOST.width / 2, top: top + HOST_HEIGHT + 10 }}>
+      <CuriosityBubble bubble={bubble} align="center" />
     </div>
   );
 }
