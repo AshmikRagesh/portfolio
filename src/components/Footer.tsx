@@ -366,7 +366,7 @@ function FooterBackdrop() {
         width={1840}
         height={640}
         unoptimized
-        className="absolute bottom-0 left-1/2 h-[360px] w-auto max-w-none -translate-x-1/2 opacity-[0.1] md:h-[440px] lg:h-[440px] xl:h-[480px]"
+        className="absolute bottom-0 left-1/2 h-[280px] w-auto max-w-none -translate-x-1/2 opacity-[0.1] md:h-[340px] lg:h-[340px] xl:h-[380px]"
       />
       {grain && <div className="absolute inset-0" style={{ backgroundImage: `url(${grain})` }} />}
     </div>
