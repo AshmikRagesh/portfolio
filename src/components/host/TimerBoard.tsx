@@ -28,14 +28,14 @@ import { formatClock } from "@/components/host/clock";
 export const BOARD_WIDTH = 184;
 
 /** One half of a card, showing the matching half of `value`. */
-function Half({ value, half, className = "" }: { value: string; half: "top" | "bottom"; className?: string }) {
+function Half({ value, half, tall = false, className = "" }: { value: string; half: "top" | "bottom"; tall?: boolean; className?: string }) {
   return (
     <span
       className={`absolute inset-x-0 h-1/2 overflow-hidden ${half === "top" ? "top-0 rounded-t-[4px] bg-[#2f2d31]" : "bottom-0 rounded-b-[4px] bg-[#28262a]"} ${className}`}
     >
       {/* Laid out at full card height, then clipped to this half */}
       <span
-        className={`absolute inset-x-0 h-[200%] flex items-center justify-center font-sans font-semibold text-[20px] leading-none tracking-[-0.4px] text-[#f8f3e8] tabular-nums ${
+        className={`absolute inset-x-0 h-[200%] flex items-center justify-center font-sans font-semibold ${tall ? "text-[24px]" : "text-[20px]"} leading-none tracking-[-0.4px] text-[#f8f3e8] tabular-nums ${
           half === "top" ? "top-0" : "bottom-0"
         }`}
       >
@@ -45,7 +45,9 @@ function Half({ value, half, className = "" }: { value: string; half: "top" | "b
   );
 }
 
-function FlapDigit({ value, narrow = false }: { value: string; narrow?: boolean }) {
+// Cards are 24×26 on the board; `tall` makes them 26×34 so the bare clock stands 42px,
+// level with the navbar's button
+function FlapDigit({ value, narrow = false, tall = false }: { value: string; narrow?: boolean; tall?: boolean }) {
   const previous = useRef(value);
   const [flip, setFlip] = useState<{ from: string; to: string } | null>(null);
 
@@ -58,16 +60,16 @@ function FlapDigit({ value, narrow = false }: { value: string; narrow?: boolean 
   }, [value]);
 
   return (
-    <span className={`relative block ${narrow ? "w-[20px]" : "w-[24px]"} h-[26px] rounded-[4px] shadow-[0_2px_2px_rgba(0,0,0,0.5)] [perspective:100px]`}>
-      <Half value={value} half="top" />
-      <Half value={flip ? flip.from : value} half="bottom" />
+    <span className={`relative block ${tall ? (narrow ? "w-[22px] h-[34px]" : "w-[26px] h-[34px]") : narrow ? "w-[20px] h-[26px]" : "w-[24px] h-[26px]"} rounded-[4px] shadow-[0_2px_2px_rgba(0,0,0,0.5)] [perspective:100px]`}>
+      <Half value={value} half="top" tall={tall} />
+      <Half value={flip ? flip.from : value} half="bottom" tall={tall} />
 
       {/* Moving flaps — keyed so a change mid-flip restarts cleanly; once the bottom
           flap lands it matches the resting halves, so they take over */}
       {flip && (
         <span key={`${flip.from}${flip.to}`} aria-hidden="true" onAnimationEnd={(e) => e.animationName === "flap-drop" && setFlip(null)}>
-          <Half value={flip.from} half="top" className="flap-fall z-10" />
-          <Half value={flip.to} half="bottom" className="flap-drop z-10" />
+          <Half value={flip.from} half="top" tall={tall} className="flap-fall z-10" />
+          <Half value={flip.to} half="bottom" tall={tall} className="flap-drop z-10" />
         </span>
       )}
 
@@ -98,19 +100,19 @@ interface Props {
   champion?: boolean;
   /** Where the host's hands hold the board, in px from its left edge — rings go here. */
   grips?: readonly number[];
-  /** Just the clock — the dark window and its cards, with no plaque around it. */
+  /** Just the clock — the dark window and its cards, with no plaque around it, at 42px tall. */
   bare?: boolean;
 }
 
 // The dark window with the split-flap cards and their unit marks
-function Clock({ groups, units, className = "" }: { groups: string[]; units: string[]; className?: string }) {
+function Clock({ groups, units, tall = false, className = "" }: { groups: string[]; units: string[]; tall?: boolean; className?: string }) {
   return (
     <div className={`${className} flex items-center justify-center gap-[4px] rounded-[6px] bg-[#1c1a1d] p-[4px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.7)]`}>
       {groups.map((group, gi) => (
         <Fragment key={gi}>
           <span className="flex gap-[4px]">
             {group.split("").map((d, di) => (
-              <FlapDigit key={di} value={d} narrow={groups.length > 2} />
+              <FlapDigit key={di} value={d} narrow={groups.length > 2} tall={tall} />
             ))}
           </span>
           {/* Unit mark — reads as a duration (4m 16s), not a time of day */}
@@ -132,7 +134,7 @@ export default function TimerBoard({ seconds, champion = false, grips = [], bare
   if (bare) {
     return (
       <div role="timer" aria-label={label} className="w-fit">
-        <Clock groups={groups} units={units} />
+        <Clock groups={groups} units={units} tall />
       </div>
     );
   }

@@ -319,11 +319,16 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile: resume CTA + hamburger */}
+        {/* Mobile: resume CTA + hamburger. While the bell has ducked for the footer's and
+            its clock sits in the logo's spot, there's no room for both: the CTA steps aside. */}
         <div className="md:hidden flex items-center gap-2">
           <Link
             href="/resume"
-            className="flex items-center gap-2 text-white font-brand font-normal text-[14px] uppercase tracking-[1px] px-[16px] py-[8px] rounded-[10px] transition-colors duration-200 whitespace-nowrap bg-primary hover:bg-grape"
+            aria-hidden={footerOnStage || undefined}
+            tabIndex={footerOnStage ? -1 : undefined}
+            className={`flex items-center gap-2 text-white font-brand font-normal text-[14px] uppercase tracking-[1px] px-[16px] py-[8px] rounded-[10px] transition-[color,background-color,opacity,visibility] duration-200 whitespace-nowrap bg-primary hover:bg-grape ${
+              footerOnStage ? "invisible opacity-0" : ""
+            }`}
           >
             <SparkleAiIcon size={16} />
             Fancy Paper
