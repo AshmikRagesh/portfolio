@@ -43,6 +43,25 @@
   animation-play-state: running;
 }
 
+/* Footer bell — once the card has risen, drops onto its top edge, squashes and settles */
+@keyframes footer-bell-land {
+  0%   { opacity: 0; transform: translateY(-56px); }
+  45%  { opacity: 1; transform: translateY(0) scale(1, 1); }
+  60%  { transform: translateY(0) scale(1.08, 0.9); }
+  78%  { transform: translateY(-8px) scale(0.98, 1.02); }
+  100% { opacity: 1; transform: none; }
+}
+.footer-bell {
+  animation: footer-bell-land 640ms 480ms cubic-bezier(0.3, 0.6, 0.4, 1) both;
+  animation-play-state: paused;
+}
+.footer-card.in-view .footer-bell {
+  animation-play-state: running;
+}
+@media (prefers-reduced-motion: reduce) {
+  .footer-bell { animation: none; }
+}
+
 /*
   GT Alpina Trial — display headings. Files live in public/fonts/.
 */

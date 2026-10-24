@@ -10,6 +10,7 @@ import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/C
 import HostCharacter, { hostLayout, type HostMood } from "@/components/host/HostCharacter";
 import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
+import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { primeBell, ringBell } from "@/components/host/bellSound";
 
 const navLinks = [
@@ -30,19 +31,6 @@ function usePreviewMood() {
     if (process.env.NODE_ENV !== "production") setPreview(new URLSearchParams(window.location.search).get("mood"));
   }, []);
   return preview;
-}
-
-/** True on screens with no hover (phones, tablets) — they get tap-to-toggle instead. */
-function useTouchScreen() {
-  const [touch, setTouch] = useState(false);
-  useEffect(() => {
-    const query = window.matchMedia("(hover: none)");
-    const update = () => setTouch(query.matches);
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-  return touch;
 }
 
 // Shown once per visit on touch screens, right after the bell's first line, so people

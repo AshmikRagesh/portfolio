@@ -112,8 +112,8 @@ export default function CaseStudyLayout({
         </button>
       </aside>
 
-      {/* ── Main content ── */}
-      <main className="flex-1 min-w-0">
+      {/* ── Main content — bottom padding leaves room for the bell sitting on the footer ── */}
+      <main className="flex-1 min-w-0 pb-[64px] md:pb-[80px] lg:pb-[96px]">
 
         {/* Mobile sticky nav — section tabs only (back is in the navbar) */}
         <div className="lg:hidden sticky top-[68px] z-30 bg-white border-b border-line-soft">

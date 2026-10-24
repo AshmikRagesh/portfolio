@@ -1,6 +1,11 @@
 "use client";
-import Image from "next/image"; // used for telephone illustration
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCuriosity } from "@/context/CuriosityContext";
+import HostCharacter, { hostLayout, type HostMood } from "@/components/host/HostCharacter";
+import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
+import { useRecordHolder } from "@/components/host/useRecordHolder";
+import { useTouchScreen } from "@/components/host/useTouchScreen";
+import { ringBell } from "@/components/host/bellSound";
 
 const socialLinks = [
   {
@@ -26,6 +31,110 @@ const socialLinks = [
   },
 ];
 
+// Bell height on phone / tablet / desktop
+const BELL_HEIGHT = { sm: 72, md: 88, lg: 112 };
+// The board never comes closer than this to the edge of the screen
+const BOARD_EDGE = 12;
+
+function useBellHeight() {
+  const [height, setHeight] = useState(BELL_HEIGHT.lg);
+  useEffect(() => {
+    const md = window.matchMedia("(min-width: 768px)");
+    const lg = window.matchMedia("(min-width: 1024px)");
+    const update = () => setHeight(lg.matches ? BELL_HEIGHT.lg : md.matches ? BELL_HEIGHT.md : BELL_HEIGHT.sm);
+    update();
+    md.addEventListener("change", update);
+    lg.addEventListener("change", update);
+    return () => {
+      md.removeEventListener("change", update);
+      lg.removeEventListener("change", update);
+    };
+  }, []);
+  return height;
+}
+
+// The front-desk bell, sitting on the footer card as if the card were the counter — where
+// the telephone used to hang. Once the card has risen into view it drops onto the edge and
+// rings. After that it behaves like the one in the navbar:
+//   pointer   hover (or keyboard focus) rings it and lowers the board over the front of
+//             the counter; a click rings it again.
+//   touch     a tap rings it and toggles the board.
+// It dozes while the clock is paused and turns gold for the longest visit ever.
+function FooterBell() {
+  const { activeSeconds, paused } = useCuriosity();
+  const record = useRecordHolder();
+  const touch = useTouchScreen();
+  const height = useBellHeight();
+  const layout = hostLayout(height);
+  const [hovered, setHovered] = useState(false);
+  const [open, setOpen] = useState(false); // touch: board pinned down by a tap
+  const [ding, setDing] = useState(0);
+  const [shift, setShift] = useState(0);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  const holding = (hovered && !touch) || open;
+  const mood: HostMood = paused && !holding ? "dozing" : record ? "champion" : "idle";
+
+  useEffect(() => {
+    if (holding) setDing((d) => d + 1);
+  }, [holding]);
+
+  // The board hangs centred under the hands, nudged in if that would run off-screen
+  const [left, right] = layout.hands;
+  const gripMid = (left.x + right.x) / 2;
+  const boardLeft = gripMid - BOARD_WIDTH / 2 + shift;
+
+  useLayoutEffect(() => {
+    if (!holding) return;
+    const edge = (wrapRef.current?.getBoundingClientRect().left ?? 0) + gripMid - BOARD_WIDTH / 2;
+    const overRight = edge + BOARD_WIDTH - (document.documentElement.clientWidth - BOARD_EDGE);
+    setShift(overRight > 0 ? -overRight : Math.max(0, BOARD_EDGE - edge));
+  }, [holding, gripMid]);
+
+  const ring = () => {
+    ringBell();
+    setDing((d) => d + 1);
+    if (touch) setOpen((o) => !o);
+  };
+
+  return (
+    <div
+      ref={wrapRef}
+      className="footer-bell absolute right-[48px] z-20 md:right-[64px] lg:right-[96px]"
+      style={{ top: -layout.base, width: layout.width, height, transformOrigin: `50% ${layout.base}px` }}
+      // Rings as it lands — only for its own landing, not the ding animations inside it
+      onAnimationEnd={(e) => e.target === e.currentTarget && setDing((d) => d + 1)}
+      onMouseEnter={() => {
+        if (touch) return; // phones fire mouseenter on tap — the tap handles it
+        setHovered(true);
+        ringBell();
+      }}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <button
+        type="button"
+        aria-label="Measuring your curiosity — ring the bell to see your time"
+        aria-expanded={holding}
+        onClick={ring}
+        onFocus={() => !touch && setHovered(true)}
+        onBlur={() => setHovered(false)}
+        className="relative z-10 block cursor-pointer select-none rounded-[12px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
+      >
+        <HostCharacter mood={mood} holding={holding} ding={ding} className="block" style={{ width: layout.width, height }} />
+      </button>
+
+      {/* Timer board — hangs from the hands over the front of the counter. On touch, a tap puts it away. */}
+      {holding && (
+        <div className="absolute" style={{ left: boardLeft, top: left.y + 6 }} onClick={() => touch && setOpen(false)}>
+          <div className="host-board" style={{ "--grip-x": `${gripMid - boardLeft}px` } as React.CSSProperties}>
+            <TimerBoard seconds={activeSeconds} champion={record} grips={[left.x - boardLeft, right.x - boardLeft]} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Footer() {
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -44,18 +153,11 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="page-container bg-background pb-4 md:pb-6 lg:pb-[40px]">
-      <div ref={cardRef} className="footer-card bg-primary relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 rounded-[24px] overflow-hidden md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[180px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px] lg:rounded-[40px]">
+    // Above the page's content layer (z-10), so the bell can sit up past the card's top edge
+    <footer className="page-container relative z-20 bg-background pb-4 md:pb-6 lg:pb-[40px]">
+      <div ref={cardRef} className="footer-card bg-primary relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 rounded-[24px] md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[180px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px] lg:rounded-[40px]">
 
-        {/* Telephone illustration — desktop only */}
-        <div className="hidden lg:block absolute top-0 right-0 w-[315px] h-[510px] pointer-events-none select-none">
-          <Image
-            src="/images/footer-telephone.png"
-            alt=""
-            fill
-            className="object-cover object-top"
-          />
-        </div>
+        <FooterBell />
 
         {/* Header */}
         <div className="flex flex-col gap-4 items-center text-center relative z-10 lg:gap-6">

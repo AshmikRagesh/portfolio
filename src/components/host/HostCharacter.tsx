@@ -60,14 +60,22 @@ const FINISH = {
 };
 const GRAPE = { lit: "#c22a88", mid: "#9D136A", shade: "#6e0e4b" };
 
-/** Size of the host at a given rendered height, and where its hands hold the board (px from top-left). */
+// Bottom edge of the base — where the bell rests on a surface
+const BASE_Y = 226;
+
+/** Size of the host at a given rendered height, where its hands hold the board, and where its base
+ *  rests (px from top-left). */
 export function hostLayout(height: number) {
   const scale = height / VIEWBOX.h;
   const px = (p: { x: number; y: number }) => ({
     x: Math.round((p.x - VIEWBOX.x) * scale),
     y: Math.round((p.y - VIEWBOX.y) * scale),
   });
-  return { width: Math.round(VIEWBOX.w * scale), hands: [px(HOLD.left), px(HOLD.right)] as const };
+  return {
+    width: Math.round(VIEWBOX.w * scale),
+    hands: [px(HOLD.left), px(HOLD.right)] as const,
+    base: Math.round((BASE_Y - VIEWBOX.y) * scale),
+  };
 }
 
 interface Props {
