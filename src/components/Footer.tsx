@@ -1,12 +1,10 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useCuriosity } from "@/context/CuriosityContext";
 import HostCharacter, { hostLayout } from "@/components/host/HostCharacter";
-import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { ringBell } from "@/components/host/bellSound";
-import LobbyIllustration from "@/components/LobbyIllustration";
+import Image from "next/image";
 
 const socialLinks = [
   {
@@ -34,8 +32,6 @@ const socialLinks = [
 
 // Bell height on phone / tablet / desktop
 const BELL_HEIGHT = { sm: 56, md: 64, lg: 72 };
-// The board never comes closer than this to the edge of the screen
-const BOARD_EDGE = 12;
 // Wandering: each hop takes HOP_MS and covers about this share of the bell's width
 const HOP_MS = 300;
 const HOP_REACH = 0.7;
@@ -71,21 +67,19 @@ function useBellHeight() {
 // of small hops — sometimes half-way across and back, sometimes all the way — with a
 // pause, a hop on the spot or a look around in between. Its eyes face the way it's going,
 // and it stretches on the way up and squashes on each landing.
-//   pointer   hover (or keyboard focus) stops it at its next landing, rings it and lowers
-//             the board; a click rings it and makes it hop.
-//   touch     a tap rings it and toggles the board; it stays put while the board's down.
+//   pointer   hover (or keyboard focus) rings it and stops it at its next landing, so it
+//             can be clicked; a click rings it and makes it hop.
+//   touch     a tap rings it and makes it hop.
+// The timer board lives with the bell in the navbar only.
 // It never dozes, and turns gold for the longest visit ever. With reduced motion it stays
 // where it landed and keeps still.
 function FooterBell() {
-  const { activeSeconds } = useCuriosity();
   const record = useRecordHolder();
   const touch = useTouchScreen();
   const height = useBellHeight();
   const layout = hostLayout(height);
   const [hovered, setHovered] = useState(false);
-  const [open, setOpen] = useState(false); // touch: board pinned down by a tap
   const [ding, setDing] = useState(0);
-  const [shift, setShift] = useState(0);
   const [gaze, setGaze] = useState<Gaze>(null);
   const [landed, setLanded] = useState(false);
   const railRef = useRef<HTMLDivElement>(null);
@@ -93,14 +87,14 @@ function FooterBell() {
   const liftRef = useRef<HTMLDivElement>(null);
   const pokeRef = useRef(() => {});
 
-  const holding = (hovered && !touch) || open;
-  const live = useRef({ x: null as number | null, holding, width: layout.width });
-  live.current.holding = holding;
+  const still = hovered && !touch; // under the pointer: stays put so it can be rung
+  const live = useRef({ x: null as number | null, still, width: layout.width });
+  live.current.still = still;
   live.current.width = layout.width;
 
   useEffect(() => {
-    if (holding) setDing((d) => d + 1);
-  }, [holding]);
+    if (still) setDing((d) => d + 1);
+  }, [still]);
 
   // Keep it on the counter: start near the right, and stay inside when the page resizes
   useLayoutEffect(() => {
@@ -162,7 +156,7 @@ function FooterBell() {
       while (i < trip.hops.length && t > trip.hops[i].ms) t -= trip.hops[i++].ms;
       const at = (k: number) => lerp(trip!.from, trip!.to, Math.min(1, k / trip!.travelling));
       // Done, or hovered/tapped: stop at the landing it has just made
-      if (i >= trip.hops.length || (s.holding && i > 0 && i <= trip.travelling)) return finish(at(i));
+      if (i >= trip.hops.length || (s.still && i > 0 && i <= trip.travelling)) return finish(at(i));
       const hop = trip.hops[i];
       const p = t / hop.ms;
       setX(at(i + p));
@@ -200,7 +194,7 @@ function FooterBell() {
 
     // Next thing to do: mostly a wander, now and then a hop or a look around
     function next() {
-      if (!visible || document.hidden || s.holding || trip) return schedule();
+      if (!visible || document.hidden || s.still || trip) return schedule();
       const roll = Math.random();
       if (roll < 0.14) return hopOnTheSpot();
       if (roll < 0.28) return lookAround();
@@ -237,23 +231,10 @@ function FooterBell() {
     };
   }, [landed]);
 
-  // The board hangs centred under the hands, nudged in if that would run off-screen
-  const [left, right] = layout.hands;
-  const gripMid = (left.x + right.x) / 2;
-  const boardLeft = gripMid - BOARD_WIDTH / 2 + shift;
-
-  useLayoutEffect(() => {
-    if (!holding) return;
-    const edge = (moverRef.current?.getBoundingClientRect().left ?? 0) + gripMid - BOARD_WIDTH / 2;
-    const overRight = edge + BOARD_WIDTH - (document.documentElement.clientWidth - BOARD_EDGE);
-    setShift(overRight > 0 ? -overRight : Math.max(0, BOARD_EDGE - edge));
-  }, [holding, gripMid]);
-
   const ring = () => {
     ringBell();
     setDing((d) => d + 1);
-    if (touch) setOpen((o) => !o);
-    else pokeRef.current();
+    pokeRef.current();
   };
 
   return (
@@ -283,26 +264,16 @@ function FooterBell() {
           <div ref={liftRef} style={{ transformOrigin: `50% ${layout.base}px` }}>
             <button
               type="button"
-              aria-label="Measuring your curiosity — ring the bell to see your time"
-              aria-expanded={holding}
+              aria-label="Ring the bell"
               onClick={ring}
               onFocus={() => !touch && setHovered(true)}
               onBlur={() => setHovered(false)}
               className="relative z-10 block cursor-pointer select-none rounded-[12px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
             >
-              <HostCharacter mood={record ? "champion" : "idle"} holding={holding} ding={ding} gaze={gaze} className="block" style={{ width: layout.width, height }} />
+              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} className="block" style={{ width: layout.width, height }} />
             </button>
           </div>
         </div>
-
-        {/* Timer board — hangs from the hands over the front of the counter. On touch, a tap puts it away. */}
-        {holding && (
-          <div className="absolute" style={{ left: boardLeft, top: left.y + 6 }} onClick={() => touch && setOpen(false)}>
-            <div className="host-board" style={{ "--grip-x": `${gripMid - boardLeft}px` } as React.CSSProperties}>
-              <TimerBoard seconds={activeSeconds} champion={record} grips={[left.x - boardLeft, right.x - boardLeft]} />
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -330,13 +301,22 @@ function tooth() {
   return toothTile;
 }
 
-// Behind the content: the paper tooth, and the lobby drawn in faint line along the floor
+// Behind the content: the paper tooth, and a corner guesthouse drawn in faint line, centred
+// and standing on the floor of the band. The drawing is generated by
+// scripts/draw-footer-guesthouse.py; its lines are grape-light.
 function FooterBackdrop() {
   const [grain, setGrain] = useState("");
   useEffect(() => setGrain(tooth()), []);
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-      <LobbyIllustration className="absolute bottom-0 left-1/2 w-full min-w-[1100px] max-w-[1600px] -translate-x-1/2 text-grape-light opacity-[0.14]" />
+      <Image
+        src="/images/footer-guesthouse.svg"
+        alt=""
+        width={1840}
+        height={640}
+        unoptimized
+        className="absolute bottom-0 left-1/2 h-[360px] w-auto max-w-none -translate-x-1/2 opacity-[0.16] md:h-[440px] lg:h-[520px] xl:h-[560px]"
+      />
       {grain && <div className="absolute inset-0" style={{ backgroundImage: `url(${grain})` }} />}
     </div>
   );
@@ -371,12 +351,12 @@ export default function Footer() {
 
           {/* Header */}
           <div className="flex flex-col gap-4 items-center text-center relative z-10 lg:gap-6">
-            <h2 className="font-heading font-medium text-[28px] leading-[1.18] tracking-[-0.28px] text-white md:text-[36px] md:leading-[44px] lg:text-[44px] lg:leading-[48px] lg:tracking-[-0.44px]">
+            <h2 className="font-heading font-medium text-[28px] leading-[1.18] tracking-[-0.28px] text-white md:text-[36px] md:leading-[44px] lg:text-[44px] lg:leading-[48px] lg:tracking-[-0.44px] xl:text-[56px] xl:leading-[64px] xl:tracking-[-2px]">
               Making creating easy and
               <br className="hidden md:block" />
               {" "}enjoyable for everyone.
             </h2>
-            <p className="font-body font-normal text-[16px] leading-[26px] text-muted max-w-[280px] md:max-w-[500px] md:text-[18px] md:leading-[28px] lg:text-[20px] lg:leading-[30px] lg:max-w-[504px]">
+            <p className="font-body font-normal text-[16px] leading-[26px] text-white/70 max-w-[280px] md:max-w-[500px] md:text-[18px] md:leading-[28px] lg:text-[20px] lg:leading-[30px] lg:max-w-[504px] xl:text-[24px] xl:leading-[36px] xl:max-w-[600px]">
               For any work inquiries, please feel free to get in touch with me anytime.
             </p>
           </div>
