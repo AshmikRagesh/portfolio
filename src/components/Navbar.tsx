@@ -319,22 +319,10 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile: resume CTA + hamburger. While the bell has ducked for the footer's and
-            its clock sits in the logo's spot, there's no room for both: the CTA steps aside. */}
-        <div className="md:hidden flex items-center gap-2">
-          <Link
-            href="/resume"
-            aria-hidden={footerOnStage || undefined}
-            tabIndex={footerOnStage ? -1 : undefined}
-            className={`flex items-center gap-2 text-white font-brand font-normal text-[14px] uppercase tracking-[1px] px-[16px] py-[8px] rounded-[10px] transition-[color,background-color,opacity,visibility] duration-200 whitespace-nowrap bg-primary hover:bg-grape ${
-              footerOnStage ? "invisible opacity-0" : ""
-            }`}
-          >
-            <SparkleAiIcon size={16} />
-            Fancy Paper
-          </Link>
+        {/* Mobile: just the menu — the CTA is desktop and tablet only */}
+        <div className="md:hidden flex items-center">
           <button
-            className="flex items-center justify-center w-[38px] self-stretch rounded-full border-[0.5px] border-line bg-[rgba(30,5,37,0.08)] p-[4px] text-heading"
+            className="flex items-center justify-center size-[38px] rounded-full border-[0.5px] border-line bg-[rgba(30,5,37,0.08)] p-[4px] text-heading"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
           >
