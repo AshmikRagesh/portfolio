@@ -264,7 +264,7 @@ export default function TasteNotes() {
     <section
       id="notes"
       aria-labelledby="notes-heading"
-      className="page-container section-spacing scroll-mt-20 bg-background pb-[96px] md:pb-[128px] lg:pb-[160px]"
+      className="page-container section-spacing scroll-mt-20 bg-background pb-[128px] md:pb-[160px] lg:pb-[200px]"
     >
       <MailerDefs />
 

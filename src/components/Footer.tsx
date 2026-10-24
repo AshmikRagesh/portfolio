@@ -135,6 +135,46 @@ function FooterBell() {
   );
 }
 
+// Fine grain, white specks at varying strength — one static tile, repeated
+const GRAIN =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+
+// The card is the front desk, finished like one: a lit counter top along the edge the bell
+// sits on, a reeded front panel below it (a groove every 16px), a little grain, and a pool
+// of lamp light where the bell stands. Clipped to the card, so the bell above isn't.
+function CounterFinish() {
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[4px]">
+      {/* Reeded front — fades out towards the floor */}
+      <div
+        className="absolute inset-x-0 bottom-0 top-[16px]"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 12px, rgba(30,5,37,0.28) 12px 14px, transparent 14px 16px)",
+          maskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.35) 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.35) 100%)",
+        }}
+      />
+      {/* Lamp light, centred under the bell */}
+      <div
+        className="absolute -top-[160px] -right-[140px] h-[400px] w-[440px] md:-right-[116px] lg:-right-[76px]"
+        style={{ background: "radial-gradient(closest-side, rgba(157,19,106,0.34), rgba(157,19,106,0))" }}
+      />
+      {/* Floor shadow — the front panel darkens towards the bottom */}
+      <div className="absolute inset-x-0 bottom-0 h-[50%]" style={{ background: "linear-gradient(to bottom, rgba(30,5,37,0), rgba(30,5,37,0.45))" }} />
+      <div className="absolute inset-0 opacity-[0.1]" style={{ backgroundImage: GRAIN }} />
+      {/* Counter top — a lit band with a highlight on the lip and a shadow cast below */}
+      <div
+        className="absolute inset-x-0 top-0 h-[16px]"
+        style={{
+          background: "linear-gradient(to bottom, #4a1559, #3e0d4b)",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.24), 0 1px 0 rgba(30,5,37,0.6), 0 8px 16px rgba(30,5,37,0.4)",
+        }}
+      />
+    </div>
+  );
+}
+
 export default function Footer() {
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -155,8 +195,9 @@ export default function Footer() {
   return (
     // Above the page's content layer (z-10), so the bell can sit up past the card's top edge
     <footer className="page-container relative z-20 bg-background pb-4 md:pb-6 lg:pb-[40px]">
-      <div ref={cardRef} className="footer-card bg-primary relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 rounded-[24px] md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[180px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px] lg:rounded-[40px]">
+      <div ref={cardRef} className="footer-card bg-primary relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 rounded-[4px] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)] md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[180px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px]">
 
+        <CounterFinish />
         <FooterBell />
 
         {/* Header */}
