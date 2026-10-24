@@ -83,6 +83,8 @@ interface Props {
   holding?: boolean;
   /** Bump to ring the bell. */
   ding?: number;
+  /** Where to look (-1…1 on each axis), overriding the cursor while set. */
+  gaze?: { x: number; y: number } | null;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -90,7 +92,7 @@ interface Props {
 // easeOutBack — a small overshoot, so the hands land with a little weight
 const settle = (t: number) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
 
-export default function HostCharacter({ mood = "idle", holding = false, ding = 0, className = "", style }: Props) {
+export default function HostCharacter({ mood = "idle", holding = false, ding = 0, gaze = null, className = "", style }: Props) {
   const uid = useId().replace(/:/g, "");
   const clipId = `${uid}-dome`;
 
@@ -105,14 +107,15 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
   // Hands come round to the front while in use, and go back behind when done
   const [armsInFront, setArmsInFront] = useState(holding);
 
-  const state = useRef({ mood, holding, look: { x: 0, y: 0 }, swing: holding ? 1 : 0 });
+  const state = useRef({ mood, holding, gaze, look: { x: 0, y: 0 }, swing: holding ? 1 : 0 });
   state.current.mood = mood;
   state.current.holding = holding;
+  state.current.gaze = gaze;
 
   // Gaze and light — recomputed whenever the cursor moves or the pose changes
   const applyLook = () => {
-    const { mood: m, holding: h, look } = state.current;
-    const { x, y } = m === "dozing" ? { x: 0, y: 0 } : look;
+    const { mood: m, holding: h, gaze: g, look } = state.current;
+    const { x, y } = m === "dozing" ? { x: 0, y: 0 } : (g ?? look);
     const down = h ? 3 : 0; // glance at the board while holding it
     faceRef.current?.setAttribute("transform", `translate(${x * 7} ${y * 4})`);
     pupilsRef.current?.setAttribute("transform", `translate(${x * 2.5} ${y * 2.5 + down})`);

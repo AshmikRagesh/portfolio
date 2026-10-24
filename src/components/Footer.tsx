@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useCuriosity } from "@/context/CuriosityContext";
-import HostCharacter, { hostLayout, type HostMood } from "@/components/host/HostCharacter";
+import HostCharacter, { hostLayout } from "@/components/host/HostCharacter";
 import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
@@ -33,9 +33,20 @@ const socialLinks = [
 ];
 
 // Bell height on phone / tablet / desktop
-const BELL_HEIGHT = { sm: 72, md: 88, lg: 112 };
+const BELL_HEIGHT = { sm: 56, md: 64, lg: 72 };
 // The board never comes closer than this to the edge of the screen
 const BOARD_EDGE = 12;
+// Wandering: each hop takes HOP_MS and covers about this share of the bell's width
+const HOP_MS = 300;
+const HOP_REACH = 0.7;
+// Squash lasts this long either side of each touch-down
+const CONTACT_MS = 60;
+
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const random = (lo: number, hi: number) => lo + Math.random() * (hi - lo);
+
+type Gaze = { x: number; y: number } | null;
+type Trip = { from: number; to: number; hops: { h: number; ms: number }[]; travelling: number; start: number };
 
 function useBellHeight() {
   const [height, setHeight] = useState(BELL_HEIGHT.lg);
@@ -54,15 +65,19 @@ function useBellHeight() {
   return height;
 }
 
-// The front-desk bell, sitting on the footer card as if the card were the counter — where
-// the telephone used to hang. Once the card has risen into view it drops onto the edge and
-// rings. After that it behaves like the one in the navbar:
-//   pointer   hover (or keyboard focus) rings it and lowers the board over the front of
-//             the counter; a click rings it again.
-//   touch     a tap rings it and toggles the board.
-// It dozes while the clock is paused and turns gold for the longest visit ever.
+// The front-desk bell, at home on the footer's top edge as if the band were the counter.
+// Once the footer has risen into view it drops onto the edge, on the right, and rings.
+// Then it potters along the counter like the Claude Code mascot on its input box: strings
+// of small hops — sometimes half-way across and back, sometimes all the way — with a
+// pause, a hop on the spot or a look around in between. Its eyes face the way it's going,
+// and it stretches on the way up and squashes on each landing.
+//   pointer   hover (or keyboard focus) stops it at its next landing, rings it and lowers
+//             the board; a click rings it and makes it hop.
+//   touch     a tap rings it and toggles the board; it stays put while the board's down.
+// It never dozes, and turns gold for the longest visit ever. With reduced motion it stays
+// where it landed and keeps still.
 function FooterBell() {
-  const { activeSeconds, paused } = useCuriosity();
+  const { activeSeconds } = useCuriosity();
   const record = useRecordHolder();
   const touch = useTouchScreen();
   const height = useBellHeight();
@@ -71,14 +86,156 @@ function FooterBell() {
   const [open, setOpen] = useState(false); // touch: board pinned down by a tap
   const [ding, setDing] = useState(0);
   const [shift, setShift] = useState(0);
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const [gaze, setGaze] = useState<Gaze>(null);
+  const [landed, setLanded] = useState(false);
+  const railRef = useRef<HTMLDivElement>(null);
+  const moverRef = useRef<HTMLDivElement>(null);
+  const liftRef = useRef<HTMLDivElement>(null);
+  const pokeRef = useRef(() => {});
 
   const holding = (hovered && !touch) || open;
-  const mood: HostMood = paused && !holding ? "dozing" : record ? "champion" : "idle";
+  const live = useRef({ x: null as number | null, holding, width: layout.width });
+  live.current.holding = holding;
+  live.current.width = layout.width;
 
   useEffect(() => {
     if (holding) setDing((d) => d + 1);
   }, [holding]);
+
+  // Keep it on the counter: start near the right, and stay inside when the page resizes
+  useLayoutEffect(() => {
+    const rail = railRef.current;
+    const mover = moverRef.current;
+    if (!rail || !mover) return;
+    const s = live.current;
+    const seat = () => {
+      const span = Math.max(0, rail.clientWidth - s.width);
+      s.x = s.x === null ? Math.round(span * 0.9) : Math.min(s.x, span);
+      mover.style.transform = `translate3d(${s.x}px, 0, 0)`;
+    };
+    seat();
+    const observer = new ResizeObserver(seat);
+    observer.observe(rail);
+    return () => observer.disconnect();
+  }, [layout.width]);
+
+  // Pottering about — starts once it has landed
+  useEffect(() => {
+    const rail = railRef.current;
+    const mover = moverRef.current;
+    const lift = liftRef.current;
+    if (!landed || !rail || !mover || !lift) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const s = live.current;
+    let frame = 0;
+    let timer = 0;
+    let looks: number[] = [];
+    let visible = true;
+    let trip: Trip | null = null;
+
+    const span = () => Math.max(0, rail.clientWidth - s.width);
+    const setX = (x: number) => {
+      s.x = x;
+      mover.style.transform = `translate3d(${x}px, 0, 0)`;
+    };
+    const setLift = (up: number, sx = 1, sy = 1) => {
+      lift.style.transform = `translate3d(0, ${-up}px, 0) scale(${sx}, ${sy})`;
+    };
+
+    const schedule = (lo = 1400, hi = 3800) => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(next, random(lo, hi));
+    };
+
+    const finish = (x: number) => {
+      trip = null;
+      setX(x);
+      setLift(0);
+      setGaze(null);
+      schedule();
+    };
+
+    const tick = (now: number) => {
+      if (!trip) return;
+      let t = now - trip.start;
+      let i = 0;
+      while (i < trip.hops.length && t > trip.hops[i].ms) t -= trip.hops[i++].ms;
+      const at = (k: number) => lerp(trip!.from, trip!.to, Math.min(1, k / trip!.travelling));
+      // Done, or hovered/tapped: stop at the landing it has just made
+      if (i >= trip.hops.length || (s.holding && i > 0 && i <= trip.travelling)) return finish(at(i));
+      const hop = trip.hops[i];
+      const p = t / hop.ms;
+      setX(at(i + p));
+      const fromContact = Math.min(p, 1 - p) * hop.ms;
+      if (fromContact < CONTACT_MS) {
+        const k = (1 - fromContact / CONTACT_MS) * (hop.h > 6 ? 0.12 : 0.05);
+        setLift(hop.h * 4 * p * (1 - p), 1 + k * 0.7, 1 - k);
+      } else {
+        const k = Math.abs(1 - 2 * p) * 0.05;
+        setLift(hop.h * 4 * p * (1 - p), 1 - k * 0.6, 1 + k);
+      }
+      frame = requestAnimationFrame(tick);
+    };
+
+    const go = (to: number, hops: { h: number; ms: number }[]) => {
+      const from = s.x ?? 0;
+      trip = { from, to, hops: [...hops, { h: 4, ms: 140 }], travelling: hops.length, start: performance.now() };
+      if (to !== from) setGaze({ x: Math.sign(to - from), y: 0.2 });
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(tick);
+    };
+
+    const hopOnTheSpot = (h = 14) => go(s.x ?? 0, [{ h, ms: HOP_MS + 40 }]);
+
+    const lookAround = () => {
+      const steps: [Gaze, number][] = [
+        [{ x: -1, y: 0.1 }, 0],
+        [{ x: 1, y: 0.1 }, 720],
+        [{ x: 0, y: -0.5 }, 1440],
+        [null, 2080],
+      ];
+      looks = steps.map(([g, at]) => window.setTimeout(() => setGaze(g), at));
+      schedule(2400, 4200);
+    };
+
+    // Next thing to do: mostly a wander, now and then a hop or a look around
+    function next() {
+      if (!visible || document.hidden || s.holding || trip) return schedule();
+      const roll = Math.random();
+      if (roll < 0.14) return hopOnTheSpot();
+      if (roll < 0.28) return lookAround();
+      const x = s.x ?? 0;
+      const max = span();
+      const step = s.width * HOP_REACH;
+      // Head for the far side more often than not, a quarter to two-thirds of the way
+      const towards = x > max / 2 ? -1 : 1;
+      let dir = Math.random() < 0.75 ? towards : -towards;
+      let to = Math.max(0, Math.min(max, x + dir * random(0.25, 0.65) * max));
+      if (Math.abs(to - x) < step) {
+        dir = -dir;
+        to = Math.max(0, Math.min(max, x + dir * random(0.25, 0.65) * max));
+      }
+      const count = Math.max(1, Math.round(Math.abs(to - x) / step));
+      go(to, Array.from({ length: count }, () => ({ h: Math.round(random(10, 16)), ms: HOP_MS })));
+    }
+
+    pokeRef.current = () => {
+      if (!trip) hopOnTheSpot(20);
+    };
+
+    const io = new IntersectionObserver(([entry]) => (visible = entry.isIntersecting));
+    io.observe(rail);
+    schedule(800, 1600);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+      looks.forEach(window.clearTimeout);
+      io.disconnect();
+      pokeRef.current = () => {};
+      setLift(0);
+    };
+  }, [landed]);
 
   // The board hangs centred under the hands, nudged in if that would run off-screen
   const [left, right] = layout.hands;
@@ -87,7 +244,7 @@ function FooterBell() {
 
   useLayoutEffect(() => {
     if (!holding) return;
-    const edge = (wrapRef.current?.getBoundingClientRect().left ?? 0) + gripMid - BOARD_WIDTH / 2;
+    const edge = (moverRef.current?.getBoundingClientRect().left ?? 0) + gripMid - BOARD_WIDTH / 2;
     const overRight = edge + BOARD_WIDTH - (document.documentElement.clientWidth - BOARD_EDGE);
     setShift(overRight > 0 ? -overRight : Math.max(0, BOARD_EDGE - edge));
   }, [holding, gripMid]);
@@ -96,42 +253,57 @@ function FooterBell() {
     ringBell();
     setDing((d) => d + 1);
     if (touch) setOpen((o) => !o);
+    else pokeRef.current();
   };
 
   return (
-    <div
-      ref={wrapRef}
-      className="footer-bell absolute right-[48px] z-20 md:right-[64px] lg:right-[96px]"
-      style={{ top: -layout.base, width: layout.width, height, transformOrigin: `50% ${layout.base}px` }}
-      // Rings as it lands — only for its own landing, not the ding animations inside it
-      onAnimationEnd={(e) => e.target === e.currentTarget && setDing((d) => d + 1)}
-      onMouseEnter={() => {
-        if (touch) return; // phones fire mouseenter on tap — the tap handles it
-        setHovered(true);
-        ringBell();
-      }}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <button
-        type="button"
-        aria-label="Measuring your curiosity — ring the bell to see your time"
-        aria-expanded={holding}
-        onClick={ring}
-        onFocus={() => !touch && setHovered(true)}
-        onBlur={() => setHovered(false)}
-        className="relative z-10 block cursor-pointer select-none rounded-[12px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
+    // The counter: a rail along the footer's top edge that the bell moves along
+    <div ref={railRef} className="pointer-events-none absolute inset-x-0 z-20" style={{ top: -layout.base, height }}>
+      <div
+        ref={moverRef}
+        className="pointer-events-auto absolute left-0 top-0"
+        style={{ width: layout.width, height }}
+        onMouseEnter={() => {
+          if (touch) return; // phones fire mouseenter on tap — the tap handles it
+          setHovered(true);
+          ringBell();
+        }}
+        onMouseLeave={() => setHovered(false)}
       >
-        <HostCharacter mood={mood} holding={holding} ding={ding} className="block" style={{ width: layout.width, height }} />
-      </button>
-
-      {/* Timer board — hangs from the hands over the front of the counter. On touch, a tap puts it away. */}
-      {holding && (
-        <div className="absolute" style={{ left: boardLeft, top: left.y + 6 }} onClick={() => touch && setOpen(false)}>
-          <div className="host-board" style={{ "--grip-x": `${gripMid - boardLeft}px` } as React.CSSProperties}>
-            <TimerBoard seconds={activeSeconds} champion={record} grips={[left.x - boardLeft, right.x - boardLeft]} />
+        <div
+          className="footer-bell"
+          style={{ transformOrigin: `50% ${layout.base}px` }}
+          // Rings as it lands — only for its own landing, not the ding animations inside it
+          onAnimationEnd={(e) => {
+            if (e.target !== e.currentTarget) return;
+            setDing((d) => d + 1);
+            setLanded(true);
+          }}
+        >
+          <div ref={liftRef} style={{ transformOrigin: `50% ${layout.base}px` }}>
+            <button
+              type="button"
+              aria-label="Measuring your curiosity — ring the bell to see your time"
+              aria-expanded={holding}
+              onClick={ring}
+              onFocus={() => !touch && setHovered(true)}
+              onBlur={() => setHovered(false)}
+              className="relative z-10 block cursor-pointer select-none rounded-[12px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
+            >
+              <HostCharacter mood={record ? "champion" : "idle"} holding={holding} ding={ding} gaze={gaze} className="block" style={{ width: layout.width, height }} />
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Timer board — hangs from the hands over the front of the counter. On touch, a tap puts it away. */}
+        {holding && (
+          <div className="absolute" style={{ left: boardLeft, top: left.y + 6 }} onClick={() => touch && setOpen(false)}>
+            <div className="host-board" style={{ "--grip-x": `${gripMid - boardLeft}px` } as React.CSSProperties}>
+              <TimerBoard seconds={activeSeconds} champion={record} grips={[left.x - boardLeft, right.x - boardLeft]} />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
