@@ -5,6 +5,7 @@
 // Uses the shared page container (1240px at desktop). All values are multiples of 2/4px.
 
 import Signature from "@/components/Signature";
+import PaperTooth from "@/components/PaperTooth";
 
 interface Testimonial {
   quote: string;
@@ -87,9 +88,11 @@ function ArrowUpRight({ size }: { size: number }) {
 export default function Testimonials() {
   return (
     <section aria-labelledby="testimonials-heading" className="section-spacing bg-background">
-      {/* A full-width band of blackcurrant; the content keeps the shared container and its inset */}
-      <div className="w-full bg-primary py-10 text-white md:py-14 lg:py-20">
-        <div className="page-container">
+      {/* A full-width band of blackcurrant with the footer's paper tooth; the content keeps
+          the shared container and its inset */}
+      <div className="relative w-full bg-primary py-10 text-white md:py-14 lg:py-20">
+        <PaperTooth />
+        <div className="page-container relative">
           <div className="px-6 md:px-8 lg:px-12">
             {/* Header */}
             <div className="mb-8 grid grid-cols-1 items-end gap-4 pb-5 shadow-[inset_0_-1px_0_rgba(255,255,255,0.22)] md:mb-10 md:grid-cols-[minmax(0,1fr)_320px] md:gap-12 lg:grid-cols-[minmax(0,1fr)_400px]">
