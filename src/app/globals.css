@@ -98,7 +98,8 @@
    stays; later hovers just swing it on the hook. NDA works: the rubber stamp presses down the first time the card is hovered
    or focused — on scroll-in for touch screens — and then stays (NdaStamp sets
    data-stamped on the card).
-   Touch screens and reduced motion show the end states with no animation. */
+   Touch screens can't hover, so there the key drops and the stamp presses once the card
+   scrolls into view. Reduced motion shows the end states with no animation. */
 
 /* Key — pivots where the ring's inner top edge rests on the wire (35.5px, 27.9px) */
 .key-hang {
@@ -190,10 +191,6 @@
   animation: stamp-thud 0.62s ease-out;
 }
 
-
-@media (hover: none) {
-  .key-hang { opacity: 1; transform: none; }
-}
 
 /* Guestbook signature — ink draws in once the card scrolls into view */
 .signature path {

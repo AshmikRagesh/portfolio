@@ -156,7 +156,8 @@ export default function PixelClouds({
       if (!raf) raf = requestAnimationFrame(tick);
     };
 
-    const onEnter = () => {
+    const onEnter = (e: PointerEvent) => {
+      if (e.pointerType === "touch") return; // a finger landing on the card mid-scroll isn't a hover
       target = 1;
       start();
     };

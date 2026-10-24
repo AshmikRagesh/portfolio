@@ -19,7 +19,8 @@ import { useEffect, useId, useRef } from "react";
 // hook's tip, runs down into the cup and swings to rest — then stays hung. Every later
 // hover just swings it on the hook. State lives on the card as data-key
 // (dropping → hung → swinging → hung); see .key-hang / .hook-jolt in globals.css.
-// Touch screens and reduced motion show it hanging still.
+// Touch screens can't hover, so there it drops once the card scrolls half into view.
+// Reduced motion shows it hanging still.
 export default function KeyTag({ room, className = "" }: { room: string; className?: string }) {
   const id = useId().replace(/:/g, "");
   const u = (name: string) => `url(#${name}-${id})`;
@@ -48,7 +49,23 @@ export default function KeyTag({ room, className = "" }: { room: string; classNa
     card.addEventListener("pointerenter", onEnter);
     card.addEventListener("focusin", onEnter);
     key.addEventListener("animationend", onEnd);
+
+    // Touch screens can't hover, so there the key drops once the card is half in view
+    let io: IntersectionObserver | null = null;
+    if (window.matchMedia("(hover: none)").matches && "IntersectionObserver" in window) {
+      io = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          if (!card.getAttribute("data-key")) set("dropping");
+          io?.disconnect();
+        },
+        { threshold: 0.5 }
+      );
+      io.observe(card);
+    }
+
     return () => {
+      io?.disconnect();
       card.removeEventListener("pointerenter", onEnter);
       card.removeEventListener("focusin", onEnter);
       key.removeEventListener("animationend", onEnd);
