@@ -25,7 +25,8 @@ export const MAILER_SEEDS = [3, 11];
 // Each tone: front/back kraft gradients, the crushed corner, crease shadow + highlight,
 // and the ink it's printed in
 export const TONES = {
-  vanilla: { front: "mailer-kraft-vanilla", back: "mailer-kraft-vanilla", corner: "#eee4cc", shade: "#524555", light: "#FFFFFF", ink: "#524555", blend: "mix-blend-multiply" },
+  // Printed in grape; multiplied into the paper so the grain shows through the ink
+  vanilla: { front: "mailer-kraft-vanilla", back: "mailer-kraft-vanilla", corner: "#eee4cc", shade: "#524555", light: "#FFFFFF", ink: "#9D136A", blend: "mix-blend-multiply" },
   grape: { front: "mailer-kraft-grape", back: "mailer-kraft-grape", corner: "#9D136A", shade: "#1e0525", light: "#f8c2f7", ink: "#F9E4FF", blend: "" },
 } as const;
 export type Tone = keyof typeof TONES;
