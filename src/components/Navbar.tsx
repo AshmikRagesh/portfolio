@@ -9,7 +9,7 @@ import { useCuriosity } from "@/context/CuriosityContext";
 import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/CuriosityBubble";
 import HostCharacter, { hostLayout, type HostMood } from "@/components/host/HostCharacter";
 import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
-import { useRecordHolder } from "@/components/host/useRecordHolder";
+import { useBellHandoff } from "@/components/host/BellHandoff";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { primeBell, ringBell } from "@/components/host/bellSound";
 
@@ -23,6 +23,9 @@ const HOST_HEIGHT = 56;
 const HOST = hostLayout(HOST_HEIGHT);
 // The board never comes closer than this to the edge of the screen
 const BOARD_EDGE = 12;
+// While the bell is down on the footer, its board hangs in the logo's spot at this scale,
+// so it fits the navbar row
+const AWAY_BOARD_SCALE = 0.72;
 
 // In development, `?mood=dozing|champion|holding` pins the host in that state for review
 function usePreviewMood() {
@@ -51,8 +54,13 @@ const BOARD_SHOWN_KEY = "ash.curiosity.boardShown"; // sessionStorage
 //
 // The board is out of the layout and above everything on the page, so nothing around
 // it ever moves.
+//
+// When the visitor reaches the footer the bell jumps down there (BellHandoff) and leaves
+// its board hanging here in its place, still counting; it comes back when they scroll up.
 function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   const { activeSeconds, paused } = useCuriosity();
+  const { at, flying, navBoard, arrivals, setAnchor } = useBellHandoff();
+  const away = at !== "nav" || flying;
   const preview = usePreviewMood();
   const touch = useTouchScreen();
   const [hovered, setHovered] = useState(false);
@@ -61,7 +69,7 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
   const speaking = bubble.message !== null;
-  const holding = (((hovered && !touch) || open) && !speaking) || preview === "holding";
+  const holding = !away && ((((hovered && !touch) || open) && !speaking) || preview === "holding");
   const champion = record || preview === "champion";
   const mood: HostMood = preview === "dozing" || (paused && !holding) ? "dozing" : champion ? "champion" : "idle";
 
@@ -70,6 +78,25 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   useEffect(() => {
     if (holding || speaking) setDing((d) => d + 1);
   }, [holding, speaking]);
+
+  // …and as it lands back home from the footer
+  useEffect(() => {
+    if (!away && arrivals) setDing((d) => d + 1);
+  }, [arrivals]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Where the bell stands here, for the jump: the middle of its base. Nothing when the
+  // logo isn't shown (phones on case studies).
+  useEffect(() => {
+    setAnchor("nav", {
+      height: HOST_HEIGHT,
+      point: () => {
+        const r = wrapRef.current?.getBoundingClientRect();
+        if (!r || r.width === 0) return null;
+        return { x: r.left + HOST.width / 2, y: r.top + HOST.base };
+      },
+    });
+    return () => setAnchor("nav", null);
+  }, [setAnchor]);
 
   // The board hangs centred under the hands, nudged in if that would run off-screen
   const [left, right] = HOST.hands;
@@ -101,7 +128,7 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
 
   // Touch: a tap on the bell or the board toggles the board. Pointer: the bell is a link home.
   const toggle = (e: React.MouseEvent) => {
-    if (!touch) return;
+    if (!touch || away) return;
     e.preventDefault();
     if (!open) ringBell();
     setOpen((o) => !o);
@@ -114,7 +141,7 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
       onMouseEnter={() => {
         if (touch) return; // phones fire mouseenter on tap — the tap handles it
         setHovered(true);
-        ringBell();
+        if (!away) ringBell();
       }}
       onMouseLeave={() => setHovered(false)}
       onFocus={() => !touch && setHovered(true)}
@@ -133,9 +160,18 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
           holding={holding}
           ding={ding}
           className="block"
-          style={{ width: HOST.width, height: HOST_HEIGHT }}
+          style={{ width: HOST.width, height: HOST_HEIGHT, visibility: away ? "hidden" : "visible" }}
         />
       </Link>
+
+      {/* The board, left hanging in the bell's place while it's down on the footer */}
+      {navBoard && (
+        <div className="pointer-events-none absolute left-0 top-0 origin-top-left" style={{ transform: `scale(${AWAY_BOARD_SCALE})` }}>
+          <div className={navBoard === "in" ? "host-board" : "host-board-out"}>
+            <TimerBoard seconds={activeSeconds} champion={champion} />
+          </div>
+        </div>
+      )}
 
       {/* Timer board — hangs from the hands, rings level with them. On touch, a tap puts it away. */}
       {holding && (
@@ -155,9 +191,10 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const isCaseStudy = pathname.startsWith("/works/");
-  // A milestone line brings the navbar back into view for as long as it's up
-  const record = useRecordHolder();
-  const bubble = useMilestoneBubble(record);
+  // A milestone line brings the navbar back into view for as long as it's up. Lines wait
+  // while the bell is away on the footer.
+  const { at, flying, record } = useBellHandoff();
+  const bubble = useMilestoneBubble(record, at !== "nav" || flying);
   const speaking = bubble.message !== null;
   const showNav = isNavVisible || speaking;
 
