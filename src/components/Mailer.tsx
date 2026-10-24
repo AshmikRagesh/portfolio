@@ -9,6 +9,7 @@
 //           the front, and ends in a heat-sealed, crinkled band.
 //   sheets  two sheets of white paper, sitting inside and peeking out under the
 //           front panel's edge. On hover (.group) they slide a little further out.
+//   mouth   the shade just inside the opening, cast by the front panel's lip.
 //   front   the front panel: crumpled paper (lit by an SVG lighting filter), two soft
 //           fold lines across it, a crimped seal along the top with a crushed corner,
 //           a glued seam down the left.
@@ -65,6 +66,17 @@ export function MailerDefs() {
         <clipPath id="mailer-front-clip">
           <path d={FRONT} />
         </clipPath>
+        {/* The mouth: shade under the front panel's lip, deepest at the edge */}
+        {(Object.keys(TONES) as Tone[]).map((k) => (
+          <linearGradient key={k} id={`mailer-mouth-${k}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor={TONES[k].shade} stopOpacity="0.5" />
+            <stop offset="0.35" stopColor={TONES[k].shade} stopOpacity="0.2" />
+            <stop offset="1" stopColor={TONES[k].shade} stopOpacity="0" />
+          </linearGradient>
+        ))}
+        <filter id="mailer-mouth-blur" x="-5%" y="-40%" width="110%" height="180%">
+          <feGaussianBlur stdDeviation="1.6" />
+        </filter>
         <filter id="mailer-soft" x="-10%" y="-10%" width="120%" height="120%">
           <feGaussianBlur stdDeviation="0.8" />
         </filter>
@@ -126,6 +138,12 @@ export default function Mailer({
         aria-hidden="true"
         className="absolute left-[11%] top-[56%] h-[34%] w-[77%] -rotate-[0.6deg] rounded-[3px] bg-[linear-gradient(175deg,#ffffff,#f6f6f4)] shadow-[0_1px_2px_rgba(0,0,0,0.16),inset_0_0_0_1px_rgba(0,0,0,0.04)] transition-transform delay-[40ms] duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-rotate-[2deg] group-hover:translate-y-[38%] group-focus-visible:translate-y-[38%] motion-reduce:transition-none"
       />
+
+      {/* The opening — the front panel's lip shades whatever is just inside it, so the
+          sheets read as tucked under it and slide out from the dark */}
+      <svg viewBox="0 0 300 430" aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full overflow-visible">
+        <path d="M6 341 Q150 346 295 338 L295 370 Q150 378 6 373 Z" fill={`url(#mailer-mouth-${tone})`} filter="url(#mailer-mouth-blur)" />
+      </svg>
 
       {/* Front panel */}
       <svg
