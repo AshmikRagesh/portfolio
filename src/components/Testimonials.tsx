@@ -95,12 +95,11 @@ export default function Testimonials() {
             <div className="mb-8 grid grid-cols-1 items-end gap-4 pb-5 shadow-[inset_0_-1px_0_rgba(255,255,255,0.22)] md:mb-10 md:grid-cols-[minmax(0,1fr)_320px] md:gap-12 lg:grid-cols-[minmax(0,1fr)_400px]">
               <h2
                 id="testimonials-heading"
-                // Same type as the footer heading — the two blackcurrant bands match
-                className="m-0 text-balance font-heading text-[32px] font-medium leading-[40px] tracking-[0px] text-white md:text-[40px] md:leading-[48px] lg:text-[44px] lg:leading-[48px] lg:tracking-[-0.44px] xl:text-[50px] xl:leading-[58px] xl:tracking-[-2px]"
+                className="m-0 text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-white md:text-[44px] md:leading-[44px]"
               >
                 The guestbook.
               </h2>
-              <p className="m-0 text-pretty font-body text-[16px] leading-[26px] text-white/70 md:text-[18px] md:leading-[28px] lg:text-[20px] lg:leading-[30px] xl:text-[24px] xl:leading-[36px]">
+              <p className="m-0 text-pretty font-body text-[16px] leading-[26px] text-white/70">
                 Kind words from the product managers, engineers and leads I&apos;ve built alongside.
               </p>
             </div>
