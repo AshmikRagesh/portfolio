@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import PixelRuler from "@/components/PixelRuler";
 import { CuriosityProvider } from "@/context/CuriosityContext";
-import { BellHandoffProvider } from "@/components/host/BellHandoff";
 
 export default function GlobalLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -17,12 +16,9 @@ export default function GlobalLayout({ children }: { children: ReactNode }) {
 
   return (
     <CuriosityProvider>
-      {/* One bell for the navbar and the footer — it jumps between them */}
-      <BellHandoffProvider>
-        {!isDemo && <Navbar />}
-        <PixelRuler />
-        {children}
-      </BellHandoffProvider>
+      {!isDemo && <Navbar />}
+      <PixelRuler />
+      {children}
     </CuriosityProvider>
   );
 }

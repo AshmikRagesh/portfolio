@@ -113,9 +113,8 @@ export interface Bubble {
 /**
  * Watches the clock and hands back whatever the host should be saying right now.
  * `record` is true once this visit is the longest ever — that line jumps the queue.
- * `hold` keeps the next line back while the bell is away from the navbar.
  */
-export function useMilestoneBubble(record = false, hold = false): Bubble {
+export function useMilestoneBubble(record = false): Bubble {
   const { visitorId, activeSeconds, paused } = useCuriosity();
   const [message, setMessage] = useState<string | null>(null);
   const [meta, setMeta] = useState({
@@ -151,7 +150,7 @@ export function useMilestoneBubble(record = false, hold = false): Bubble {
   }, []);
 
   useEffect(() => {
-    if (!visitorId || paused || hold || busy.current) return;
+    if (!visitorId || paused || busy.current) return;
     seen.current ??= loadSeen();
     const recordDue = record && !seen.current.has("record");
     const next = recordDue ? null : MILESTONES.find((m) => m.at <= activeSeconds && !seen.current!.has(m.id));
@@ -174,7 +173,7 @@ export function useMilestoneBubble(record = false, hold = false): Bubble {
       deadline.current = Date.now() + timing.typeMs + timing.holdMs;
       timers.current.push(window.setTimeout(dismiss, timing.typeMs + timing.holdMs));
     })();
-  }, [visitorId, activeSeconds, paused, hold, record, dismiss]);
+  }, [visitorId, activeSeconds, paused, record, dismiss]);
 
   useEffect(() => clearTimers, []);
 

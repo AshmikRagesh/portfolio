@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import HostCharacter, { hostLayout } from "@/components/host/HostCharacter";
-import { useBellHandoff } from "@/components/host/BellHandoff";
+import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { ringBell } from "@/components/host/bellSound";
 import Image from "next/image";
@@ -37,9 +37,6 @@ const HOP_MS = 300;
 const HOP_REACH = 0.7;
 // Squash lasts this long either side of each touch-down
 const CONTACT_MS = 60;
-// Where on the counter it first lands, as a share of the way across — the left, under
-// the navbar it jumps down from
-const LANDING = 0.12;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const random = (lo: number, hi: number) => lo + Math.random() * (hi - lo);
@@ -64,10 +61,9 @@ function useBellHeight() {
   return height;
 }
 
-// The front-desk bell, on the footer's top edge as if the band were the counter. It's the
-// navbar's bell: when the visitor reaches the footer it jumps down here (BellHandoff flies
-// it), lands on the left and rings, and when they scroll back up it jumps home again —
-// it's only shown here while it's here. In between it potters along the counter like the Claude Code mascot on its input box: strings
+// The front-desk bell, at home on the footer's top edge as if the band were the counter.
+// Once the footer has risen into view it drops onto the edge, on the right, and rings.
+// Then it potters along the counter like the Claude Code mascot on its input box: strings
 // of small hops — sometimes half-way across and back, sometimes all the way — with a
 // pause, a hop on the spot or a look around in between. Its eyes face the way it's going,
 // and it stretches on the way up and squashes on each landing.
@@ -78,14 +74,14 @@ function useBellHeight() {
 // It never dozes, and turns gold for the longest visit ever. With reduced motion it stays
 // where it landed and keeps still.
 function FooterBell() {
-  const { at, flying, arrivals, record, setAnchor } = useBellHandoff();
-  const present = at === "footer" && !flying;
+  const record = useRecordHolder();
   const touch = useTouchScreen();
   const height = useBellHeight();
   const layout = hostLayout(height);
   const [hovered, setHovered] = useState(false);
   const [ding, setDing] = useState(0);
   const [gaze, setGaze] = useState<Gaze>(null);
+  const [landed, setLanded] = useState(false);
   const railRef = useRef<HTMLDivElement>(null);
   const moverRef = useRef<HTMLDivElement>(null);
   const liftRef = useRef<HTMLDivElement>(null);
@@ -100,28 +96,7 @@ function FooterBell() {
     if (still) setDing((d) => d + 1);
   }, [still]);
 
-  // Rings as it's handed over from the jump
-  useEffect(() => {
-    if (present && arrivals) setDing((d) => d + 1);
-  }, [arrivals]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Tell the handoff where the bell stands on the counter: the middle of its base, on the
-  // band's top edge
-  useEffect(() => {
-    setAnchor("footer", {
-      height,
-      point: () => {
-        const rail = railRef.current;
-        if (!rail) return null;
-        const r = rail.getBoundingClientRect();
-        const x = live.current.x ?? Math.round(Math.max(0, rail.clientWidth - layout.width) * LANDING);
-        return { x: r.left + x + layout.width / 2, y: r.top + layout.base };
-      },
-    });
-    return () => setAnchor("footer", null);
-  }, [setAnchor, height, layout.width, layout.base]);
-
-  // Keep it on the counter: start on the left, and stay inside when the page resizes
+  // Keep it on the counter: start near the right, and stay inside when the page resizes
   useLayoutEffect(() => {
     const rail = railRef.current;
     const mover = moverRef.current;
@@ -129,7 +104,7 @@ function FooterBell() {
     const s = live.current;
     const seat = () => {
       const span = Math.max(0, rail.clientWidth - s.width);
-      s.x = s.x === null ? Math.round(span * LANDING) : Math.min(s.x, span);
+      s.x = s.x === null ? Math.round(span * 0.9) : Math.min(s.x, span);
       mover.style.transform = `translate3d(${s.x}px, 0, 0)`;
     };
     seat();
@@ -138,12 +113,12 @@ function FooterBell() {
     return () => observer.disconnect();
   }, [layout.width]);
 
-  // Pottering about — while it's here
+  // Pottering about — starts once it has landed
   useEffect(() => {
     const rail = railRef.current;
     const mover = moverRef.current;
     const lift = liftRef.current;
-    if (!present || !rail || !mover || !lift) return;
+    if (!landed || !rail || !mover || !lift) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const s = live.current;
     let frame = 0;
@@ -254,12 +229,7 @@ function FooterBell() {
       pokeRef.current = () => {};
       setLift(0);
     };
-  }, [present]);
-
-  // It can leave from under the pointer — don't keep it held
-  useEffect(() => {
-    if (!present) setHovered(false);
-  }, [present]);
+  }, [landed]);
 
   const ring = () => {
     ringBell();
@@ -273,7 +243,7 @@ function FooterBell() {
       <div
         ref={moverRef}
         className="pointer-events-auto absolute left-0 top-0"
-        style={{ width: layout.width, height, visibility: present ? "visible" : "hidden" }}
+        style={{ width: layout.width, height }}
         onMouseEnter={() => {
           if (touch) return; // phones fire mouseenter on tap — the tap handles it
           setHovered(true);
@@ -281,17 +251,28 @@ function FooterBell() {
         }}
         onMouseLeave={() => setHovered(false)}
       >
-        <div ref={liftRef} style={{ transformOrigin: `50% ${layout.base}px` }}>
-          <button
-            type="button"
-            aria-label="Ring the bell"
-            onClick={ring}
-            onFocus={() => !touch && setHovered(true)}
-            onBlur={() => setHovered(false)}
-            className="relative z-10 block cursor-pointer select-none rounded-[12px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
-          >
-            <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} className="block" style={{ width: layout.width, height }} />
-          </button>
+        <div
+          className="footer-bell"
+          style={{ transformOrigin: `50% ${layout.base}px` }}
+          // Rings as it lands — only for its own landing, not the ding animations inside it
+          onAnimationEnd={(e) => {
+            if (e.target !== e.currentTarget) return;
+            setDing((d) => d + 1);
+            setLanded(true);
+          }}
+        >
+          <div ref={liftRef} style={{ transformOrigin: `50% ${layout.base}px` }}>
+            <button
+              type="button"
+              aria-label="Ring the bell"
+              onClick={ring}
+              onFocus={() => !touch && setHovered(true)}
+              onBlur={() => setHovered(false)}
+              className="relative z-10 block cursor-pointer select-none rounded-[12px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
+            >
+              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} className="block" style={{ width: layout.width, height }} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
