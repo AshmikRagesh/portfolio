@@ -1,6 +1,6 @@
 // ── Mailer ────────────────────────────────────────────────────────────────────
 // A kraft mailer with a couple of sheets tucked in, printed on the front. Two tones,
-// each a single design-system colour, front and back alike: vanilla printed in the
+// each a single colour, front and back alike: warm cream (vanilla nudged toward yellow) printed in the
 // secondary text colour, and grape printed in grape-light. The paper's form comes
 // from the crumple lighting, not from shading the colour.
 // It's a stack of layers, back to front:
@@ -11,7 +11,7 @@
 //           front panel's edge. On hover (.group) they slide a little further out.
 //   front   the front panel: crumpled paper (lit by an SVG lighting filter), two soft
 //           fold lines across it, a crimped seal along the top with a crushed corner,
-//           a glued seam down the left. Its edge casts a shadow onto the sheets.
+//           a glued seam down the left.
 //   print   real text in the tone's ink.
 //
 // Paint is defined once by <MailerDefs /> — one crumple filter per seed, so no two
@@ -21,10 +21,10 @@
 export const MAILER_SEEDS = [3, 11];
 
 // Each tone: front/back kraft gradients, the crushed corner, crease shadow + highlight,
-// edge grime, and the ink it's printed in
+// and the ink it's printed in
 export const TONES = {
-  vanilla: { front: "mailer-kraft-vanilla", back: "mailer-kraft-vanilla", corner: "#ece5d8", shade: "#524555", light: "#FFFFFF", grime: "#524555", ink: "#524555", blend: "mix-blend-multiply" },
-  grape: { front: "mailer-kraft-grape", back: "mailer-kraft-grape", corner: "#9D136A", shade: "#1e0525", light: "#f8c2f7", grime: "#1e0525", ink: "#F9E4FF", blend: "" },
+  vanilla: { front: "mailer-kraft-vanilla", back: "mailer-kraft-vanilla", corner: "#eee4cc", shade: "#524555", light: "#FFFFFF", ink: "#524555", blend: "mix-blend-multiply" },
+  grape: { front: "mailer-kraft-grape", back: "mailer-kraft-grape", corner: "#9D136A", shade: "#1e0525", light: "#f8c2f7", ink: "#F9E4FF", blend: "" },
 } as const;
 export type Tone = keyof typeof TONES;
 // Front panel outline (in the 300×430 box)
@@ -36,7 +36,7 @@ export function MailerDefs() {
       <defs>
         {/* One flat colour per mailer, front and back panel alike */}
         <linearGradient id="mailer-kraft-vanilla">
-          <stop offset="0" stopColor="#ece5d8" />
+          <stop offset="0" stopColor="#eee4cc" />
         </linearGradient>
         <linearGradient id="mailer-kraft-grape">
           <stop offset="0" stopColor="#9D136A" />
@@ -65,9 +65,6 @@ export function MailerDefs() {
         <clipPath id="mailer-front-clip">
           <path d={FRONT} />
         </clipPath>
-        <filter id="mailer-edge" x="-5%" y="-5%" width="110%" height="110%">
-          <feGaussianBlur stdDeviation="6" />
-        </filter>
         <filter id="mailer-soft" x="-10%" y="-10%" width="120%" height="120%">
           <feGaussianBlur stdDeviation="0.8" />
         </filter>
@@ -109,7 +106,7 @@ export default function Mailer({
   const t = TONES[tone];
 
   return (
-    <div className="relative aspect-[300/430] w-full [filter:drop-shadow(0_2px_2px_rgba(30,5,37,0.22))_drop-shadow(0_18px_22px_rgba(30,5,37,0.16))]">
+    <div className="relative aspect-[300/430] w-full">
       {/* Back panel — shows below the front, and flares a touch at the bottom */}
       <svg viewBox="0 0 300 430" aria-hidden="true" className="absolute inset-0 h-full w-full overflow-visible">
         <path d="M8 300 H292 L297 412 Q298 428 284 428 L16 429 Q2 429 3 414 Z" fill={`url(#${t.back})`} filter={crumple} />
@@ -134,13 +131,9 @@ export default function Mailer({
       <svg
         viewBox="0 0 300 430"
         aria-hidden="true"
-        className="absolute inset-0 h-full w-full overflow-visible [filter:drop-shadow(0_3px_3px_rgba(30,5,37,0.28))]"
+        className="absolute inset-0 h-full w-full overflow-visible"
       >
         <path d={FRONT} fill={`url(#${t.front})`} filter={crumple} />
-        {/* Edges darker and grimier than the middle, from handling */}
-        <g clipPath="url(#mailer-front-clip)">
-          <path d={FRONT} fill="none" stroke={t.grime} strokeOpacity="0.3" strokeWidth="14" filter="url(#mailer-edge)" />
-        </g>
         {/* Crimped seal along the top + its fold line */}
         <Crimp x1={9} x2={284} y={5} h={18} shade={t.shade} light={t.light} />
         <path d="M6 24 Q150 21 294 24" fill="none" stroke={t.shade} strokeOpacity="0.22" strokeWidth="0.9" />
