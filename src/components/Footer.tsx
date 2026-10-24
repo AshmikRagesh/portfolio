@@ -6,6 +6,7 @@ import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { ringBell } from "@/components/host/bellSound";
+import LobbyIllustration from "@/components/LobbyIllustration";
 
 const socialLinks = [
   {
@@ -135,42 +136,36 @@ function FooterBell() {
   );
 }
 
-// Fine grain, white specks at varying strength — one static tile, repeated
-const GRAIN =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+// Paper tooth, as on the taste-note mailers: a small tile of per-pixel grain made once and
+// repeated. Here it's pale specks over the dark, so the band reads as a surface.
+let toothTile: string | null = null;
+function tooth() {
+  if (toothTile) return toothTile;
+  const size = 160;
+  const c = document.createElement("canvas");
+  c.width = c.height = size;
+  const ctx = c.getContext("2d");
+  if (!ctx) return "";
+  const img = ctx.createImageData(size, size);
+  for (let i = 0; i < img.data.length; i += 4) {
+    img.data[i] = 249;
+    img.data[i + 1] = 228;
+    img.data[i + 2] = 255;
+    img.data[i + 3] = Math.random() < 0.5 ? Math.random() * 22 : 0;
+  }
+  ctx.putImageData(img, 0, 0);
+  toothTile = c.toDataURL();
+  return toothTile;
+}
 
-// The card is the front desk, finished like one: a lit counter top along the edge the bell
-// sits on, a reeded front panel below it (a groove every 16px), a little grain, and a pool
-// of lamp light where the bell stands. Clipped to the card, so the bell above isn't.
-function CounterFinish() {
+// Behind the content: the paper tooth, and the lobby drawn in faint line along the floor
+function FooterBackdrop() {
+  const [grain, setGrain] = useState("");
+  useEffect(() => setGrain(tooth()), []);
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Reeded front — fades out towards the floor */}
-      <div
-        className="absolute inset-x-0 bottom-0 top-[16px]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 12px, rgba(30,5,37,0.28) 12px 14px, transparent 14px 16px)",
-          maskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.35) 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.35) 100%)",
-        }}
-      />
-      {/* Lamp light, centred under the bell */}
-      <div
-        className="absolute -top-[160px] -right-[140px] h-[400px] w-[440px] md:-right-[116px] lg:-right-[76px]"
-        style={{ background: "radial-gradient(closest-side, rgba(157,19,106,0.34), rgba(157,19,106,0))" }}
-      />
-      {/* Floor shadow — the front panel darkens towards the bottom */}
-      <div className="absolute inset-x-0 bottom-0 h-[50%]" style={{ background: "linear-gradient(to bottom, rgba(30,5,37,0), rgba(30,5,37,0.45))" }} />
-      <div className="absolute inset-0 opacity-[0.1]" style={{ backgroundImage: GRAIN }} />
-      {/* Counter top — a lit band with a highlight on the lip and a shadow cast below */}
-      <div
-        className="absolute inset-x-0 top-0 h-[16px]"
-        style={{
-          background: "linear-gradient(to bottom, #4a1559, #3e0d4b)",
-          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.24), 0 1px 0 rgba(30,5,37,0.6), 0 8px 16px rgba(30,5,37,0.4)",
-        }}
-      />
+      <LobbyIllustration className="absolute bottom-0 left-1/2 w-full min-w-[1100px] max-w-[1600px] -translate-x-1/2 text-grape-light opacity-[0.14]" />
+      {grain && <div className="absolute inset-0" style={{ backgroundImage: `url(${grain})` }} />}
     </div>
   );
 }
@@ -196,7 +191,7 @@ export default function Footer() {
     // A full-width band of blackcurrant down to the bottom of the page; the content keeps the
     // shared container. Above the page's content layer (z-10), so the bell can sit up past the top edge.
     <footer className="relative z-20 bg-primary">
-      <CounterFinish />
+      <FooterBackdrop />
       <div className="page-container">
         <div ref={cardRef} className="footer-card relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[180px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px]">
 
