@@ -373,7 +373,7 @@ export default function Footer() {
     <footer className="relative z-20 bg-primary">
       <FooterBackdrop />
       <div className="page-container">
-        <div ref={cardRef} className="footer-card relative flex flex-col gap-[60px] items-center px-8 pt-[96px] pb-[100px] md:px-16 md:pt-[116px] md:pb-[132px] md:gap-[72px] lg:px-[180px] lg:pt-[112px] lg:pb-[100px] lg:gap-[64px]">
+        <div ref={cardRef} className="footer-card relative flex flex-col gap-[60px] items-center px-8 pt-[96px] pb-[100px] md:px-16 md:pt-[116px] md:pb-[132px] md:gap-[72px] lg:px-[180px] lg:pt-[80px] lg:pb-[100px] lg:gap-[64px]">
 
           <FooterBell />
 
