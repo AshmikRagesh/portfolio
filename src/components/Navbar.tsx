@@ -10,6 +10,7 @@ import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/C
 import HostCharacter, { hostLayout, type HostMood } from "@/components/host/HostCharacter";
 import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
+import { useBellStage } from "@/components/host/BellStage";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { primeBell, ringBell } from "@/components/host/bellSound";
 
@@ -23,6 +24,9 @@ const HOST_HEIGHT = 56;
 const HOST = hostLayout(HOST_HEIGHT);
 // The board never comes closer than this to the edge of the screen
 const BOARD_EDGE = 12;
+// While the bell has ducked out for the footer's bell, its board hangs in the logo's spot
+// at this scale, so it fits the navbar row
+const AWAY_BOARD_SCALE = 0.72;
 
 // In development, `?mood=dozing|champion|holding` pins the host in that state for review
 function usePreviewMood() {
@@ -51,6 +55,10 @@ const BOARD_SHOWN_KEY = "ash.curiosity.boardShown"; // sessionStorage
 //
 // The board is out of the layout and above everything on the page, so nothing around
 // it ever moves.
+//
+// Only one bell is up at a time: while the footer's bell is on screen (BellStage), this
+// one ducks down out of its spot and leaves its board hanging there, still counting.
+// When the footer leaves, the board lifts away and the bell pops back up and rings.
 function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   const { activeSeconds, paused } = useCuriosity();
   const preview = usePreviewMood();
@@ -61,12 +69,36 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
   const speaking = bubble.message !== null;
-  const holding = (((hovered && !touch) || open) && !speaking) || preview === "holding";
+  const [ding, setDing] = useState(0);
+  const { footerOnStage: ducked } = useBellStage();
+  const holding = !ducked && ((((hovered && !touch) || open) && !speaking) || preview === "holding");
+
+  // Ducking out for the footer's bell, and popping back up. Nothing moves until the first duck.
+  const [entrance, setEntrance] = useState<"up" | "duck" | "pop">("up");
+  const [awayBoard, setAwayBoard] = useState<"in" | "out" | null>(null);
+  const hasDucked = useRef(false);
+  useEffect(() => {
+    if (ducked) {
+      hasDucked.current = true;
+      setEntrance("duck");
+      setAwayBoard("in");
+      return;
+    }
+    if (!hasDucked.current) return;
+    // The board lifts away first, then the bell springs up and rings
+    setEntrance("pop");
+    setAwayBoard((b) => (b ? "out" : null));
+    const clear = window.setTimeout(() => setAwayBoard(null), 220);
+    const ring = window.setTimeout(() => setDing((d) => d + 1), 680);
+    return () => {
+      window.clearTimeout(clear);
+      window.clearTimeout(ring);
+    };
+  }, [ducked]);
   const champion = record || preview === "champion";
   const mood: HostMood = preview === "dozing" || (paused && !holding) ? "dozing" : champion ? "champion" : "idle";
 
   // It rings like a desk bell: when the board comes down, and before it says anything
-  const [ding, setDing] = useState(0);
   useEffect(() => {
     if (holding || speaking) setDing((d) => d + 1);
   }, [holding, speaking]);
@@ -101,7 +133,7 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
 
   // Touch: a tap on the bell or the board toggles the board. Pointer: the bell is a link home.
   const toggle = (e: React.MouseEvent) => {
-    if (!touch) return;
+    if (!touch || ducked) return;
     e.preventDefault();
     if (!open) ringBell();
     setOpen((o) => !o);
@@ -114,7 +146,7 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
       onMouseEnter={() => {
         if (touch) return; // phones fire mouseenter on tap — the tap handles it
         setHovered(true);
-        ringBell();
+        if (!ducked) ringBell();
       }}
       onMouseLeave={() => setHovered(false)}
       onFocus={() => !touch && setHovered(true)}
@@ -127,15 +159,26 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
         aria-expanded={touch ? holding : undefined}
         onClick={toggle}
         className="relative z-10 block select-none"
+        // Clipped along the bottom of the spot, so the bell can duck out of sight through it
+        style={{ clipPath: "inset(-100% -100% 0 -100%)" }}
       >
         <HostCharacter
           mood={mood}
           holding={holding}
           ding={ding}
-          className="block"
-          style={{ width: HOST.width, height: HOST_HEIGHT }}
+          className={`block ${entrance === "up" ? "" : `bell-${entrance}`}`}
+          style={{ width: HOST.width, height: HOST_HEIGHT, animationDelay: entrance === "pop" ? "160ms" : undefined }}
         />
       </Link>
+
+      {/* The board, left hanging in the bell's spot while it's ducked out */}
+      {awayBoard && (
+        <div className="pointer-events-none absolute left-0 top-0 origin-top-left" style={{ transform: `scale(${AWAY_BOARD_SCALE})` }}>
+          <div className={awayBoard === "in" ? "host-board" : "host-board-out"} style={awayBoard === "in" ? { animationDelay: "240ms" } : undefined}>
+            <TimerBoard seconds={activeSeconds} champion={champion} />
+          </div>
+        </div>
+      )}
 
       {/* Timer board — hangs from the hands, rings level with them. On touch, a tap puts it away. */}
       {holding && (
@@ -157,7 +200,9 @@ export default function Navbar() {
   const isCaseStudy = pathname.startsWith("/works/");
   // A milestone line brings the navbar back into view for as long as it's up
   const record = useRecordHolder();
-  const bubble = useMilestoneBubble(record);
+  // Lines wait while the bell has ducked out for the footer's bell
+  const { footerOnStage } = useBellStage();
+  const bubble = useMilestoneBubble(record, footerOnStage);
   const speaking = bubble.message !== null;
   const showNav = isNavVisible || speaking;
 

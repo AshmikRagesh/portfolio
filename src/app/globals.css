@@ -43,23 +43,27 @@
   animation-play-state: running;
 }
 
-/* Footer bell — once the card has risen, drops onto its top edge, squashes and settles */
-@keyframes footer-bell-land {
-  0%   { opacity: 0; transform: translateY(-56px); }
-  45%  { opacity: 1; transform: translateY(0) scale(1, 1); }
-  60%  { transform: translateY(0) scale(1.08, 0.9); }
-  78%  { transform: translateY(-8px) scale(0.98, 1.02); }
-  100% { opacity: 1; transform: none; }
+/* Bell duck and pop — one bell is up at a time (BellStage). It sinks out of sight
+   behind an edge after a small squash, and springs back up past it with an overshoot.
+   Percentages are of the bell's own height; whatever holds it clips below the edge. */
+@keyframes bell-duck {
+  0%   { transform: translateY(0) scale(1, 1); }
+  20%  { transform: translateY(-6%) scale(1.04, 0.94); }
+  100% { transform: translateY(110%) scale(0.96, 1.04); }
 }
-.footer-bell {
-  animation: footer-bell-land 640ms 480ms cubic-bezier(0.3, 0.6, 0.4, 1) both;
-  animation-play-state: paused;
+@keyframes bell-pop {
+  0%   { transform: translateY(110%) scale(0.96, 1.04); }
+  55%  { transform: translateY(-12%) scale(0.96, 1.06); }
+  75%  { transform: translateY(3%) scale(1.05, 0.95); }
+  90%  { transform: translateY(-1%) scale(1, 1); }
+  100% { transform: none; }
 }
-.footer-card.in-view .footer-bell {
-  animation-play-state: running;
-}
+.bell-duck { transform-origin: 50% 100%; animation: bell-duck 320ms cubic-bezier(0.5, 0, 0.75, 0) both; }
+.bell-pop { transform-origin: 50% 100%; animation: bell-pop 520ms cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+.bell-away { transform: translateY(110%); }
 @media (prefers-reduced-motion: reduce) {
-  .footer-bell { animation: none; }
+  .bell-duck, .bell-away { animation: none; transform: translateY(110%); }
+  .bell-pop { animation: none; }
 }
 
 /*
@@ -264,6 +268,9 @@
   100% { opacity: 1; transform: rotate(0); }
 }
 .host-board { transform-origin: var(--grip-x, 50%) 0; animation: host-board-in 700ms cubic-bezier(0.3, 1.2, 0.5, 1) both; }
+/* …and lifts away when the navbar bell comes back up and takes it down */
+@keyframes host-board-out { to { opacity: 0; transform: translateY(-12px) scale(0.92); } }
+.host-board-out { transform-origin: 50% 0; animation: host-board-out 200ms ease-in both; }
 
 /* Split-flap: the old top flap falls forward, then the new bottom flap drops into place */
 @keyframes flap-fall { from { transform: rotateX(0); } to { transform: rotateX(-90deg); } }

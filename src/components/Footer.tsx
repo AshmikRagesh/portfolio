@@ -2,6 +2,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import HostCharacter, { hostLayout } from "@/components/host/HostCharacter";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
+import { useBellStage } from "@/components/host/BellStage";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { ringBell } from "@/components/host/bellSound";
 import Image from "next/image";
@@ -37,6 +38,10 @@ const HOP_MS = 300;
 const HOP_REACH = 0.7;
 // Squash lasts this long either side of each touch-down
 const CONTACT_MS = 60;
+// The bell is up while the band's top edge is above ON_LINE of the screen, and ducks
+// once it falls below OFF_LINE — a gap, so scrolling around one spot can't flicker it
+const ON_LINE = 0.85;
+const OFF_LINE = 0.9;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const random = (lo: number, hi: number) => lo + Math.random() * (hi - lo);
@@ -61,9 +66,10 @@ function useBellHeight() {
   return height;
 }
 
-// The front-desk bell, at home on the footer's top edge as if the band were the counter.
-// Once the footer has risen into view it drops onto the edge, on the right, and rings.
-// Then it potters along the counter like the Claude Code mascot on its input box: strings
+// The front-desk bell, on the footer's top edge as if the band were the counter. While the
+// footer's on screen it pops up from behind the counter and rings, and the navbar's bell
+// ducks out of sight so only one is ever up (BellStage); it ducks back behind the counter
+// when the footer leaves. While it's up it potters along the counter like the Claude Code mascot on its input box: strings
 // of small hops — sometimes half-way across and back, sometimes all the way — with a
 // pause, a hop on the spot or a look around in between. Its eyes face the way it's going,
 // and it stretches on the way up and squashes on each landing.
@@ -81,7 +87,9 @@ function FooterBell() {
   const [hovered, setHovered] = useState(false);
   const [ding, setDing] = useState(0);
   const [gaze, setGaze] = useState<Gaze>(null);
-  const [landed, setLanded] = useState(false);
+  const [onStage, setOnStage] = useState(false);
+  const [entrance, setEntrance] = useState<"away" | "pop" | "duck">("away");
+  const { setFooterOnStage } = useBellStage();
   const railRef = useRef<HTMLDivElement>(null);
   const moverRef = useRef<HTMLDivElement>(null);
   const liftRef = useRef<HTMLDivElement>(null);
@@ -113,12 +121,59 @@ function FooterBell() {
     return () => observer.disconnect();
   }, [layout.width]);
 
-  // Pottering about — starts once it has landed
+  // Up while the footer's on screen: pops up from behind the counter (and rings), ducks
+  // back down when it leaves. The navbar bell does the opposite (BellStage).
+  // Kept across re-runs of the watcher below (it restarts when the bell changes size)
+  const onRef = useRef(false);
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const edge = rail.getBoundingClientRect().top + layout.base;
+      const h = window.innerHeight;
+      const next = onRef.current ? edge < h * OFF_LINE : edge < h * ON_LINE;
+      if (next === onRef.current) return;
+      onRef.current = next;
+      setOnStage(next);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(check);
+    };
+    check();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    // The page can grow or shrink under a still scroll position (images loading)
+    const observer = new ResizeObserver(onScroll);
+    observer.observe(document.body);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      observer.disconnect();
+    };
+  }, [layout.base]);
+
+  useEffect(() => {
+    setFooterOnStage(onStage);
+    if (onStage) {
+      setEntrance("pop");
+      setDing((d) => d + 1);
+    } else {
+      setEntrance((e) => (e === "away" ? "away" : "duck"));
+      setHovered(false);
+    }
+  }, [onStage, setFooterOnStage]);
+
+  useEffect(() => () => setFooterOnStage(false), [setFooterOnStage]);
+
+  // Pottering about — while it's up
   useEffect(() => {
     const rail = railRef.current;
     const mover = moverRef.current;
     const lift = liftRef.current;
-    if (!landed || !rail || !mover || !lift) return;
+    if (!onStage || !rail || !mover || !lift) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const s = live.current;
     let frame = 0;
@@ -229,7 +284,7 @@ function FooterBell() {
       pokeRef.current = () => {};
       setLift(0);
     };
-  }, [landed]);
+  }, [onStage]);
 
   const ring = () => {
     ringBell();
@@ -239,7 +294,12 @@ function FooterBell() {
 
   return (
     // The counter: a rail along the footer's top edge that the bell moves along
-    <div ref={railRef} className="pointer-events-none absolute inset-x-0 z-20" style={{ top: -layout.base, height }}>
+    // Clipped at the band's top edge, so the bell can duck behind the counter
+    <div
+      ref={railRef}
+      className="pointer-events-none absolute inset-x-0 z-20"
+      style={{ top: -layout.base, height, clipPath: `inset(-200px -200px ${height - layout.base}px -200px)` }}
+    >
       <div
         ref={moverRef}
         className="pointer-events-auto absolute left-0 top-0"
@@ -251,16 +311,7 @@ function FooterBell() {
         }}
         onMouseLeave={() => setHovered(false)}
       >
-        <div
-          className="footer-bell"
-          style={{ transformOrigin: `50% ${layout.base}px` }}
-          // Rings as it lands — only for its own landing, not the ding animations inside it
-          onAnimationEnd={(e) => {
-            if (e.target !== e.currentTarget) return;
-            setDing((d) => d + 1);
-            setLanded(true);
-          }}
-        >
+        <div className={`bell-${entrance}`} style={entrance === "pop" ? { animationDelay: "160ms" } : undefined}>
           <div ref={liftRef} style={{ transformOrigin: `50% ${layout.base}px` }}>
             <button
               type="button"
