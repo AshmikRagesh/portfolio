@@ -412,7 +412,7 @@ export default function Footer() {
           </div>
 
           {/* Copyright */}
-          <p className="font-body font-normal text-[14px] leading-[22px] text-white/70 text-center relative z-10 md:text-[16px] md:leading-[24px]">
+          <p className="font-body font-normal text-[14px] leading-[22px] text-white/70 text-center relative z-10">
             Designed + Coded with ❤︎ by Ashmik
           </p>
 
