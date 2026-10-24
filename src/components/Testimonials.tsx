@@ -86,73 +86,78 @@ function ArrowUpRight({ size }: { size: number }) {
 
 export default function Testimonials() {
   return (
-    <section aria-labelledby="testimonials-heading" className="page-container section-spacing bg-background">
-      <div className="w-full rounded-[4px] bg-primary px-6 py-10 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)] md:px-8 md:py-14 lg:px-12 lg:py-20">
-        {/* Header */}
-        <div className="mb-8 grid grid-cols-1 items-end gap-4 pb-5 shadow-[inset_0_-1px_0_rgba(255,255,255,0.22)] md:mb-10 md:grid-cols-[minmax(0,1fr)_320px] md:gap-12 lg:grid-cols-[minmax(0,1fr)_400px]">
-          <h2
-            id="testimonials-heading"
-            className="m-0 text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-white md:text-[44px] md:leading-[44px]"
-          >
-            The guestbook.
-          </h2>
-          <p className="m-0 text-pretty font-body text-[16px] leading-[26px] text-white/70">
-            Kind words from the product managers, engineers and leads I&apos;ve built alongside.
-          </p>
-        </div>
-
-        {/* Cards */}
-        <ol className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2 md:gap-6 min-[960px]:grid-cols-3">
-          {testimonials.map((t, i) => (
-            <li key={i} className="min-w-0 md:last:odd:col-span-2 md:last:odd:mx-auto md:last:odd:w-[calc(50%_-_12px)] min-[960px]:last:odd:col-span-1 min-[960px]:last:odd:w-auto">
-              <figure
-                className={`relative m-0 flex h-full flex-col rounded-[4px] border border-white/25 [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] p-5 text-heading shadow-[0_4px_18px_rgba(30,5,37,0.16)] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-4px] hover:!rotate-0 md:p-6 motion-reduce:!transform-none motion-reduce:transition-none ${
-                  TILTS[i % TILTS.length]
-                }`}
+    <section aria-labelledby="testimonials-heading" className="section-spacing bg-background">
+      {/* A full-width band of blackcurrant; the content keeps the shared container and its inset */}
+      <div className="w-full bg-primary py-10 text-white md:py-14 lg:py-20">
+        <div className="page-container">
+          <div className="px-6 md:px-8 lg:px-12">
+            {/* Header */}
+            <div className="mb-8 grid grid-cols-1 items-end gap-4 pb-5 shadow-[inset_0_-1px_0_rgba(255,255,255,0.22)] md:mb-10 md:grid-cols-[minmax(0,1fr)_320px] md:gap-12 lg:grid-cols-[minmax(0,1fr)_400px]">
+              <h2
+                id="testimonials-heading"
+                className="m-0 text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-white md:text-[44px] md:leading-[44px]"
               >
-                {/* Number + punch hole — the hole is filled with the panel colour so the
-                    dark section shows "through" the paper. */}
-                <div className="mb-5 flex items-center justify-between border-b border-line/60 pb-[10px] font-brand text-[10px] uppercase leading-[14px] tracking-[0px] text-muted">
-                  <span>{String(i + 1).padStart(2, "0")}</span>
-                  <PunchHole index={i} />
-                </div>
+                The guestbook.
+              </h2>
+              <p className="m-0 text-pretty font-body text-[16px] leading-[26px] text-white/70">
+                Kind words from the product managers, engineers and leads I&apos;ve built alongside.
+              </p>
+            </div>
 
-                {/* Quote */}
-                <blockquote className="m-0 flex-1 pt-1 font-heading text-[20px] font-normal not-italic leading-[26px] tracking-[0px] text-heading lg:text-[22px] lg:leading-[30px]">
-                  <p className="m-0">{t.quote}</p>
-                </blockquote>
+            {/* Cards */}
+            <ol className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2 md:gap-6 min-[960px]:grid-cols-3">
+              {testimonials.map((t, i) => (
+                <li key={i} className="min-w-0 md:last:odd:col-span-2 md:last:odd:mx-auto md:last:odd:w-[calc(50%_-_12px)] min-[960px]:last:odd:col-span-1 min-[960px]:last:odd:w-auto">
+                  <figure
+                    className={`relative m-0 flex h-full flex-col rounded-[4px] border border-white/25 [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] p-5 text-heading shadow-[0_4px_18px_rgba(30,5,37,0.16)] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-4px] hover:!rotate-0 md:p-6 motion-reduce:!transform-none motion-reduce:transition-none ${
+                      TILTS[i % TILTS.length]
+                    }`}
+                  >
+                    {/* Number + punch hole — the hole is filled with the panel colour so the
+                        dark section shows "through" the paper. */}
+                    <div className="mb-5 flex items-center justify-between border-b border-line/60 pb-[10px] font-brand text-[10px] uppercase leading-[14px] tracking-[0px] text-muted">
+                      <span>{String(i + 1).padStart(2, "0")}</span>
+                      <PunchHole index={i} />
+                    </div>
 
-                {/* Signature — its own element on the right, above the footer. The bottom
-                    crosses the divider; multiply blend lets the paper's ruled lines show through. */}
-                <Signature
-                  strokes={t.signature}
-                  label={t.name}
-                  className="relative z-[1] -mb-11 h-[68px] w-[160px] shrink-0 -rotate-[6deg] self-end mix-blend-multiply lg:-mb-12 lg:-mr-1 lg:h-[72px] lg:w-[168px]"
-                />
+                    {/* Quote */}
+                    <blockquote className="m-0 flex-1 pt-1 font-heading text-[20px] font-normal not-italic leading-[26px] tracking-[0px] text-heading lg:text-[22px] lg:leading-[30px]">
+                      <p className="m-0">{t.quote}</p>
+                    </blockquote>
 
-                {/* Citation */}
-                <figcaption className="mt-8 border-t border-line/60 pt-[14px] font-body text-[12px] not-italic leading-[16px] text-secondary">
-                  <div className="grid min-w-0 grid-cols-1">
-                    {t.href ? (
-                      <a
-                        href={t.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex w-fit items-center gap-1 text-[14px] font-medium leading-[20px] text-heading underline underline-offset-2"
-                      >
-                        {t.name}
-                        <ArrowUpRight size={12} />
-                      </a>
-                    ) : (
-                      <span className="text-[14px] font-medium leading-[20px] text-heading">{t.name}</span>
-                    )}
-                    <span>{t.role}</span>
-                  </div>
-                </figcaption>
-              </figure>
-            </li>
-          ))}
-        </ol>
+                    {/* Signature — its own element on the right, above the footer. The bottom
+                        crosses the divider; multiply blend lets the paper's ruled lines show through. */}
+                    <Signature
+                      strokes={t.signature}
+                      label={t.name}
+                      className="relative z-[1] -mb-11 h-[68px] w-[160px] shrink-0 -rotate-[6deg] self-end mix-blend-multiply lg:-mb-12 lg:-mr-1 lg:h-[72px] lg:w-[168px]"
+                    />
+
+                    {/* Citation */}
+                    <figcaption className="mt-8 border-t border-line/60 pt-[14px] font-body text-[12px] not-italic leading-[16px] text-secondary">
+                      <div className="grid min-w-0 grid-cols-1">
+                        {t.href ? (
+                          <a
+                            href={t.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex w-fit items-center gap-1 text-[14px] font-medium leading-[20px] text-heading underline underline-offset-2"
+                          >
+                            {t.name}
+                            <ArrowUpRight size={12} />
+                          </a>
+                        ) : (
+                          <span className="text-[14px] font-medium leading-[20px] text-heading">{t.name}</span>
+                        )}
+                        <span>{t.role}</span>
+                      </div>
+                    </figcaption>
+                  </figure>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
       </div>
     </section>
   );

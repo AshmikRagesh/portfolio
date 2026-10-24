@@ -144,7 +144,7 @@ const GRAIN =
 // of lamp light where the bell stands. Clipped to the card, so the bell above isn't.
 function CounterFinish() {
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[4px]">
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
       {/* Reeded front — fades out towards the floor */}
       <div
         className="absolute inset-x-0 bottom-0 top-[16px]"
@@ -193,52 +193,55 @@ export default function Footer() {
   }, []);
 
   return (
-    // Above the page's content layer (z-10), so the bell can sit up past the card's top edge
-    <footer className="page-container relative z-20 bg-background pb-4 md:pb-6 lg:pb-[40px]">
-      <div ref={cardRef} className="footer-card bg-primary relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 rounded-[4px] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)] md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[180px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px]">
+    // A full-width band of blackcurrant down to the bottom of the page; the content keeps the
+    // shared container. Above the page's content layer (z-10), so the bell can sit up past the top edge.
+    <footer className="relative z-20 bg-primary">
+      <CounterFinish />
+      <div className="page-container">
+        <div ref={cardRef} className="footer-card relative flex flex-col gap-[60px] items-center px-8 pt-16 pb-16 md:px-16 md:pt-20 md:pb-24 md:gap-[72px] lg:px-[180px] lg:pt-[100px] lg:pb-[80px] lg:gap-[100px]">
 
-        <CounterFinish />
-        <FooterBell />
+          <FooterBell />
 
-        {/* Header */}
-        <div className="flex flex-col gap-4 items-center text-center relative z-10 lg:gap-6">
-          <h2 className="font-heading font-medium text-[28px] leading-[1.18] tracking-[-0.28px] text-white md:text-[36px] md:leading-[44px] lg:text-[44px] lg:leading-[48px] lg:tracking-[-0.44px]">
-            Making creating easy and
-            <br className="hidden md:block" />
-            {" "}enjoyable for everyone.
-          </h2>
-          <p className="font-body font-normal text-[16px] leading-[26px] text-muted max-w-[280px] md:max-w-[500px] md:text-[18px] md:leading-[28px] lg:text-[20px] lg:leading-[30px] lg:max-w-[504px]">
-            For any work inquiries, please feel free to get in touch with me anytime.
+          {/* Header */}
+          <div className="flex flex-col gap-4 items-center text-center relative z-10 lg:gap-6">
+            <h2 className="font-heading font-medium text-[28px] leading-[1.18] tracking-[-0.28px] text-white md:text-[36px] md:leading-[44px] lg:text-[44px] lg:leading-[48px] lg:tracking-[-0.44px]">
+              Making creating easy and
+              <br className="hidden md:block" />
+              {" "}enjoyable for everyone.
+            </h2>
+            <p className="font-body font-normal text-[16px] leading-[26px] text-muted max-w-[280px] md:max-w-[500px] md:text-[18px] md:leading-[28px] lg:text-[20px] lg:leading-[30px] lg:max-w-[504px]">
+              For any work inquiries, please feel free to get in touch with me anytime.
+            </p>
+          </div>
+
+          {/* Social icons */}
+          <div className="flex items-center relative z-10">
+            {socialLinks.map(({ label, href, bg, tiltClass, icon }, i) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className={`size-[44px] md:size-[57px] rounded-full border border-line-soft flex items-center justify-center shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] ${tiltClass}`}
+                style={{
+                  background: bg,
+                  marginRight: i < socialLinks.length - 1 ? "-4px" : 0,
+                  zIndex: i + 1,
+                  position: "relative",
+                }}
+              >
+                {icon}
+              </a>
+            ))}
+          </div>
+
+          {/* Copyright */}
+          <p className="font-body font-normal text-[14px] leading-[22px] text-muted text-center relative z-10 md:text-[16px] md:leading-[24px]">
+            Designed + Coded with ❤︎ by Ashmik
           </p>
+
         </div>
-
-        {/* Social icons */}
-        <div className="flex items-center relative z-10">
-          {socialLinks.map(({ label, href, bg, tiltClass, icon }, i) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              className={`size-[44px] md:size-[57px] rounded-full border border-line-soft flex items-center justify-center shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] ${tiltClass}`}
-              style={{
-                background: bg,
-                marginRight: i < socialLinks.length - 1 ? "-4px" : 0,
-                zIndex: i + 1,
-                position: "relative",
-              }}
-            >
-              {icon}
-            </a>
-          ))}
-        </div>
-
-        {/* Copyright */}
-        <p className="font-body font-normal text-[14px] leading-[22px] text-muted text-center relative z-10 md:text-[16px] md:leading-[24px]">
-          Designed + Coded with ❤︎ by Ashmik
-        </p>
-
       </div>
     </footer>
   );
