@@ -24,9 +24,6 @@ const HOST_HEIGHT = 56;
 const HOST = hostLayout(HOST_HEIGHT);
 // The board never comes closer than this to the edge of the screen
 const BOARD_EDGE = 12;
-// While the bell has ducked out for the footer's bell, its board hangs in the logo's spot
-// at this scale, so it fits the navbar row
-const AWAY_BOARD_SCALE = 0.72;
 
 // In development, `?mood=dozing|champion|holding` pins the host in that state for review
 function usePreviewMood() {
@@ -57,8 +54,8 @@ const BOARD_SHOWN_KEY = "ash.curiosity.boardShown"; // sessionStorage
 // it ever moves.
 //
 // Only one bell is up at a time: while the footer's bell is on screen (BellStage), this
-// one ducks down out of its spot and leaves its board hanging there, still counting.
-// When the footer leaves, the board lifts away and the bell pops back up and rings.
+// one ducks down out of its spot and leaves just its clock there, still counting. When the
+// footer leaves, the clock lifts away and the bell pops back up and rings.
 function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   const { activeSeconds, paused } = useCuriosity();
   const preview = usePreviewMood();
@@ -85,11 +82,15 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
       return;
     }
     if (!hasDucked.current) return;
-    // The board lifts away first, then the bell springs up and rings
+    // The clock lifts away first, then the bell springs up and rings — and once it's up,
+    // the clip comes off so its hands can reach below the spot to hold the board again
     setEntrance("pop");
     setAwayBoard((b) => (b ? "out" : null));
     const clear = window.setTimeout(() => setAwayBoard(null), 220);
-    const ring = window.setTimeout(() => setDing((d) => d + 1), 680);
+    const ring = window.setTimeout(() => {
+      setDing((d) => d + 1);
+      setEntrance("up");
+    }, 680);
     return () => {
       window.clearTimeout(clear);
       window.clearTimeout(ring);
@@ -159,8 +160,9 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
         aria-expanded={touch ? holding : undefined}
         onClick={toggle}
         className="relative z-10 block select-none"
-        // Clipped along the bottom of the spot, so the bell can duck out of sight through it
-        style={{ clipPath: "inset(-100% -100% 0 -100%)" }}
+        // Clipped along the bottom of the spot while ducking and popping, so the bell can
+        // go out of sight through it. Off otherwise: the hands reach below to hold the board.
+        style={entrance === "up" ? undefined : { clipPath: "inset(-100% -100% 0 -100%)" }}
       >
         <HostCharacter
           mood={mood}
@@ -171,11 +173,11 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
         />
       </Link>
 
-      {/* The board, left hanging in the bell's spot while it's ducked out */}
+      {/* Just the clock, left in the bell's spot while it's ducked out */}
       {awayBoard && (
-        <div className="pointer-events-none absolute left-0 top-0 origin-top-left" style={{ transform: `scale(${AWAY_BOARD_SCALE})` }}>
-          <div className={awayBoard === "in" ? "host-board" : "host-board-out"} style={awayBoard === "in" ? { animationDelay: "240ms" } : undefined}>
-            <TimerBoard seconds={activeSeconds} champion={champion} />
+        <div className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2">
+          <div className={awayBoard === "in" ? "clock-in" : "host-board-out"} style={awayBoard === "in" ? { animationDelay: "240ms" } : undefined}>
+            <TimerBoard seconds={activeSeconds} champion={champion} bare />
           </div>
         </div>
       )}

@@ -98,15 +98,47 @@ interface Props {
   champion?: boolean;
   /** Where the host's hands hold the board, in px from its left edge — rings go here. */
   grips?: readonly number[];
+  /** Just the clock — the dark window and its cards, with no plaque around it. */
+  bare?: boolean;
 }
 
-export default function TimerBoard({ seconds, champion = false, grips = [] }: Props) {
+// The dark window with the split-flap cards and their unit marks
+function Clock({ groups, units, className = "" }: { groups: string[]; units: string[]; className?: string }) {
+  return (
+    <div className={`${className} flex items-center justify-center gap-[4px] rounded-[6px] bg-[#1c1a1d] p-[4px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.7)]`}>
+      {groups.map((group, gi) => (
+        <Fragment key={gi}>
+          <span className="flex gap-[4px]">
+            {group.split("").map((d, di) => (
+              <FlapDigit key={di} value={d} narrow={groups.length > 2} />
+            ))}
+          </span>
+          {/* Unit mark — reads as a duration (4m 16s), not a time of day */}
+          <span aria-hidden="true" className="self-end pb-[2px] pr-[2px] font-brand text-[10px] leading-[12px] text-[#e9dfc8]/60">
+            {units[gi]}
+          </span>
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
+export default function TimerBoard({ seconds, champion = false, grips = [], bare = false }: Props) {
   const edition = champion ? EDITIONS.champion : EDITIONS.standard;
   const groups = formatClock(seconds).split(":");
   const units = groups.length > 2 ? ["h", "m", "s"] : ["m", "s"];
+  const label = `${edition.title}: ${groups.map((g, i) => `${Number(g)}${units[i]}`).join(" ")}`;
+
+  if (bare) {
+    return (
+      <div role="timer" aria-label={label} className="w-fit">
+        <Clock groups={groups} units={units} />
+      </div>
+    );
+  }
 
   return (
-    <div role="timer" aria-label={`${edition.title}: ${groups.map((g, i) => `${Number(g)}${units[i]}`).join(" ")}`} className="relative" style={{ width: BOARD_WIDTH }}>
+    <div role="timer" aria-label={label} className="relative" style={{ width: BOARD_WIDTH }}>
       {/* Rings the hands hold */}
       {grips.map((x, i) => (
         <span
@@ -133,21 +165,7 @@ export default function TimerBoard({ seconds, champion = false, grips = [] }: Pr
           </p>
 
           {/* The clock — a dark window the full width of the face, cards centred */}
-          <div className="mt-[6px] flex items-center justify-center gap-[4px] rounded-[6px] bg-[#1c1a1d] p-[4px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.7)]">
-            {groups.map((group, gi) => (
-              <Fragment key={gi}>
-                <span className="flex gap-[4px]">
-                  {group.split("").map((d, di) => (
-                    <FlapDigit key={di} value={d} narrow={groups.length > 2} />
-                  ))}
-                </span>
-                {/* Unit mark — reads as a duration (4m 16s), not a time of day */}
-                <span aria-hidden="true" className="self-end pb-[2px] pr-[2px] font-brand text-[10px] leading-[12px] text-[#e9dfc8]/60">
-                  {units[gi]}
-                </span>
-              </Fragment>
-            ))}
-          </div>
+          <Clock groups={groups} units={units} className="mt-[6px]" />
         </div>
       </div>
     </div>

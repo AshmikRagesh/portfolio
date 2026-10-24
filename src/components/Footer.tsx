@@ -402,7 +402,7 @@ export default function Footer() {
 
           {/* Header */}
           <div className="flex flex-col gap-4 items-center text-center relative z-10 lg:gap-6">
-            <h2 className="font-heading font-medium text-[32px] leading-[40px] tracking-[0px] text-white md:text-[40px] md:leading-[48px] lg:text-[44px] lg:leading-[48px] lg:tracking-[-0.44px] xl:text-[56px] xl:leading-[64px] xl:tracking-[-2px]">
+            <h2 className="font-heading font-medium text-[32px] leading-[40px] tracking-[0px] text-white md:text-[40px] md:leading-[48px] lg:text-[44px] lg:leading-[48px] lg:tracking-[-0.44px] xl:text-[52px] xl:leading-[60px] xl:tracking-[-2px]">
               Making creating easy and
               <br className="hidden md:block" />
               {" "}enjoyable for everyone.
