@@ -199,8 +199,10 @@ function FiveFronts() {
     <Chapter id="five-fronts" num={3} title="The five fronts">
       <Copy>
         <p>Each one showed up across every tool, in different combinations.</p>
-        <CardGrid items={FRONT_CARDS} />
       </Copy>
+      <Visual>
+        <CardGrid items={FRONT_CARDS} />
+      </Visual>
     </Chapter>
   );
 }
@@ -481,7 +483,7 @@ function Adoption() {
         </p>
       </Copy>
       {/* System-level stats — celebratory treatment (success-bg cards + trend arrows) */}
-      <Visual narrow>
+      <Visual>
         <Metrics items={METRICS} />
       </Visual>
       <Copy>

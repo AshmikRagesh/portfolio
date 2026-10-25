@@ -6,7 +6,8 @@ import TrendUpArrow from "./TrendUpArrow";
 // ─────────────────────────────────────────────────────────────────────────────
 // Case study building blocks — used inside <Chapter>. Copy is the 700px reading
 // column (plain <p>, <h3>, <h4>, <ul> are styled by .cs-copy); Visual breaks out
-// to 1000px and stacks its figures one below the other.
+// to 1000px and stacks what's in it one below the other. Images and cards go in a
+// Visual; running text stays in Copy.
 // Green marks what worked or improved, red what didn't — keep that meaning.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -119,14 +120,19 @@ export function Quote({
   );
 }
 
-/** Icon cards — research insights, challenges, fronts */
+/** Icon cards — research insights, challenges, fronts. Five go three over two. */
 export function CardGrid({
   items,
 }: {
   items: { icon: React.ReactNode; title: string; description: string }[];
 }) {
+  const threeOverTwo = items.length === 5;
   return (
-    <div className="mt-[32px] grid grid-cols-1 gap-[16px] md:grid-cols-2 md:gap-[24px]">
+    <div
+      className={`grid grid-cols-1 gap-[16px] md:gap-[24px] ${
+        threeOverTwo ? "md:grid-cols-6 md:[&>*:nth-child(-n+3)]:col-span-2 md:[&>*]:col-span-3" : "md:grid-cols-2"
+      }`}
+    >
       {items.map(({ icon, title, description }) => (
         <div key={title} className="flex flex-col gap-[16px] rounded-[16px] bg-white p-[20px]">
           <div className="shrink-0">{icon}</div>
@@ -149,7 +155,7 @@ export function ProblemStatement({
   consequence: string;
 }) {
   return (
-    <div className="mt-[32px] flex flex-col gap-[20px] rounded-[8px] border-2 border-heading bg-[rgba(137,91,231,0.05)] p-[24px]">
+    <div className="flex flex-col gap-[20px] rounded-[8px] border-2 border-heading bg-[rgba(137,91,231,0.05)] p-[24px]">
       <div className="flex items-center gap-[8px]">
         <SparkleAiIcon size={26} className="shrink-0 text-heading" />
         <h3 className="font-body text-[18px] font-medium leading-[26px] text-heading">The Problem Statement</h3>
@@ -186,8 +192,8 @@ export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: str
 }
 
 /**
- * An iteration or design option: eyebrow (+ Shipped badge), optional title, its
- * notes, then its preview image below. The shipped one is outlined.
+ * An iteration or design option: eyebrow (+ Shipped badge) over its title and notes,
+ * with the preview image beside them (below on phones). The shipped one is outlined.
  */
 export function OptionCard({
   label,
@@ -204,7 +210,7 @@ export function OptionCard({
 }) {
   return (
     <div
-      className={`mt-[20px] flex flex-col gap-[20px] rounded-[16px] p-[20px] md:p-[24px] ${
+      className={`flex flex-col gap-[20px] rounded-[16px] p-[20px] md:p-[24px] ${
         shipped ? "border-2 border-heading bg-[rgba(137,91,231,0.05)]" : "bg-white"
       }`}
     >
@@ -217,25 +223,29 @@ export function OptionCard({
           </span>
         )}
       </div>
-      {title && <p className="font-body text-[18px] font-medium leading-[28px] text-heading">{title}</p>}
-      {children}
-      <ImagePlaceholder label={image} aspect="aspect-[4/3]" radius="rounded-[8px]" />
+      <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[24px]">
+        <div className="flex flex-col gap-[16px]">
+          {title && <p className="font-body text-[18px] font-medium leading-[28px] text-heading">{title}</p>}
+          {children}
+        </div>
+        <ImagePlaceholder label={image} aspect="aspect-[4/3]" radius="rounded-[8px]" />
+      </div>
     </div>
   );
 }
 
-/** Headline results — green cards with an upward arrow */
+/** Headline results — green cards with an upward arrow; the numbers line up along the bottom */
 export function Metrics({ items }: { items: { stat: string; label: string }[] }) {
   return (
-    <div className="mt-[32px] grid grid-cols-1 gap-[16px] md:grid-cols-3 md:gap-[24px]">
+    <div className="grid grid-cols-1 gap-[16px] md:grid-cols-3 md:gap-[24px]">
       {items.map(({ stat, label }) => (
         <div key={stat} className="flex flex-col gap-[16px] rounded-[16px] bg-success-bg p-[24px]">
           <div className="flex justify-end">
             <TrendUpArrow />
           </div>
-          <div className="flex flex-col gap-[12px]">
+          <div className="flex flex-1 flex-col gap-[12px]">
             <p className="font-body text-[16px] leading-[26px] text-secondary">{label}</p>
-            <span className="font-heading text-stat font-medium text-heading md:text-stat-md lg:text-stat-lg">
+            <span className="mt-auto font-heading text-stat font-medium text-heading md:text-stat-md lg:text-stat-lg">
               {stat}
             </span>
           </div>

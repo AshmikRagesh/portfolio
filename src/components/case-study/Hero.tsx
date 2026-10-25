@@ -38,7 +38,7 @@ export default function Hero({
       />
 
       <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-start gap-[14px] pt-[88px] md:justify-center md:pt-0">
-        <h1 className="max-w-[640px] text-balance px-[20px] text-center font-heading text-[32px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[48px] lg:text-[56px] lg:leading-[60px]">
+        <h1 className="max-w-[640px] text-balance px-[20px] text-center font-heading text-[32px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[48px] lg:text-[50px] lg:leading-[54px]">
           {title}
         </h1>
         <div className="flex flex-wrap items-center justify-center gap-[12px] px-[20px]">

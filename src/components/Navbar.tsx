@@ -3,7 +3,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutGrid, CircleUser, ArrowLeft } from "lucide-react";
+import { Menu, X, LayoutGrid, CircleUser } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import { useCuriosity } from "@/context/CuriosityContext";
 import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/CuriosityBubble";
@@ -278,22 +278,6 @@ export default function Navbar() {
         {/* Desktop + tablet: nav links + CTA */}
         <div className="hidden md:flex items-center gap-[20px]">
           <ul className="flex items-center gap-[24px]">
-            {/* Case studies: the way back home sits first */}
-            {isCaseStudy && (
-              <li>
-                <Link
-                  href="/#works"
-                  className="group/tab flex items-center gap-2 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] transition-colors duration-200 hover:text-grape hover:underline hover:decoration-wavy"
-                >
-                  <ArrowLeft
-                    size={18}
-                    strokeWidth={1.5}
-                    className="transition-[stroke-width] duration-200 group-hover/tab:stroke-2"
-                  />
-                  Back
-                </Link>
-              </li>
-            )}
             {navLinks.map(({ label, href, Icon }) => (
               <li key={label}>
                 <a

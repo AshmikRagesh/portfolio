@@ -190,8 +190,10 @@ function Insights() {
           converged on the same finding: guests wanted insurance but the
           platform gave them no path to it.
         </p>
-        <CardGrid items={INSIGHT_CARDS} />
       </Copy>
+      <Visual>
+        <CardGrid items={INSIGHT_CARDS} />
+      </Visual>
     </Chapter>
   );
 }
@@ -215,11 +217,13 @@ function TheProblem() {
           its TC team with avoidable queries. A single design decision had
           been quietly creating both problems for years.
         </p>
+      </Copy>
+      <Visual>
         <ProblemStatement
           situation="Guests booking through Artemis had no in-flow option to add travel insurance."
           consequence="This forced them off-platform at the moment of highest commitment — the checkout step — causing abandonment, reducing guest confidence, and costing the business an estimated $250K in unrealised revenue each quarter."
         />
-      </Copy>
+      </Visual>
     </Chapter>
   );
 }
@@ -294,11 +298,13 @@ function Process() {
           should it carry? Three iterations tested different answers, each
           building on what the previous one revealed.
         </p>
-        {ITERATIONS.map(({ label, title, insight, worked, didntWork }, i) => (
-          <div key={label} className="mt-[48px]">
-            <h3 className="font-body text-[18px] font-medium leading-[26px] text-heading">
-              {i + 1}. {title}
-            </h3>
+      </Copy>
+      {ITERATIONS.map(({ label, title, insight, worked, didntWork }, i) => (
+        <div key={label} className="mt-[64px]">
+          <Copy>
+            <h3>{i + 1}. {title}</h3>
+          </Copy>
+          <Visual>
             <OptionCard
               label={label}
               shipped={didntWork.length === 0}
@@ -306,12 +312,12 @@ function Process() {
             >
               <ProsCons pros={worked} cons={didntWork} />
             </OptionCard>
-            <p className="mt-[20px] font-body text-[16px] italic leading-[26px] text-secondary">
-              Key insight: &ldquo;{insight}&rdquo;
-            </p>
-          </div>
-        ))}
-      </Copy>
+          </Visual>
+          <Copy>
+            <p className="italic">Key insight: &ldquo;{insight}&rdquo;</p>
+          </Copy>
+        </div>
+      ))}
     </Chapter>
   );
 }
@@ -399,7 +405,7 @@ function Impact() {
           that the integration point and design approach were right.
         </p>
       </Copy>
-      <Visual narrow>
+      <Visual>
         <Metrics items={METRICS} />
       </Visual>
     </Chapter>

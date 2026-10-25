@@ -223,8 +223,10 @@ function Challenges() {
           thread analysis, five themes surfaced repeatedly. Each became a
           target for the redesign.
         </p>
-        <CardGrid items={CHALLENGE_CARDS} />
       </Copy>
+      <Visual>
+        <CardGrid items={CHALLENGE_CARDS} />
+      </Visual>
     </Chapter>
   );
 }
@@ -253,12 +255,12 @@ function TheProblem() {
       <Visual>
         <Figure label="Artemis Reservations — the problem illustration" />
       </Visual>
-      <Copy>
+      <Visual>
         <ProblemStatement
           situation="Artemis Reservations depended on manual coordination for high-stakes booking workflows."
           consequence="As operational complexity increased, this reliance on user intervention created inefficiencies, miscommunication, and avoidable risk. The system needed to shift from user-driven execution to system-driven reliability."
         />
-      </Copy>
+      </Visual>
     </Chapter>
   );
 }
@@ -411,13 +413,15 @@ function Process() {
           consequences. Two of them — save behavior and bulk editing —
           best show the trade-offs.
         </p>
+      </Copy>
 
-        {DESIGN_DECISIONS.map((decision) => (
-          <div key={decision.title}>
-            <h4 className="mb-[8px] mt-[40px] font-body text-[16px] font-medium leading-[24px] text-heading">
-              {decision.title}
-            </h4>
-            <p className="font-body text-[16px] leading-[26px] text-secondary">{decision.intro}</p>
+      {DESIGN_DECISIONS.map((decision) => (
+        <div key={decision.title}>
+          <Copy>
+            <h4>{decision.title}</h4>
+            <p>{decision.intro}</p>
+          </Copy>
+          <Visual>
             {decision.options.map((opt) => (
               <OptionCard
                 key={opt.label}
@@ -439,10 +443,12 @@ function Process() {
                 )}
               </OptionCard>
             ))}
-          </div>
-        ))}
+          </Visual>
+        </div>
+      ))}
 
-        <p className="mt-[40px]">
+      <Copy>
+        <p>
           The same pattern played out across the other three solution
           directions (status indicators, activity feed, and progressive
           layout): explore alternatives, weigh trade-offs, ship the one
@@ -549,7 +555,7 @@ function Impact() {
           that surfaced in research.
         </p>
       </Copy>
-      <Visual narrow>
+      <Visual>
         <Metrics items={METRICS} />
       </Visual>
       <Copy>
