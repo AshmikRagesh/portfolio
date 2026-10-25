@@ -1,7 +1,7 @@
 import { ArrowRight } from "lucide-react";
 
 /**
- * Case study hero — a coloured band with the project name, its date, and an
+ * Case study hero — a coloured band with the case study's title, its date, and an
  * optional live link, flanked by two screens (left only on phones).
  * Pass `left` / `right` image paths once real screenshots exist.
  */
@@ -38,7 +38,7 @@ export default function Hero({
       />
 
       <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-start gap-[14px] pt-[88px] md:justify-center md:pt-0">
-        <h1 className="px-[20px] text-center font-heading text-[44px] font-normal leading-[48px] tracking-[-2px] text-heading md:text-[56px] md:leading-[60px] lg:text-[72px] lg:leading-[76px]">
+        <h1 className="max-w-[640px] text-balance px-[20px] text-center font-heading text-[32px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[48px] lg:text-[56px] lg:leading-[60px]">
           {title}
         </h1>
         <div className="flex flex-wrap items-center justify-center gap-[12px] px-[20px]">

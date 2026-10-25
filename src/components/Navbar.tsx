@@ -267,28 +267,12 @@ export default function Navbar() {
     >
       {/* Main nav row */}
       <nav className="relative flex items-center justify-between h-full nav-container">
-        {/* Mobile on case study pages: back button. Everything else: Ash logo */}
-        {isCaseStudy ? (
-          <>
-            <Link
-              href="/#works"
-              className="md:hidden flex items-center gap-2 font-brand text-[14px] font-medium uppercase tracking-[1px] text-muted hover:text-heading transition-colors duration-150 shrink-0"
-            >
-              <ArrowLeft size={14} strokeWidth={2} />
-              Back
-            </Link>
-            <div className="hidden md:block">
-              <NavHost bubble={bubble} record={record} />
-            </div>
-          </>
-        ) : (
-          <NavHost bubble={bubble} record={record} />
-        )}
+        <NavHost bubble={bubble} record={record} />
 
         {/* Host tooltip — just under the bell, its pointer at the bell's centre. Out of
             the layout and above everything on the page. */}
         <div className="absolute z-[60] top-full mt-[4px] left-[20px] md:left-[80px] lg:left-[100px]">
-          <CuriosityBubble bubble={bubble} pointerFromMd={isCaseStudy} />
+          <CuriosityBubble bubble={bubble} />
         </div>
 
         {/* Desktop + tablet: nav links + CTA */}

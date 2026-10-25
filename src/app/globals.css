@@ -328,11 +328,12 @@
   [data-cs-hero] + .cs-chapter {
     @apply mt-[64px] md:mt-[100px];
   }
+  /* Same size as the home page's section headings */
   .cs-h2 {
-    @apply relative mb-[32px] font-heading text-[36px] font-normal leading-[42px] tracking-[-2px] text-heading md:text-[44px] md:leading-[50px] lg:text-[48px] lg:leading-[54px];
+    @apply relative mb-[32px] text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[44px];
   }
   .cs-number {
-    @apply mb-[16px] flex items-center gap-[12px] whitespace-nowrap font-body text-[16px] leading-[24px] tracking-[0px] lg:absolute lg:right-[calc(100%+16px)] lg:top-0 lg:mb-0 lg:gap-[16px] lg:font-heading lg:text-[48px] lg:leading-[54px] lg:tracking-[-2px];
+    @apply mb-[16px] flex items-center gap-[12px] whitespace-nowrap font-body text-[16px] leading-[24px] tracking-[0px] lg:absolute lg:right-[calc(100%+16px)] lg:top-0 lg:mb-0 lg:gap-[16px] lg:font-heading lg:text-[44px] lg:leading-[44px] lg:tracking-[-2px];
   }
   .cs-rule {
     @apply h-px w-[36px] bg-current lg:w-[64px];

@@ -38,7 +38,7 @@ const SECTIONS: CaseStudySection[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 function Overview() {
   return (
-    <Chapter id="overview" num={0} title="Three years of building Artemis at Enchanting Travels">
+    <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
           Tokens, components, patterns, and governance — the shared
@@ -542,7 +542,11 @@ function Reflection() {
 export default function ArtemisDesignSystemPage() {
   return (
     <CaseStudyLayout sections={SECTIONS}>
-      <Hero title="Artemis Design System" date="2023 — Ongoing" color="#EFE8DC" />
+      <Hero
+        title="Three years of building Artemis at Enchanting Travels"
+        date="2023 — Ongoing"
+        color="#EFE8DC"
+      />
       <Overview />
       <WhyArtemis />
       <Audit />

@@ -42,11 +42,7 @@ const SECTIONS: CaseStudySection[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 function Overview() {
   return (
-    <Chapter
-      id="overview"
-      num={0}
-      title="Giving the Reservations team back their time in Artemis 3.0"
-    >
+    <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
           Redesigned the Reservations Bookings flow in Artemis 3.0 —
@@ -607,7 +603,11 @@ function Reflection() {
 export default function ArtemisReservationsPage() {
   return (
     <CaseStudyLayout sections={SECTIONS}>
-      <Hero title="Artemis Reservations" date="08/11/2024" color="#E6EDF8" />
+      <Hero
+        title="Giving the Reservations team back their time in Artemis 3.0"
+        date="08/11/2024"
+        color="#E6EDF8"
+      />
       <Overview />
       <Background />
       <Research />

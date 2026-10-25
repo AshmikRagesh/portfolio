@@ -39,11 +39,7 @@ const SECTIONS: CaseStudySection[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 function Overview() {
   return (
-    <Chapter
-      id="overview"
-      num={0}
-      title="Adding travel insurance to the Artemis guest booking experience"
-    >
+    <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
           Designed an in-flow travel insurance option for the Artemis platform —
@@ -453,7 +449,11 @@ function Reflection() {
 export default function ArtemisInsurancePage() {
   return (
     <CaseStudyLayout sections={SECTIONS}>
-      <Hero title="Artemis Insurance" date="November 2024" color="#F3E4F7" />
+      <Hero
+        title="Adding travel insurance to the Artemis guest booking experience"
+        date="November 2024"
+        color="#F3E4F7"
+      />
       <Overview />
       <Background />
       <Research />
