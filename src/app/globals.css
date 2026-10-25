@@ -307,15 +307,16 @@
 }
 
 /* ── Case study template ──────────────────────────────────────────────────────────
-   One 560px reading column, with visuals breaking out to 1000px (720px narrow).
+   One 700px reading column, with visuals breaking out to 1000px (720px narrow) and
+   stacking one below the other.
    Chapters carry a "01 —— Title" heading whose number hangs left of the column
    from lg up. Pieces live in components/case-study. */
 @layer components {
   .cs-column {
-    @apply mx-auto w-[560px] max-w-[calc(100%-40px)] md:max-w-[calc(100%-64px)];
+    @apply mx-auto w-[700px] max-w-[calc(100%-40px)] md:max-w-[calc(100%-64px)];
   }
   .cs-visual {
-    @apply mx-auto my-[32px] w-[1000px] max-w-[calc(100%-40px)] md:my-[44px] md:max-w-[calc(100%-64px)];
+    @apply mx-auto my-[32px] flex w-[1000px] max-w-[calc(100%-40px)] flex-col gap-[24px] md:my-[44px] md:max-w-[calc(100%-64px)];
   }
   .cs-visual.cs-narrow {
     @apply w-[720px];
@@ -348,6 +349,9 @@
   }
   .cs-copy > h3 {
     @apply mb-[12px] mt-[32px] font-body text-[18px] font-medium leading-[26px] text-heading;
+  }
+  .cs-copy > h4 {
+    @apply mb-[8px] mt-[28px] font-body text-[16px] font-medium leading-[24px] text-heading;
   }
   .cs-copy strong {
     @apply font-medium text-heading;
@@ -466,7 +470,8 @@
   transform: rotate(180deg);
 }
 .cs-pill-panel {
-  padding: 14px 20px;
+  min-width: 280px;
+  padding: 16px 24px;
   border-radius: 16px;
   background: theme("colors.midnight");
   box-shadow: rgba(0, 0, 0, 0.15) 0 4px 16px;

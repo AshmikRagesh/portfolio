@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
-import { Fragment } from "react";
+import { Palette, Boxes, ArrowLeftRight, Accessibility, TrendingUp } from "lucide-react";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import {
   Hero,
   Chapter,
   Copy,
-  Lead,
   Meta,
   Visual,
-  Pair,
   Figure,
   Quote,
-  Outcome,
+  CardGrid,
+  Metrics,
+  Stats,
+  ImpactList,
+  Punchline,
 } from "@/components/case-study";
 
 export const metadata: Metadata = {
@@ -21,61 +23,96 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS: CaseStudySection[] = [
-  { id: "context",       label: "Context"       },
-  { id: "audit",         label: "Audit"         },
-  { id: "five-fronts",   label: "Five fronts"   },
-  { id: "contributions", label: "Contributions" },
-  { id: "adoption",      label: "Adoption"      },
-  { id: "reflection",    label: "Reflection"    },
+  { id: "overview",         label: "Overview"         },
+  { id: "why-artemis",      label: "Why Artemis"      },
+  { id: "audit",            label: "Audit"            },
+  { id: "five-fronts",      label: "Five Fronts"      },
+  { id: "my-contributions", label: "My Contributions" },
+  { id: "adoption",         label: "Adoption"         },
+  { id: "reflection",       label: "Reflection"       },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 00 Context
+// Section: Overview  (with At a Glance)
 // TODO: Verify product count (~6) and active contributor count (~10).
 // ─────────────────────────────────────────────────────────────────────────────
-function Context() {
+function Overview() {
   return (
-    <Chapter id="context" num={0} title="Context">
+    <Chapter id="overview" num={0} title="Three years of building Artemis at Enchanting Travels">
       <Copy>
+        <p>
+          Tokens, components, patterns, and governance — the shared
+          foundation behind every Enchanting Travels product. Outcomes
+          so far: ~35% less net-new UI effort, 40% wider component
+          coverage, and a contribution model now used by designers and
+          engineers across the org.
+        </p>
         <Meta
           items={[
-            { label: "Role", value: "Lead UX Designer — founder and maintainer of Artemis" },
-            { label: "Timeline", value: <>Jan 2023 — ongoing<br />v1 shipped Jul 2023</> },
+            {
+              label: "My Role",
+              value: (
+                <>
+                  Lead UX Designer. Founder, lead, and ongoing maintainer of the
+                  Artemis Design System — owned everything from research through to
+                  governance.
+                </>
+              ),
+            },
+            { label: "Timeline", value: <>Jan 2023 — Ongoing<br />v1 shipped Jul 2023</> },
             {
               label: "Scope",
-              value: <>Web + mobile, ~6 products, ~10 active contributors</>,
+              value: (
+                <>
+                  Web + mobile<br />~6 products across the Enchanting Travels suite<br />
+                  ~10 active contributors
+                </>
+              ),
             },
             {
               label: "Founding team",
-              value: <>Vishwa (Design), Parv (PM), Aman (Frontend), Swapnil Negi (Backend)</>,
+              value: (
+                <>
+                  Vishwa (Design)<br />Parv (PM)<br />Aman (Frontend)<br />Swapnil Negi (Backend)
+                </>
+              ),
             },
           ]}
         />
-        <h3>Why Artemis?</h3>
+      </Copy>
+      <Visual>
+        <Figure label="Artemis — system at a glance" />
+      </Visual>
+    </Chapter>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section: Why Artemis  (strategic case for the work)
+// ─────────────────────────────────────────────────────────────────────────────
+function WhyArtemis() {
+  return (
+    <Chapter id="why-artemis" num={1} title="Why Artemis">
+      <Copy>
         <p>
-          By early 2023, Enchanting Travels was running on a fragmented product
-          surface. Six core tools, each built by a different team at a different
-          stage of the company&apos;s growth, each with its own typography,
-          spacing, and component conventions. Designers re-litigated the same
-          low-level decisions on every new screen; engineers rebuilt the same UI
-          from screenshots because there was no canonical source. The cost
-          wasn&apos;t visible on any single project — it accumulated quietly
-          across every sprint, every quarter.
+          By early 2023, Enchanting Travels was running on a fragmented
+          product surface. Six core tools, each built by a different team
+          at a different stage of the company&apos;s growth, each with its
+          own typography, spacing, and component conventions. Designers
+          re-litigated the same low-level decisions on every new screen;
+          engineers rebuilt the same UI from screenshots because there was
+          no canonical source. The cost wasn&apos;t visible on any single
+          project — it accumulated quietly across every sprint, every
+          quarter.
         </p>
         <p>
-          A design system wasn&apos;t going to fix that overnight, and wasn&apos;t
-          going to be cheap to build. But the alternative — keep paying the tax
-          indefinitely, scale it as the company scaled — was worse. The bet was
-          that two engineering quarters of foundation work would compound into
-          faster shipping, lower defect rates, and a unified product experience
-          for years afterward. Three years later, it has.
-        </p>
-        <h3>Goal</h3>
-        <p>
-          Build the shared foundation behind every Enchanting Travels product —
-          tokens, components, patterns, and governance. Outcomes so far: ~35% less
-          net-new UI effort, 40% wider component coverage, and a contribution
-          model now used by designers and engineers across the org.
+          A design system wasn&apos;t going to fix that overnight, and
+          wasn&apos;t going to be cheap to build. But the alternative —
+          keep paying the tax indefinitely, scale it as the company
+          scaled — was worse. The bet was that two engineering quarters
+          of foundation work would compound into faster shipping, lower
+          defect rates, and a unified product experience for years
+          afterward. Three years later, it has.
         </p>
       </Copy>
       <Visual>
@@ -86,44 +123,56 @@ function Context() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 01 Audit
+// Section: Audit  (audit-first method, the receipts, voices from the field)
 // ─────────────────────────────────────────────────────────────────────────────
+const AUDIT_STATS = [
+  { stat: "6",    label: "products audited" },
+  { stat: "300+", label: "screens reviewed" },
+  { stat: "12",   label: "stakeholder interviews" },
+  { stat: "47",   label: "UI primitives catalogued" },
+];
+
+const AUDIT_QUOTES = [
+  {
+    text:
+      "I keep a 'colours-I-actually-use' Figma file pinned in my workspace. I haven't checked the official style guide in months.",
+    attribution: "— Product designer, Booking team",
+  },
+  {
+    text:
+      "Every new sprint starts the same way: open someone else's PR, copy the button JSX, hope it still works.",
+    attribution: "— Engineer, Itinerary team",
+  },
+];
+
 function Audit() {
   return (
-    <Chapter id="audit" num={1} title="Mapping the system before redesigning it">
+    <Chapter id="audit" num={2} title="Mapping the system before redesigning it">
       <Copy>
-        <Lead>
-          The risk in starting a design system without an audit is obvious: you
-          redesign what you remember, not what&apos;s actually there.
-        </Lead>
         <p>
-          So before opening a new Figma file, I spent a week with what already
-          existed. Two parallel threads: an inventory of every UI primitive across
-          the six tools — buttons, inputs, modals, cards, every distinct variation
-          tagged in a single spreadsheet — and twelve short interviews, one
-          designer and one engineer per product team, to surface the pain the
-          visual audit couldn&apos;t see.
+          The risk in starting a design system without an audit is obvious:
+          you redesign what you remember, not what&apos;s actually there. So
+          before opening a new Figma file, I spent a week with what already
+          existed. Two parallel threads: an inventory of every UI primitive
+          across the six tools — buttons, inputs, modals, cards, every
+          distinct variation tagged in a single spreadsheet — and twelve
+          short interviews, one designer and one engineer per product team,
+          to surface the pain the visual audit couldn&apos;t see.
         </p>
-        <Outcome
-          metric="300+"
-          title="Screens reviewed"
-          stats={[
-            { value: "6", label: "Products audited" },
-            { value: "12", label: "Stakeholder interviews" },
-            { value: "47", label: "UI primitives catalogued" },
-          ]}
-        />
-        <Quote name="Product designer" role="Booking team">
-          I keep a &lsquo;colours-I-actually-use&rsquo; Figma file pinned in my
-          workspace. I haven&apos;t checked the official style guide in months.
-        </Quote>
-        <Quote name="Engineer" role="Itinerary team">
-          Every new sprint starts the same way: open someone else&apos;s PR, copy
-          the button JSX, hope it still works.
-        </Quote>
-        <p className="cs-closing">
-          Five clear challenges came up across every product. They appear next as
-          the five fronts.
+
+        {/* By the numbers — bare 4-stat grid (no card chrome — matter-of-fact, not celebratory) */}
+        <Stats items={AUDIT_STATS} />
+
+        {/* Voices from each side of the handoff */}
+        {AUDIT_QUOTES.map(({ text, attribution }) => (
+          <Quote key={attribution} attribution={attribution}>
+            {text}
+          </Quote>
+        ))}
+
+        <p className="mt-[32px]">
+          Five clear challenges came up across every product. They appear
+          next as the Five Fronts.
         </p>
       </Copy>
     </Chapter>
@@ -131,30 +180,35 @@ function Audit() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 02 Five fronts
+// Section: Five Fronts  (the five challenges that emerged from the audit)
 // ─────────────────────────────────────────────────────────────────────────────
-const FRONTS = [
+const FRONT_CARDS = [
   {
+    icon: <Palette size={26} className="text-grape" strokeWidth={2} />,
     title: "Visual fragmentation",
     description:
       "Across the six tools, typography, colour, and spacing had drifted into incompatible local conventions. The same brand looked materially different from one product to the next.",
   },
   {
+    icon: <Boxes size={26} className="text-grape" strokeWidth={2} />,
     title: "Component drift",
     description:
       "Buttons existed in 6+ parallel implementations across the suite; inputs in 3 different formats. The same UI primitive, rebuilt independently in every product.",
   },
   {
+    icon: <ArrowLeftRight size={26} className="text-grape" strokeWidth={2} />,
     title: "Broken handoff",
     description:
       "Engineers built features from designer screenshots and inspector measurements because there was no canonical Figma source, and no code library to match it.",
   },
   {
+    icon: <Accessibility size={26} className="text-grape" strokeWidth={2} />,
     title: "Accessibility gaps",
     description:
       "Each team approached interface building differently, so accessibility wasn't standardised. Colour contrast failed in several places; focus states and keyboard behaviour weren't shared expectations.",
   },
   {
+    icon: <TrendingUp size={26} className="text-grape" strokeWidth={2} />,
     title: "Compounding cost",
     description:
       "Every new tool added new inconsistencies to the system. Feature teams reinvented basic UI on every sprint. Onboarding new designers got slower with each release.",
@@ -163,26 +217,22 @@ const FRONTS = [
 
 function FiveFronts() {
   return (
-    <Chapter id="five-fronts" num={2} title="The five fronts">
+    <Chapter id="five-fronts" num={3} title="The five fronts">
       <Copy>
         <p>Each one showed up across every tool, in different combinations.</p>
-        {FRONTS.map(({ title, description }) => (
-          <Fragment key={title}>
-            <h3>{title}</h3>
-            <p>{description}</p>
-          </Fragment>
-        ))}
+        <CardGrid items={FRONT_CARDS} />
       </Copy>
     </Chapter>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 03 Contributions  (six pillars of the work, drawn from Notion §7)
+// Section: My Contributions  (six pillars of the work, drawn from Notion §7)
 // Impacts marked REAL come from the user's Notion doc; others are
 // dummy-but-logical per the agreed metrics handling. Confirm before publish.
 // ─────────────────────────────────────────────────────────────────────────────
 type ContributionItem = {
+  num: number;
   title: string;
   intro: string;
   bullets: { label: string; body: string }[];
@@ -193,6 +243,7 @@ type ContributionItem = {
 
 const CONTRIBUTION_ITEMS: ContributionItem[] = [
   {
+    num: 1,
     title: "Foundations",
     intro: "A token system before any component existed:",
     bullets: [
@@ -223,7 +274,8 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
   },
   {
-    title: "Shipping components",
+    num: 2,
+    title: "Shipping Components",
     intro: "Starting from zero, I designed and built the foundational components:",
     bullets: [
       {
@@ -245,7 +297,7 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
     closing:
       "Each component was designed with responsiveness, accessibility, and edge cases in mind — using Figma's auto-layout, variants, and tokens to keep them flexible and scalable. Worked closely with developers to ensure 1:1 parity between design and code.",
-    images: ["Shipping components — library overview", "Shipping components — variant matrix"],
+    images: ["Shipping Components — library overview", "Shipping Components — variant matrix"],
     impacts: [
       "~35% reduction in net-new UI design effort", // REAL — Notion §7a
       "40% increase in overall component coverage", // REAL — Notion §7a
@@ -253,7 +305,8 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
   },
   {
-    title: "Maintaining and enhancing components",
+    num: 3,
+    title: "Maintaining and Enhancing Components",
     intro: "Shipping was only the first beat. Real value came from how the system stayed alive:",
     bullets: [
       {
@@ -279,6 +332,7 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
   },
   {
+    num: 4,
     title: "Documentation",
     intro: "Documentation wasn't an afterthought — it was a tool for adoption:",
     bullets: [
@@ -313,7 +367,8 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
   },
   {
-    title: "Design system governance",
+    num: 5,
+    title: "Design System Governance",
     intro: "Systems thrive when people understand them — and contribute to them:",
     bullets: [
       {
@@ -339,7 +394,8 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
   },
   {
-    title: "Providing DS education",
+    num: 6,
+    title: "Providing DS Education",
     intro: "For any design system to thrive, it must be understood, respected, and effectively used:",
     bullets: [
       {
@@ -374,45 +430,42 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
   },
 ];
 
-function Contributions() {
+function MyContributions() {
   return (
-    <Chapter id="contributions" num={3} title="Six pillars of the work">
+    <Chapter
+      id="my-contributions"
+      num={4}
+      title="Six pillars that grew Artemis from a Figma file into a system every Enchanting Travels product runs on"
+    >
       <Copy>
-        <Lead>
-          How Artemis grew from a Figma file into a system every Enchanting
-          Travels product runs on.
-        </Lead>
         <p>
           Across three years I shipped foundations, built and maintained the
-          component library, wrote the documentation, established the governance
-          model, and ran the education work that drove adoption.
+          component library, wrote the documentation, established the
+          governance model, and ran the education work that drove adoption.
+          Each pillar is detailed below.
         </p>
       </Copy>
-      {CONTRIBUTION_ITEMS.map(({ title, intro, bullets, closing, images, impacts }) => (
-        <div key={title} className="mt-[64px]">
+      {CONTRIBUTION_ITEMS.map(({ num, title, intro, bullets, closing, images, impacts }) => (
+        <div key={num} className="mt-[64px]">
           <Copy>
-            <h3>{title}</h3>
+            <h3>{num}. {title}</h3>
             <p>{intro}</p>
             <ul>
               {bullets.map(({ label, body }) => (
                 <li key={label}>
-                  <strong>{label}:</strong> {body}
+                  <strong>{label}</strong>: {body}
                 </li>
               ))}
             </ul>
             <p>{closing}</p>
           </Copy>
+          {/* 2 images, one below the other */}
           <Visual>
-            <Pair>
-              <Figure label={images[0]} />
-              <Figure label={images[1]} />
-            </Pair>
+            <Figure label={images[0]} />
+            <Figure label={images[1]} />
           </Visual>
           <Copy>
-            <p><strong>Impact</strong></p>
-            <ul>
-              {impacts.map((i) => <li key={i}>{i}</li>)}
-            </ul>
+            <ImpactList items={impacts} />
           </Copy>
         </div>
       ))}
@@ -421,74 +474,83 @@ function Contributions() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 04 Adoption
+// Section: Adoption  (system-level outcomes + voices from current users)
 // ─────────────────────────────────────────────────────────────────────────────
+const METRICS: { stat: string; label: string }[] = [
+  {
+    stat: "6/6",
+    label: "Enchanting Travels products fully on Artemis (was 0 at start)",
+  },
+  {
+    stat: "4×",
+    label: "faster to ship a new screen, design-to-production",
+  },
+  {
+    stat: "~80%",
+    label:
+      "of new screens built entirely from Artemis components — no custom one-offs",
+  },
+];
+
 function Adoption() {
   return (
-    <Chapter id="adoption" num={4} title="Three years on — where Artemis sits today">
+    <Chapter id="adoption" num={5} title="Three years on — where Artemis sits today">
       <Copy>
         <p>
-          The per-pillar impacts above are the inputs. These are the system-level
-          outputs three years in.
+          The per-pillar impacts above are the inputs. These are the
+          system-level outputs three years in.
         </p>
-        <Outcome
-          metric="6/6"
-          title="Enchanting Travels products fully on Artemis"
-          stats={[
-            { value: "4×", label: "Faster to ship a new screen, design-to-production." },
-            {
-              value: "~80%",
-              label: "Of new screens built entirely from Artemis components — no custom one-offs.",
-            },
-          ]}
-        >
-          <p>Up from zero at the start.</p>
-        </Outcome>
-        <p className="cs-closing">
+      </Copy>
+      {/* System-level stats — celebratory treatment (success-bg cards + trend arrows) */}
+      <Visual narrow>
+        <Metrics items={METRICS} />
+      </Visual>
+      <Copy>
+        <Punchline>
           Three years in, Artemis isn&apos;t something I maintain — it&apos;s
           something the team builds on.
-        </p>
+        </Punchline>
       </Copy>
     </Chapter>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 05 Reflection
+// Section: Reflection  (three first-person learnings, thesis-driven prose)
 // ─────────────────────────────────────────────────────────────────────────────
 function Reflection() {
   return (
-    <Chapter id="reflection" num={5} title="What I learned">
+    <Chapter id="reflection" num={6} title="What I learned">
       <Copy>
-        <h3>Foundations pay off slowly, then all at once</h3>
         <p>
-          The hardest call I made in the first quarter was to build the token
-          system before any component. Visible progress was slow — three weeks in,
-          there was nothing to demo to leadership, no clickable Figma file, no
-          &ldquo;we shipped a button&rdquo; moment. But every component that came
-          after inherited from those tokens, and brand updates that would have
-          taken weeks of cross-product coordination became single-file edits.
+          The hardest call I made in the first quarter was to build the
+          token system before any component. Visible progress was slow —
+          three weeks in, there was nothing to demo to leadership, no
+          clickable Figma file, no &ldquo;we shipped a button&rdquo;
+          moment. But every component that came after inherited from those
+          tokens, and brand updates that would have taken weeks of
+          cross-product coordination became single-file edits. Foundations
+          paid off slowly, then all at once.
         </p>
-        <h3>The system that scales is the one others can change</h3>
         <p>
-          Building a contribution workflow into v1 felt premature at the time —
-          there was barely a system to contribute to. Without proposal → review →
-          accept in place from day one, the library would have plateaued the
-          moment my attention moved to other work. The system became a team
-          because it could, and that was the only reason it outlasted me being its
-          sole maintainer.
+          Building a contribution workflow into v1 felt premature at the
+          time — there was barely a system to contribute to. But the
+          system that scales is the one other people can change. Without
+          proposal → review → accept in place from day one, the library
+          would have plateaued the moment my attention moved to other
+          work. The system became a team because it could, and that was
+          the only reason it outlasted me being its sole maintainer.
         </p>
-        <h3>Removing myself from the critical path</h3>
         <p>
-          Year one I was the bottleneck. Every &ldquo;should this component handle
-          X&rdquo; question came to me; every implementation review pinged me
-          directly. By year three, those questions had moved to a Slack channel
-          that designers and engineers answered each other in, and to weekly
-          clinics that ran with or without me.
-        </p>
-        <p className="cs-closing">
-          If a DS lead is still indispensable in year three, the system hasn&apos;t
-          matured — only the lead has.
+          Year one I was the bottleneck. Every &ldquo;should this
+          component handle X&rdquo; question came to me; every
+          implementation review pinged me directly. By year three, those
+          questions had moved to a Slack channel that designers and
+          engineers answered each other in, and to weekly clinics that
+          ran with or without me. Removing myself from the critical path
+          was the actual measure of success. If a DS lead is still
+          indispensable in year three, the system hasn&apos;t matured —
+          only the lead has.
         </p>
       </Copy>
     </Chapter>
@@ -502,10 +564,11 @@ export default function ArtemisDesignSystemPage() {
   return (
     <CaseStudyLayout sections={SECTIONS}>
       <Hero title="Artemis Design System" date="2023 — Ongoing" color="#EFE8DC" />
-      <Context />
+      <Overview />
+      <WhyArtemis />
       <Audit />
       <FiveFronts />
-      <Contributions />
+      <MyContributions />
       <Adoption />
       <Reflection />
     </CaseStudyLayout>
