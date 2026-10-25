@@ -7,7 +7,7 @@ export {
   Meta,
   Visual,
   Figure,
-  Quote,
+  Quotes,
   CardGrid,
   ProblemStatement,
   ProsCons,
@@ -15,5 +15,4 @@ export {
   Metrics,
   Stats,
   ImpactList,
-  Punchline,
 } from "./Blocks";

@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
+import PunchHole from "@/components/PunchHole";
 import ImagePlaceholder from "./ImagePlaceholder";
 import TrendUpArrow from "./TrendUpArrow";
 
@@ -82,7 +83,7 @@ export function Figure({
         )}
       </div>
       {label && (
-        <p className="mt-[12px] text-center font-body text-[12px] font-medium leading-[16px] text-heading">{label}</p>
+        <p className="mt-[12px] text-center font-body text-[12px] font-medium leading-[16px] text-muted">{label}</p>
       )}
       {caption && (
         <figcaption className="mt-[14px] font-body text-[14px] leading-[22px] text-muted [text-wrap:pretty]">
@@ -98,25 +99,46 @@ export function Figure({
   );
 }
 
-/** Pull quote; `attribution` is shown exactly as written (e.g. "— ResCo, Delhi office") */
-export function Quote({
-  children,
-  attribution,
-  italic,
-}: {
-  children: React.ReactNode;
-  attribution: string;
-  italic?: boolean;
-}) {
+// Cards tilt alternately, like loose pages (as in the home page guestbook)
+const TILTS = ["-rotate-[0.35deg]", "rotate-[0.4deg]"];
+
+/**
+ * Quotes as guestbook notepad cards: ruled cream paper, a punched hole, a slight tilt
+ * that straightens on hover. Two sit side by side; one sits centred. `attribution` is
+ * written as usual ("— ResCo, Delhi office") and set as name over role.
+ */
+export function Quotes({ items }: { items: { text: React.ReactNode; attribution: string }[] }) {
   return (
-    <blockquote className="mx-0 mb-0 mt-[32px] border-l-2 border-grape pl-[24px]">
-      <p
-        className={`font-heading text-[20px] leading-[30px] text-heading md:text-[24px] md:leading-[34px] ${italic ? "italic" : ""}`}
-      >
-        &ldquo;{children}&rdquo;
-      </p>
-      <footer className="mt-[16px] font-body text-[14px] leading-[20px] text-muted">{attribution}</footer>
-    </blockquote>
+    <ol
+      className={`m-0 grid list-none grid-cols-1 gap-[16px] p-0 md:gap-[24px] ${
+        items.length > 1 ? "md:grid-cols-2" : "mx-auto w-full max-w-[488px]"
+      }`}
+    >
+      {items.map(({ text, attribution }, i) => {
+        const [name, ...role] = attribution.replace(/^—\s*/, "").split(", ");
+        return (
+          <li key={attribution} className="min-w-0">
+            <figure
+              className={`relative m-0 flex h-full flex-col rounded-[4px] border border-line p-[20px] text-heading shadow-[0_4px_18px_rgba(30,5,37,0.10)] [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-4px] hover:!rotate-0 md:p-[24px] motion-reduce:!transform-none motion-reduce:transition-none ${
+                TILTS[i % TILTS.length]
+              }`}
+            >
+              <div className="mb-[20px] flex items-center justify-between border-b border-line/60 pb-[10px] font-brand text-[10px] uppercase leading-[14px] tracking-[0px] text-muted">
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <PunchHole index={i} fill="#f8f9fa" />
+              </div>
+              <blockquote className="m-0 flex-1 pt-[4px] font-heading text-[20px] leading-[26px] text-heading lg:text-[22px] lg:leading-[30px]">
+                <p className="m-0">&ldquo;{text}&rdquo;</p>
+              </blockquote>
+              <figcaption className="mt-[32px] border-t border-line/60 pt-[14px] font-body text-[12px] leading-[16px] text-secondary">
+                <span className="block text-[14px] font-medium leading-[20px] text-heading">{name}</span>
+                {role.length > 0 && <span>{role.join(", ")}</span>}
+              </figcaption>
+            </figure>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
@@ -158,7 +180,7 @@ export function ProblemStatement({
     <div className="flex flex-col gap-[20px] rounded-[8px] border-2 border-heading bg-[rgba(137,91,231,0.05)] p-[24px]">
       <div className="flex items-center gap-[8px]">
         <SparkleAiIcon size={26} className="shrink-0 text-heading" />
-        <h3 className="font-body text-[18px] font-medium leading-[26px] text-heading">The Problem Statement</h3>
+        <h3 className="font-heading text-[22px] leading-[28px] text-heading md:text-[24px] md:leading-[30px]">The Problem Statement</h3>
       </div>
       <p className="font-body text-[18px] leading-[28px]">
         <span className="text-secondary">{situation} </span>
@@ -283,17 +305,6 @@ export function ImpactList({ items }: { items: string[] }) {
           </li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-/** Centred italic closing line */
-export function Punchline({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mt-[40px]">
-      <p className="mx-auto max-w-[640px] text-center font-body text-[18px] italic leading-[28px] text-heading">
-        {children}
-      </p>
     </div>
   );
 }

@@ -8,7 +8,7 @@ import {
   Meta,
   Visual,
   Figure,
-  Quote,
+  Quotes,
   CardGrid,
   ProblemStatement,
   ProsCons,
@@ -153,12 +153,10 @@ function Research() {
           I reviewed ~30 recent support tickets and internal Slack threads
           about lost-work incidents. The themes were unambiguous.
         </p>
-        {RESEARCH_QUOTES.map(({ text, attribution }) => (
-          <Quote key={attribution} attribution={attribution}>
-            {text}
-          </Quote>
-        ))}
       </Copy>
+      <Visual>
+        <Quotes items={RESEARCH_QUOTES} />
+      </Visual>
     </Chapter>
   );
 }
@@ -558,13 +556,22 @@ function Impact() {
       <Visual>
         <Metrics items={METRICS} />
       </Visual>
-      <Copy>
-        <Quote italic attribution="— Sarah M., Reservations Consultant, Enchanting Travels">
-          It&apos;s not that everything&apos;s faster — it&apos;s that I stopped
-          second-guessing myself. I used to screenshot my work before switching tabs, just in
-          case. I haven&apos;t done that once since launch.
-        </Quote>
-      </Copy>
+      <Visual>
+        <Quotes
+          items={[
+            {
+              text: (
+                <>
+                  It&apos;s not that everything&apos;s faster — it&apos;s that I stopped
+                  second-guessing myself. I used to screenshot my work before switching tabs, just in
+                  case. I haven&apos;t done that once since launch.
+                </>
+              ),
+              attribution: "— Sarah M., Reservations Consultant, Enchanting Travels",
+            },
+          ]}
+        />
+      </Visual>
     </Chapter>
   );
 }

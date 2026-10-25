@@ -8,12 +8,11 @@ import {
   Meta,
   Visual,
   Figure,
-  Quote,
+  Quotes,
   CardGrid,
   Metrics,
   Stats,
   ImpactList,
-  Punchline,
 } from "@/components/case-study";
 
 export const metadata: Metadata = {
@@ -142,14 +141,13 @@ function Audit() {
         {/* By the numbers — bare 4-stat grid (no card chrome — matter-of-fact, not celebratory) */}
         <Stats items={AUDIT_STATS} />
 
-        {/* Voices from each side of the handoff */}
-        {AUDIT_QUOTES.map(({ text, attribution }) => (
-          <Quote key={attribution} attribution={attribution}>
-            {text}
-          </Quote>
-        ))}
-
-        <p className="mt-[32px]">
+      </Copy>
+      {/* Voices from each side of the handoff */}
+      <Visual>
+        <Quotes items={AUDIT_QUOTES} />
+      </Visual>
+      <Copy>
+        <p>
           Five clear challenges came up across every product. They appear
           next as the Five Fronts.
         </p>
@@ -486,12 +484,6 @@ function Adoption() {
       <Visual>
         <Metrics items={METRICS} />
       </Visual>
-      <Copy>
-        <Punchline>
-          Three years in, Artemis isn&apos;t something I maintain — it&apos;s
-          something the team builds on.
-        </Punchline>
-      </Copy>
     </Chapter>
   );
 }

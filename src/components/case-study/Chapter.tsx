@@ -1,5 +1,5 @@
 /**
- * One numbered chapter of a case study: "01 —— Title" over the reading column.
+ * One numbered chapter of a case study: "01  Title" over the reading column.
  * Children are Copy and Visual blocks, in reading order. `num` should match the
  * chapter's position in the page's SECTIONS so the bottom pill agrees.
  */
@@ -18,11 +18,8 @@ export default function Chapter({
     <section id={id} className="cs-chapter">
       <div className="cs-column">
         <h2 className="cs-h2">
-          <span className="cs-number">
-            {String(num).padStart(2, "0")}
-            <span className="cs-rule" aria-hidden="true" />
-          </span>
-          {title}
+          <span className="cs-number">{String(num).padStart(2, "0")}</span>
+          <span>{title}</span>
         </h2>
       </div>
       {children}

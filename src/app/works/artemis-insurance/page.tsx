@@ -8,7 +8,7 @@ import {
   Meta,
   Visual,
   Figure,
-  Quote,
+  Quotes,
   CardGrid,
   ProblemStatement,
   ProsCons,
@@ -130,12 +130,11 @@ function Research() {
           insurance. The question was never about the product — it was always
           about where to find it.
         </p>
-        {RESEARCH_QUOTES.map(({ text, attribution }) => (
-          <Quote key={attribution} attribution={attribution}>
-            {text}
-          </Quote>
-        ))}
-
+      </Copy>
+      <Visual>
+        <Quotes items={RESEARCH_QUOTES} />
+      </Visual>
+      <Copy>
         <h3>TC interviews &amp; guest surveys</h3>
         <p>
           Travel Consultants who handle post-booking queries were surveyed
