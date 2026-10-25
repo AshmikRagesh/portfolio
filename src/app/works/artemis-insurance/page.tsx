@@ -299,7 +299,7 @@ function Process() {
         </p>
       </Copy>
       {ITERATIONS.map(({ label, title, insight, worked, didntWork }, i) => (
-        <div key={label} className="mt-[64px]">
+        <div key={label} className="cs-sub">
           <Copy>
             <h3>{i + 1}. {title}</h3>
           </Copy>
@@ -359,7 +359,7 @@ function Solution() {
         </p>
       </Copy>
       {SOLUTION_ITEMS.map(({ num, title, body }) => (
-        <div key={num}>
+        <div key={num} className="cs-sub">
           <Copy>
             <h3>{num}. {title}</h3>
             <p>{body}</p>

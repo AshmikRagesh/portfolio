@@ -415,7 +415,7 @@ function Process() {
       </Copy>
 
       {DESIGN_DECISIONS.map((decision) => (
-        <div key={decision.title}>
+        <div key={decision.title} className="cs-sub">
           <Copy>
             <h4>{decision.title}</h4>
             <p>{decision.intro}</p>
@@ -504,7 +504,7 @@ function Solution() {
         </p>
       </Copy>
       {SOLUTION_ITEMS.map(({ num, title, body, impact }) => (
-        <div key={num}>
+        <div key={num} className="cs-sub">
           <Copy>
             <h3>{num}. {title}</h3>
             <p>{body}</p>

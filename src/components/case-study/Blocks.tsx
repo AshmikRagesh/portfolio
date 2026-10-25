@@ -12,10 +12,6 @@ import TrendUpArrow from "./TrendUpArrow";
 // Green marks what worked or improved, red what didn't — keep that meaning.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Cards lift on hover like the home page guestbook cards
-const LIFT =
-  "transition-[transform,box-shadow] duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] hover:shadow-[0_12px_28px_rgba(30,5,37,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0";
-
 export function Copy({ children }: { children: React.ReactNode }) {
   return <div className="cs-column cs-copy">{children}</div>;
 }
@@ -163,7 +159,7 @@ export function CardGrid({
       }`}
     >
       {items.map(({ icon, title, description }) => (
-        <div key={title} className={`flex flex-col gap-[16px] rounded-[16px] border border-line-soft bg-white p-[20px] ${LIFT}`}>
+        <div key={title} className="flex flex-col gap-[16px] rounded-[16px] border border-line-soft bg-white p-[20px]">
           <div className="shrink-0">{icon}</div>
           <div className="flex flex-col gap-[12px]">
             <h4 className="font-heading text-[20px] leading-[26px] tracking-[0px] text-heading">{title}</h4>
@@ -175,21 +171,24 @@ export function CardGrid({
   );
 }
 
-// Filled warning sign for the problem statement
+// Filled alert mark for the problem statement: a solid disc with the "!" cut out
 function ProblemIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
       <path
-        d="M10.27 3.5 1.9 17.9A2 2 0 0 0 3.63 21h16.74a2 2 0 0 0 1.73-3.1L13.73 3.5a2 2 0 0 0-3.46 0Z"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10 19a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm-1-13a1 1 0 1 1 2 0v4.5a1 1 0 1 1-2 0V6Zm1 9.25a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Z"
         fill="currentColor"
       />
-      <path d="M12 9v4.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
-      <circle cx="12" cy="17.2" r="1.3" fill="#fff" />
     </svg>
   );
 }
 
-/** The problem statement: the situation in grey, the consequence underlined in grape */
+/**
+ * The problem statement: the situation in grey, the consequence underlined in grape.
+ * Lifts on hover like the guestbook cards.
+ */
 export function ProblemStatement({
   situation,
   consequence,
@@ -198,11 +197,9 @@ export function ProblemStatement({
   consequence: string;
 }) {
   return (
-    <div
-      className={`relative overflow-hidden rounded-[16px] border border-grape/20 bg-white p-[24px] [background-image:radial-gradient(120%_80%_at_0%_0%,rgba(249,228,255,0.9),transparent_60%)] md:p-[32px] ${LIFT}`}
-    >
+    <div className="rounded-[16px] border border-line bg-white p-[24px] shadow-[0_4px_18px_rgba(30,5,37,0.08)] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] md:p-[32px] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
       <div className="mb-[20px] flex items-center gap-[12px]">
-        <span className="flex size-[40px] shrink-0 items-center justify-center rounded-[12px] bg-grape text-white shadow-[0_4px_12px_rgba(157,19,106,0.28)]">
+        <span className="flex size-[36px] shrink-0 items-center justify-center rounded-[10px] bg-grape-light text-grape">
           <ProblemIcon />
         </span>
         <h3 className="font-heading text-[22px] leading-[28px] text-heading md:text-[24px] md:leading-[30px]">
@@ -273,8 +270,8 @@ export function Reasons({ items }: { items: string[] }) {
 }
 
 /**
- * An iteration or design option: tags (+ Shipped) over its title and notes, with the
- * preview image beside them (below on phones). The shipped one is outlined in grape.
+ * An iteration or design option: its label (+ Shipped) over its title and notes, with
+ * the preview image beside them (below on phones). The shipped one has a grape border.
  */
 export function OptionCard({
   label,
@@ -291,24 +288,19 @@ export function OptionCard({
 }) {
   return (
     <div
-      className={`rounded-[16px] border p-[8px] ${LIFT} ${
-        shipped
-          ? "border-grape/40 bg-[linear-gradient(180deg,rgba(249,228,255,0.6),#fff_40%)] shadow-[0_4px_16px_rgba(157,19,106,0.08)]"
-          : "border-line-soft bg-white"
+      className={`rounded-[16px] bg-white p-[8px] ${
+        shipped ? "border-2 border-grape" : "border border-line-soft"
       }`}
     >
       <div className="grid grid-cols-1 gap-[8px] md:grid-cols-2">
         <div className="flex flex-col gap-[16px] p-[12px] md:p-[16px]">
           <div className="flex flex-wrap items-center gap-[8px]">
-            <Tag tone="grey">{label}</Tag>
-            {shipped && (
-              <Tag tone="grape">
-                <Check size={12} strokeWidth={2.5} />
-                Shipped
-              </Tag>
-            )}
+            <Tag tone="outline">{label}</Tag>
+            {shipped && <Tag tone="grape">Shipped</Tag>}
           </div>
-          {title && <p className="font-heading text-[20px] leading-[28px] text-heading">{title}</p>}
+          {title && (
+            <p className="font-heading text-[22px] font-medium leading-[30px] text-heading">{title}</p>
+          )}
           {children}
         </div>
         <div className="overflow-hidden rounded-[10px] bg-surface">
@@ -324,7 +316,7 @@ export function Metrics({ items }: { items: { stat: string; label: string }[] })
   return (
     <div className="grid grid-cols-1 gap-[16px] md:grid-cols-3 md:gap-[24px]">
       {items.map(({ stat, label }) => (
-        <div key={stat} className={`group/metric flex flex-col gap-[16px] rounded-[16px] bg-success-bg p-[24px] ${LIFT}`}>
+        <div key={stat} className="group/metric flex flex-col gap-[16px] rounded-[16px] bg-success-bg p-[24px]">
           {/* The arrow rises a touch on hover */}
           <div className="flex justify-end transition-transform duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover/metric:-translate-y-[6px] motion-reduce:transition-none motion-reduce:group-hover/metric:translate-y-0">
             <TrendUpArrow />

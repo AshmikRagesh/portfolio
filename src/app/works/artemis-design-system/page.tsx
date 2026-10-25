@@ -425,7 +425,7 @@ function MyContributions() {
         </p>
       </Copy>
       {CONTRIBUTION_ITEMS.map(({ num, title, intro, bullets, closing, images, impacts }) => (
-        <div key={num} className="mt-[64px]">
+        <div key={num} className="cs-sub">
           <Copy>
             <h3>{num}. {title}</h3>
             <p>{intro}</p>
