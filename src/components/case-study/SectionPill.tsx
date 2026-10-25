@@ -151,7 +151,12 @@ export default function SectionPill({ sections }: { sections: CaseStudySection[]
           </span>
           <ol>
             {sections.map(({ id }, i) => (
-              <li key={id} data-reached={i <= active} data-current={i === active}>
+              <li
+                key={id}
+                data-reached={i <= active}
+                data-current={i === active}
+                style={{ "--i": i } as React.CSSProperties}
+              >
                 <a
                   href={`#${id}`}
                   onClick={(e) => goTo(e, id)}

@@ -469,8 +469,11 @@
 .cs-pill[data-open="true"] .cs-pill-chevron {
   transform: rotate(180deg);
 }
+/* A touch roomier than the reference (187px wide, 14px 20px padding, 32px rows);
+   grows with longer titles. Opens with a soft spring up from the pill, closes quickly. */
 .cs-pill-panel {
-  min-width: 280px;
+  --spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  min-width: 200px;
   padding: 16px 24px;
   border-radius: 16px;
   background: theme("colors.midnight");
@@ -478,18 +481,41 @@
   transform-origin: 50% 100%;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(8px) scale(0.96);
-  transition: transform 0.25s var(--ease-out), opacity 0.2s ease, visibility 0s 0.25s;
+  filter: blur(4px);
+  transform: translateY(12px) scale(0.92);
+  transition: transform 0.2s var(--ease-out), opacity 0.16s ease, filter 0.16s ease, visibility 0s 0.2s;
 }
 .cs-pill[data-open="true"] .cs-pill-panel {
   opacity: 1;
   visibility: visible;
+  filter: none;
   transform: none;
-  transition: transform 0.25s var(--ease-out), opacity 0.2s ease;
+  transition: transform 0.46s var(--spring), opacity 0.24s ease, filter 0.3s ease;
+}
+/* Rows rise in one after another, and the line draws down through the dots */
+.cs-timeline li {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.cs-pill[data-open="true"] .cs-timeline li {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.3s ease, transform 0.4s var(--ease-out);
+  transition-delay: calc(60ms + var(--i) * 30ms);
+}
+.cs-timeline-track {
+  transform-origin: 50% 0;
+  transform: scaleY(0);
+  transition: transform 0.12s ease;
+}
+.cs-pill[data-open="true"] .cs-timeline-track {
+  transform: none;
+  transition: transform 0.5s var(--ease-out) 80ms;
 }
 /* Timeline: a 2px track through the dots fills to the reading position */
 .cs-timeline {
-  --row: 32px;
+  --row: 36px;
   --ink: #fff;
   --muted: #a19dab;
   --line: rgba(255, 255, 255, 0.2);
@@ -558,7 +584,9 @@
   transform: scale(1);
 }
 @media (prefers-reduced-motion: reduce) {
-  .cs-pill, .cs-pill-panel, .cs-pill-label, .cs-pill-chevron, .cs-timeline a, .cs-timeline-dot, .cs-timeline-dot::after { transition: none; }
+  .cs-pill, .cs-pill-panel, .cs-pill-label, .cs-pill-chevron, .cs-timeline a, .cs-timeline-dot, .cs-timeline-dot::after,
+  .cs-pill .cs-timeline li, .cs-pill .cs-timeline-track { transition: none !important; }
+  .cs-pill-panel { filter: none; transform: none; }
   .cs-pill-slot[data-motion] { animation: none; }
   .cs-pill-slot[data-motion^="out"] { display: none; }
   .cs-pill { filter: none; transform: translate(-50%); }

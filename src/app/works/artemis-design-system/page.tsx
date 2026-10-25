@@ -33,7 +33,7 @@ const SECTIONS: CaseStudySection[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Overview  (with At a Glance)
+// Section: Overview  (with Role / Team / Timeline)
 // TODO: Verify product count (~6) and active contributor count (~10).
 // ─────────────────────────────────────────────────────────────────────────────
 function Overview() {
@@ -48,36 +48,15 @@ function Overview() {
           engineers across the org.
         </p>
         <Meta
-          items={[
-            {
-              label: "My Role",
-              value: (
-                <>
-                  Lead UX Designer. Founder, lead, and ongoing maintainer of the
-                  Artemis Design System — owned everything from research through to
-                  governance.
-                </>
-              ),
-            },
-            { label: "Timeline", value: <>Jan 2023 — Ongoing<br />v1 shipped Jul 2023</> },
-            {
-              label: "Scope",
-              value: (
-                <>
-                  Web + mobile<br />~6 products across the Enchanting Travels suite<br />
-                  ~10 active contributors
-                </>
-              ),
-            },
-            {
-              label: "Founding team",
-              value: (
-                <>
-                  Vishwa (Design)<br />Parv (PM)<br />Aman (Frontend)<br />Swapnil Negi (Backend)
-                </>
-              ),
-            },
-          ]}
+          role={
+            <>
+              Lead UX Designer. Founder, lead, and ongoing maintainer of the
+              Artemis Design System — owned everything from research through to
+              governance.
+            </>
+          }
+          team="Vishwa (Design), Parv (PM), Aman (Frontend), Swapnil Negi (Backend)"
+          timeline={<>Jan 2023 — Ongoing<br />v1 shipped Jul 2023</>}
         />
       </Copy>
       <Visual>

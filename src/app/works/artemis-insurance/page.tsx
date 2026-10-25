@@ -35,7 +35,7 @@ const SECTIONS: CaseStudySection[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Overview  (with At a Glance)
+// Section: Overview  (with Role / Team / Timeline)
 // ─────────────────────────────────────────────────────────────────────────────
 function Overview() {
   return (
@@ -51,27 +51,14 @@ function Overview() {
           generating $125K in Q1 revenue.
         </p>
         <Meta
-          items={[
-            {
-              label: "My Role",
-              value: (
-                <>
-                  Lead UX Designer. Owned end-to-end — research, iterations, final
-                  design, and engineering handoff.
-                </>
-              ),
-            },
-            { label: "Timeline", value: <>4 weeks design<br />Launched Dec 2024</> },
-            { label: "Tools", value: <>Figma<br />Mixpanel<br />Intercom<br />Slack</> },
-            {
-              label: "Team",
-              value: (
-                <>
-                  Vishwa (Design)<br />Parv (PM)<br />Aman (Frontend)<br />Swapnil Negi (Backend)
-                </>
-              ),
-            },
-          ]}
+          role={
+            <>
+              Lead UX Designer. Owned end-to-end — research, iterations, final
+              design, and engineering handoff.
+            </>
+          }
+          team="Vishwa (Design), Parv (PM), Aman (Frontend), Swapnil Negi (Backend)"
+          timeline={<>4 weeks design<br />Launched Dec 2024</>}
         />
       </Copy>
       <Visual>

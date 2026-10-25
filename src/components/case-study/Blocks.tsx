@@ -19,15 +19,23 @@ export function Lead({ children }: { children: React.ReactNode }) {
   return <p className="cs-lead">{children}</p>;
 }
 
-/** Role / Timeline / Tools / Team grid in the Overview chapter */
-export function Meta({ items }: { items: { label: string; value: React.ReactNode }[] }) {
-  // Three or fewer sit in one row; four go two by two
-  const cols = items.length === 4 ? 2 : items.length;
+/** Role / Team / Timeline in one row under the Overview intro */
+export function Meta({
+  role,
+  team,
+  timeline,
+}: {
+  role: React.ReactNode;
+  team: React.ReactNode;
+  timeline: React.ReactNode;
+}) {
+  const items = [
+    { label: "Role", value: role },
+    { label: "Team", value: team },
+    { label: "Timeline", value: timeline },
+  ];
   return (
-    <dl
-      className="mb-[28px] mt-[48px] grid grid-cols-1 gap-[20px] md:grid-cols-[repeat(var(--cols),minmax(0,1fr))] md:gap-[28px]"
-      style={{ "--cols": cols } as React.CSSProperties}
-    >
+    <dl className="mb-[28px] mt-[48px] grid grid-cols-1 gap-[20px] md:grid-cols-[1fr_1.5fr_1.4fr] md:gap-[28px]">
       {items.map(({ label, value }) => (
         <div key={label}>
           <dt className="mb-[8px] font-body text-[16px] font-medium leading-[24px] text-heading">{label}</dt>
@@ -43,7 +51,7 @@ export function Visual({ narrow, children }: { narrow?: boolean; children: React
 }
 
 /**
- * Screenshot with an optional label above and caption below. Without `src` it
+ * Screenshot with an optional label centred below it, then a caption. Without `src` it
  * shows a placeholder named after the label. `impact` is the green result line
  * some solution screens carry.
  */
@@ -64,9 +72,6 @@ export function Figure({
 }) {
   return (
     <figure className="m-0 min-w-0">
-      {label && (
-        <p className="mb-[12px] font-body text-[12px] font-medium leading-[16px] text-heading">{label}</p>
-      )}
       <div className="overflow-hidden rounded-[4px] bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]">
         {src ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -75,6 +80,9 @@ export function Figure({
           <ImagePlaceholder label={label ?? "Image"} aspect={aspect} />
         )}
       </div>
+      {label && (
+        <p className="mt-[12px] text-center font-body text-[12px] font-medium leading-[16px] text-heading">{label}</p>
+      )}
       {caption && (
         <figcaption className="mt-[14px] font-body text-[14px] leading-[22px] text-muted [text-wrap:pretty]">
           {caption}

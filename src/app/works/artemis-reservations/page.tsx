@@ -38,7 +38,7 @@ const SECTIONS: CaseStudySection[] = [
 // screens used (overview, background, the problem, solution) expired after 7 days.
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Overview  (with At a Glance)
+// Section: Overview  (with Role / Team / Timeline)
 // ─────────────────────────────────────────────────────────────────────────────
 function Overview() {
   return (
@@ -56,28 +56,14 @@ function Overview() {
           and a streamlined modal-based workflow.
         </p>
         <Meta
-          items={[
-            {
-              label: "My Role",
-              value: (
-                <>
-                  Sole designer. Owned the full lifecycle — research, IA, flows,
-                  v0 prototype, high-fi designs, and engineering handoff.
-                </>
-              ),
-            },
-            { label: "Timeline", value: <>4 weeks<br />Launched Aug 2024</> },
-            { label: "Tools", value: <>Figma<br />FigJam<br />Vercel V0<br />Slack<br />Loom</> },
-            {
-              label: "Team",
-              value: (
-                <>
-                  Srishti Mahajan (PM)<br />Unnikrishnan Manikoth (Design Manager)<br />
-                  Muzamil (Engineering)<br />Niraj (Engineering)
-                </>
-              ),
-            },
-          ]}
+          role={
+            <>
+              Sole designer. Owned the full lifecycle — research, IA, flows,
+              v0 prototype, high-fi designs, and engineering handoff.
+            </>
+          }
+          team="Srishti Mahajan (PM), Unnikrishnan Manikoth (Design Manager), Muzamil (Engineering), Niraj (Engineering)"
+          timeline={<>4 weeks<br />Launched Aug 2024</>}
         />
       </Copy>
       <Visual>
