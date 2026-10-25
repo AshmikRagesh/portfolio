@@ -261,7 +261,7 @@ export default function Navbar() {
   return (
     <header
       onFocusCapture={() => setIsNavVisible(true)}
-      className={`fixed ${isCaseStudy ? "top-0" : "top-[20px]"} right-0 left-0 h-[68px] z-50 bg-background border-b border-line transition-[transform,box-shadow] duration-300 ease-in-out ${
+      className={`fixed top-[20px] right-0 left-0 h-[68px] z-50 bg-background border-b border-line transition-[transform,box-shadow] duration-300 ease-in-out ${
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
       } ${showNav ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >

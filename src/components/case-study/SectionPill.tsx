@@ -35,7 +35,10 @@ export default function SectionPill({ sections }: { sections: CaseStudySection[]
       frame = null;
       const y = window.scrollY;
       const hero = document.querySelector<HTMLElement>("[data-cs-hero]");
-      setVisible(y > (hero ? hero.offsetHeight / 2 : 260));
+      // Step aside once the footer comes up, so its links and bell stay reachable
+      const main = document.querySelector<HTMLElement>("[data-cs-main]");
+      const footerShowing = main ? main.getBoundingClientRect().bottom < window.innerHeight : false;
+      setVisible(y > (hero ? hero.offsetHeight / 2 : 260) && !footerShowing);
 
       const tops = sections.map(
         ({ id }) => (document.getElementById(id)?.getBoundingClientRect().top ?? 0) + y

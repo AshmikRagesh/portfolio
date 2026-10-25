@@ -109,9 +109,6 @@ export default function PixelRuler() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Early return AFTER all hooks
-  if (pathname.startsWith("/works/")) return null;
-
   const scrubTo = (x: number) => {
     const root = rootRef.current;
     if (!root) return;

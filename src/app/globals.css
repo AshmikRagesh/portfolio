@@ -323,7 +323,7 @@
   }
 
   .cs-chapter {
-    @apply mt-[104px] scroll-mt-[108px] md:mt-[160px];
+    @apply mt-[104px] scroll-mt-[128px] md:mt-[160px];
   }
   [data-cs-hero] + .cs-chapter {
     @apply mt-[64px] md:mt-[100px];
@@ -371,10 +371,12 @@
 }
 
 /* Bottom section pill — the case study's index. It fades and rises in once the hero
-   is half scrolled past; the button shows the current chapter with a progress bar
-   through it, and opens a timeline of every chapter above itself. */
+   is half scrolled past and drops away when the footer comes up; the button shows the
+   current chapter with a progress bar through it, and opens a timeline of every chapter
+   above itself. Only the button and the open panel take clicks. */
 .cs-pill {
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
   position: fixed;
   bottom: 20px;
   left: 50%;
@@ -395,6 +397,7 @@
   transform: translate(-50%);
 }
 .cs-pill-button {
+  pointer-events: auto;
   display: flex;
   align-items: center;
   padding: 12px 16px 12px 20px;
@@ -486,6 +489,7 @@
   transition: transform 0.2s var(--ease-out), opacity 0.16s ease, filter 0.16s ease, visibility 0s 0.2s;
 }
 .cs-pill[data-open="true"] .cs-pill-panel {
+  pointer-events: auto;
   opacity: 1;
   visibility: visible;
   filter: none;
