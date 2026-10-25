@@ -175,7 +175,7 @@ export function CardGrid({
 /**
  * The problem statement on a guestbook notepad page: ruled cream paper, a punched hole,
  * a slight tilt that straightens as it lifts on hover. The situation reads in grey; the
- * consequence is marked with a grape highlighter.
+ * consequence is marked in solid grape with white text.
  */
 export function ProblemStatement({
   situation,
@@ -194,7 +194,7 @@ export function ProblemStatement({
       </div>
       <p className="font-heading text-[20px] leading-[32px] text-secondary md:text-[24px] md:leading-[38px]">
         {situation}{" "}
-        <mark className="rounded-[2px] bg-grape-light px-[4px] text-heading [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
+        <mark className="rounded-[2px] bg-grape px-[4px] text-white [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
           {consequence}
         </mark>
       </p>
