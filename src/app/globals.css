@@ -310,7 +310,7 @@
    One 700px reading column, with visuals breaking out to 1000px (720px narrow) and
    stacking one below the other.
    Chapters carry a "01  Title" heading, the number set inline at the column's left
-   edge so it lines up with the text below. Pieces live in components/case-study. */
+   edge so it lines up with the text below; long titles wrap back under the number. Pieces live in components/case-study. */
 @layer components {
   .cs-column {
     @apply mx-auto w-[700px] max-w-[calc(100%-40px)] md:max-w-[calc(100%-64px)];
@@ -330,10 +330,10 @@
   }
   /* Same size as the home page's section headings */
   .cs-h2 {
-    @apply mb-[32px] flex gap-[16px] text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:gap-[20px] md:text-[44px] md:leading-[44px];
+    @apply mb-[32px] text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[44px];
   }
   .cs-number {
-    @apply shrink-0 tabular-nums;
+    @apply mr-[16px] tabular-nums md:mr-[20px];
   }
 
   /* Prose inside the reading column — direct children only, so quotes and outcome
