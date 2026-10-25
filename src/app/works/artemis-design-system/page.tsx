@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Palette, Boxes, ArrowLeftRight, Accessibility, TrendingUp } from "lucide-react";
+import { Fragment } from "react";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import {
-  NumberedH3,
-  ImagePlaceholder,
-  SectionHeader,
-  TrendUpArrow,
-  H1_CLASS,
-  H4_CLASS,
-  LEAD_CLASS,
-  BODY_CLASS,
-  SECTION_PAD,
+  Hero,
+  Chapter,
+  Copy,
+  Lead,
+  Meta,
+  Visual,
+  Pair,
+  Figure,
+  Quote,
+  Outcome,
 } from "@/components/case-study";
 
 export const metadata: Metadata = {
@@ -20,328 +21,168 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS: CaseStudySection[] = [
-  { id: "overview",     label: "Overview"     },
-  { id: "at-a-glance",  label: "At a Glance"  },
-  { id: "why-artemis",  label: "Why Artemis"  },
-  { id: "audit",        label: "Audit"        },
-  { id: "five-fronts",  label: "Five Fronts"  },
-  { id: "my-contributions", label: "My Contributions" },
-  { id: "adoption",     label: "Adoption"     },
-  { id: "reflection",   label: "Reflection"   },
+  { id: "context",       label: "Context"       },
+  { id: "audit",         label: "Audit"         },
+  { id: "five-fronts",   label: "Five fronts"   },
+  { id: "contributions", label: "Contributions" },
+  { id: "adoption",      label: "Adoption"      },
+  { id: "reflection",    label: "Reflection"    },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Overview
-// ─────────────────────────────────────────────────────────────────────────────
-function Overview() {
-  return (
-    <section id="overview" className={`bg-white ${SECTION_PAD}`}>
-      <div className="flex flex-col gap-10 w-full">
-        <div className="flex flex-col gap-5">
-          <div className="-rotate-3 w-fit">
-            <span className="font-handwriting text-[24px] leading-[32px] tracking-[-0.15px] text-grape whitespace-nowrap">
-              {"< 2023 — Ongoing >"}
-            </span>
-          </div>
-
-          <div className="flex flex-col gap-5">
-            <h1 className={H1_CLASS}>
-              Three years of building Artemis at Enchanting Travels
-            </h1>
-            <p className={LEAD_CLASS}>
-              Tokens, components, patterns, and governance — the shared
-              foundation behind every Enchanting Travels product. Outcomes
-              so far: ~35% less net-new UI effort, 40% wider component
-              coverage, and a contribution model now used by designers and
-              engineers across the org.
-            </p>
-          </div>
-        </div>
-
-        <ImagePlaceholder label="Artemis — system at a glance" />
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: At a Glance
+// 00 Context
 // TODO: Verify product count (~6) and active contributor count (~10).
 // ─────────────────────────────────────────────────────────────────────────────
-function AtAGlance() {
-  const columns = [
-    {
-      heading: "My Role",
-      content: (
-        <>
-          Lead UX Designer. Founder, lead, and ongoing maintainer of the
-          Artemis Design System — owned everything from research through to
-          governance.
-        </>
-      ),
-    },
-    {
-      heading: "Timeline",
-      content: (
-        <>
-          Jan 2023 — Ongoing
-          <br />
-          v1 shipped Jul 2023
-        </>
-      ),
-    },
-    {
-      heading: "Scope",
-      content: (
-        <>
-          Web + mobile
-          <br />
-          ~6 products across the Enchanting Travels suite
-          <br />
-          ~10 active contributors
-        </>
-      ),
-    },
-    {
-      heading: "Founding team",
-      content: (
-        <>
-          Vishwa (Design)
-          <br />
-          Parv (PM)
-          <br />
-          Aman (Frontend)
-          <br />
-          Swapnil Negi (Backend)
-        </>
-      ),
-    },
-  ];
-
+function Context() {
   return (
-    <section id="at-a-glance" className={`bg-white ${SECTION_PAD}`}>
-      <div className="grid grid-cols-2 gap-x-8 gap-y-10 w-full md:gap-x-[48px] lg:grid-cols-4 lg:gap-x-[48px]">
-        {columns.map(({ heading, content }) => (
-          <div key={heading} className="flex flex-col gap-3">
-            <h4 className={H4_CLASS}>{heading}</h4>
-            <p className={BODY_CLASS}>{content}</p>
-          </div>
-        ))}
-      </div>
-    </section>
+    <Chapter id="context" num={0} title="Context">
+      <Copy>
+        <Meta
+          items={[
+            { label: "Role", value: "Lead UX Designer — founder and maintainer of Artemis" },
+            { label: "Timeline", value: <>Jan 2023 — ongoing<br />v1 shipped Jul 2023</> },
+            {
+              label: "Scope",
+              value: <>Web + mobile, ~6 products, ~10 active contributors</>,
+            },
+            {
+              label: "Founding team",
+              value: <>Vishwa (Design), Parv (PM), Aman (Frontend), Swapnil Negi (Backend)</>,
+            },
+          ]}
+        />
+        <h3>Why Artemis?</h3>
+        <p>
+          By early 2023, Enchanting Travels was running on a fragmented product
+          surface. Six core tools, each built by a different team at a different
+          stage of the company&apos;s growth, each with its own typography,
+          spacing, and component conventions. Designers re-litigated the same
+          low-level decisions on every new screen; engineers rebuilt the same UI
+          from screenshots because there was no canonical source. The cost
+          wasn&apos;t visible on any single project — it accumulated quietly
+          across every sprint, every quarter.
+        </p>
+        <p>
+          A design system wasn&apos;t going to fix that overnight, and wasn&apos;t
+          going to be cheap to build. But the alternative — keep paying the tax
+          indefinitely, scale it as the company scaled — was worse. The bet was
+          that two engineering quarters of foundation work would compound into
+          faster shipping, lower defect rates, and a unified product experience
+          for years afterward. Three years later, it has.
+        </p>
+        <h3>Goal</h3>
+        <p>
+          Build the shared foundation behind every Enchanting Travels product —
+          tokens, components, patterns, and governance. Outcomes so far: ~35% less
+          net-new UI effort, 40% wider component coverage, and a contribution
+          model now used by designers and engineers across the org.
+        </p>
+      </Copy>
+      <Visual>
+        <Figure label="The fragmented product surface — late 2022" />
+      </Visual>
+    </Chapter>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Why Artemis  (strategic case for the work)
+// 01 Audit
 // ─────────────────────────────────────────────────────────────────────────────
-function WhyArtemis() {
-  return (
-    <section id="why-artemis" className={`bg-white ${SECTION_PAD}`}>
-      <div className="flex flex-col gap-10 w-full md:gap-[48px]">
-        <SectionHeader tag="why" heading="Why Artemis" />
-
-        <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
-          <p>
-            By early 2023, Enchanting Travels was running on a fragmented
-            product surface. Six core tools, each built by a different team
-            at a different stage of the company&apos;s growth, each with its
-            own typography, spacing, and component conventions. Designers
-            re-litigated the same low-level decisions on every new screen;
-            engineers rebuilt the same UI from screenshots because there was
-            no canonical source. The cost wasn&apos;t visible on any single
-            project — it accumulated quietly across every sprint, every
-            quarter.
-          </p>
-          <p>
-            A design system wasn&apos;t going to fix that overnight, and
-            wasn&apos;t going to be cheap to build. But the alternative —
-            keep paying the tax indefinitely, scale it as the company
-            scaled — was worse. The bet was that two engineering quarters
-            of foundation work would compound into faster shipping, lower
-            defect rates, and a unified product experience for years
-            afterward. Three years later, it has.
-          </p>
-        </div>
-
-        <ImagePlaceholder label="The fragmented product surface — late 2022" />
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Audit  (audit-first method, the receipts, voices from the field)
-// ─────────────────────────────────────────────────────────────────────────────
-const AUDIT_STATS = [
-  { stat: "6",    label: "products audited" },
-  { stat: "300+", label: "screens reviewed" },
-  { stat: "12",   label: "stakeholder interviews" },
-  { stat: "47",   label: "UI primitives catalogued" },
-];
-
-const AUDIT_QUOTES = [
-  {
-    text:
-      "I keep a 'colours-I-actually-use' Figma file pinned in my workspace. I haven't checked the official style guide in months.",
-    attribution: "— Product designer, Booking team",
-  },
-  {
-    text:
-      "Every new sprint starts the same way: open someone else's PR, copy the button JSX, hope it still works.",
-    attribution: "— Engineer, Itinerary team",
-  },
-];
-
 function Audit() {
   return (
-    <section id="audit" className={`bg-white ${SECTION_PAD}`}>
-      <div className="flex flex-col gap-10 w-full md:gap-[48px]">
-        <SectionHeader
-          tag="audit"
-          heading="Mapping the system before redesigning it"
+    <Chapter id="audit" num={1} title="Mapping the system before redesigning it">
+      <Copy>
+        <Lead>
+          The risk in starting a design system without an audit is obvious: you
+          redesign what you remember, not what&apos;s actually there.
+        </Lead>
+        <p>
+          So before opening a new Figma file, I spent a week with what already
+          existed. Two parallel threads: an inventory of every UI primitive across
+          the six tools — buttons, inputs, modals, cards, every distinct variation
+          tagged in a single spreadsheet — and twelve short interviews, one
+          designer and one engineer per product team, to surface the pain the
+          visual audit couldn&apos;t see.
+        </p>
+        <Outcome
+          metric="300+"
+          title="Screens reviewed"
+          stats={[
+            { value: "6", label: "Products audited" },
+            { value: "12", label: "Stakeholder interviews" },
+            { value: "47", label: "UI primitives catalogued" },
+          ]}
         />
-
-        {/* Lead — audit-first framing + the two-thread method */}
-        <p className={LEAD_CLASS}>
-          The risk in starting a design system without an audit is obvious:
-          you redesign what you remember, not what&apos;s actually there. So
-          before opening a new Figma file, I spent a week with what already
-          existed. Two parallel threads: an inventory of every UI primitive
-          across the six tools — buttons, inputs, modals, cards, every
-          distinct variation tagged in a single spreadsheet — and twelve
-          short interviews, one designer and one engineer per product team,
-          to surface the pain the visual audit couldn&apos;t see.
+        <Quote name="Product designer" role="Booking team">
+          I keep a &lsquo;colours-I-actually-use&rsquo; Figma file pinned in my
+          workspace. I haven&apos;t checked the official style guide in months.
+        </Quote>
+        <Quote name="Engineer" role="Itinerary team">
+          Every new sprint starts the same way: open someone else&apos;s PR, copy
+          the button JSX, hope it still works.
+        </Quote>
+        <p className="cs-closing">
+          Five clear challenges came up across every product. They appear next as
+          the five fronts.
         </p>
-
-        {/* By the numbers — bare 4-stat grid (no card chrome — matter-of-fact, not celebratory) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-          {AUDIT_STATS.map(({ stat, label }) => (
-            <div key={label} className="flex flex-col gap-2">
-              <span className="font-heading font-medium text-stat md:text-stat-md lg:text-stat-lg text-heading leading-none">
-                {stat}
-              </span>
-              <p className="font-body font-normal text-body md:text-body-md lg:text-body-lg text-muted">
-                {label}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Voices from each side of the handoff */}
-        <div className="flex flex-col gap-5 md:gap-6">
-          {AUDIT_QUOTES.map(({ text, attribution }) => (
-            <blockquote
-              key={attribution + text.slice(0, 20)}
-              className="border-l-2 border-grape pl-5 md:pl-6 flex flex-col gap-2"
-            >
-              <p className="font-body font-normal text-lead md:text-lead-md lg:text-lead-lg text-heading">
-                &ldquo;{text}&rdquo;
-              </p>
-              <p className="font-body text-body md:text-body-md lg:text-body-lg text-muted">
-                {attribution}
-              </p>
-            </blockquote>
-          ))}
-        </div>
-
-        {/* Closing transition */}
-        <p className={LEAD_CLASS}>
-          Five clear challenges came up across every product. They appear
-          next as the Five Fronts.
-        </p>
-      </div>
-    </section>
+      </Copy>
+    </Chapter>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Five Fronts  (the five challenges that emerged from the audit)
+// 02 Five fronts
 // ─────────────────────────────────────────────────────────────────────────────
-const FRONT_CARDS = [
-  [
-    {
-      icon: <Palette size={26} className="text-grape" strokeWidth={2} />,
-      title: "Visual fragmentation",
-      description:
-        "Across the six tools, typography, colour, and spacing had drifted into incompatible local conventions. The same brand looked materially different from one product to the next.",
-    },
-    {
-      icon: <Boxes size={26} className="text-grape" strokeWidth={2} />,
-      title: "Component drift",
-      description:
-        "Buttons existed in 6+ parallel implementations across the suite; inputs in 3 different formats. The same UI primitive, rebuilt independently in every product.",
-    },
-    {
-      icon: <ArrowLeftRight size={26} className="text-grape" strokeWidth={2} />,
-      title: "Broken handoff",
-      description:
-        "Engineers built features from designer screenshots and inspector measurements because there was no canonical Figma source, and no code library to match it.",
-    },
-  ],
-  [
-    {
-      icon: <Accessibility size={26} className="text-grape" strokeWidth={2} />,
-      title: "Accessibility gaps",
-      description:
-        "Each team approached interface building differently, so accessibility wasn't standardised. Colour contrast failed in several places; focus states and keyboard behaviour weren't shared expectations.",
-    },
-    {
-      icon: <TrendingUp size={26} className="text-grape" strokeWidth={2} />,
-      title: "Compounding cost",
-      description:
-        "Every new tool added new inconsistencies to the system. Feature teams reinvented basic UI on every sprint. Onboarding new designers got slower with each release.",
-    },
-  ],
+const FRONTS = [
+  {
+    title: "Visual fragmentation",
+    description:
+      "Across the six tools, typography, colour, and spacing had drifted into incompatible local conventions. The same brand looked materially different from one product to the next.",
+  },
+  {
+    title: "Component drift",
+    description:
+      "Buttons existed in 6+ parallel implementations across the suite; inputs in 3 different formats. The same UI primitive, rebuilt independently in every product.",
+  },
+  {
+    title: "Broken handoff",
+    description:
+      "Engineers built features from designer screenshots and inspector measurements because there was no canonical Figma source, and no code library to match it.",
+  },
+  {
+    title: "Accessibility gaps",
+    description:
+      "Each team approached interface building differently, so accessibility wasn't standardised. Colour contrast failed in several places; focus states and keyboard behaviour weren't shared expectations.",
+  },
+  {
+    title: "Compounding cost",
+    description:
+      "Every new tool added new inconsistencies to the system. Feature teams reinvented basic UI on every sprint. Onboarding new designers got slower with each release.",
+  },
 ];
 
 function FiveFronts() {
   return (
-    <section id="five-fronts" className={`bg-white ${SECTION_PAD}`}>
-      <div className="flex flex-col gap-10 w-full md:gap-[48px]">
-        <SectionHeader
-          tag="five fronts"
-          heading="The five fronts"
-          lead="Each one showed up across every tool, in different combinations."
-        />
-
-        <div className="flex flex-col gap-[16px] md:gap-[24px]">
-          {FRONT_CARDS.map((row, rowIdx) => (
-            <div
-              key={rowIdx}
-              className={`grid gap-[16px] md:gap-[24px] ${
-                row.length === 3
-                  ? "grid-cols-1 md:grid-cols-3"
-                  : "grid-cols-1 md:grid-cols-2"
-              }`}
-            >
-              {row.map(({ icon, title, description }) => (
-                <div
-                  key={title}
-                  className="flex flex-col gap-[16px] bg-surface rounded-[16px] p-[20px]"
-                >
-                  <div className="shrink-0">{icon}</div>
-                  <div className="flex flex-col gap-3">
-                    <h4 className={H4_CLASS}>{title}</h4>
-                    <p className={BODY_CLASS}>{description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+    <Chapter id="five-fronts" num={2} title="The five fronts">
+      <Copy>
+        <p>Each one showed up across every tool, in different combinations.</p>
+        {FRONTS.map(({ title, description }) => (
+          <Fragment key={title}>
+            <h3>{title}</h3>
+            <p>{description}</p>
+          </Fragment>
+        ))}
+      </Copy>
+    </Chapter>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: My Contributions  (six pillars of the work, drawn from Notion §7)
+// 03 Contributions  (six pillars of the work, drawn from Notion §7)
 // Impacts marked REAL come from the user's Notion doc; others are
 // dummy-but-logical per the agreed metrics handling. Confirm before publish.
 // ─────────────────────────────────────────────────────────────────────────────
 type ContributionItem = {
-  num: number;
   title: string;
   intro: string;
   bullets: { label: string; body: string }[];
@@ -352,7 +193,6 @@ type ContributionItem = {
 
 const CONTRIBUTION_ITEMS: ContributionItem[] = [
   {
-    num: 1,
     title: "Foundations",
     intro: "A token system before any component existed:",
     bullets: [
@@ -383,8 +223,7 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
   },
   {
-    num: 2,
-    title: "Shipping Components",
+    title: "Shipping components",
     intro: "Starting from zero, I designed and built the foundational components:",
     bullets: [
       {
@@ -406,7 +245,7 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
     closing:
       "Each component was designed with responsiveness, accessibility, and edge cases in mind — using Figma's auto-layout, variants, and tokens to keep them flexible and scalable. Worked closely with developers to ensure 1:1 parity between design and code.",
-    images: ["Shipping Components — library overview", "Shipping Components — variant matrix"],
+    images: ["Shipping components — library overview", "Shipping components — variant matrix"],
     impacts: [
       "~35% reduction in net-new UI design effort", // REAL — Notion §7a
       "40% increase in overall component coverage", // REAL — Notion §7a
@@ -414,8 +253,7 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
   },
   {
-    num: 3,
-    title: "Maintaining and Enhancing Components",
+    title: "Maintaining and enhancing components",
     intro: "Shipping was only the first beat. Real value came from how the system stayed alive:",
     bullets: [
       {
@@ -441,7 +279,6 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
   },
   {
-    num: 4,
     title: "Documentation",
     intro: "Documentation wasn't an afterthought — it was a tool for adoption:",
     bullets: [
@@ -476,8 +313,7 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
   },
   {
-    num: 5,
-    title: "Design System Governance",
+    title: "Design system governance",
     intro: "Systems thrive when people understand them — and contribute to them:",
     bullets: [
       {
@@ -503,8 +339,7 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
     ],
   },
   {
-    num: 6,
-    title: "Providing DS Education",
+    title: "Providing DS education",
     intro: "For any design system to thrive, it must be understood, respected, and effectively used:",
     bullets: [
       {
@@ -539,167 +374,124 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
   },
 ];
 
-function MyContributions() {
+function Contributions() {
   return (
-    <section id="my-contributions" className={`bg-white ${SECTION_PAD}`}>
-      <div className="flex flex-col gap-10 w-full md:gap-[80px]">
-        <SectionHeader
-          tag="my contributions"
-          heading="Six pillars that grew Artemis from a Figma file into a system every Enchanting Travels product runs on"
-          lead="Across three years I shipped foundations, built and maintained the component library, wrote the documentation, established the governance model, and ran the education work that drove adoption. Each pillar is detailed below."
-        />
-
-        {CONTRIBUTION_ITEMS.map(({ num, title, intro, bullets, closing, images, impacts }) => (
-          <div key={num} className="flex flex-col gap-10 md:gap-[48px]">
-            {/* Title + intro + bullets + closing */}
-            <div className="flex flex-col gap-5 md:gap-[24px]">
-              <NumberedH3 num={num} title={title} />
-              <p className={LEAD_CLASS}>{intro}</p>
-
-              <ul className={`list-disc ${LEAD_CLASS} flex flex-col gap-2`}>
-                {bullets.map(({ label, body }) => (
-                  <li key={label} className="ms-[27px]">
-                    <span className="font-medium text-heading">{label}</span>: {body}
-                  </li>
-                ))}
-              </ul>
-
-              <p className={LEAD_CLASS}>{closing}</p>
-            </div>
-
-            {/* 2 images, stacked vertically — matches Reservations cadence */}
-            <div className="flex flex-col gap-4 md:gap-6">
-              <ImagePlaceholder label={images[0]} />
-              <ImagePlaceholder label={images[1]} />
-            </div>
-
-            {/* Impact block — eyebrow + bullets */}
-            <div className="flex flex-col gap-3">
-              <p className="font-brand text-[12px] font-medium uppercase tracking-[1px] text-success">
-                Impact
-              </p>
-              <ul className="list-disc flex flex-col gap-2">
-                {impacts.map((i) => (
-                  <li
-                    key={i}
-                    className="ms-[27px] font-body text-body md:text-body-md lg:text-body-lg text-muted"
-                  >
-                    {i}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
+    <Chapter id="contributions" num={3} title="Six pillars of the work">
+      <Copy>
+        <Lead>
+          How Artemis grew from a Figma file into a system every Enchanting
+          Travels product runs on.
+        </Lead>
+        <p>
+          Across three years I shipped foundations, built and maintained the
+          component library, wrote the documentation, established the governance
+          model, and ran the education work that drove adoption.
+        </p>
+      </Copy>
+      {CONTRIBUTION_ITEMS.map(({ title, intro, bullets, closing, images, impacts }) => (
+        <div key={title} className="mt-[64px]">
+          <Copy>
+            <h3>{title}</h3>
+            <p>{intro}</p>
+            <ul>
+              {bullets.map(({ label, body }) => (
+                <li key={label}>
+                  <strong>{label}:</strong> {body}
+                </li>
+              ))}
+            </ul>
+            <p>{closing}</p>
+          </Copy>
+          <Visual>
+            <Pair>
+              <Figure label={images[0]} />
+              <Figure label={images[1]} />
+            </Pair>
+          </Visual>
+          <Copy>
+            <p><strong>Impact</strong></p>
+            <ul>
+              {impacts.map((i) => <li key={i}>{i}</li>)}
+            </ul>
+          </Copy>
+        </div>
+      ))}
+    </Chapter>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Adoption  (system-level outcomes + voices from current users)
+// 04 Adoption
 // ─────────────────────────────────────────────────────────────────────────────
-const METRICS: { stat: string; label: string }[] = [
-  {
-    stat: "6/6",
-    label: "Enchanting Travels products fully on Artemis (was 0 at start)",
-  },
-  {
-    stat: "4×",
-    label: "faster to ship a new screen, design-to-production",
-  },
-  {
-    stat: "~80%",
-    label:
-      "of new screens built entirely from Artemis components — no custom one-offs",
-  },
-];
-
 function Adoption() {
   return (
-    <section id="adoption" className={`bg-white ${SECTION_PAD}`}>
-      <div className="flex flex-col gap-10 w-full md:gap-[48px]">
-        <SectionHeader
-          tag="adoption"
-          heading="Three years on — where Artemis sits today"
-          lead="The per-pillar impacts above are the inputs. These are the system-level outputs three years in."
-        />
-
-        {/* System-level stats — celebratory treatment (success-bg cards + trend arrows) */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-[24px]">
-          {METRICS.map(({ stat, label }) => (
-            <div
-              key={label}
-              className="flex flex-col gap-4 bg-success-bg rounded-[16px] p-[24px]"
-            >
-              <div className="flex justify-end">
-                <TrendUpArrow />
-              </div>
-              <div className="flex flex-col gap-3">
-                <p className="font-body font-normal text-body md:text-body-md lg:text-body-lg text-secondary">
-                  {label}
-                </p>
-                <span className="font-heading font-medium text-stat md:text-stat-md lg:text-stat-lg text-heading">
-                  {stat}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Closing line — case study punchline, centered + italic */}
-        <p className="font-body italic text-lead md:text-lead-md lg:text-lead-lg text-heading text-center max-w-[640px] mx-auto pt-2">
+    <Chapter id="adoption" num={4} title="Three years on — where Artemis sits today">
+      <Copy>
+        <p>
+          The per-pillar impacts above are the inputs. These are the system-level
+          outputs three years in.
+        </p>
+        <Outcome
+          metric="6/6"
+          title="Enchanting Travels products fully on Artemis"
+          stats={[
+            { value: "4×", label: "Faster to ship a new screen, design-to-production." },
+            {
+              value: "~80%",
+              label: "Of new screens built entirely from Artemis components — no custom one-offs.",
+            },
+          ]}
+        >
+          <p>Up from zero at the start.</p>
+        </Outcome>
+        <p className="cs-closing">
           Three years in, Artemis isn&apos;t something I maintain — it&apos;s
           something the team builds on.
         </p>
-      </div>
-    </section>
+      </Copy>
+    </Chapter>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Reflection  (three first-person learnings, thesis-driven prose)
+// 05 Reflection
 // ─────────────────────────────────────────────────────────────────────────────
 function Reflection() {
   return (
-    <section id="reflection" className={`bg-white ${SECTION_PAD}`}>
-      <div className="flex flex-col gap-5 w-full md:gap-[24px]">
-        <SectionHeader tag="reflection" heading="What I learned" />
-
-        <div className={`flex flex-col gap-4 ${LEAD_CLASS}`}>
-          <p>
-            The hardest call I made in the first quarter was to build the
-            token system before any component. Visible progress was slow —
-            three weeks in, there was nothing to demo to leadership, no
-            clickable Figma file, no &ldquo;we shipped a button&rdquo;
-            moment. But every component that came after inherited from those
-            tokens, and brand updates that would have taken weeks of
-            cross-product coordination became single-file edits. Foundations
-            paid off slowly, then all at once.
-          </p>
-          <p>
-            Building a contribution workflow into v1 felt premature at the
-            time — there was barely a system to contribute to. But the
-            system that scales is the one other people can change. Without
-            proposal → review → accept in place from day one, the library
-            would have plateaued the moment my attention moved to other
-            work. The system became a team because it could, and that was
-            the only reason it outlasted me being its sole maintainer.
-          </p>
-          <p>
-            Year one I was the bottleneck. Every &ldquo;should this
-            component handle X&rdquo; question came to me; every
-            implementation review pinged me directly. By year three, those
-            questions had moved to a Slack channel that designers and
-            engineers answered each other in, and to weekly clinics that
-            ran with or without me. Removing myself from the critical path
-            was the actual measure of success. If a DS lead is still
-            indispensable in year three, the system hasn&apos;t matured —
-            only the lead has.
-          </p>
-        </div>
-      </div>
-    </section>
+    <Chapter id="reflection" num={5} title="What I learned">
+      <Copy>
+        <h3>Foundations pay off slowly, then all at once</h3>
+        <p>
+          The hardest call I made in the first quarter was to build the token
+          system before any component. Visible progress was slow — three weeks in,
+          there was nothing to demo to leadership, no clickable Figma file, no
+          &ldquo;we shipped a button&rdquo; moment. But every component that came
+          after inherited from those tokens, and brand updates that would have
+          taken weeks of cross-product coordination became single-file edits.
+        </p>
+        <h3>The system that scales is the one others can change</h3>
+        <p>
+          Building a contribution workflow into v1 felt premature at the time —
+          there was barely a system to contribute to. Without proposal → review →
+          accept in place from day one, the library would have plateaued the
+          moment my attention moved to other work. The system became a team
+          because it could, and that was the only reason it outlasted me being its
+          sole maintainer.
+        </p>
+        <h3>Removing myself from the critical path</h3>
+        <p>
+          Year one I was the bottleneck. Every &ldquo;should this component handle
+          X&rdquo; question came to me; every implementation review pinged me
+          directly. By year three, those questions had moved to a Slack channel
+          that designers and engineers answered each other in, and to weekly
+          clinics that ran with or without me.
+        </p>
+        <p className="cs-closing">
+          If a DS lead is still indispensable in year three, the system hasn&apos;t
+          matured — only the lead has.
+        </p>
+      </Copy>
+    </Chapter>
   );
 }
 
@@ -708,13 +500,12 @@ function Reflection() {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ArtemisDesignSystemPage() {
   return (
-    <CaseStudyLayout sections={SECTIONS} backHref="/#works">
-      <Overview />
-      <AtAGlance />
-      <WhyArtemis />
+    <CaseStudyLayout sections={SECTIONS}>
+      <Hero title="Artemis Design System" date="2023 — Ongoing" color="#EFE8DC" />
+      <Context />
       <Audit />
       <FiveFronts />
-      <MyContributions />
+      <Contributions />
       <Adoption />
       <Reflection />
     </CaseStudyLayout>

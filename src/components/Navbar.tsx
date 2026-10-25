@@ -266,7 +266,7 @@ export default function Navbar() {
       } ${showNav ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >
       {/* Main nav row */}
-      <nav className={`relative flex items-center justify-between h-full ${isCaseStudy ? "px-[20px] md:px-[80px] lg:px-[100px]" : "nav-container"}`}>
+      <nav className="relative flex items-center justify-between h-full nav-container">
         {/* Mobile on case study pages: back button. Everything else: Ash logo */}
         {isCaseStudy ? (
           <>
@@ -294,10 +294,26 @@ export default function Navbar() {
         {/* Desktop + tablet: nav links + CTA */}
         <div className="hidden md:flex items-center gap-[20px]">
           <ul className="flex items-center gap-[24px]">
+            {/* Case studies: the way back home sits first */}
+            {isCaseStudy && (
+              <li>
+                <Link
+                  href="/#works"
+                  className="group/tab flex items-center gap-2 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] transition-colors duration-200 hover:text-grape hover:underline hover:decoration-wavy"
+                >
+                  <ArrowLeft
+                    size={18}
+                    strokeWidth={1.5}
+                    className="transition-[stroke-width] duration-200 group-hover/tab:stroke-2"
+                  />
+                  Back
+                </Link>
+              </li>
+            )}
             {navLinks.map(({ label, href, Icon }) => (
               <li key={label}>
                 <a
-                  href={href}
+                  href={isCaseStudy ? `/${href}` : href}
                   className="group/tab flex items-center gap-2 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] transition-colors duration-200 hover:text-grape hover:underline hover:decoration-wavy"
                 >
                   <Icon
@@ -339,7 +355,7 @@ export default function Navbar() {
             {navLinks.map(({ label, href, Icon }) => (
               <li key={label} className="border-b border-line-soft">
                 <a
-                  href={href}
+                  href={isCaseStudy ? `/${href}` : href}
                   className="flex items-center gap-3 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] px-[20px] py-5 transition-colors duration-200 hover:text-black"
                   onClick={() => setMenuOpen(false)}
                 >

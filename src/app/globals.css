@@ -305,3 +305,256 @@
   .host-tip.is-leaving { opacity: 0; }
   .flap-fall, .flap-drop { display: none; }
 }
+
+/* ── Case study template ──────────────────────────────────────────────────────────
+   One 560px reading column, with visuals breaking out to 1000px (720px narrow).
+   Chapters carry a "01 —— Title" heading whose number hangs left of the column
+   from lg up. Pieces live in components/case-study. */
+@layer components {
+  .cs-column {
+    @apply mx-auto w-[560px] max-w-[calc(100%-40px)] md:max-w-[calc(100%-64px)];
+  }
+  .cs-visual {
+    @apply mx-auto my-[32px] w-[1000px] max-w-[calc(100%-40px)] md:my-[44px] md:max-w-[calc(100%-64px)];
+  }
+  .cs-visual.cs-narrow {
+    @apply w-[720px];
+  }
+
+  .cs-chapter {
+    @apply mt-[104px] scroll-mt-[108px] md:mt-[160px];
+  }
+  [data-cs-hero] + .cs-chapter {
+    @apply mt-[64px] md:mt-[100px];
+  }
+  .cs-h2 {
+    @apply relative mb-[32px] font-heading text-[36px] font-normal leading-[42px] tracking-[-2px] text-heading md:text-[44px] md:leading-[50px] lg:text-[48px] lg:leading-[54px];
+  }
+  .cs-number {
+    @apply mb-[16px] flex items-center gap-[12px] whitespace-nowrap font-body text-[16px] leading-[24px] tracking-[0px] lg:absolute lg:right-[calc(100%+16px)] lg:top-0 lg:mb-0 lg:gap-[16px] lg:font-heading lg:text-[48px] lg:leading-[54px] lg:tracking-[-2px];
+  }
+  .cs-rule {
+    @apply h-px w-[36px] bg-current lg:w-[64px];
+  }
+
+  /* Prose inside the reading column — direct children only, so quotes and outcome
+     boxes inside it keep their own type */
+  .cs-copy > p,
+  .cs-copy > ul > li {
+    @apply font-body text-[16px] leading-[26px] text-secondary;
+  }
+  .cs-copy > p + p {
+    @apply mt-[20px];
+  }
+  .cs-copy > h3 {
+    @apply mb-[12px] mt-[32px] font-body text-[18px] font-medium leading-[26px] text-heading;
+  }
+  .cs-copy strong {
+    @apply font-medium text-heading;
+  }
+  .cs-copy > ul {
+    @apply mt-[16px] flex list-disc flex-col gap-[8px] pl-[20px];
+  }
+  .cs-copy > ul + p {
+    @apply mt-[20px];
+  }
+  .cs-copy > .cs-lead {
+    @apply mb-[24px] font-heading text-[26px] leading-[34px] text-heading md:text-[30px] md:leading-[38px];
+  }
+  .cs-copy > .cs-closing {
+    @apply mt-[32px] border-t border-line-soft pt-[28px];
+  }
+}
+
+/* Bottom section pill — the case study's index. It fades and rises in once the hero
+   is half scrolled past; the button shows the current chapter with a progress bar
+   through it, and opens a timeline of every chapter above itself. */
+.cs-pill {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  filter: blur(4px);
+  transform: translate(-50%, 24px) scale(0.96);
+  transition: transform 0.7s var(--ease-out), opacity 0.5s ease, filter 0.5s ease;
+}
+.cs-pill[data-visible="true"] {
+  opacity: 1;
+  filter: none;
+  transform: translate(-50%);
+}
+.cs-pill-button {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px 12px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: theme("colors.midnight");
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  outline-offset: 4px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0 4px 16px;
+}
+.cs-pill-button .cs-pill-num {
+  opacity: 0.55;
+}
+.cs-pill-num {
+  margin-right: 10px;
+  font-variant-numeric: tabular-nums;
+}
+/* The label column eases to each title's measured width; old and new titles share
+   one grid cell while they cross */
+.cs-pill-label {
+  display: grid;
+  flex: 0 0 auto;
+  margin-right: 16px;
+  padding-block: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: left;
+  transition: width 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.cs-pill-slot {
+  grid-area: 1 / 1;
+  justify-self: start;
+}
+@keyframes cs-slot-in-up { from { opacity: 0; transform: translateY(16px); } }
+@keyframes cs-slot-in-down { from { opacity: 0; transform: translateY(-16px); } }
+@keyframes cs-slot-out-up { to { opacity: 0; transform: translateY(-16px); } }
+@keyframes cs-slot-out-down { to { opacity: 0; transform: translateY(16px); } }
+.cs-pill-slot[data-motion="in-up"] { animation: cs-slot-in-up 0.4s var(--ease-out) both; }
+.cs-pill-slot[data-motion="in-down"] { animation: cs-slot-in-down 0.4s var(--ease-out) both; }
+.cs-pill-slot[data-motion="out-up"] { animation: cs-slot-out-up 0.4s var(--ease-out) both; }
+.cs-pill-slot[data-motion="out-down"] { animation: cs-slot-out-down 0.4s var(--ease-out) both; }
+.cs-pill-sizers {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.cs-pill-sizers > span {
+  position: absolute;
+}
+.cs-pill-bar {
+  position: relative;
+  width: 48px;
+  height: 2px;
+  margin-right: 12px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.25);
+}
+.cs-pill-bar > span {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 50%;
+  background: #fff;
+}
+.cs-pill-chevron {
+  transition: transform 0.25s var(--ease-out);
+}
+.cs-pill[data-open="true"] .cs-pill-chevron {
+  transform: rotate(180deg);
+}
+.cs-pill-panel {
+  padding: 14px 20px;
+  border-radius: 16px;
+  background: theme("colors.midnight");
+  box-shadow: rgba(0, 0, 0, 0.15) 0 4px 16px;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px) scale(0.96);
+  transition: transform 0.25s var(--ease-out), opacity 0.2s ease, visibility 0s 0.25s;
+}
+.cs-pill[data-open="true"] .cs-pill-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: transform 0.25s var(--ease-out), opacity 0.2s ease;
+}
+/* Timeline: a 2px track through the dots fills to the reading position */
+.cs-timeline {
+  --row: 32px;
+  --ink: #fff;
+  --muted: #a19dab;
+  --line: rgba(255, 255, 255, 0.2);
+  --ring: rgba(255, 255, 255, 0.35);
+  position: relative;
+}
+.cs-timeline-track {
+  position: absolute;
+  top: calc(var(--row) / 2);
+  left: 4px;
+  width: 2px;
+  height: calc(var(--row) * var(--span));
+  background: var(--line);
+}
+.cs-timeline-track > span {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform-origin: 50% 0;
+  transform: scaleY(var(--progress));
+}
+.cs-timeline li {
+  position: relative;
+  height: var(--row);
+}
+.cs-timeline a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-left: 24px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.cs-timeline a:hover,
+.cs-timeline [data-current="true"] a {
+  color: var(--ink);
+}
+.cs-timeline-dot {
+  position: absolute;
+  top: calc(50% - 5px);
+  left: 0;
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--ring);
+  border-radius: 50%;
+  background: theme("colors.midnight");
+  transition: border-color 0.2s;
+}
+.cs-timeline-dot::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  background: var(--ink);
+  transform: scale(0);
+  transition: transform 0.35s var(--ease-out);
+}
+.cs-timeline [data-reached="true"] .cs-timeline-dot {
+  border-color: var(--ink);
+}
+.cs-timeline [data-reached="true"] .cs-timeline-dot::after {
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-pill, .cs-pill-panel, .cs-pill-label, .cs-pill-chevron, .cs-timeline a, .cs-timeline-dot, .cs-timeline-dot::after { transition: none; }
+  .cs-pill-slot[data-motion] { animation: none; }
+  .cs-pill-slot[data-motion^="out"] { display: none; }
+  .cs-pill { filter: none; transform: translate(-50%); }
+}
