@@ -15,7 +15,6 @@ const BASE =
 const TONES = {
   grape: "bg-grape text-white",
   grey: "bg-[#E5E7EB] text-[#374151]",
-  outline: "text-secondary shadow-[inset_0_0_0_1px_#c8ccd4]",
 };
 
 /** Any label in the tag shape — case studies use it for iteration / option labels */

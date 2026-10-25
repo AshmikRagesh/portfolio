@@ -202,13 +202,13 @@ export function ProblemStatement({
   );
 }
 
-// Round marks for the notes: green tick for what worked, red cross for what didn't,
-// grape number for the reasons the shipped option won
+// Round marks for the notes: solid green tick for what worked, solid red cross for what
+// didn't, dark number for the reasons the shipped option won — white symbol on each
 function Mark({ tone, children }: { tone: "pro" | "con" | "reason"; children: React.ReactNode }) {
   const tones = {
-    pro: "bg-success/10 text-success",
-    con: "bg-warning/10 text-warning",
-    reason: "bg-grape-light text-grape",
+    pro: "bg-success text-white",
+    con: "bg-warning text-white",
+    reason: "bg-primary text-white",
   };
   return (
     <span
@@ -257,7 +257,8 @@ export function Reasons({ items }: { items: string[] }) {
 
 /**
  * An iteration or design option: its label over its title and notes, with the preview
- * image beside them (below on phones). The one that shipped is stamped SHIPPED.
+ * image beside them (below on phones). The one that shipped has a dark border and is
+ * stamped SHIPPED.
  */
 export function OptionCard({
   label,
@@ -273,11 +274,15 @@ export function OptionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="group relative rounded-[16px] border border-line-soft bg-white p-[8px]">
+    <div
+      className={`group relative rounded-[16px] bg-white p-[8px] ${
+        shipped ? "border-2 border-primary" : "border border-line-soft"
+      }`}
+    >
       <div className="grid grid-cols-1 gap-[8px] md:grid-cols-2">
         <div className="flex flex-col gap-[16px] p-[12px] md:p-[16px]">
           <div className="flex flex-wrap items-center gap-[8px]">
-            <Tag tone="outline">{label}</Tag>
+            <Tag tone="grape">{label}</Tag>
           </div>
           {title && (
             <p className="font-heading text-[22px] font-medium leading-[30px] text-heading">{title}</p>
