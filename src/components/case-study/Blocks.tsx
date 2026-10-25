@@ -2,6 +2,7 @@ import { Check, X } from "lucide-react";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
 import ImagePlaceholder from "./ImagePlaceholder";
+import ShippedStamp from "./ShippedStamp";
 import TrendUpArrow from "./TrendUpArrow";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -171,23 +172,10 @@ export function CardGrid({
   );
 }
 
-// Filled alert mark for the problem statement: a solid disc with the "!" cut out
-function ProblemIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M10 19a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm-1-13a1 1 0 1 1 2 0v4.5a1 1 0 1 1-2 0V6Zm1 9.25a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
-
 /**
- * The problem statement: the situation in grey, the consequence underlined in grape.
- * Lifts on hover like the guestbook cards.
+ * The problem statement on a guestbook notepad page: ruled cream paper, a punched hole,
+ * a slight tilt that straightens as it lifts on hover. The situation reads in grey; the
+ * consequence is marked with a grape highlighter.
  */
 export function ProblemStatement({
   situation,
@@ -197,20 +185,18 @@ export function ProblemStatement({
   consequence: string;
 }) {
   return (
-    <div className="rounded-[16px] border border-line bg-white p-[24px] shadow-[0_4px_18px_rgba(30,5,37,0.08)] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] md:p-[32px] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
-      <div className="mb-[20px] flex items-center gap-[12px]">
-        <span className="flex size-[36px] shrink-0 items-center justify-center rounded-[10px] bg-grape-light text-grape">
-          <ProblemIcon />
-        </span>
-        <h3 className="font-heading text-[22px] leading-[28px] text-heading md:text-[24px] md:leading-[30px]">
+    <div className="-rotate-[0.35deg] rounded-[4px] border border-line p-[20px] shadow-[0_4px_18px_rgba(30,5,37,0.10)] [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] hover:rotate-0 md:p-[32px] motion-reduce:transform-none motion-reduce:transition-none">
+      <div className="mb-[20px] flex items-center justify-between border-b border-line/60 pb-[10px]">
+        <h3 className="font-brand text-[12px] font-normal uppercase leading-[16px] tracking-[0px] text-muted">
           The Problem Statement
         </h3>
+        <PunchHole index={2} fill="#f8f9fa" />
       </div>
-      <p className="font-heading text-[20px] leading-[30px] md:text-[24px] md:leading-[34px]">
-        <span className="text-secondary">{situation} </span>
-        <span className="text-heading underline decoration-grape/50 decoration-2 underline-offset-[6px] [text-decoration-skip-ink:none]">
+      <p className="font-heading text-[20px] leading-[32px] text-secondary md:text-[24px] md:leading-[38px]">
+        {situation}{" "}
+        <mark className="rounded-[2px] bg-grape-light px-[4px] text-heading [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
           {consequence}
-        </span>
+        </mark>
       </p>
     </div>
   );
@@ -270,8 +256,8 @@ export function Reasons({ items }: { items: string[] }) {
 }
 
 /**
- * An iteration or design option: its label (+ Shipped) over its title and notes, with
- * the preview image beside them (below on phones). The shipped one has a grape border.
+ * An iteration or design option: its label over its title and notes, with the preview
+ * image beside them (below on phones). The one that shipped is stamped SHIPPED.
  */
 export function OptionCard({
   label,
@@ -287,16 +273,11 @@ export function OptionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className={`rounded-[16px] bg-white p-[8px] ${
-        shipped ? "border-2 border-grape" : "border border-line-soft"
-      }`}
-    >
+    <div className="group relative rounded-[16px] border border-line-soft bg-white p-[8px]">
       <div className="grid grid-cols-1 gap-[8px] md:grid-cols-2">
         <div className="flex flex-col gap-[16px] p-[12px] md:p-[16px]">
           <div className="flex flex-wrap items-center gap-[8px]">
             <Tag tone="outline">{label}</Tag>
-            {shipped && <Tag tone="grape">Shipped</Tag>}
           </div>
           {title && (
             <p className="font-heading text-[22px] font-medium leading-[30px] text-heading">{title}</p>
@@ -307,6 +288,9 @@ export function OptionCard({
           <ImagePlaceholder label={image} aspect="aspect-[4/3]" radius="rounded-[10px]" />
         </div>
       </div>
+      {shipped && (
+        <ShippedStamp className="absolute right-[16px] top-[20px] h-[52px] w-[136px] md:right-[28px] md:top-[28px] md:h-[64px] md:w-[168px]" />
+      )}
     </div>
   );
 }

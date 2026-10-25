@@ -164,8 +164,9 @@
   animation: hook-jolt 1.6s ease-out;
 }
 
-/* NDA stamp — presses down once (first hover/focus), then stays */
-.nda-stamp {
+/* NDA stamp (and the case studies' Shipped stamp) — presses down once (first hover/focus), then stays */
+.nda-stamp,
+.shipped-stamp {
   opacity: 0;
   transform: scale(1.5) rotate(-6deg);
 }
@@ -177,7 +178,8 @@
   84%  { transform: scale(0.99) rotate(-12deg); }
   100% { opacity: 1; transform: scale(1) rotate(-12deg); }
 }
-.group[data-stamped="true"] .nda-stamp {
+.group[data-stamped="true"] .nda-stamp,
+.group[data-stamped="true"] .shipped-stamp {
   animation: stamp-press 0.62s cubic-bezier(0.3, 0.7, 0.2, 1) both;
 }
 /* Image takes the hit at the moment of impact */
@@ -292,10 +294,11 @@
 .host-tip.is-leaving { animation: host-tip-out 160ms ease-in both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .key-hang, .nda-stamp, .stamp-thud { transition: none; }
+  .key-hang, .nda-stamp, .shipped-stamp, .stamp-thud { transition: none; }
   .group[data-key] .key-hang { animation: none !important; opacity: 1; transform: none; }
   .group[data-key] .hook-jolt { animation: none; }
-  .group[data-stamped="true"] .nda-stamp { animation: none; opacity: 1; transform: rotate(-12deg); }
+  .group[data-stamped="true"] .nda-stamp,
+  .group[data-stamped="true"] .shipped-stamp { animation: none; opacity: 1; transform: rotate(-12deg); }
   .group[data-stamped="true"] .stamp-thud { animation: none; }
   .signature path { transition: none; stroke-dashoffset: 0; }
   .host-breathe, .host-blink, .host-zz text, .host-sparkles path, .host-plunger, .host-dome, .host-rings path, .host-sweep { animation: none !important; }

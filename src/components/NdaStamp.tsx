@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
+import { useId, useRef } from "react";
+import { useStampOnce } from "@/components/useStampOnce";
 
 // Round rubber-stamp "NDA" seal for case studies that can't be shown publicly.
 //   • double outer ring, thin inner ring and a dotted ring, like a postmark
@@ -20,43 +21,7 @@ export default function NdaStamp({ className = "" }: { className?: string }) {
   const u = (name: string) => `url(#${name}-${id})`;
   const ref = useRef<SVGSVGElement>(null);
 
-  useEffect(() => {
-    const card = ref.current?.closest<HTMLElement>(".group");
-    if (!card) return;
-    const stamp = () => card.setAttribute("data-stamped", "true");
-
-    // Mouse/trackpad + keyboard: first hover or focus
-    if (window.matchMedia("(hover: hover)").matches) {
-      const once = () => {
-        stamp();
-        card.removeEventListener("pointerenter", once);
-        card.removeEventListener("focusin", once);
-      };
-      card.addEventListener("pointerenter", once);
-      card.addEventListener("focusin", once);
-      return () => {
-        card.removeEventListener("pointerenter", once);
-        card.removeEventListener("focusin", once);
-      };
-    }
-
-    // Touch: on scroll-in
-    if (!("IntersectionObserver" in window)) {
-      stamp();
-      return;
-    }
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          stamp();
-          io.disconnect();
-        }
-      },
-      { threshold: 0.5 }
-    );
-    io.observe(card);
-    return () => io.disconnect();
-  }, []);
+  useStampOnce(ref);
 
   // Ribbon: body 24→96 × 49→71, notched tails out to x = 12 / 108
   const ribbon = "M24 49h72v22H24Z M24 52H12l5 8-5 8h12 M96 52h12l-5 8 5 8H96";
