@@ -309,8 +309,9 @@
 /* ── Case study template ──────────────────────────────────────────────────────────
    One 700px reading column, with visuals breaking out to 1000px (720px narrow) and
    stacking one below the other.
-   Chapters carry a "01  Title" heading, the number set inline at the column's left
-   edge so it lines up with the text below; long titles wrap back under the number. Pieces live in components/case-study. */
+   Chapters carry a "01. Title" heading (grape full stop), the number set inline at the
+   column's left edge so it lines up with the text below; long titles use the full
+   column and wrap back under the number. Pieces live in components/case-study. */
 @layer components {
   .cs-column {
     @apply mx-auto w-[700px] max-w-[calc(100%-40px)] md:max-w-[calc(100%-64px)];
@@ -328,12 +329,11 @@
   [data-cs-hero] + .cs-chapter {
     @apply mt-[64px] md:mt-[100px];
   }
-  /* Same size as the home page's section headings */
   .cs-h2 {
-    @apply mb-[32px] text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[44px];
+    @apply mb-[32px] font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[42px] md:leading-[44px];
   }
   .cs-number {
-    @apply mr-[16px] tabular-nums md:mr-[20px];
+    @apply mr-[12px] tabular-nums md:mr-[14px];
   }
 
   /* Prose inside the reading column — direct children only, so quotes and outcome
