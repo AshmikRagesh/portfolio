@@ -1,6 +1,6 @@
-import { Check } from "lucide-react";
-import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
+import { Check, X } from "lucide-react";
 import PunchHole from "@/components/PunchHole";
+import { Tag } from "@/components/Tag";
 import ImagePlaceholder from "./ImagePlaceholder";
 import TrendUpArrow from "./TrendUpArrow";
 
@@ -11,6 +11,10 @@ import TrendUpArrow from "./TrendUpArrow";
 // Visual; running text stays in Copy.
 // Green marks what worked or improved, red what didn't — keep that meaning.
 // ─────────────────────────────────────────────────────────────────────────────
+
+// Cards lift on hover like the home page guestbook cards
+const LIFT =
+  "transition-[transform,box-shadow] duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] hover:shadow-[0_12px_28px_rgba(30,5,37,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0";
 
 export function Copy({ children }: { children: React.ReactNode }) {
   return <div className="cs-column cs-copy">{children}</div>;
@@ -54,11 +58,12 @@ export function Visual({ narrow, children }: { narrow?: boolean; children: React
 
 /**
  * Screenshot with an optional label centred below it, then a caption. Without `src` it
- * shows a placeholder named after the label. `impact` is the green result line
- * some solution screens carry.
+ * shows a placeholder named `name` (defaults to the label). `impact` is the green
+ * result line some solution screens carry.
  */
 export function Figure({
   label,
+  name,
   caption,
   impact,
   src,
@@ -66,20 +71,22 @@ export function Figure({
   aspect = "aspect-[16/9]",
 }: {
   label?: string;
+  name?: string;
   caption?: React.ReactNode;
   impact?: string;
   src?: string;
   alt?: string;
   aspect?: string;
 }) {
+  const title = name ?? label ?? "Image";
   return (
     <figure className="m-0 min-w-0">
       <div className="overflow-hidden rounded-[4px] bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]">
         {src ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={src} alt={alt ?? label ?? ""} className="block h-auto w-full" />
+          <img src={src} alt={alt ?? title} className="block h-auto w-full" />
         ) : (
-          <ImagePlaceholder label={label ?? "Image"} aspect={aspect} />
+          <ImagePlaceholder label={title} aspect={aspect} />
         )}
       </div>
       {label && (
@@ -156,7 +163,7 @@ export function CardGrid({
       }`}
     >
       {items.map(({ icon, title, description }) => (
-        <div key={title} className="flex flex-col gap-[16px] rounded-[16px] bg-white p-[20px]">
+        <div key={title} className={`flex flex-col gap-[16px] rounded-[16px] border border-line-soft bg-white p-[20px] ${LIFT}`}>
           <div className="shrink-0">{icon}</div>
           <div className="flex flex-col gap-[12px]">
             <h4 className="font-heading text-[20px] leading-[26px] tracking-[0px] text-heading">{title}</h4>
@@ -168,7 +175,21 @@ export function CardGrid({
   );
 }
 
-/** The problem statement: the situation in grey, the consequence underlined */
+// Filled warning sign for the problem statement
+function ProblemIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M10.27 3.5 1.9 17.9A2 2 0 0 0 3.63 21h16.74a2 2 0 0 0 1.73-3.1L13.73 3.5a2 2 0 0 0-3.46 0Z"
+        fill="currentColor"
+      />
+      <path d="M12 9v4.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
+      <circle cx="12" cy="17.2" r="1.3" fill="#fff" />
+    </svg>
+  );
+}
+
+/** The problem statement: the situation in grey, the consequence underlined in grape */
 export function ProblemStatement({
   situation,
   consequence,
@@ -177,14 +198,20 @@ export function ProblemStatement({
   consequence: string;
 }) {
   return (
-    <div className="flex flex-col gap-[20px] rounded-[8px] border-2 border-heading bg-[rgba(137,91,231,0.05)] p-[24px]">
-      <div className="flex items-center gap-[8px]">
-        <SparkleAiIcon size={26} className="shrink-0 text-heading" />
-        <h3 className="font-heading text-[22px] leading-[28px] text-heading md:text-[24px] md:leading-[30px]">The Problem Statement</h3>
+    <div
+      className={`relative overflow-hidden rounded-[16px] border border-grape/20 bg-white p-[24px] [background-image:radial-gradient(120%_80%_at_0%_0%,rgba(249,228,255,0.9),transparent_60%)] md:p-[32px] ${LIFT}`}
+    >
+      <div className="mb-[20px] flex items-center gap-[12px]">
+        <span className="flex size-[40px] shrink-0 items-center justify-center rounded-[12px] bg-grape text-white shadow-[0_4px_12px_rgba(157,19,106,0.28)]">
+          <ProblemIcon />
+        </span>
+        <h3 className="font-heading text-[22px] leading-[28px] text-heading md:text-[24px] md:leading-[30px]">
+          The Problem Statement
+        </h3>
       </div>
-      <p className="font-body text-[18px] leading-[28px]">
+      <p className="font-heading text-[20px] leading-[30px] md:text-[24px] md:leading-[34px]">
         <span className="text-secondary">{situation} </span>
-        <span className="text-heading underline decoration-solid [text-decoration-skip-ink:none]">
+        <span className="text-heading underline decoration-grape/50 decoration-2 underline-offset-[6px] [text-decoration-skip-ink:none]">
           {consequence}
         </span>
       </p>
@@ -192,20 +219,38 @@ export function ProblemStatement({
   );
 }
 
-/** What worked (green +) and what didn't (red −) */
-export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: string[] }) {
-  const row = "flex gap-[8px] font-body text-[16px] leading-[26px] text-muted";
+// Round marks for the notes: green tick for what worked, red cross for what didn't,
+// grape number for the reasons the shipped option won
+function Mark({ tone, children }: { tone: "pro" | "con" | "reason"; children: React.ReactNode }) {
+  const tones = {
+    pro: "bg-success/10 text-success",
+    con: "bg-warning/10 text-warning",
+    reason: "bg-grape-light text-grape",
+  };
   return (
-    <ul className="flex flex-col gap-[6px]">
+    <span
+      className={`mt-[2px] flex size-[22px] shrink-0 items-center justify-center rounded-full font-brand text-[12px] leading-none ${tones[tone]}`}
+    >
+      {children}
+    </span>
+  );
+}
+
+const NOTE = "flex gap-[12px] font-body text-[16px] leading-[26px] text-secondary";
+
+/** What worked (green tick) and what didn't (red cross) */
+export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: string[] }) {
+  return (
+    <ul className="flex flex-col gap-[10px]">
       {pros.map((item) => (
-        <li key={item} className={row}>
-          <span className="shrink-0 font-medium text-success">+</span>
+        <li key={item} className={NOTE}>
+          <Mark tone="pro"><Check size={14} strokeWidth={2.5} /></Mark>
           <span>{item}</span>
         </li>
       ))}
       {cons.map((item) => (
-        <li key={item} className={row}>
-          <span className="shrink-0 font-medium text-warning">−</span>
+        <li key={item} className={NOTE}>
+          <Mark tone="con"><X size={14} strokeWidth={2.5} /></Mark>
           <span>{item}</span>
         </li>
       ))}
@@ -213,9 +258,23 @@ export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: str
   );
 }
 
+/** Why the shipped option won, numbered */
+export function Reasons({ items }: { items: string[] }) {
+  return (
+    <ol className="flex flex-col gap-[10px]">
+      {items.map((r, i) => (
+        <li key={r} className={NOTE}>
+          <Mark tone="reason">{i + 1}</Mark>
+          <span>{r}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 /**
- * An iteration or design option: eyebrow (+ Shipped badge) over its title and notes,
- * with the preview image beside them (below on phones). The shipped one is outlined.
+ * An iteration or design option: tags (+ Shipped) over its title and notes, with the
+ * preview image beside them (below on phones). The shipped one is outlined in grape.
  */
 export function OptionCard({
   label,
@@ -232,25 +291,29 @@ export function OptionCard({
 }) {
   return (
     <div
-      className={`flex flex-col gap-[20px] rounded-[16px] p-[20px] md:p-[24px] ${
-        shipped ? "border-2 border-heading bg-[rgba(137,91,231,0.05)]" : "bg-white"
+      className={`rounded-[16px] border p-[8px] ${LIFT} ${
+        shipped
+          ? "border-grape/40 bg-[linear-gradient(180deg,rgba(249,228,255,0.6),#fff_40%)] shadow-[0_4px_16px_rgba(157,19,106,0.08)]"
+          : "border-line-soft bg-white"
       }`}
     >
-      <div className="flex items-center justify-between gap-[8px]">
-        <span className="font-brand text-[12px] font-medium uppercase tracking-[1px] text-muted">{label}</span>
-        {shipped && (
-          <span className="inline-flex items-center gap-[4px] rounded-[4px] bg-primary px-[10px] py-[4px] font-brand text-[10px] font-medium uppercase tracking-[1px] text-white">
-            <Check size={10} strokeWidth={2.5} />
-            Shipped
-          </span>
-        )}
-      </div>
-      <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[24px]">
-        <div className="flex flex-col gap-[16px]">
-          {title && <p className="font-body text-[18px] font-medium leading-[28px] text-heading">{title}</p>}
+      <div className="grid grid-cols-1 gap-[8px] md:grid-cols-2">
+        <div className="flex flex-col gap-[16px] p-[12px] md:p-[16px]">
+          <div className="flex flex-wrap items-center gap-[8px]">
+            <Tag tone="grey">{label}</Tag>
+            {shipped && (
+              <Tag tone="grape">
+                <Check size={12} strokeWidth={2.5} />
+                Shipped
+              </Tag>
+            )}
+          </div>
+          {title && <p className="font-heading text-[20px] leading-[28px] text-heading">{title}</p>}
           {children}
         </div>
-        <ImagePlaceholder label={image} aspect="aspect-[4/3]" radius="rounded-[8px]" />
+        <div className="overflow-hidden rounded-[10px] bg-surface">
+          <ImagePlaceholder label={image} aspect="aspect-[4/3]" radius="rounded-[10px]" />
+        </div>
       </div>
     </div>
   );
@@ -261,8 +324,9 @@ export function Metrics({ items }: { items: { stat: string; label: string }[] })
   return (
     <div className="grid grid-cols-1 gap-[16px] md:grid-cols-3 md:gap-[24px]">
       {items.map(({ stat, label }) => (
-        <div key={stat} className="flex flex-col gap-[16px] rounded-[16px] bg-success-bg p-[24px]">
-          <div className="flex justify-end">
+        <div key={stat} className={`group/metric flex flex-col gap-[16px] rounded-[16px] bg-success-bg p-[24px] ${LIFT}`}>
+          {/* The arrow rises a touch on hover */}
+          <div className="flex justify-end transition-transform duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover/metric:-translate-y-[6px] motion-reduce:transition-none motion-reduce:group-hover/metric:translate-y-0">
             <TrendUpArrow />
           </div>
           <div className="flex flex-1 flex-col gap-[12px]">

@@ -12,10 +12,20 @@ export type Discipline = "Design systems" | "Product design" | "Interaction desi
 const BASE =
   "inline-flex h-[24px] shrink-0 items-center whitespace-nowrap rounded-[2px] px-[8px] font-brand text-[12px] uppercase leading-[16px] tracking-[0px]";
 
+const TONES = {
+  grape: "bg-grape text-white",
+  grey: "bg-[#E5E7EB] text-[#374151]",
+};
+
+/** Any label in the tag shape — case studies use it for iteration / option labels */
+export function Tag({ tone, children }: { tone: keyof typeof TONES; children: React.ReactNode }) {
+  return <span className={`${BASE} gap-[4px] ${TONES[tone]}`}>{children}</span>;
+}
+
 export function TypeTag({ type }: { type: ProjectType }) {
-  return <span className={`${BASE} bg-grape text-white`}>{type}</span>;
+  return <Tag tone="grape">{type}</Tag>;
 }
 
 export function DisciplineTag({ discipline }: { discipline: Discipline }) {
-  return <span className={`${BASE} bg-[#E5E7EB] text-[#374151]`}>{discipline}</span>;
+  return <Tag tone="grey">{discipline}</Tag>;
 }

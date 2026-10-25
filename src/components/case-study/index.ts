@@ -11,6 +11,7 @@ export {
   CardGrid,
   ProblemStatement,
   ProsCons,
+  Reasons,
   OptionCard,
   Metrics,
   Stats,

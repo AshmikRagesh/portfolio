@@ -12,6 +12,7 @@ import {
   CardGrid,
   ProblemStatement,
   ProsCons,
+  Reasons,
   OptionCard,
   Metrics,
 } from "@/components/case-study";
@@ -429,13 +430,7 @@ function Process() {
                 image={`${opt.label} preview`}
               >
                 {opt.shipped && opt.reasons ? (
-                  <ol className="ms-[20px] flex list-decimal flex-col gap-[6px]">
-                    {opt.reasons.map((r) => (
-                      <li key={r} className="font-body text-[16px] leading-[26px] text-muted">
-                        {r}
-                      </li>
-                    ))}
-                  </ol>
+                  <Reasons items={opt.reasons} />
                 ) : (
                   <ProsCons pros={opt.pros} cons={opt.cons} />
                 )}
@@ -515,7 +510,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            <Figure label={`Solution ${num} — ${title}`} impact={impact} />
+            <Figure name={`Solution ${num} — ${title}`} impact={impact} />
           </Visual>
         </div>
       ))}

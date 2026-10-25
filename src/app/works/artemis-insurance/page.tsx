@@ -365,7 +365,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            <Figure label={`Solution ${num} — ${title}`} />
+            <Figure name={`Solution ${num} — ${title}`} />
           </Visual>
         </div>
       ))}
