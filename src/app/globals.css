@@ -733,6 +733,22 @@
   transform: translate(-50%, -50%);
 }
 
+/* Stepping between reels: the next slides in over the last, which sinks back and dims.
+   --dir is 1 for next (in from below) and -1 for previous (in from above). */
+.reel-layer { position: absolute; inset: 0; z-index: 2; }
+.reel-layer[data-slide="true"] { animation: reel-layer-in 640ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.reel-layer-out { z-index: 1; animation: reel-layer-out 640ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes reel-layer-in { from { transform: translateY(calc(var(--dir) * 100%)); } }
+@keyframes reel-layer-out {
+  to { transform: translateY(calc(var(--dir) * -24%)) scale(0.92); opacity: 0.2; filter: blur(4px); }
+}
+/* The title and description follow the video's direction, one after the other */
+.reel-info > * { animation: reel-info-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.reel-info > :nth-child(2) { animation-delay: 70ms; }
+@keyframes reel-info-in {
+  from { opacity: 0; transform: translateY(calc(var(--dir) * 24px)); filter: blur(4px); }
+}
+
 /* Expanded view: the title and controls settle in after the video, and the title again
    on each change of reel */
 .reel-modal-ui { animation: reel-head-in 320ms 200ms cubic-bezier(0.23, 1, 0.32, 1) both; }
@@ -741,5 +757,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .reel, .reel-frame, .reel-expand, .reel-arrow-ne, .reel-arrow-sw { transition: none !important; }
-  .reel-modal-ui, .reel-slot { animation: none; }
+  .reel-modal-ui, .reel-slot, .reel-layer, .reel-info > * { animation: none !important; }
 }

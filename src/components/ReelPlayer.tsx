@@ -10,24 +10,25 @@ export type { Reel };
 /**
  * Walkthrough videos, floating over the page. On tablet and up the card can be dragged
  * to one of five docks (two on each side, one centred at the bottom); on phones it sits
- * still at the middle of the right edge. Click it to watch with sound.
+ * still in the bottom right corner. Click it to watch with sound.
  * `browse` (the home page) adds chevrons between reels and a link to each case study.
  * Styles: .reel in globals.css.
  */
 
-type Dock = "left-top" | "left-bottom" | "right-top" | "right-bottom" | "bottom" | "right-middle";
+type Dock = "left-top" | "left-bottom" | "right-top" | "right-bottom" | "bottom" | "right-corner";
 const DOCKS: Dock[] = ["left-top", "left-bottom", "right-top", "right-bottom", "bottom"];
 const STORAGE_KEY = "reel-dock";
 
 type Point = { x: number; y: number };
 
 // Where the card sits for a viewport. The card is a 9:16 video in a 4px bezel.
-function geometry(w: number, h: number) {
+// `pill`: the page has a chapter pill along the bottom, so the phone card sits above it.
+function geometry(w: number, h: number, pill: boolean) {
   const small = w < 768;
   if (small) {
     const card = { w: 98, h: 168 };
-    const spot = { x: w - 16 - card.w, y: Math.round((h - card.h) / 2) };
-    return { small, card, pos: { "right-middle": spot } as Partial<Record<Dock, Point>> };
+    const spot = { x: w - 16 - card.w, y: h - (pill ? 76 : 16) - card.h };
+    return { small, card, pos: { "right-corner": spot } as Partial<Record<Dock, Point>> };
   }
   const card = { w: 116, h: 200 };
   const side = w < 1024 ? 24 : 32;
@@ -142,7 +143,15 @@ interface Gesture {
   samples: { x: number; y: number; t: number }[];
 }
 
-export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; browse?: boolean }) {
+export default function ReelPlayer({
+  reels,
+  browse = false,
+  pill = false,
+}: {
+  reels: Reel[];
+  browse?: boolean;
+  pill?: boolean;
+}) {
   const [viewport, setViewport] = useState<{ w: number; h: number } | null>(null);
   const [savedDock, setSavedDock] = useState<Dock>("right-bottom");
   const [index, setIndex] = useState(0);
@@ -161,8 +170,8 @@ export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; b
 
   const reel = reels[index];
   const many = browse && reels.length > 1;
-  const geo = viewport ? geometry(viewport.w, viewport.h) : null;
-  const dock: Dock = geo?.small ? "right-middle" : savedDock;
+  const geo = viewport ? geometry(viewport.w, viewport.h, pill) : null;
+  const dock: Dock = geo?.small ? "right-corner" : savedDock;
   const spot = geo?.pos[dock];
 
   // Size to the window, and come back to the dock the visitor last chose
@@ -326,7 +335,10 @@ export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; b
     });
   };
 
-  const open = () => setView("open");
+  const open = () => {
+    setStepped(false);
+    setView("open");
+  };
 
   const close = () => {
     if (view !== "open") return;
@@ -336,7 +348,17 @@ export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; b
     else setView("closed");
   };
 
-  const go = (dir: 1 | -1) => setIndex((i) => (i + dir + reels.length) % reels.length);
+  // Stepping between reels slides the next one in over the last, the way a vertical feed
+  // moves: down brings the next up from below, up brings the previous down from above.
+  const [slide, setSlide] = useState<{ from: number; dir: 1 | -1; id: number } | null>(null);
+  // Once stepped, the title keeps the slide's entrance rather than the opening fade
+  const [stepped, setStepped] = useState(false);
+  const go = (dir: 1 | -1) => {
+    setStepped(true);
+    if (!prefersReducedMotion()) setSlide({ from: index, dir, id: Date.now() });
+    setIndex((index + dir + reels.length) % reels.length);
+  };
+  const poster = (r: Reel) => ({ backgroundImage: `url(https://i.ytimg.com/vi/${r.youtubeId}/hqdefault.jpg)` });
 
   useLayoutEffect(() => {
     if (view !== "open") return;
@@ -443,7 +465,11 @@ export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; b
             <div className="relative flex h-full w-full md:h-auto md:w-auto md:gap-[16px]">
               {/* Panel */}
               <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-[20px] bg-gradient-to-t from-midnight via-midnight/80 to-transparent p-[16px] pt-[96px] md:pointer-events-auto md:relative md:w-[var(--panel)] md:justify-between md:gap-[32px] md:rounded-[12px] md:border md:border-white/10 md:bg-white/[0.04] md:bg-none md:p-[24px] lg:p-[32px]">
-                <div key={`info-${index}`} className="reel-modal-ui">
+                <div
+                  key={`info-${index}`}
+                  className={stepped ? "reel-info" : "reel-modal-ui"}
+                  style={{ "--dir": slide?.dir ?? 1 } as React.CSSProperties}
+                >
                   <h2 className="font-heading text-h2 text-white lg:text-h2-lg">{reel.title}</h2>
                   <p className="mt-[8px] line-clamp-3 font-body text-body text-white/70 md:mt-[16px] md:line-clamp-none md:text-body-md lg:text-lead-lg">
                     {reel.description}
@@ -468,17 +494,32 @@ export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; b
               {/* Video */}
               <div
                 ref={boxRef}
-                className="reel-player pointer-events-auto absolute inset-0 origin-top-left overflow-hidden bg-black bg-cover bg-center md:relative md:inset-auto md:aspect-[9/16] md:rounded-[12px]"
-                style={{ backgroundImage: `url(https://i.ytimg.com/vi/${reel.youtubeId}/hqdefault.jpg)` }}
+                className="reel-player pointer-events-auto absolute inset-0 origin-top-left overflow-hidden bg-black md:relative md:inset-auto md:aspect-[9/16] md:rounded-[12px]"
               >
-                <iframe
-                  key={`${index}-${geo.small}`}
-                  src={expandSrc(reel.youtubeId, !geo.small)}
-                  allow="autoplay; encrypted-media; fullscreen"
-                  allowFullScreen
-                  className="border-0"
-                  title={reel.title}
-                />
+                {/* The reel leaving, held as its poster while the next one covers it */}
+                {slide && (
+                  <div
+                    key={`out-${slide.id}`}
+                    aria-hidden="true"
+                    className="reel-layer reel-layer-out bg-cover bg-center"
+                    style={{ ...poster(reels[slide.from]), "--dir": slide.dir } as React.CSSProperties}
+                  />
+                )}
+                <div
+                  key={`in-${index}-${geo.small}`}
+                  className="reel-layer bg-cover bg-center"
+                  data-slide={!!slide}
+                  style={{ ...poster(reel), "--dir": slide?.dir ?? 1 } as React.CSSProperties}
+                  onAnimationEnd={(e) => e.target === e.currentTarget && setSlide(null)}
+                >
+                  <iframe
+                    src={expandSrc(reel.youtubeId, !geo.small)}
+                    allow="autoplay; encrypted-media; fullscreen"
+                    allowFullScreen
+                    className="border-0"
+                    title={reel.title}
+                  />
+                </div>
               </div>
             </div>
           </div>

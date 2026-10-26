@@ -20,7 +20,7 @@ export default function CaseStudyLayout({ sections, reel, children }: CaseStudyL
         {children}
       </main>
       <SectionPill sections={sections} />
-      {reel && <ReelPlayer reels={[reel]} />}
+      {reel && <ReelPlayer reels={[reel]} pill />}
       <Footer />
     </>
   );
