@@ -442,7 +442,11 @@ function Reflection() {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ArtemisInsurancePage() {
   return (
-    <CaseStudyLayout sections={SECTIONS}>
+    <CaseStudyLayout
+      sections={SECTIONS}
+      // Placeholder video until this case study has its own cut
+      reel={{ youtubeId: "2rs_wDV_0Ww", title: "Adding travel insurance to the Artemis guest booking experience" }}
+    >
       <Hero
         title="Adding travel insurance to the Artemis guest booking experience"
         date="November 2024"

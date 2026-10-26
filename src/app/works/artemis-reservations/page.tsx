@@ -610,7 +610,11 @@ function Reflection() {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ArtemisReservationsPage() {
   return (
-    <CaseStudyLayout sections={SECTIONS}>
+    <CaseStudyLayout
+      sections={SECTIONS}
+      // Placeholder video until this case study has its own cut
+      reel={{ youtubeId: "2rs_wDV_0Ww", title: "Giving the Reservations team back their time in Artemis 3.0" }}
+    >
       <Hero
         title="Giving the Reservations team back their time in Artemis 3.0"
         date="08/11/2024"

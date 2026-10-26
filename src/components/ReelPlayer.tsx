@@ -1,43 +1,85 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { X, Maximize2 } from "lucide-react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { X } from "lucide-react";
 
-// Figma arrow/arrow-up icon — points up by default; rotate-90 = right, rotate-180 = down
-function ArrowIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 12.0001 15.3333"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      style={{ display: "block" }}
-    >
-      <path
-        d="M1.00006 5.85867C2.29637 4.10584 3.81072 2.53153 5.5048 1.1746C5.65012 1.0582 5.82509 1 6.00006 1M11.0001 5.85867C9.70376 4.10583 8.18941 2.53153 6.49533 1.1746C6.35 1.0582 6.17503 1 6.00006 1M6.00006 1V14.3333"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-interface Reel {
+export interface Reel {
   youtubeId: string;
   title: string;
-  projectHref: string;
 }
 
-const reels: Reel[] = [
-  { youtubeId: "2rs_wDV_0Ww", title: "Artemis Design System", projectHref: "#" },
-  { youtubeId: "2rs_wDV_0Ww", title: "PokerGPT", projectHref: "#" },
-  { youtubeId: "2rs_wDV_0Ww", title: "RBC AI Solution", projectHref: "#" },
-];
+/**
+ * A case study's walkthrough video, floating over the page. Drag it to one of six docks
+ * (two on each side, one centred top and bottom); click it to watch with sound.
+ * Styles: .reel in globals.css.
+ */
+
+type Dock = "left-top" | "left-bottom" | "right-top" | "right-bottom" | "top" | "bottom";
+const DOCKS: Dock[] = ["left-top", "left-bottom", "right-top", "right-bottom", "top", "bottom"];
+const STORAGE_KEY = "reel-dock";
+
+type Point = { x: number; y: number };
+
+// Where each dock sits for a viewport. The card is a 9:16 video in a 4px bezel.
+function geometry(w: number, h: number) {
+  const small = w < 768;
+  const card = small ? { w: 80, h: 136 } : { w: 116, h: 200 };
+  const side = small ? 16 : w < 1024 ? 24 : 32;
+  const top = 88 + (small ? 16 : 24); // under the ruler and navbar
+  const low = h - (small ? 16 : 24) - card.h;
+  const right = w - side - card.w;
+  const centre = Math.round((w - card.w) / 2);
+  const pos: Record<Dock, Point> = {
+    "left-top": { x: side, y: top },
+    "left-bottom": { x: side, y: low },
+    "right-top": { x: right, y: top },
+    "right-bottom": { x: right, y: low },
+    top: { x: centre, y: top },
+    bottom: { x: centre, y: h - 76 - card.h }, // stacks above the chapter pill
+  };
+  return { card, pos };
+}
+
+function nearest(pos: Record<Dock, Point>, p: Point): Dock {
+  let best: Dock = "right-bottom";
+  let bestDist = Infinity;
+  for (const d of DOCKS) {
+    const dist = Math.hypot(pos[d].x - p.x, pos[d].y - p.y);
+    if (dist < bestDist) {
+      best = d;
+      bestDist = dist;
+    }
+  }
+  return best;
+}
+
+const ARROWS: Record<string, Point> = {
+  ArrowLeft: { x: -1, y: 0 },
+  ArrowRight: { x: 1, y: 0 },
+  ArrowUp: { x: 0, y: -1 },
+  ArrowDown: { x: 0, y: 1 },
+};
+
+// The closest dock in a direction, favouring ones straight ahead
+function neighbour(pos: Record<Dock, Point>, from: Dock, dir: Point): Dock {
+  let best = from;
+  let bestScore = Infinity;
+  for (const d of DOCKS) {
+    const vx = pos[d].x - pos[from].x;
+    const vy = pos[d].y - pos[from].y;
+    const along = vx * dir.x + vy * dir.y;
+    if (along <= 1) continue;
+    const score = along + 2 * Math.abs(vx * dir.y - vy * dir.x);
+    if (score < bestScore) {
+      best = d;
+      bestScore = score;
+    }
+  }
+  return best;
+}
+
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const floatSrc = (id: string) =>
   `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&modestbranding=1&iv_load_policy=3&rel=0`;
@@ -45,136 +87,341 @@ const floatSrc = (id: string) =>
 const expandSrc = (id: string) =>
   `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&playsinline=1&rel=0&modestbranding=1`;
 
-export default function ReelPlayer() {
-  const [index, setIndex] = useState(0);
-  const [expanded, setExpanded] = useState(false);
-  const [hovered, setHovered] = useState(false);
+const EASE_OPEN = "cubic-bezier(0.2, 0.8, 0.3, 1)";
+const EASE_CLOSE = "cubic-bezier(0.4, 0, 0.2, 1)";
 
-  // Lock body scroll when expanded
+// Two arrows pointing out to opposite corners; they spread on hover
+function ExpandIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <g className="reel-arrow-ne" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9.5 2.5H13.5V6.5" />
+        <path d="M13.5 2.5L9 7" />
+      </g>
+      <g className="reel-arrow-sw" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6.5 13.5H2.5V9.5" />
+        <path d="M2.5 13.5L7 9" />
+      </g>
+    </svg>
+  );
+}
+
+interface Gesture {
+  id: number;
+  start: Point;
+  origin: Point;
+  at: Point;
+  moved: boolean;
+  tilt: number;
+  samples: { x: number; y: number; t: number }[];
+}
+
+export default function ReelPlayer({ reel }: { reel: Reel }) {
+  const [viewport, setViewport] = useState<{ w: number; h: number } | null>(null);
+  const [dock, setDock] = useState<Dock>("right-bottom");
+  const [ready, setReady] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const [target, setTarget] = useState<Dock | null>(null);
+  const [footerUp, setFooterUp] = useState(false);
+  const [view, setView] = useState<"closed" | "open" | "closing">("closed");
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLDivElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const gesture = useRef<Gesture | null>(null);
+
+  const geo = viewport ? geometry(viewport.w, viewport.h) : null;
+  const spot = geo?.pos[dock];
+
+  // Size to the window, and come back to the dock the visitor last chose
   useEffect(() => {
-    document.body.style.overflow = expanded ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [expanded]);
+    const measure = () => setViewport({ w: window.innerWidth, h: window.innerHeight });
+    measure();
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY) as Dock | null;
+      if (saved && DOCKS.includes(saved)) setDock(saved);
+    } catch {}
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
-  const go = (dir: 1 | -1) =>
-    setIndex((i) => (i + dir + reels.length) % reels.length);
+  // Step aside once the footer comes up, like the chapter pill
+  useEffect(() => {
+    let frame: number | null = null;
+    const update = () => {
+      frame = null;
+      const main = document.querySelector<HTMLElement>("[data-cs-main]");
+      setFooterUp(main ? main.getBoundingClientRect().bottom < window.innerHeight : false);
+    };
+    const onScroll = () => {
+      if (frame === null) frame = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame !== null) window.cancelAnimationFrame(frame);
+    };
+  }, []);
 
-  const reel = reels[index];
+  // Sit on the dock. The position is written straight to the element so a drag never
+  // waits on a render.
+  useLayoutEffect(() => {
+    const el = cardRef.current;
+    if (!el || !spot || gesture.current?.moved) return;
+    el.style.transform = `translate3d(${spot.x}px, ${spot.y}px, 0)`;
+    if (!ready) {
+      // The first placement lands without sliding in from the corner
+      const id = window.requestAnimationFrame(() => setReady(true));
+      return () => window.cancelAnimationFrame(id);
+    }
+  }, [spot?.x, spot?.y, ready]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const choose = (d: Dock) => {
+    setDock(d);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, d);
+    } catch {}
+  };
+
+  // ── Dragging ───────────────────────────────────────────────────────────────
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 || !spot) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    gesture.current = {
+      id: e.pointerId,
+      start: { x: e.clientX, y: e.clientY },
+      origin: spot,
+      at: spot,
+      moved: false,
+      tilt: 0,
+      samples: [{ x: e.clientX, y: e.clientY, t: e.timeStamp }],
+    };
+  };
+
+  const velocity = (g: Gesture) => {
+    const last = g.samples[g.samples.length - 1];
+    const first = g.samples.find((s) => last.t - s.t < 80) ?? last;
+    const dt = Math.max(1, last.t - first.t);
+    return { x: (last.x - first.x) / dt, y: (last.y - first.y) / dt };
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const g = gesture.current;
+    if (!g || g.id !== e.pointerId || !geo) return;
+    const dx = e.clientX - g.start.x;
+    const dy = e.clientY - g.start.y;
+    if (!g.moved) {
+      if (Math.hypot(dx, dy) < 4) return;
+      g.moved = true;
+      setDragging(true);
+    }
+    g.samples.push({ x: e.clientX, y: e.clientY, t: e.timeStamp });
+    if (g.samples.length > 8) g.samples.shift();
+    g.at = { x: g.origin.x + dx, y: g.origin.y + dy };
+
+    // Lean a little into the direction of travel
+    const lean = prefersReducedMotion() ? 0 : Math.max(-4, Math.min(4, velocity(g).x * 3));
+    g.tilt += (lean - g.tilt) * 0.3;
+    cardRef.current!.style.transform =
+      `translate3d(${g.at.x}px, ${g.at.y}px, 0) rotate(${g.tilt.toFixed(2)}deg)`;
+
+    const d = nearest(geo.pos, g.at);
+    setTarget((t) => (t === d ? t : d));
+  };
+
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const g = gesture.current;
+    if (!g || g.id !== e.pointerId || !geo) return;
+    gesture.current = null;
+    if (!g.moved) {
+      if (e.type === "pointerup") open();
+      return;
+    }
+    // A throw carries on: aim for where it was heading, not where it was let go
+    const v = velocity(g);
+    const d = nearest(geo.pos, { x: g.at.x + v.x * 180, y: g.at.y + v.y * 180 });
+    setDragging(false);
+    setTarget(null);
+    choose(d);
+    // Back to the same dock: the layout effect won't re-run, so send it home by hand
+    if (d === dock) cardRef.current!.style.transform = `translate3d(${geo.pos[d].x}px, ${geo.pos[d].y}px, 0)`;
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      open();
+      return;
+    }
+    const dir = ARROWS[e.key];
+    if (dir && geo) {
+      e.preventDefault();
+      choose(neighbour(geo.pos, dock, dir));
+    }
+  };
+
+  // ── Expanded view ──────────────────────────────────────────────────────────
+  // The video grows out of the card, and shrinks back into it
+  const flip = (direction: "in" | "out") => {
+    const box = boxRef.current;
+    const from = videoRef.current?.getBoundingClientRect();
+    if (!box || !from) return null;
+    const to = box.getBoundingClientRect();
+    const s = from.width / to.width;
+    const small = {
+      transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${s})`,
+      borderRadius: `${8 / s}px`,
+    };
+    const full = { transform: "none", borderRadius: "12px" };
+    const duration = prefersReducedMotion() ? 0 : direction === "in" ? 520 : 360;
+    backdropRef.current?.animate(
+      direction === "in" ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }],
+      { duration: duration * 0.7, easing: "ease-out", fill: "forwards" }
+    );
+    return box.animate(direction === "in" ? [small, full] : [full, small], {
+      duration,
+      easing: direction === "in" ? EASE_OPEN : EASE_CLOSE,
+      fill: "forwards",
+    });
+  };
+
+  const open = () => setView("open");
+
+  const close = () => {
+    if (view !== "open") return;
+    setView("closing");
+    const anim = flip("out");
+    if (anim) anim.onfinish = () => setView("closed");
+    else setView("closed");
+  };
+
+  useLayoutEffect(() => {
+    if (view !== "open") return;
+    flip("in");
+    closeRef.current?.focus({ preventScroll: true });
+  }, [view]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Hand focus back to the card once the video has gone
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (view === "closed" && wasOpen.current) cardRef.current?.focus({ preventScroll: true });
+    wasOpen.current = view !== "closed";
+  }, [view]);
+
+  // Hold the page still behind, and close on Escape
+  useEffect(() => {
+    if (view === "closed") return;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKey);
+    };
+  }); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!geo) return null;
 
   return (
     <>
+      {/* Docks, shown while dragging */}
+      {dragging &&
+        DOCKS.map((d) => (
+          <div
+            key={d}
+            aria-hidden="true"
+            className="reel-slot"
+            data-near={target === d}
+            style={{
+              width: geo.card.w,
+              height: geo.card.h,
+              transform: `translate3d(${geo.pos[d].x}px, ${geo.pos[d].y}px, 0)`,
+            }}
+          />
+        ))}
+
       {/* ── Floating card ── */}
       <div
+        ref={cardRef}
         role="button"
         tabIndex={0}
-        aria-label="Expand reel"
-        className="fixed right-[20px] bottom-8 z-[45] cursor-pointer select-none md:right-[80px] lg:right-[100px]"
-        style={{
-          transform: hovered ? "scale(1.13)" : "scale(1)",
-          transition: hovered
-            ? "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), right 0.3s ease-in-out"
-            : "transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), right 0.3s ease-in-out",
-        }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onClick={() => setExpanded(true)}
-        onKeyDown={(e) => e.key === "Enter" && setExpanded(true)}
+        aria-label={`Play the ${reel.title} walkthrough. Arrow keys move it.`}
+        className="reel"
+        data-ready={ready}
+        data-dragging={dragging}
+        data-hidden={!ready || footerUp}
+        data-away={view !== "closed"}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onKeyDown={onKeyDown}
       >
-        {/* Navy bezel frame */}
-        <div className="bg-primary p-[4px] rounded-[8px] shadow-[0_8px_32px_rgba(0,0,0,0.32)]">
-          <div className="relative w-[102px] h-[180px] rounded-[6px] overflow-hidden bg-black">
+        <div className="reel-frame">
+          <div ref={videoRef} className="reel-video" style={{ width: geo.card.w - 8, height: geo.card.h - 8 }}>
             <iframe
-              key={index}
               src={floatSrc(reel.youtubeId)}
               allow="autoplay; encrypted-media"
-              allowFullScreen
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              style={{ border: "none" }}
-              title={reel.title}
+              tabIndex={-1}
+              className="absolute inset-0 h-full w-full border-0"
+              title={`${reel.title}, muted preview`}
             />
-            {/* Expand overlay on hover */}
-            <div
-              className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
-                hovered ? "opacity-100 bg-black/30" : "opacity-0"
-              }`}
-            >
-              <div className="bg-white/20 backdrop-blur-sm rounded-full p-2.5">
-                <Maximize2 size={16} strokeWidth={1.5} className="text-white" />
-              </div>
-            </div>
+            <span className="reel-veil" />
+            <span className="reel-expand">
+              <ExpandIcon />
+            </span>
           </div>
         </div>
       </div>
 
-      {/* ── Expanded overlay ── */}
-      {expanded && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-midnight px-4 py-10">
-          {/* Full-width flex row: video column (flex-1, centered) + right column (close + nav) */}
-          <div
-            className="flex items-center w-full h-full"
-            style={
-              {
-                "--vh": "min(604px, calc(100svh - 150px))",
-                "--vw": "calc(var(--vh) * 9 / 16)",
-              } as React.CSSProperties
-            }
-          >
-            {/* Video + CTA — centered within flex-1, 20px gap between them */}
-            <div className="flex flex-1 flex-col items-center justify-center gap-5">
-              {/* Phone-frame video — fully rounded */}
-              <div
-                className="relative rounded-[16px] overflow-hidden bg-black"
-                style={{ width: "var(--vw)", height: "var(--vh)" }}
-              >
-                <iframe
-                  key={index}
-                  src={expandSrc(reel.youtubeId)}
-                  allow="autoplay; encrypted-media"
-                  allowFullScreen
-                  className="absolute inset-0 w-full h-full"
-                  style={{ border: "none" }}
-                  title={reel.title}
-                />
-              </div>
+      {/* ── Expanded view ── */}
+      {view !== "closed" && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={reel.title}
+          className="reel-modal fixed inset-0 z-[70] flex flex-col"
+          data-closing={view === "closing"}
+        >
+          <div ref={backdropRef} className="absolute inset-0 bg-midnight" onClick={close} />
 
-              {/* View Case Study — standalone button with its own rounding */}
-              <Link
-                href={reel.projectHref}
-                className="flex items-center justify-center gap-2 bg-[#481B55] hover:bg-grape transition-colors duration-200 h-[50px] px-4 rounded-[10px] text-white font-brand font-medium text-[14px] tracking-[0px]"
-                style={{ width: "var(--vw)" }}
-              >
-                View Case Study
-                <ArrowIcon size={16} className="rotate-90" />
-              </Link>
+          <div className="reel-modal-head relative flex items-start justify-between gap-[16px] p-[16px] md:p-[32px]">
+            <div className="max-w-[480px] pt-[4px]">
+              <p className="font-brand text-[12px] uppercase leading-[16px] tracking-[1px] text-white/60">
+                Case study walkthrough
+              </p>
+              <h2 className="mt-[8px] font-heading text-h4 text-white md:text-h4-md lg:text-h4-lg">
+                {reel.title}
+              </h2>
             </div>
+            <button
+              ref={closeRef}
+              onClick={close}
+              aria-label="Close"
+              className="flex size-[48px] shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-200 hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            >
+              <X size={20} strokeWidth={1.5} />
+            </button>
+          </div>
 
-            {/* Right column: close pinned top, nav buttons centered in remaining space */}
-            <div className="flex flex-col items-center shrink-0 pr-6 self-stretch">
-              {/* Close — top of column */}
-              <button
-                onClick={() => setExpanded(false)}
-                aria-label="Close"
-                className="flex items-center justify-center size-[46px] rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors"
-              >
-                <X size={20} strokeWidth={1.5} />
-              </button>
-              {/* Nav buttons — centered in remaining height */}
-              <div className="flex flex-1 flex-col items-center justify-center gap-2">
-                <button
-                  onClick={() => go(-1)}
-                  aria-label="Previous reel"
-                  className="flex items-center justify-center size-[46px] rounded-full bg-[#481B55] text-white hover:bg-grape transition-colors duration-200"
-                >
-                  <ArrowIcon size={18} />
-                </button>
-                <button
-                  onClick={() => go(1)}
-                  aria-label="Next reel"
-                  className="flex items-center justify-center size-[46px] rounded-full bg-[#481B55] text-white hover:bg-grape transition-colors duration-200"
-                >
-                  <ArrowIcon size={18} className="rotate-180" />
-                </button>
-              </div>
+          <div className="pointer-events-none relative flex min-h-0 flex-1 items-center justify-center px-[16px] pb-[16px] md:pb-[32px]">
+            <div
+              ref={boxRef}
+              className="pointer-events-auto relative aspect-[9/16] h-full max-h-[640px] max-w-full origin-top-left overflow-hidden rounded-[12px] bg-black bg-cover bg-center"
+              style={{ backgroundImage: `url(https://i.ytimg.com/vi/${reel.youtubeId}/hqdefault.jpg)` }}
+            >
+              <iframe
+                src={expandSrc(reel.youtubeId)}
+                allow="autoplay; encrypted-media; fullscreen"
+                allowFullScreen
+                className="absolute inset-0 h-full w-full border-0"
+                title={reel.title}
+              />
             </div>
           </div>
         </div>

@@ -42,7 +42,7 @@ const TOKEN_GROUPS: { id: string; title: string; intro: string; items: Token[] }
     intro: "Blackcurrant carries the brand, grape is the one interactive accent, and the two pale tints soften them.",
     items: [
       { token: "primary", name: "Blackcurrant", use: "CTAs, the navbar button, badges, the footer card" },
-      { token: "midnight", name: "Midnight", use: "Deepest dark: reel hero, modal backgrounds, the bell's tooltip" },
+      { token: "midnight", name: "Midnight", use: "Deepest dark: the reel and its expanded view, modal backgrounds, the bell's tooltip" },
       { token: "grape", name: "Grape", use: "Hover, focus rings, links, Type tags, active states" },
       { token: "grape-light", name: "Grape, light", use: "Active and hover rows in the case-study nav and the chat" },
       { token: "pink", name: "Pink", use: "Soft tints. Nothing uses it through a class yet" },
@@ -93,7 +93,6 @@ const TOKEN_GROUPS: { id: string; title: string; intro: string; items: Token[] }
 
 // Interface colours that aren't tokens
 const DRIFT: Loose[] = [
-  { hex: "#481B55", name: "Reel button", use: "Overlay buttons on the expanded reel", where: "ReelPlayer.tsx", closest: "primary" },
   { hex: "#0B0B0B", name: "Near black", use: "The Read the note button", where: "TasteNotes.tsx", closest: "midnight" },
   { hex: "#E5E7EB", name: "Tag grey", use: "Grey tag fill — Works discipline tags, case study option labels (Tailwind gray-200)", where: "Tag.tsx", closest: "line-soft or surface" },
 ];
@@ -127,7 +126,7 @@ const FINDINGS = [
   "Body text and midnight are the same colour under two names (#1E0525), and so are heading and blackcurrant (#32073E).",
   "Paper is drawn in five creams that are close but not the same: vanilla, and the four under Papers.",
   "The selected option in two case studies still uses the old grape, #895BE7, at 5%.",
-  "Buttons use three different darks: blackcurrant on the navbar, #481B55 on the reel and #0B0B0B on the note button.",
+  "Buttons use two different darks: blackcurrant on the navbar and #0B0B0B on the note button.",
   "Discipline tags use Tailwind's greys instead of the palette.",
   "Pink is a token, but nothing uses it through a class.",
 ];

@@ -3,7 +3,6 @@ import Works from "@/components/Works";
 import Testimonials from "@/components/Testimonials";
 import TasteNotes from "@/components/TasteNotes";
 import Footer from "@/components/Footer";
-import ReelPlayer from "@/components/ReelPlayer";
 
 export default function Home() {
   return (
@@ -16,7 +15,6 @@ export default function Home() {
         <TasteNotes />
       </div>
       <Footer />
-      <ReelPlayer />
     </>
   );
 }

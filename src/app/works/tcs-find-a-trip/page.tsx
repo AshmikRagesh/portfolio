@@ -360,7 +360,11 @@ function Reflection() {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function TcsFindATripPage() {
   return (
-    <CaseStudyLayout sections={SECTIONS}>
+    <CaseStudyLayout
+      sections={SECTIONS}
+      // Placeholder video until this case study has its own cut
+      reel={{ youtubeId: "2rs_wDV_0Ww", title: "Letting travellers choose: explore a destination, or browse trips" }}
+    >
       <Hero
         title="Letting travellers choose: explore a destination, or browse trips"
         date="July 2026"

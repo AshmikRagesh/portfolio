@@ -600,3 +600,121 @@
   .cs-pill-slot[data-motion^="out"] { display: none; }
   .cs-pill { filter: none; transform: translate(-50%); }
 }
+
+/* ── Reel: a case study's floating walkthrough video (ReelPlayer.tsx) ───────────── */
+.reel {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 39; /* under the chapter pill, so its timeline opens over the reel */
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+  transition: transform 560ms cubic-bezier(0.3, 1.2, 0.5, 1);
+}
+.reel[data-ready="false"],
+.reel[data-dragging="true"] { transition: none; }
+.reel[data-dragging="true"] { z-index: 60; cursor: grabbing; }
+.reel[data-hidden="true"] { pointer-events: none; }
+.reel[data-away="true"] { visibility: hidden; }
+
+.reel-frame {
+  padding: 4px;
+  border-radius: 12px;
+  background: theme("colors.midnight");
+  box-shadow: 0 4px 16px rgba(30, 5, 37, 0.16);
+  transition:
+    transform 320ms var(--ease-out),
+    box-shadow 320ms var(--ease-out),
+    opacity 240ms ease,
+    filter 240ms ease;
+}
+.reel:hover .reel-frame,
+.reel:focus-visible .reel-frame {
+  transform: scale(1.04);
+  box-shadow: 0 12px 32px rgba(30, 5, 37, 0.24);
+}
+.reel:focus-visible .reel-frame { outline: 2px solid theme("colors.grape"); outline-offset: 4px; }
+.reel[data-dragging="true"] .reel-frame {
+  transform: scale(1.06);
+  box-shadow: 0 24px 48px rgba(30, 5, 37, 0.28);
+}
+.reel[data-hidden="true"] .reel-frame {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(16px) scale(0.96);
+}
+
+.reel-video {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+}
+.reel-video iframe { pointer-events: none; }
+
+/* Hover: the video dims and a white button rises in, its arrows spreading to the corners */
+.reel-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(30, 5, 37, 0.24), rgba(30, 5, 37, 0.48));
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+.reel-expand {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 999px;
+  background: #fff;
+  color: theme("colors.midnight");
+  box-shadow: 0 4px 12px rgba(30, 5, 37, 0.24);
+  opacity: 0;
+  transform: translateY(4px) scale(0.84);
+  transition: opacity 200ms ease, transform 320ms var(--ease-out);
+}
+.reel-arrow-ne, .reel-arrow-sw { transition: transform 320ms var(--ease-out) 60ms; }
+.reel:hover .reel-veil, .reel:focus-visible .reel-veil { opacity: 1; }
+.reel:hover .reel-expand, .reel:focus-visible .reel-expand { opacity: 1; transform: none; }
+.reel:hover .reel-arrow-ne, .reel:focus-visible .reel-arrow-ne { transform: translate(1px, -1px); }
+.reel:hover .reel-arrow-sw, .reel:focus-visible .reel-arrow-sw { transform: translate(-1px, 1px); }
+.reel[data-dragging="true"] .reel-veil,
+.reel[data-dragging="true"] .reel-expand { opacity: 0; }
+
+/* Where it can be dropped, shown while dragging */
+.reel-slot {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 59;
+  border: 1px dashed theme("colors.line");
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.4);
+  animation: reel-slot-in 200ms ease-out both;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+.reel-slot[data-near="true"] {
+  border: 1px solid theme("colors.grape");
+  background: rgba(249, 228, 255, 0.64); /* grape-light */
+}
+@keyframes reel-slot-in { from { opacity: 0; } }
+
+/* Expanded view: the header settles in after the video */
+.reel-modal-head { animation: reel-head-in 320ms 200ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+.reel-modal[data-closing="true"] .reel-modal-head { opacity: 0; transition: opacity 120ms ease; }
+@keyframes reel-head-in { from { opacity: 0; transform: translateY(-8px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .reel, .reel-frame, .reel-expand, .reel-arrow-ne, .reel-arrow-sw { transition: none !important; }
+  .reel-modal-head, .reel-slot { animation: none; }
+}

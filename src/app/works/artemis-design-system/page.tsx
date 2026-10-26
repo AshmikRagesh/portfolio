@@ -535,7 +535,11 @@ function Reflection() {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ArtemisDesignSystemPage() {
   return (
-    <CaseStudyLayout sections={SECTIONS}>
+    <CaseStudyLayout
+      sections={SECTIONS}
+      // Placeholder video until this case study has its own cut
+      reel={{ youtubeId: "2rs_wDV_0Ww", title: "Three years of building Artemis at Enchanting Travels" }}
+    >
       <Hero
         title="Three years of building Artemis at Enchanting Travels"
         date="2023 — Ongoing"

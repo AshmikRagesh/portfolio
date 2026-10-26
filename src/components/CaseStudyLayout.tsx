@@ -1,14 +1,17 @@
 import Footer from "@/components/Footer";
 import SectionPill, { type CaseStudySection } from "@/components/case-study/SectionPill";
+import ReelPlayer, { type Reel } from "@/components/ReelPlayer";
 
-export type { CaseStudySection };
+export type { CaseStudySection, Reel };
 
 interface CaseStudyLayoutProps {
   sections: CaseStudySection[];
+  /** The case study's walkthrough video, floating over the page */
+  reel?: Reel;
   children: React.ReactNode;
 }
 
-export default function CaseStudyLayout({ sections, children }: CaseStudyLayoutProps) {
+export default function CaseStudyLayout({ sections, reel, children }: CaseStudyLayoutProps) {
   return (
     <>
       {/* Top padding clears the ruler and navbar; bottom padding leaves room for the bell
@@ -17,6 +20,7 @@ export default function CaseStudyLayout({ sections, children }: CaseStudyLayoutP
         {children}
       </main>
       <SectionPill sections={sections} />
+      {reel && <ReelPlayer reel={reel} />}
       <Footer />
     </>
   );
