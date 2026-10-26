@@ -540,7 +540,6 @@ export default function ArtemisDesignSystemPage() {
       <Hero
         title="Three years of building Artemis at Enchanting Travels"
         date="2023 — Ongoing"
-        color="#EFE8DC"
       />
       <Overview />
       <WhyArtemis />

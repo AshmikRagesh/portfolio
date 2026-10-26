@@ -1,51 +1,46 @@
 import { ArrowRight } from "lucide-react";
 
 /**
- * Case study hero — a coloured band with two screens (left only on phones), and the
- * title, date and optional live link set left in the reading column over a midnight
- * fade rising from the bottom, ready for a video behind it.
- * Pass `left` / `right` image paths once real screenshots exist.
+ * Case study hero — a grey stand-in image for now (a video later), with the title, date
+ * and optional live link set left in the reading column over a midnight fade rising
+ * from the bottom.
  */
 export default function Hero({
   title,
   date,
-  color,
   link,
-  left,
-  right,
 }: {
   title: string;
   date: string;
-  color: string;
   link?: { href: string; label: string };
-  left?: string;
-  right?: string;
 }) {
   return (
-    <header
-      data-cs-hero
-      className="relative isolate h-[520px] overflow-hidden"
-      style={{ backgroundColor: color }}
-    >
-      <HeroScreen
-        src={left}
-        alt={`${title} — screen`}
-        className="left-[calc(50%-150px)] top-[300px] md:left-auto md:right-[calc(50%+310px)] md:top-[112px]"
-      />
-      <HeroScreen
-        src={right}
-        alt={`${title} — screen`}
-        className="hidden md:block md:left-[calc(50%+310px)] md:top-[112px]"
-      />
+    <header data-cs-hero className="relative isolate h-[520px] overflow-hidden bg-placeholder">
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="absolute left-1/2 top-[112px] -translate-x-1/2 text-muted opacity-50"
+      >
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <circle cx="9" cy="9" r="2" />
+        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+      </svg>
 
       {/* The same fade the expanded reel uses on phones */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[80%] bg-gradient-to-t from-midnight via-midnight/80 to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[80%] bg-gradient-to-t from-midnight/90 via-midnight/60 to-transparent"
       />
 
       <div className="cs-column pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-start gap-[16px] pb-[40px] md:pb-[56px]">
-        <h1 className="text-balance text-left font-heading text-[32px] font-normal leading-[36px] tracking-[-2px] text-white md:text-[44px] md:leading-[48px] lg:text-[50px] lg:leading-[54px]">
+        <h1 className="text-balance text-left font-heading text-[40px] font-normal leading-[44px] tracking-[-2px] text-white md:text-[44px] md:leading-[48px] lg:text-[50px] lg:leading-[54px]">
           {title}
         </h1>
         <div className="flex flex-wrap items-center gap-[12px]">
@@ -70,16 +65,5 @@ export default function Hero({
         </div>
       </div>
     </header>
-  );
-}
-
-function HeroScreen({ src, alt, className }: { src?: string; alt: string; className: string }) {
-  const frame =
-    "absolute w-[300px] rounded-[8px] shadow-[0_10px_40px_rgba(0,0,0,0.07)] md:w-[650px] md:rounded-[12px] max-lg:md:opacity-60";
-  return src ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} className={`${frame} ${className}`} />
-  ) : (
-    <div aria-hidden="true" className={`${frame} aspect-[16/10] bg-white/70 ${className}`} />
   );
 }

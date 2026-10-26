@@ -447,7 +447,6 @@ export default function ArtemisInsurancePage() {
       <Hero
         title="Adding travel insurance to the Artemis guest booking experience"
         date="November 2024"
-        color="#F3E4F7"
       />
       <Overview />
       <Background />

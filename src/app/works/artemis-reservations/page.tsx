@@ -615,7 +615,6 @@ export default function ArtemisReservationsPage() {
       <Hero
         title="Giving the Reservations team back their time in Artemis 3.0"
         date="08/11/2024"
-        color="#E6EDF8"
       />
       <Overview />
       <Background />

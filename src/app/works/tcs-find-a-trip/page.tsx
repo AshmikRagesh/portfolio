@@ -365,7 +365,6 @@ export default function TcsFindATripPage() {
       <Hero
         title="Not everyone is ready to book. Letting travellers choose: explore a destination, or browse trips"
         date="July 2026"
-        color="#E4EEF7"
       />
       <Overview />
       <TheProblem />
