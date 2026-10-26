@@ -710,6 +710,25 @@
 }
 @keyframes reel-slot-in { from { opacity: 0; } }
 
+/* Expanded view. The stage is a size container: the video takes the most room it can
+   while leaving the panel its width, and never grows past 450 × 800. */
+.reel-stage { container-type: size; display: flex; align-items: center; justify-content: center; }
+.reel-stage { --panel: 280px; }
+@media (min-width: 1024px) { .reel-stage { --panel: 400px; } }
+@media (min-width: 768px) {
+  .reel-player { width: min(450px, calc(100cqh * 9 / 16), calc(100cqw - var(--panel) - 16px)); }
+}
+/* The video covers its box: exact at 9:16, cropped to fill a phone screen */
+.reel-player { container-type: size; }
+.reel-player iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100cqw, calc(100cqh * 9 / 16));
+  height: max(100cqh, calc(100cqw * 16 / 9));
+  transform: translate(-50%, -50%);
+}
+
 /* Expanded view: the title and controls settle in after the video, and the title again
    on each change of reel */
 .reel-modal-ui { animation: reel-head-in 320ms 200ms cubic-bezier(0.23, 1, 0.32, 1) both; }

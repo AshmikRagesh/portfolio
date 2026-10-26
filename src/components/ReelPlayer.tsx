@@ -88,8 +88,9 @@ const prefersReducedMotion = () =>
 const floatSrc = (id: string) =>
   `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&modestbranding=1&iv_load_policy=3&rel=0`;
 
-const expandSrc = (id: string) =>
-  `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&playsinline=1&rel=0&modestbranding=1`;
+// Phones hide YouTube's controls: the title and buttons sit over the bottom of the video
+const expandSrc = (id: string, controls: boolean) =>
+  `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&playsinline=1&rel=0&modestbranding=1&controls=${controls ? 1 : 0}`;
 
 const EASE_OPEN = "cubic-bezier(0.2, 0.8, 0.3, 1)";
 const EASE_CLOSE = "cubic-bezier(0.4, 0, 0.2, 1)";
@@ -124,6 +125,9 @@ function ExpandIcon() {
     </svg>
   );
 }
+
+const ctaButton =
+  "flex h-[48px] items-center justify-center gap-[8px] rounded-[10px] bg-white px-[16px] font-brand text-[14px] uppercase tracking-[1px] text-midnight transition-colors duration-200 hover:bg-grape-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
 
 const roundButton =
   "flex size-[48px] shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-200 hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
@@ -302,12 +306,14 @@ export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; b
     const from = videoRef.current?.getBoundingClientRect();
     if (!box || !from) return null;
     const to = box.getBoundingClientRect();
-    const s = from.width / to.width;
+    // On phones the video fills the screen, so the two scales differ
+    const sx = from.width / to.width;
+    const sy = from.height / to.height;
     const small = {
-      transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${s})`,
-      borderRadius: `${8 / s}px`,
+      transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${sx}, ${sy})`,
+      borderRadius: `${8 / sx}px / ${8 / sy}px`,
     };
-    const full = { transform: "none", borderRadius: "12px" };
+    const full = { transform: "none", borderRadius: geo?.small ? "0px" : "12px" };
     const duration = prefersReducedMotion() ? 0 : direction === "in" ? 520 : 360;
     backdropRef.current?.animate(
       direction === "in" ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }],
@@ -420,9 +426,9 @@ export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; b
       </div>
 
       {/* ── Expanded view ──
-          One grid for both pages. Phones: title and close on top, video, then the link and
-          chevrons below. Desktop: title and link on the left, video full height in the
-          middle, close and chevrons on the right. */}
+          Two sections: a panel with the title, description and actions, and the video.
+          Tablet and up they sit side by side, the panel on the left at the video's height.
+          Phones play the video full screen with the panel over its bottom edge. */}
       {view !== "closed" && (
         <div
           role="dialog"
@@ -433,66 +439,69 @@ export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; b
         >
           <div ref={backdropRef} className="absolute inset-0 bg-midnight" onClick={close} />
 
-          <div className="pointer-events-none relative grid h-full grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_minmax(0,1fr)_auto] gap-[16px] p-[16px] md:gap-[24px] md:p-[32px] lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:grid-rows-[auto_auto_minmax(0,1fr)] lg:gap-x-[48px] lg:gap-y-[32px]">
-            {/* Title and description */}
-            <div key={`info-${index}`} className="reel-modal-ui col-start-1 row-start-1 max-w-[480px] lg:pt-[8px]">
-              <h2 className="font-heading text-h2 text-white md:text-h2-md xl:text-h1-md">{reel.title}</h2>
-              <p className="mt-[12px] line-clamp-2 font-body text-body text-white/70 md:mt-[16px] md:line-clamp-none md:text-lead-md">
-                {reel.description}
-              </p>
-            </div>
+          <div className="reel-stage pointer-events-none absolute inset-0 md:inset-x-[32px] md:inset-y-[32px] lg:inset-x-[80px]">
+            <div className="relative flex h-full w-full md:h-auto md:w-auto md:gap-[16px]">
+              {/* Panel */}
+              <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-[20px] bg-gradient-to-t from-midnight via-midnight/80 to-transparent p-[16px] pt-[96px] md:pointer-events-auto md:relative md:w-[var(--panel)] md:justify-between md:gap-[32px] md:rounded-[12px] md:border md:border-white/10 md:bg-white/[0.04] md:bg-none md:p-[24px] lg:p-[32px]">
+                <div key={`info-${index}`} className="reel-modal-ui">
+                  <h2 className="font-heading text-h4-md text-white md:text-h2 lg:text-h2-lg">{reel.title}</h2>
+                  <p className="mt-[8px] line-clamp-3 font-body text-body text-white/70 md:mt-[16px] md:line-clamp-none md:text-body-md lg:text-lead-lg">
+                    {reel.description}
+                  </p>
+                </div>
 
-            {/* Video */}
-            <div className="col-span-2 col-start-1 row-start-2 flex min-h-0 items-center justify-center lg:col-span-1 lg:col-start-2 lg:row-span-3 lg:row-start-1">
+                <div className="reel-modal-ui pointer-events-auto flex items-center gap-[8px]">
+                  {browse ? (
+                    <Link href={reel.href} className={`${ctaButton} flex-1 md:flex-none`}>
+                      Read case study
+                      <ArrowRight />
+                    </Link>
+                  ) : (
+                    <button onClick={close} className={`${ctaButton} flex-1 md:flex-none`}>
+                      Continue reading
+                      <ArrowRight />
+                    </button>
+                  )}
+                  {many && (
+                    <div className="ml-auto flex gap-[8px]">
+                      <button onClick={() => go(-1)} aria-label="Previous case study" className={roundButton}>
+                        <ChevronUp size={20} strokeWidth={1.5} />
+                      </button>
+                      <button onClick={() => go(1)} aria-label="Next case study" className={roundButton}>
+                        <ChevronDown size={20} strokeWidth={1.5} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Video */}
               <div
                 ref={boxRef}
-                className="pointer-events-auto relative aspect-[9/16] h-full max-h-[800px] max-w-full origin-top-left overflow-hidden rounded-[12px] bg-black bg-cover bg-center"
+                className="reel-player pointer-events-auto absolute inset-0 origin-top-left overflow-hidden bg-black bg-cover bg-center md:relative md:inset-auto md:aspect-[9/16] md:rounded-[12px]"
                 style={{ backgroundImage: `url(https://i.ytimg.com/vi/${reel.youtubeId}/hqdefault.jpg)` }}
               >
                 <iframe
-                  key={index}
-                  src={expandSrc(reel.youtubeId)}
+                  key={`${index}-${geo.small}`}
+                  src={expandSrc(reel.youtubeId, !geo.small)}
                   allow="autoplay; encrypted-media; fullscreen"
                   allowFullScreen
-                  className="absolute inset-0 h-full w-full border-0"
+                  className="border-0"
                   title={reel.title}
                 />
               </div>
             </div>
-
-            {/* Close */}
-            <button
-              ref={closeRef}
-              onClick={close}
-              aria-label="Close"
-              className={`reel-modal-ui pointer-events-auto col-start-2 row-start-1 justify-self-end lg:col-start-3 ${roundButton}`}
-            >
-              <X size={20} strokeWidth={1.5} />
-            </button>
-
-            {/* Read the case study */}
-            {browse && (
-              <Link
-                href={reel.href}
-                className="reel-modal-ui pointer-events-auto col-start-1 row-start-3 flex h-[48px] items-center justify-center gap-[8px] self-end rounded-[10px] bg-white px-[16px] font-brand text-[14px] uppercase tracking-[1px] text-midnight transition-colors duration-200 hover:bg-grape-light md:justify-self-start lg:row-start-2 lg:self-start"
-              >
-                Read case study
-                <ArrowRight />
-              </Link>
-            )}
-
-            {/* Previous / next */}
-            {many && (
-              <div className="reel-modal-ui pointer-events-auto col-start-2 row-start-3 flex gap-[8px] self-end lg:col-start-3 lg:row-span-3 lg:row-start-1 lg:flex-col lg:self-center lg:justify-self-end">
-                <button onClick={() => go(-1)} aria-label="Previous case study" className={roundButton}>
-                  <ChevronUp size={20} strokeWidth={1.5} />
-                </button>
-                <button onClick={() => go(1)} aria-label="Next case study" className={roundButton}>
-                  <ChevronDown size={20} strokeWidth={1.5} />
-                </button>
-              </div>
-            )}
           </div>
+
+          {/* Close */}
+          <button
+            ref={closeRef}
+            onClick={close}
+            aria-label="Close"
+            className={`reel-modal-ui absolute right-[16px] top-[16px] z-10 backdrop-blur-[8px] md:right-[16px] md:top-[32px] ${roundButton}`}
+          >
+            <X size={20} strokeWidth={1.5} />
+          </button>
         </div>
       )}
     </>
