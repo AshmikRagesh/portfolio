@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import HostCharacter, { hostLayout } from "@/components/host/HostCharacter";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useBellStage } from "@/components/host/BellStage";
@@ -331,23 +331,25 @@ function FooterBell() {
   );
 }
 
-// The signature writes itself out once, the first time the footer comes into view, with
-// the guestbook signatures' easing: the wide pen strokes in SIGNATURE.strokes draw into a
-// mask over the exact ink, one after another — the run of "Ashmik", the dot on the i,
-// "Ragesh", then the two trailing dots. Never loops. With reduced motion it's simply there.
-// Drawn in the same faint grape-light as the band's other marks, at the slant it was written.
-const WRITE = [
-  { ms: 1600, delay: 0 }, // Ashmik
-  { ms: 240, delay: 1500 }, // the i's dot
-  { ms: 1600, delay: 1800 }, // Ragesh
-  { ms: 320, delay: 3300 }, // trailing dots
-];
-// Wide enough to cover the ink either side of its centreline, in the signature's own units
-const PEN = 34;
+// The signature writes itself out once, the first time the footer comes into view, like the
+// guestbook signatures: each stroke inks in along its length with the same easing, one after
+// another at a steady pen speed, with a short lift of the pen between strokes; the dots are
+// pressed in when their turn comes. Never loops. With reduced motion it's simply there.
+// Drawn in faint grape-light, behind the footer's content.
+const PEN_SPEED = 1500; // signature units per second
+const PEN_LIFT = 50; // ms between strokes
+const WRITE = (() => {
+  let at = 0;
+  return SIGNATURE.strokes.map(({ length }) => {
+    const ms = length ? Math.max(160, Math.round((length / PEN_SPEED) * 1000)) : 0;
+    const step = { delay: at, ms };
+    at += ms + PEN_LIFT;
+    return step;
+  });
+})();
 
 function FooterSignature({ className = "" }: { className?: string }) {
   const ref = useRef<SVGSVGElement>(null);
-  const maskId = `footer-signature-${useId().replace(/:/g, "")}`;
   const [drawn, setDrawn] = useState(false);
   const [still, setStill] = useState(false);
 
@@ -373,48 +375,37 @@ function FooterSignature({ className = "" }: { className?: string }) {
 
   return (
     <svg ref={ref} viewBox={`0 0 ${SIGNATURE.width} ${SIGNATURE.height}`} fill="none" className={className}>
-      <defs>
-        <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width={SIGNATURE.width} height={SIGNATURE.height}>
-          <g fill="none" stroke="#fff" strokeWidth={PEN} strokeLinecap="round" strokeLinejoin="round">
-            {SIGNATURE.strokes.map((d, i) => {
-              const { ms, delay } = WRITE[i];
-              // The dots are pressed rather than drawn: they just appear
-              const dot = d.length < 60;
-              return (
-                <path
-                  key={i}
-                  d={d}
-                  pathLength={1}
-                  style={
-                    dot
-                      ? { opacity: drawn ? 1 : 0, transition: still ? "none" : `opacity 120ms ease-out ${delay}ms` }
-                      : {
-                          strokeDasharray: 1,
-                          strokeDashoffset: drawn ? 0 : 1,
-                          transition: still ? "none" : `stroke-dashoffset ${ms}ms cubic-bezier(0.6, 0, 0.3, 1) ${delay}ms`,
-                        }
-                  }
-                />
-              );
-            })}
-          </g>
-        </mask>
-      </defs>
-      <path d={SIGNATURE.ink} fill="currentColor" fillRule="evenodd" mask={`url(#${maskId})`} />
+      <g stroke="currentColor" strokeWidth={6.4} strokeLinecap="round" strokeLinejoin="round">
+        {SIGNATURE.strokes.map(({ d, length }, i) => {
+          const { ms, delay } = WRITE[i];
+          return (
+            <path
+              key={i}
+              d={d}
+              pathLength={1}
+              style={
+                length
+                  ? {
+                      strokeDasharray: 1,
+                      strokeDashoffset: drawn ? 0 : 1,
+                      transition: still ? "none" : `stroke-dashoffset ${ms}ms cubic-bezier(0.6, 0, 0.3, 1) ${delay}ms`,
+                    }
+                  : { opacity: drawn ? 1 : 0, transition: still ? "none" : `opacity 80ms ease-out ${delay}ms` }
+              }
+            />
+          );
+        })}
+      </g>
     </svg>
   );
 }
 
-// Behind the content: the paper tooth, and the signature on the left of the band, its left
-// edge on the content's edge — tucked into the bottom corner beside the links on phones
-// and tablets, centred down the side on desktop (clear of the floating reel on the right)
+// Behind the content: the paper tooth, and the signature large across the middle of the band
 function FooterBackdrop() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
       <PaperTooth />
-      <div className="page-container relative h-full">
-        <FooterSignature className="absolute bottom-[24px] left-[20px] h-[180px] text-grape-light opacity-[0.26] md:left-[80px] md:h-[220px] lg:bottom-auto lg:left-[100px] lg:top-1/2 lg:h-[400px] lg:-translate-y-1/2" />
-      </div>
+      <FooterSignature className="absolute left-1/2 top-1/2 w-[340px] -translate-x-1/2 -translate-y-1/2 text-grape-light opacity-[0.2] md:w-[600px] lg:w-[760px]" />
     </div>
   );
 }
