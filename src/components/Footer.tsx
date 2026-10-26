@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import HostCharacter, { hostLayout } from "@/components/host/HostCharacter";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useBellStage } from "@/components/host/BellStage";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { ringBell } from "@/components/host/bellSound";
 import PaperTooth from "@/components/PaperTooth";
+import { SIGNATURE } from "@/content/signature";
 
 const socialLinks = [
   {
@@ -330,22 +331,23 @@ function FooterBell() {
   );
 }
 
-// Ashmik's signature, written large across the floor of the band in the same faint
-// grape-light line the drawing used: the A, the rest of the name in one run, the A's
-// crossbar, the dot on the i, and an underline. Drawn in a 600×220 box.
-const SIGNATURE = [
-  "M40 168 C66 128 98 70 132 28 C142 70 150 116 166 160",
-  "M188 150 C196 132 204 116 212 104 C216 118 222 134 214 148 C208 156 196 152 198 144 C222 126 246 80 252 42 C254 24 238 26 238 46 C236 82 236 120 234 152 C244 122 262 108 270 116 C278 126 272 140 276 152 C282 126 294 110 302 116 C310 124 306 140 308 152 C314 126 326 110 334 116 C342 124 338 140 342 152 C348 136 352 122 356 112 C356 128 358 142 366 150 C376 128 386 80 390 44 C392 28 378 30 378 48 C376 90 376 126 374 152 C380 134 392 118 404 114 C412 116 406 128 386 132 C400 138 406 150 422 152 C446 154 476 140 506 118",
-  "M76 116 C112 106 152 102 196 110",
-  "M358 90 c2 -3 5 -2 4 1",
-  "M56 192 C200 178 380 176 566 160",
+// The signature writes itself out once, the first time the footer comes into view, with
+// the guestbook signatures' easing: the wide pen strokes in SIGNATURE.strokes draw into a
+// mask over the exact ink, one after another — the run of "Ashmik", the dot on the i,
+// "Ragesh", then the two trailing dots. Never loops. With reduced motion it's simply there.
+// Drawn in the same faint grape-light as the band's other marks, at the slant it was written.
+const WRITE = [
+  { ms: 1600, delay: 0 }, // Ashmik
+  { ms: 240, delay: 1500 }, // the i's dot
+  { ms: 1600, delay: 1800 }, // Ragesh
+  { ms: 320, delay: 3300 }, // trailing dots
 ];
+// Wide enough to cover the ink either side of its centreline, in the signature's own units
+const PEN = 34;
 
-// The signature draws itself once, the first time the footer comes into view, with the
-// guestbook signatures' motion: each stroke inks in over 0.9s, the next 0.35s behind.
-// Never loops. With reduced motion it's simply there.
-function FooterSignature() {
+function FooterSignature({ className = "" }: { className?: string }) {
   const ref = useRef<SVGSVGElement>(null);
+  const maskId = `footer-signature-${useId().replace(/:/g, "")}`;
   const [drawn, setDrawn] = useState(false);
   const [still, setStill] = useState(false);
 
@@ -370,43 +372,49 @@ function FooterSignature() {
   }, []);
 
   return (
-    <svg
-      ref={ref}
-      viewBox="0 0 600 220"
-      fill="none"
-      className="absolute bottom-[16px] left-1/2 w-[360px] -translate-x-1/2 text-grape-light opacity-[0.24] md:w-[560px] lg:bottom-[8px] lg:w-[720px]"
-    >
+    <svg ref={ref} viewBox={`0 0 ${SIGNATURE.width} ${SIGNATURE.height}`} fill="none" className={className}>
       <defs>
-        {/* A little wobble, as in a hand-drawn line */}
-        <filter id="footer-signature-wobble" x="-2%" y="-4%" width="104%" height="108%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" />
-          <feDisplacementMap in="SourceGraphic" scale="2.4" />
-        </filter>
+        <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width={SIGNATURE.width} height={SIGNATURE.height}>
+          <g fill="none" stroke="#fff" strokeWidth={PEN} strokeLinecap="round" strokeLinejoin="round">
+            {SIGNATURE.strokes.map((d, i) => {
+              const { ms, delay } = WRITE[i];
+              // The dots are pressed rather than drawn: they just appear
+              const dot = d.length < 60;
+              return (
+                <path
+                  key={i}
+                  d={d}
+                  pathLength={1}
+                  style={
+                    dot
+                      ? { opacity: drawn ? 1 : 0, transition: still ? "none" : `opacity 120ms ease-out ${delay}ms` }
+                      : {
+                          strokeDasharray: 1,
+                          strokeDashoffset: drawn ? 0 : 1,
+                          transition: still ? "none" : `stroke-dashoffset ${ms}ms cubic-bezier(0.6, 0, 0.3, 1) ${delay}ms`,
+                        }
+                  }
+                />
+              );
+            })}
+          </g>
+        </mask>
       </defs>
-      <g filter="url(#footer-signature-wobble)" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-        {SIGNATURE.map((d, i) => (
-          <path
-            key={i}
-            d={d}
-            pathLength={1}
-            style={{
-              strokeDasharray: 1,
-              strokeDashoffset: drawn ? 0 : 1,
-              transition: still ? "none" : `stroke-dashoffset 0.9s cubic-bezier(0.6, 0, 0.3, 1) ${i * 0.35}s`,
-            }}
-          />
-        ))}
-      </g>
+      <path d={SIGNATURE.ink} fill="currentColor" fillRule="evenodd" mask={`url(#${maskId})`} />
     </svg>
   );
 }
 
-// Behind the content: the paper tooth, and the signature along the floor of the band
+// Behind the content: the paper tooth, and the signature on the left of the band, its left
+// edge on the content's edge — tucked into the bottom corner beside the links on phones
+// and tablets, centred down the side on desktop (clear of the floating reel on the right)
 function FooterBackdrop() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-      <FooterSignature />
       <PaperTooth />
+      <div className="page-container relative h-full">
+        <FooterSignature className="absolute bottom-[24px] left-[20px] h-[180px] text-grape-light opacity-[0.26] md:left-[80px] md:h-[220px] lg:bottom-auto lg:left-[100px] lg:top-1/2 lg:h-[400px] lg:-translate-y-1/2" />
+      </div>
     </div>
   );
 }
