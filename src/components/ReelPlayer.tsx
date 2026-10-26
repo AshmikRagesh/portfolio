@@ -98,7 +98,7 @@ const EASE_CLOSE = "cubic-bezier(0.4, 0, 0.2, 1)";
 // Figma arrow/arrow-up icon, turned to point right
 function ArrowRight() {
   return (
-    <svg width="16" height="16" viewBox="0 0 12.0001 15.3333" fill="none" aria-hidden="true" className="rotate-90">
+    <svg width="16" height="16" viewBox="0 0 12.0001 15.3333" fill="none" aria-hidden="true" className="rotate-90 transition-transform duration-200 group-hover:translate-x-[2px]">
       <path
         d="M1.00006 5.85867C2.29637 4.10584 3.81072 2.53153 5.5048 1.1746C5.65012 1.0582 5.82509 1 6.00006 1M11.0001 5.85867C9.70376 4.10583 8.18941 2.53153 6.49533 1.1746C6.35 1.0582 6.17503 1 6.00006 1M6.00006 1V14.3333"
         stroke="currentColor"
@@ -127,7 +127,7 @@ function ExpandIcon() {
 }
 
 const ctaButton =
-  "flex h-[48px] items-center justify-center gap-[8px] rounded-[10px] bg-white px-[16px] font-brand text-[14px] uppercase tracking-[1px] text-midnight transition-colors duration-200 hover:bg-grape-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
+  "group flex h-[48px] w-full items-center justify-center gap-[8px] rounded-[10px] bg-white px-[16px] font-brand text-[14px] uppercase tracking-[1px] text-midnight transition-colors duration-200 hover:bg-grape hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
 
 const roundButton =
   "flex size-[48px] shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-200 hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
@@ -439,38 +439,28 @@ export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; b
         >
           <div ref={backdropRef} className="absolute inset-0 bg-midnight" onClick={close} />
 
-          <div className="reel-stage pointer-events-none absolute inset-0 md:inset-x-[32px] md:inset-y-[32px] lg:inset-x-[80px]">
+          <div className={`reel-stage pointer-events-none absolute inset-0 md:inset-y-[32px] lg:inset-x-[80px] ${many ? "md:inset-x-[80px]" : "md:inset-x-[32px]"}`}>
             <div className="relative flex h-full w-full md:h-auto md:w-auto md:gap-[16px]">
               {/* Panel */}
               <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-[20px] bg-gradient-to-t from-midnight via-midnight/80 to-transparent p-[16px] pt-[96px] md:pointer-events-auto md:relative md:w-[var(--panel)] md:justify-between md:gap-[32px] md:rounded-[12px] md:border md:border-white/10 md:bg-white/[0.04] md:bg-none md:p-[24px] lg:p-[32px]">
                 <div key={`info-${index}`} className="reel-modal-ui">
-                  <h2 className="font-heading text-h4-md text-white md:text-h2 lg:text-h2-lg">{reel.title}</h2>
+                  <h2 className="font-heading text-h2 text-white lg:text-h2-lg">{reel.title}</h2>
                   <p className="mt-[8px] line-clamp-3 font-body text-body text-white/70 md:mt-[16px] md:line-clamp-none md:text-body-md lg:text-lead-lg">
                     {reel.description}
                   </p>
                 </div>
 
-                <div className="reel-modal-ui pointer-events-auto flex items-center gap-[8px]">
+                <div className="reel-modal-ui pointer-events-auto">
                   {browse ? (
-                    <Link href={reel.href} className={`${ctaButton} flex-1 md:flex-none`}>
+                    <Link href={reel.href} className={ctaButton}>
                       Read case study
                       <ArrowRight />
                     </Link>
                   ) : (
-                    <button onClick={close} className={`${ctaButton} flex-1 md:flex-none`}>
+                    <button onClick={close} className={ctaButton}>
                       Continue reading
                       <ArrowRight />
                     </button>
-                  )}
-                  {many && (
-                    <div className="ml-auto flex gap-[8px]">
-                      <button onClick={() => go(-1)} aria-label="Previous case study" className={roundButton}>
-                        <ChevronUp size={20} strokeWidth={1.5} />
-                      </button>
-                      <button onClick={() => go(1)} aria-label="Next case study" className={roundButton}>
-                        <ChevronDown size={20} strokeWidth={1.5} />
-                      </button>
-                    </div>
                   )}
                 </div>
               </div>
@@ -501,10 +491,24 @@ export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; b
             ref={closeRef}
             onClick={close}
             aria-label="Close"
-            className={`reel-modal-ui absolute right-[16px] top-[16px] z-10 backdrop-blur-[8px] md:right-[16px] md:top-[32px] ${roundButton}`}
+            className={`reel-modal-ui absolute right-[16px] top-[16px] z-10 backdrop-blur-[8px] max-md:bg-midnight/40 md:right-[16px] md:top-[32px] ${roundButton}`}
           >
             <X size={20} strokeWidth={1.5} />
           </button>
+
+          {/* Previous / next, at the middle of the right edge under the close button */}
+          {many && (
+            <div className="absolute right-[16px] top-1/2 z-10 -translate-y-1/2">
+              <div className="reel-modal-ui flex flex-col gap-[8px]">
+                <button onClick={() => go(-1)} aria-label="Previous case study" className={`backdrop-blur-[8px] max-md:bg-midnight/40 ${roundButton}`}>
+                  <ChevronUp size={20} strokeWidth={1.5} />
+                </button>
+                <button onClick={() => go(1)} aria-label="Next case study" className={`backdrop-blur-[8px] max-md:bg-midnight/40 ${roundButton}`}>
+                  <ChevronDown size={20} strokeWidth={1.5} />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>

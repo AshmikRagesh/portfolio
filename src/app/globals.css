@@ -716,7 +716,11 @@
 .reel-stage { --panel: 280px; }
 @media (min-width: 1024px) { .reel-stage { --panel: 400px; } }
 @media (min-width: 768px) {
-  .reel-player { width: min(450px, calc(100cqh * 9 / 16), calc(100cqw - var(--panel) - 16px)); }
+  .reel-player {
+    width: min(450px, calc(100cqh * 9 / 16), calc(100cqw - var(--panel) - 16px));
+    /* border-radius alone doesn't clip a YouTube iframe once it has been animated */
+    clip-path: inset(0 round 12px);
+  }
 }
 /* The video covers its box: exact at 9:16, cropped to fill a phone screen */
 .reel-player { container-type: size; }

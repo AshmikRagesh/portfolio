@@ -41,7 +41,7 @@ export default function DemoNav() {
           </ul>
           <Link
             href="/resume"
-            className="flex h-[40px] items-center gap-2 whitespace-nowrap rounded-[10px] bg-primary px-4 font-brand text-[14px] uppercase leading-[20px] tracking-[1px] text-white transition-colors hover:bg-grape"
+            className="flex h-[40px] items-center gap-2 whitespace-nowrap rounded-[10px] bg-primary px-4 font-brand font-medium text-[14px] uppercase leading-[20px] tracking-[1px] text-white transition-colors hover:bg-grape"
           >
             <FileText size={16} strokeWidth={1.6} />
             <span className="hidden sm:inline">Registration card</span>

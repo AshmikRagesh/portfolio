@@ -296,7 +296,7 @@ export default function Navbar() {
           </ul>
           <Link
             href="/resume"
-            className="flex items-center gap-2 text-white font-brand font-normal text-[14px] uppercase tracking-[1px] px-[16px] h-[42px] rounded-[10px] transition-colors duration-200 whitespace-nowrap bg-primary hover:bg-grape"
+            className="flex items-center gap-2 text-white font-brand font-medium text-[14px] uppercase tracking-[1px] px-[16px] h-[42px] rounded-[10px] transition-colors duration-200 whitespace-nowrap bg-primary hover:bg-grape"
           >
             <SparkleAiIcon size={16} />
             Fancy Paper
