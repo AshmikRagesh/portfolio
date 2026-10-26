@@ -21,7 +21,7 @@ import {
 // figures are placeholders until the Figma exports are in.
 
 export const metadata: Metadata = {
-  title: "Destination or Trips · Ashmik Ragesh",
+  title: "Not everyone is ready to book · Ashmik Ragesh",
   description:
     "Designed a two-path choice in the TCS World Travel “Find a Trip” menu — letting travellers still dreaming explore a destination, and travellers ready to compare go straight to trips. Shipped as an A/B/C test.",
 };
@@ -363,7 +363,7 @@ export default function TcsFindATripPage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels["tcs-find-a-trip"]}>
       <Hero
-        title="Letting travellers choose: explore a destination, or browse trips"
+        title="Not everyone is ready to book. Letting travellers choose: explore a destination, or browse trips"
         date="July 2026"
         color="#E4EEF7"
       />
