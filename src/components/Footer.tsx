@@ -373,28 +373,36 @@ function FooterSignature({ className = "" }: { className?: string }) {
     return () => io.disconnect();
   }, []);
 
+  // Each stroke is laid twice, as an ink pen's line is: a wider, fainter bleed where the
+  // ink has spread into the paper, and a fine core on top. Dots get a heavier nib.
+  const layer = (width: number, dotWidth: number, opacity: number) =>
+    SIGNATURE.strokes.map(({ d, length }, i) => {
+      const { ms, delay } = WRITE[i];
+      return (
+        <path
+          key={i}
+          d={d}
+          pathLength={1}
+          strokeWidth={length ? width : dotWidth}
+          strokeOpacity={opacity}
+          style={
+            length
+              ? {
+                  strokeDasharray: 1,
+                  strokeDashoffset: drawn ? 0 : 1,
+                  transition: still ? "none" : `stroke-dashoffset ${ms}ms cubic-bezier(0.6, 0, 0.3, 1) ${delay}ms`,
+                }
+              : { opacity: drawn ? 1 : 0, transition: still ? "none" : `opacity 80ms ease-out ${delay}ms` }
+          }
+        />
+      );
+    });
+
   return (
     <svg ref={ref} viewBox={`0 0 ${SIGNATURE.width} ${SIGNATURE.height}`} fill="none" className={className}>
-      <g stroke="currentColor" strokeWidth={6.4} strokeLinecap="round" strokeLinejoin="round">
-        {SIGNATURE.strokes.map(({ d, length }, i) => {
-          const { ms, delay } = WRITE[i];
-          return (
-            <path
-              key={i}
-              d={d}
-              pathLength={1}
-              style={
-                length
-                  ? {
-                      strokeDasharray: 1,
-                      strokeDashoffset: drawn ? 0 : 1,
-                      transition: still ? "none" : `stroke-dashoffset ${ms}ms cubic-bezier(0.6, 0, 0.3, 1) ${delay}ms`,
-                    }
-                  : { opacity: drawn ? 1 : 0, transition: still ? "none" : `opacity 80ms ease-out ${delay}ms` }
-              }
-            />
-          );
-        })}
+      <g stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+        <g>{layer(4.4, 8, 0.35)}</g>
+        <g>{layer(2.2, 6, 1)}</g>
       </g>
     </svg>
   );
@@ -405,7 +413,7 @@ function FooterBackdrop() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
       <PaperTooth />
-      <FooterSignature className="absolute left-1/2 top-1/2 w-[340px] -translate-x-1/2 -translate-y-1/2 text-grape-light opacity-[0.2] md:w-[600px] lg:w-[760px]" />
+      <FooterSignature className="absolute left-1/2 top-1/2 w-[340px] -translate-x-1/2 -translate-y-1/2 text-grape-light opacity-[0.3] md:w-[600px] lg:w-[760px]" />
     </div>
   );
 }
