@@ -413,7 +413,7 @@ function FooterBackdrop() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
       <PaperTooth />
-      <FooterSignature className="absolute left-1/2 top-1/2 w-[340px] -translate-x-1/2 -translate-y-1/2 text-grape-light opacity-[0.3] md:w-[600px] lg:w-[760px]" />
+      <FooterSignature className="absolute left-1/2 top-1/2 w-[340px] -translate-x-1/2 -translate-y-1/2 text-grape-light opacity-[0.18] md:w-[600px] lg:w-[760px]" />
     </div>
   );
 }
