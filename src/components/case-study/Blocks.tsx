@@ -224,7 +224,7 @@ const NOTE = "flex gap-[12px] font-body text-[16px] leading-[26px] text-secondar
 /** What worked (green tick) and what didn't (red cross) */
 export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: string[] }) {
   return (
-    <ul className="flex flex-col gap-[10px]">
+    <ul className="flex flex-col gap-[12px]">
       {pros.map((item) => (
         <li key={item} className={NOTE}>
           <Mark tone="pro"><Check size={14} strokeWidth={2.5} /></Mark>
@@ -244,7 +244,7 @@ export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: str
 /** Why the shipped option won, numbered */
 export function Reasons({ items }: { items: string[] }) {
   return (
-    <ol className="flex flex-col gap-[10px]">
+    <ol className="flex flex-col gap-[12px]">
       {items.map((r, i) => (
         <li key={r} className={NOTE}>
           <Mark tone="reason">{i + 1}</Mark>

@@ -4,7 +4,7 @@
 // 4.5:1 at this size.
 //
 //   Type        grape fill (the button hover colour), white text   (7.7:1)
-//   Discipline  light grey, dark grey text                         (8.6:1)
+//   Discipline  light grey, blackcurrant text (the brand primary)
 
 export type ProjectType = "Case study" | "Side project" | "Exploration" | "Taste note";
 export type Discipline = "Design systems" | "Product design" | "Interaction design" | "UX research" | "AI";
@@ -14,7 +14,7 @@ const BASE =
 
 const TONES = {
   grape: "bg-grape text-white",
-  grey: "bg-[#E5E7EB] text-[#374151]",
+  grey: "bg-[#E5E7EB] text-primary",
 };
 
 /** Any label in the tag shape — case studies use it for iteration / option labels */

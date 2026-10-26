@@ -94,10 +94,8 @@ const TOKEN_GROUPS: { id: string; title: string; intro: string; items: Token[] }
 // Interface colours that aren't tokens
 const DRIFT: Loose[] = [
   { hex: "#481B55", name: "Reel button", use: "Overlay buttons on the expanded reel", where: "ReelPlayer.tsx", closest: "primary" },
-  { hex: "rgba(137,91,231,0.05)", name: "Old grape, 5%", use: "Selected option card fill", where: "artemis-insurance, artemis-reservations", closest: "grape-light, or grape at 5%. This is the grape from before the palette changed" },
   { hex: "#0B0B0B", name: "Near black", use: "The Read the note button", where: "TasteNotes.tsx", closest: "midnight" },
-  { hex: "#E5E7EB", name: "Tag grey", use: "Discipline tag fill (Tailwind gray-200)", where: "Tag.tsx", closest: "line-soft or surface" },
-  { hex: "#374151", name: "Tag text", use: "Discipline tag text (Tailwind gray-700)", where: "Tag.tsx", closest: "secondary" },
+  { hex: "#E5E7EB", name: "Tag grey", use: "Grey tag fill — Works discipline tags, case study option labels (Tailwind gray-200)", where: "Tag.tsx", closest: "line-soft or surface" },
 ];
 
 const PAPERS: Loose[] = [

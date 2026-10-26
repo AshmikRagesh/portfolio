@@ -233,7 +233,6 @@ function TheProblem() {
 type IterationItem = {
   label: string;
   title: string;
-  insight: string;
   worked: string[];
   didntWork: string[];
 };
@@ -242,8 +241,6 @@ const ITERATIONS: IterationItem[] = [
   {
     label: "Iteration 1",
     title: "Insurance as a dedicated booking step",
-    insight:
-      "Insurance needs to feel like a natural part of booking — not a separate task.",
     worked: [
       "Clear plan differentiation between Basic and CFAR",
       "Right-side pricing context kept total trip cost visible",
@@ -258,8 +255,6 @@ const ITERATIONS: IterationItem[] = [
   {
     label: "Iteration 2",
     title: "Insurance embedded in the traveller details step",
-    insight:
-      "Important decisions still need enough visual weight and narrative framing to signal value.",
     worked: [
       "No page break reduced cognitive load — insurance felt less intimidating",
       "Improved microcopy helped demystify what guests were paying for",
@@ -274,7 +269,6 @@ const ITERATIONS: IterationItem[] = [
   {
     label: "Iteration 3",
     title: "Visually-elevated, embedded insurance selection",
-    insight: "Shipped.",
     worked: [
       "Clear side-by-side plan comparison — Basic vs CFAR with benefit callouts",
       '"POPULAR" badge and placement nudged guests without overwhelming them',
@@ -298,7 +292,7 @@ function Process() {
           building on what the previous one revealed.
         </p>
       </Copy>
-      {ITERATIONS.map(({ label, title, insight, worked, didntWork }) => (
+      {ITERATIONS.map(({ label, title, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
             <OptionCard
@@ -310,9 +304,6 @@ function Process() {
               <ProsCons pros={worked} cons={didntWork} />
             </OptionCard>
           </Visual>
-          <Copy>
-            <p className="italic">Key insight: &ldquo;{insight}&rdquo;</p>
-          </Copy>
         </div>
       ))}
     </Chapter>
