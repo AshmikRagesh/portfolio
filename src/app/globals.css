@@ -353,7 +353,7 @@
     @apply mt-[20px];
   }
   .cs-copy > h3 {
-    @apply mb-[16px] mt-[56px] font-heading text-[22px] font-normal leading-[28px] tracking-[0px] text-heading md:text-[24px] md:leading-[30px];
+    @apply mb-[16px] mt-[56px] font-heading text-[24px] font-normal leading-[30px] tracking-[0px] text-heading;
   }
   .cs-copy > h4 {
     @apply mb-[8px] mt-[32px] font-body text-[18px] font-medium leading-[26px] text-heading;

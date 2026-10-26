@@ -298,14 +298,12 @@ function Process() {
           building on what the previous one revealed.
         </p>
       </Copy>
-      {ITERATIONS.map(({ label, title, insight, worked, didntWork }, i) => (
+      {ITERATIONS.map(({ label, title, insight, worked, didntWork }) => (
         <div key={label} className="cs-sub">
-          <Copy>
-            <h3>{i + 1}. {title}</h3>
-          </Copy>
           <Visual>
             <OptionCard
               label={label}
+              title={title}
               shipped={didntWork.length === 0}
               image={`${label} — design preview`}
             >

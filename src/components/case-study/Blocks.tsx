@@ -187,7 +187,7 @@ export function ProblemStatement({
   return (
     <div className="-rotate-[0.35deg] rounded-[4px] border border-line p-[20px] shadow-[0_4px_18px_rgba(30,5,37,0.10)] [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] hover:rotate-0 md:p-[32px] motion-reduce:transform-none motion-reduce:transition-none">
       <div className="mb-[20px] flex items-center justify-between border-b border-line/60 pb-[10px]">
-        <h3 className="font-brand text-[12px] font-normal uppercase leading-[16px] tracking-[0px] text-muted">
+        <h3 className="font-brand text-[16px] font-medium uppercase leading-[20px] tracking-[0px] text-heading">
           The Problem Statement
         </h3>
         <PunchHole index={2} light />
@@ -256,9 +256,9 @@ export function Reasons({ items }: { items: string[] }) {
 }
 
 /**
- * An iteration or design option: its label over its title and notes, with the preview
- * image beside them (below on phones). The one that shipped has a dark border and is
- * stamped SHIPPED.
+ * An iteration or design option, every one laid out the same: label, title and notes on
+ * the left, the preview image on the right filling the card's full height (below on
+ * phones). The one that shipped has a dark border and is stamped SHIPPED.
  */
 export function OptionCard({
   label,
@@ -282,15 +282,21 @@ export function OptionCard({
       <div className="grid grid-cols-1 gap-[8px] md:grid-cols-2">
         <div className="flex flex-col gap-[16px] p-[12px] md:p-[16px]">
           <div className="flex flex-wrap items-center gap-[8px]">
-            <Tag tone="grape">{label}</Tag>
+            <Tag tone="grey">{label}</Tag>
           </div>
           {title && (
-            <p className="font-heading text-[22px] font-medium leading-[30px] text-heading">{title}</p>
+            <p className="font-heading text-[22px] font-medium leading-[30px] text-heading md:text-[24px] md:leading-[32px]">
+              {title}
+            </p>
           )}
           {children}
         </div>
-        <div className="overflow-hidden rounded-[10px] bg-surface">
-          <ImagePlaceholder label={image} aspect="aspect-[4/3]" radius="rounded-[10px]" />
+        <div className="flex overflow-hidden rounded-[10px]">
+          <ImagePlaceholder
+            label={image}
+            aspect="aspect-[4/3] md:aspect-auto md:h-full md:min-h-[280px]"
+            radius="rounded-[10px]"
+          />
         </div>
       </div>
       {shipped && (
