@@ -493,6 +493,9 @@ export default function ReelPlayer({ reels, browse = false }: { reels: Reel[]; b
             </div>
           </div>
 
+          {/* Phones: a scrim so the close button doesn't sit on the video's own title */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[96px] bg-gradient-to-b from-midnight/60 to-transparent md:hidden" />
+
           {/* Close */}
           <button
             ref={closeRef}
