@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Palette, Boxes, ArrowLeftRight, Accessibility, TrendingUp } from "lucide-react";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
+import { reels } from "@/content/reels";
 import {
   Hero,
   Chapter,
@@ -535,11 +536,7 @@ function Reflection() {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ArtemisDesignSystemPage() {
   return (
-    <CaseStudyLayout
-      sections={SECTIONS}
-      // Placeholder video until this case study has its own cut
-      reel={{ youtubeId: "2rs_wDV_0Ww", title: "Three years of building Artemis at Enchanting Travels" }}
-    >
+    <CaseStudyLayout sections={SECTIONS} reel={reels["artemis-design-system"]}>
       <Hero
         title="Three years of building Artemis at Enchanting Travels"
         date="2023 — Ongoing"

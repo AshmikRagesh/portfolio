@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Save, CircleX, BellOff, Workflow } from "lucide-react";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
+import { reels } from "@/content/reels";
 import {
   Hero,
   Chapter,
@@ -610,11 +611,7 @@ function Reflection() {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ArtemisReservationsPage() {
   return (
-    <CaseStudyLayout
-      sections={SECTIONS}
-      // Placeholder video until this case study has its own cut
-      reel={{ youtubeId: "2rs_wDV_0Ww", title: "Giving the Reservations team back their time in Artemis 3.0" }}
-    >
+    <CaseStudyLayout sections={SECTIONS} reel={reels["artemis-reservations"]}>
       <Hero
         title="Giving the Reservations team back their time in Artemis 3.0"
         date="08/11/2024"

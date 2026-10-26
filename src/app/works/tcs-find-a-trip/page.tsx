@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Compass, Gem, Scale, MapPinOff } from "lucide-react";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
+import { reels } from "@/content/reels";
 import {
   Hero,
   Chapter,
@@ -360,11 +361,7 @@ function Reflection() {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function TcsFindATripPage() {
   return (
-    <CaseStudyLayout
-      sections={SECTIONS}
-      // Placeholder video until this case study has its own cut
-      reel={{ youtubeId: "2rs_wDV_0Ww", title: "Letting travellers choose: explore a destination, or browse trips" }}
-    >
+    <CaseStudyLayout sections={SECTIONS} reel={reels["tcs-find-a-trip"]}>
       <Hero
         title="Letting travellers choose: explore a destination, or browse trips"
         date="July 2026"
