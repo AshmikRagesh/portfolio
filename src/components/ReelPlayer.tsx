@@ -10,7 +10,7 @@ export type { Reel };
 /**
  * Walkthrough videos, floating over the page. On tablet and up the card can be dragged
  * to one of five docks (two on each side, one centred at the bottom); on phones it sits
- * still in the bottom right corner. Click it to watch with sound.
+ * still on the right edge. Click it to watch with sound.
  * `browse` (the home page) adds chevrons between reels and a link to each case study.
  * Styles: .reel in globals.css.
  */
@@ -22,12 +22,13 @@ const STORAGE_KEY = "reel-dock";
 type Point = { x: number; y: number };
 
 // Where the card sits for a viewport. The card is a 9:16 video in a 4px bezel.
-// `pill`: the page has a chapter pill along the bottom, so the phone card sits above it.
+// `pill`: a case study, whose chapter pill runs along the bottom; there the phone card
+// sits at the middle of the right edge, elsewhere in the bottom right corner.
 function geometry(w: number, h: number, pill: boolean) {
   const small = w < 768;
   if (small) {
     const card = { w: 98, h: 168 };
-    const spot = { x: w - 16 - card.w, y: h - (pill ? 76 : 16) - card.h };
+    const spot = { x: w - 16 - card.w, y: pill ? Math.round((h - card.h) / 2) : h - 16 - card.h };
     return { small, card, pos: { "right-corner": spot } as Partial<Record<Dock, Point>> };
   }
   const card = { w: 116, h: 200 };

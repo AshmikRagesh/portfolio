@@ -1,8 +1,9 @@
 import { ArrowRight } from "lucide-react";
 
 /**
- * Case study hero — a coloured band with the case study's title, its date, and an
- * optional live link, flanked by two screens (left only on phones).
+ * Case study hero — a coloured band with two screens (left only on phones), and the
+ * title, date and optional live link set left in the reading column over a midnight
+ * fade rising from the bottom, ready for a video behind it.
  * Pass `left` / `right` image paths once real screenshots exist.
  */
 export default function Hero({
@@ -37,11 +38,17 @@ export default function Hero({
         className="hidden md:block md:left-[calc(50%+310px)] md:top-[112px]"
       />
 
-      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-start gap-[14px] pt-[88px] md:justify-center md:pt-0">
-        <h1 className="max-w-[640px] text-balance px-[20px] text-center font-heading text-[32px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[48px] lg:text-[50px] lg:leading-[54px]">
+      {/* The same fade the expanded reel uses on phones */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[80%] bg-gradient-to-t from-midnight via-midnight/80 to-transparent"
+      />
+
+      <div className="cs-column pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-start gap-[16px] pb-[40px] md:pb-[56px]">
+        <h1 className="text-balance text-left font-heading text-[32px] font-normal leading-[36px] tracking-[-2px] text-white md:text-[44px] md:leading-[48px] lg:text-[50px] lg:leading-[54px]">
           {title}
         </h1>
-        <div className="flex flex-wrap items-center justify-center gap-[12px] px-[20px]">
+        <div className="flex flex-wrap items-center gap-[12px]">
           <span className="whitespace-nowrap rounded-full bg-white px-[18px] py-[10px] font-body text-[16px] leading-[20px] text-heading">
             {date}
           </span>
