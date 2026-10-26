@@ -129,7 +129,7 @@ export function Quotes({ items }: { items: { text: React.ReactNode; attribution:
             >
               <div className="mb-[20px] flex items-center justify-between border-b border-line/60 pb-[10px] font-brand text-[10px] uppercase leading-[14px] tracking-[0px] text-muted">
                 <span>{String(i + 1).padStart(2, "0")}</span>
-                <PunchHole index={i} fill="#f8f9fa" />
+                <PunchHole index={i} light />
               </div>
               <blockquote className="m-0 flex-1 pt-[4px] font-heading text-[20px] leading-[26px] text-heading lg:text-[22px] lg:leading-[30px]">
                 <p className="m-0">&ldquo;{text}&rdquo;</p>
@@ -190,7 +190,7 @@ export function ProblemStatement({
         <h3 className="font-brand text-[12px] font-normal uppercase leading-[16px] tracking-[0px] text-muted">
           The Problem Statement
         </h3>
-        <PunchHole index={2} fill="#f8f9fa" />
+        <PunchHole index={2} light />
       </div>
       <p className="font-heading text-[20px] leading-[32px] text-secondary md:text-[24px] md:leading-[38px]">
         {situation}{" "}
