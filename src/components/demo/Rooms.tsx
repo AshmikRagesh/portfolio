@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { featuredWorks, type FeaturedWork } from "@/components/Works";
+import { featuredWorks, type FeaturedWork } from "@/content/works";
 
 // Works, re-dressed as rooms. Same card layout as the live Works section, plus:
 //   • a room key fob that swings on hover
