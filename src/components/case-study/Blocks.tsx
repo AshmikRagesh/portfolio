@@ -413,7 +413,7 @@ export function NumberedPoints({
               {String(i + 1).padStart(2, "0")}
             </span>
             <div className="flex flex-col gap-[8px]">
-              <h4 className="font-heading text-[24px] leading-[30px] tracking-[0px] text-heading">{title}</h4>
+              <h4 className="font-heading text-[20px] leading-[28px] tracking-[0px] text-heading">{title}</h4>
               <p className="font-body text-[18px] leading-[30px] text-secondary">{description}</p>
             </div>
           </li>
@@ -432,7 +432,7 @@ export function NumberedPoints({
           <span className="font-heading text-[40px] font-normal leading-none tracking-[-2px] text-grape">
             {String(i + 1).padStart(2, "0")}
           </span>
-          <h4 className="mt-[8px] font-heading text-[24px] leading-[30px] tracking-[0px] text-heading">{title}</h4>
+          <h4 className="mt-[8px] font-heading text-[20px] leading-[28px] tracking-[0px] text-heading">{title}</h4>
           <p className="font-body text-[18px] leading-[30px] text-secondary">{description}</p>
         </li>
       ))}
