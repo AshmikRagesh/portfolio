@@ -218,72 +218,77 @@ function Context() {
           emphasis="because explorers can learn about the place first, and planners can go straight to trips."
         />
       </Copy>
-      <Copy>
-        <h3>The menu hid the pages explorers needed</h3>
-        <p>
-          The live menu made this easy to check. Every continent link pointed
-          to a trip search. Not one pointed to a destination page, even though
-          most continents already had one. We had no analytics on how many
-          people left as a result, so we estimated it from travel industry
-          averages.
-        </p>
-      </Copy>
-      <Visual>
-        <StatTiles items={MENU_TILES} />
-        <MoreDetail label="Research behind these numbers">
-          <div className="flex flex-col gap-[32px]">
-            <div>
-              <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
-                Where each menu link goes
-              </h4>
-              <MenuMap />
+      {/* Subsections sit one step apart (.cs-sub), like the solutions below */}
+      <div className="cs-sub">
+        <Copy>
+          <h3>The menu hid the pages explorers needed</h3>
+          <p>
+            The live menu made this easy to check. Every continent link pointed
+            to a trip search. Not one pointed to a destination page, even though
+            most continents already had one. We had no analytics on how many
+            people left as a result, so we estimated it from travel industry
+            averages.
+          </p>
+        </Copy>
+        <Visual>
+          <StatTiles items={MENU_TILES} />
+          <MoreDetail label="Research behind these numbers">
+            <div className="flex flex-col gap-[32px]">
+              <div>
+                <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
+                  Where each menu link goes
+                </h4>
+                <MenuMap />
+              </div>
+              <div>
+                <h4 className="mb-[12px] font-body text-[18px] font-medium leading-[28px] text-heading">
+                  How we estimated the drop-off
+                </h4>
+                <ul className="flex list-disc flex-col gap-[8px] pl-[20px] font-body text-[16px] leading-[26px] text-secondary">
+                  <li>Travel sites average a 43% bounce rate, with a usual range of 40–60%.</li>
+                  <li>We took the low end, about 40%, because people arriving from the menu are already browsing the site.</li>
+                  <li>83% of visits to travel sites come from direct and search traffic, so people who can&apos;t find a place in the menu often go back to Google.</li>
+                </ul>
+                <Footnote>
+                  Estimates, not TCS data. The test&apos;s exit tracking measures the real number. Sources:{" "}
+                  <a href="https://www.avidlyagency.com/blog/is-my-websites-bounce-rate-too-high-industry-data" target="_blank" rel="noreferrer">
+                    Contentsquare, 2021
+                  </a>
+                  ,{" "}
+                  <a href="https://plausible.io/blog/bounce-rate" target="_blank" rel="noreferrer">
+                    Plausible
+                  </a>
+                  ,{" "}
+                  <a href="https://contentsquare.com/guides/travel-hospitality-digital-experience/traffic/" target="_blank" rel="noreferrer">
+                    Contentsquare, 2026
+                  </a>
+                  . Menu links and prices from tcsworldtravel.com, October 2026.
+                </Footnote>
+              </div>
             </div>
-            <div>
-              <h4 className="mb-[12px] font-body text-[18px] font-medium leading-[28px] text-heading">
-                How we estimated the drop-off
-              </h4>
-              <ul className="flex list-disc flex-col gap-[8px] pl-[20px] font-body text-[16px] leading-[26px] text-secondary">
-                <li>Travel sites average a 43% bounce rate, with a usual range of 40–60%.</li>
-                <li>We took the low end, about 40%, because people arriving from the menu are already browsing the site.</li>
-                <li>83% of visits to travel sites come from direct and search traffic, so people who can&apos;t find a place in the menu often go back to Google.</li>
-              </ul>
-              <Footnote>
-                Estimates, not TCS data. The test&apos;s exit tracking measures the real number. Sources:{" "}
-                <a href="https://www.avidlyagency.com/blog/is-my-websites-bounce-rate-too-high-industry-data" target="_blank" rel="noreferrer">
-                  Contentsquare, 2021
-                </a>
-                ,{" "}
-                <a href="https://plausible.io/blog/bounce-rate" target="_blank" rel="noreferrer">
-                  Plausible
-                </a>
-                ,{" "}
-                <a href="https://contentsquare.com/guides/travel-hospitality-digital-experience/traffic/" target="_blank" rel="noreferrer">
-                  Contentsquare, 2026
-                </a>
-                . Menu links and prices from tcsworldtravel.com, October 2026.
-              </Footnote>
-            </div>
-          </div>
-        </MoreDetail>
-      </Visual>
-      <Copy>
-        <h3>What shaped the design</h3>
-        <p>
-          Before drawing anything, five things set the rules: three about the
-          people using the menu, and two constraints the design had to work
-          within.
-        </p>
-      </Copy>
-      <Visual>
-        <CardGrid items={CONTEXT_CARDS} />
-      </Visual>
-      <Copy>
-        <p>
-          <strong>What success looked like:</strong> more people reaching a
-          real next page after picking a continent, either a destination page
-          or a list of trips.
-        </p>
-      </Copy>
+          </MoreDetail>
+        </Visual>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What shaped the design</h3>
+          <p>
+            Before drawing anything, five things set the rules: three about the
+            people using the menu, and two constraints the design had to work
+            within.
+          </p>
+        </Copy>
+        <Visual>
+          <CardGrid items={CONTEXT_CARDS} />
+        </Visual>
+        <Copy>
+          <p>
+            <strong>What success looked like:</strong> more people reaching a
+            real next page after picking a continent, either a destination page
+            or a list of trips.
+          </p>
+        </Copy>
+      </div>
     </Chapter>
   );
 }
