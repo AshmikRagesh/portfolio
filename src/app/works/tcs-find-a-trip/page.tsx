@@ -300,7 +300,6 @@ type IterationItem = {
   label: string;
   title: string;
   chosen?: boolean;
-  src?: string;
   worked: string[];
   didntWork: string[];
 };
@@ -322,7 +321,6 @@ const ITERATIONS: IterationItem[] = [
     label: "Variant 2",
     title: "Text links that open under the continent",
     chosen: true,
-    src: "/images/tcs-find-a-trip/variant-text-links.webp",
     worked: [
       "The choice opens right under the continent you clicked",
       "The selected continent stays highlighted while its paths are open",
@@ -337,7 +335,6 @@ const ITERATIONS: IterationItem[] = [
     label: "Variant 3",
     title: "Image cards that open under the continent",
     chosen: true,
-    src: "/images/tcs-find-a-trip/variant-image-cards.webp",
     worked: [
       "A photo for each path makes exploring a place feel inviting",
       "Two big cards side by side are easy to tap, even on a phone",
@@ -382,7 +379,7 @@ function Exploration() {
           end, two designs were strong enough that we tested both.
         </p>
       </Copy>
-      {ITERATIONS.map(({ label, title, chosen, src, worked, didntWork }) => (
+      {ITERATIONS.map(({ label, title, chosen, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
             <OptionCard
@@ -390,7 +387,6 @@ function Exploration() {
               title={title}
               shipped={chosen}
               stamp="In test"
-              src={src}
               image={`${label} — ${title}`}
             >
               <ProsCons pros={worked} cons={didntWork} />
