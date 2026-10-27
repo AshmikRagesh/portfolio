@@ -175,20 +175,23 @@ export function CardGrid({
 /**
  * The problem statement on a guestbook notepad page: ruled cream paper, a punched hole,
  * a slight tilt that straightens as it lifts on hover. The situation reads in grey; the
- * consequence is marked in solid grape with white text.
+ * consequence is marked in solid grape with white text. `label` reuses the page for
+ * another key statement, such as the hypothesis.
  */
 export function ProblemStatement({
   situation,
   consequence,
+  label = "The Problem Statement",
 }: {
   situation: string;
   consequence: string;
+  label?: string;
 }) {
   return (
     <div className="-rotate-[0.35deg] rounded-[4px] border border-line p-[20px] shadow-[0_4px_18px_rgba(30,5,37,0.10)] [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] hover:rotate-0 md:p-[32px] motion-reduce:transform-none motion-reduce:transition-none">
       <div className="mb-[20px] flex items-center justify-between border-b border-line/60 pb-[10px]">
         <h3 className="font-brand text-[16px] font-medium uppercase leading-[20px] tracking-[0px] text-heading">
-          The Problem Statement
+          {label}
         </h3>
         <PunchHole index={2} light />
       </div>
@@ -340,6 +343,15 @@ export function Stats({ items }: { items: { stat: string; label: string }[] }) {
           <p className="font-body text-[18px] leading-[30px] text-muted">{label}</p>
         </div>
       ))}
+    </div>
+  );
+}
+
+/** Small muted note under a block — sources, and what's an estimate rather than data */
+export function Footnote({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mt-[24px] font-body text-[14px] leading-[22px] text-muted [&_a]:underline [&_a]:underline-offset-[2px]">
+      {children}
     </div>
   );
 }

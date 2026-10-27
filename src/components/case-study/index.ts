@@ -16,4 +16,5 @@ export {
   Metrics,
   Stats,
   ImpactList,
+  Footnote,
 } from "./Blocks";
