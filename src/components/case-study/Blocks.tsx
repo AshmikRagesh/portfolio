@@ -163,7 +163,7 @@ export function CardGrid({
         <div key={title} className="flex flex-col gap-[16px] rounded-[16px] border border-line-soft bg-white p-[20px]">
           <div className="shrink-0">{icon}</div>
           <div className="flex flex-col gap-[12px]">
-            <h4 className="font-heading text-[20px] leading-[26px] tracking-[0px] text-heading">{title}</h4>
+            <h4 className="font-heading text-[24px] leading-[30px] tracking-[0px] text-heading">{title}</h4>
             <p className="font-body text-[18px] leading-[30px] text-muted">{description}</p>
           </div>
         </div>
@@ -205,7 +205,8 @@ export function ProblemStatement({
 
 /**
  * A key statement that isn't the problem — a hypothesis, a principle. A grape rule on the
- * left, a grey tag, then the line in the heading face with its key half in grape.
+ * left, a grey tag, then the line in the heading face with its key half in grape. It's
+ * text, not a card, so it sits in the reading column (inside Copy) with its own spacing.
  */
 export function PullQuote({
   label,
@@ -217,7 +218,7 @@ export function PullQuote({
   emphasis: string;
 }) {
   return (
-    <div className="border-l-[4px] border-grape pl-[24px] md:pl-[32px]">
+    <div className="my-[40px] border-l-[4px] border-grape pl-[24px] md:my-[48px] md:pl-[32px]">
       <Tag tone="grey">{label}</Tag>
       <p className="mt-[16px] font-heading text-[22px] leading-[32px] text-heading md:text-[26px] md:leading-[38px]">
         {text} <span className="text-grape">{emphasis}</span>
@@ -267,21 +268,35 @@ export function StatTiles({
 }
 
 /**
- * Extra research tucked behind a toggle — a native <details>, so it opens without JS
- * and with the keyboard. The summary reads like a tag; the chevron turns when open.
+ * Extra research tucked behind a toggle — a native <details>, so it opens without JS and
+ * with the keyboard. The toggle is a white pill like the hero's date chip, centred, that
+ * fills blackcurrant on hover; its label swaps and the chevron turns when open. The
+ * research drops in below on its own white panel.
  */
-export function MoreDetail({ label, children }: { label: string; children: React.ReactNode }) {
+export function MoreDetail({
+  label,
+  openLabel = "Hide the research",
+  children,
+}: {
+  label: string;
+  openLabel?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <details className="group rounded-[16px] border border-line-soft bg-white">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-[12px] rounded-[16px] px-[20px] py-[16px] font-brand text-[12px] uppercase leading-[16px] text-heading transition-colors hover:bg-grape-light/40 md:px-[24px] [&::-webkit-details-marker]:hidden">
-        {label}
+    <details className="group">
+      <summary className="mx-auto flex w-fit cursor-pointer list-none items-center gap-[8px] rounded-full border border-line bg-white px-[18px] py-[10px] font-body text-[16px] leading-[20px] text-heading transition-colors duration-200 hover:border-primary hover:bg-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape [&::-webkit-details-marker]:hidden">
+        <span className="group-open:hidden">{label}</span>
+        <span className="hidden group-open:inline">{openLabel}</span>
         <ChevronDown
-          size={18}
+          size={16}
           strokeWidth={2}
-          className="shrink-0 transition-transform duration-[260ms] group-open:rotate-180 motion-reduce:transition-none"
+          aria-hidden="true"
+          className="-mr-[2px] shrink-0 transition-transform duration-[260ms] group-open:rotate-180 motion-reduce:transition-none"
         />
       </summary>
-      <div className="border-t border-line-soft p-[20px] md:p-[24px]">{children}</div>
+      <div className="cs-reveal mt-[24px] rounded-[16px] border border-line-soft bg-white p-[20px] md:p-[32px]">
+        {children}
+      </div>
     </details>
   );
 }
