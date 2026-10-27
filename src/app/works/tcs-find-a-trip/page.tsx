@@ -11,6 +11,8 @@ import {
   Figure,
   CardGrid,
   ProblemStatement,
+  PullQuote,
+  Compare,
   ProsCons,
   Reasons,
   OptionCard,
@@ -97,12 +99,10 @@ function TheProblem() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Context  (research / inputs)
 // ─────────────────────────────────────────────────────────────────────────────
-// Counted on the live menu (tcsworldtravel.com, Oct 2026) and taken from TCS trip pages
-const MENU_STATS = [
-  { stat: "32", label: "Links in the menu that lead to a trip search" },
-  { stat: "0", label: "Links in the menu that lead to a destination page" },
-  { stat: "9 of 11", label: "Menu categories that already had a destination page" },
-  { stat: "$135k", label: "Starting price per person for a featured TCS expedition" },
+// Counted on the live menu (tcsworldtravel.com, Oct 2026)
+const MENU_COMPARE: Parameters<typeof Compare>[0]["items"] = [
+  { tag: "Trip search", stat: "32", label: "menu links send people straight to a list of trips" },
+  { tag: "Destination pages", stat: "0", label: "menu links lead to a destination page, though 9 of 11 categories had one" },
 ];
 
 // Three on top (the people and the choice), two below (the constraints)
@@ -111,7 +111,7 @@ const CONTEXT_CARDS = [
     icon: <Gem size={26} className="text-grape" strokeWidth={2} />,
     title: "A long, careful decision",
     description:
-      "Trips at this price are planned months ahead. People explore a place long before they choose a trip.",
+      "Featured TCS expeditions start at $135k per person and are planned months ahead. People explore a place long before they choose a trip.",
   },
   {
     icon: <Compass size={26} className="text-grape" strokeWidth={2} />,
@@ -149,10 +149,10 @@ function Context() {
         </p>
       </Copy>
       <Visual>
-        <ProblemStatement
-          label="The Hypothesis"
-          situation="If travellers get a clear choice after picking a continent, more of them will keep going,"
-          consequence="because explorers can learn about the place first, and planners can go straight to trips."
+        <PullQuote
+          label="Hypothesis"
+          text="If travellers get a clear choice after picking a continent, more of them will keep going,"
+          emphasis="because explorers can learn about the place first, and planners can go straight to trips."
         />
       </Visual>
       <Copy>
@@ -162,8 +162,11 @@ function Context() {
           to a trip search. Not one pointed to a destination page, even though
           most continents already had one.
         </p>
-        <Stats items={MENU_STATS} />
-
+      </Copy>
+      <Visual>
+        <Compare items={MENU_COMPARE} />
+      </Visual>
+      <Copy>
         <h3>What we expected to find</h3>
         <p>
           We had no analytics on this. Based on travel industry averages, we
