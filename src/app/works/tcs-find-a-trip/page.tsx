@@ -16,8 +16,9 @@ import {
   StatTiles,
   MoreDetail,
   ProsCons,
-  Reasons,
   NumberedPoints,
+  Funnel,
+  NextCaseStudy,
   OptionCard,
   Footnote,
   VariantProvider,
@@ -551,28 +552,54 @@ function Output() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Outcome
+// Section: Outcome  (how the test will be read; results to come)
 // ─────────────────────────────────────────────────────────────────────────────
-const MEASURES = [
-  "Path completion — do more people reach a real next page after picking a continent?",
-  "Which path they choose — how many people want inspiration, and how many want trips?",
-  "Exits without a choice — does the extra step cost us anyone?",
+// The journey the test tracks, from the ticket's AB Tasty goals
+const JOURNEY = [
+  { label: "Opens Find a Trip", note: "Counted for everyone, in all three arms" },
+  { label: "Picks a continent", note: "The continent is recorded with each click" },
+  { label: "Chooses a path", note: "Explore Trips or Explore Destination, in the variants" },
+  { label: "Lands on the page", note: "The trip list or the destination page loads", goal: true },
+];
+
+// Where the results go once the test reads out; dashed until then
+const RESULTS: Parameters<typeof StatTiles>[0]["items"] = [
+  { tag: "Pending", stat: "—", label: "Path completion, Variant 2 against the control", tone: "estimate" },
+  { tag: "Pending", stat: "—", label: "Path completion, Variant 3 against the control", tone: "estimate" },
+  { tag: "Pending", stat: "—", label: "Share of visitors who chose Explore Destination", tone: "estimate" },
 ];
 
 function Outcome() {
   return (
-    <Chapter id="outcome" num={6} title="What we're measuring">
+    <Chapter id="outcome" num={6} title="How we'll know it worked">
       <Copy>
         <p>
-          The test is approved and queued for development, so there are no
-          results yet. The main measure counts a journey as complete only
-          when the next page actually loads, either the trip list or the
-          destination page. That makes all three arms directly comparable.
+          The test isn&apos;t live yet, so there are no results. This is how it
+          will be read. A journey only counts as complete when the next page
+          actually loads, so all three arms are judged the same way.
         </p>
       </Copy>
-      <Visual narrow>
-        <Reasons items={MEASURES} />
+      <Visual>
+        <Funnel
+          steps={JOURNEY}
+          branch={{
+            label: "Leaving without choosing",
+            note: "to see whether the extra step costs anyone",
+          }}
+        />
       </Visual>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Results</h3>
+          <p>
+            These fill in when the test reads out. Until then, they stay
+            empty rather than guessed.
+          </p>
+        </Copy>
+        <Visual>
+          <StatTiles items={RESULTS} />
+        </Visual>
+      </div>
     </Chapter>
   );
 }
@@ -580,22 +607,30 @@ function Outcome() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Reflection
 // ─────────────────────────────────────────────────────────────────────────────
+const LESSONS = [
+  {
+    title: "Ask before you draw",
+    description:
+      "One question on 24 June, whether both paths deserved equal weight, shaped every layout after it and kept bias out of the test.",
+  },
+  {
+    title: "Let the screen decide",
+    description:
+      "Building the side-by-side version settled the layout in a day. Each screen got the layout that suits it, not one for every screen.",
+  },
+  {
+    title: "Ask for baseline data",
+    description:
+      "This menu had no tracking, so the problem rested on a hypothesis. Next time I'd ask for baseline data before the first sketch.",
+  },
+];
+
 function Reflection() {
   return (
     <Chapter id="reflection" num={7} title="What I learned">
       <Copy>
-        <p>
-          The most useful thing I did on this project was ask a question
-          before drawing anything. Whether the two paths should be equal
-          shaped every layout after it, and it kept me from building a bias
-          into a test meant to measure intent.
-        </p>
-        <p>
-          Building the side-by-side version on a real phone, rather than
-          arguing about it, settled the layout question in a day. The fix was
-          to give each screen size the layout that suits it, not to choose
-          one for all of them.
-        </p>
+        <p>Three things I&apos;d carry into the next test.</p>
+        <NumberedPoints items={LESSONS} stacked />
       </Copy>
     </Chapter>
   );
@@ -621,6 +656,16 @@ export default function TcsFindATripPage() {
       <Output />
       <Outcome />
       <Reflection />
+      <section className="cs-chapter">
+        <Visual>
+          <NextCaseStudy
+            href="/works/artemis-design-system"
+            title="Creating and maintaining the Artemis Design System"
+            description="Three years of building one accessible design system for Enchanting Travels' tools."
+            image="/images/works-cover.png"
+          />
+        </Visual>
+      </section>
     </CaseStudyLayout>
   );
 }
