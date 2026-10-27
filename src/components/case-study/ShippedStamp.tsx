@@ -3,12 +3,12 @@
 import { useId, useRef } from "react";
 import { useStampOnce } from "@/components/useStampOnce";
 
-// Rectangular rubber stamp marking the option that shipped — a sibling of the round
+// Rectangular rubber stamp marking the option that shipped (or, with `label`, its status — a sibling of the round
 // NDA seal on the Works cards: double border, "SHIPPED" in grape ink with a star either
-// side, rough edges and ink dropout. Presses down as its card (.group) scrolls into view.
+// side, rough edges and ink dropout — "IN TEST" for one approved but not live yet). Presses down as its card (.group) scrolls into view.
 const INK = "#9D136A";
 
-export default function ShippedStamp({ className = "" }: { className?: string }) {
+export default function ShippedStamp({ className = "", label = "Shipped" }: { className?: string; label?: string }) {
   const id = useId().replace(/:/g, "");
   const u = (name: string) => `url(#${name}-${id})`;
   const ref = useRef<SVGSVGElement>(null);
@@ -21,7 +21,7 @@ export default function ShippedStamp({ className = "" }: { className?: string })
       height="64"
       viewBox="0 0 168 64"
       role="img"
-      aria-label="Shipped"
+      aria-label={label}
       className={`shipped-stamp pointer-events-none overflow-visible ${className}`}
     >
       <defs>
@@ -53,7 +53,7 @@ export default function ShippedStamp({ className = "" }: { className?: string })
         </g>
         <g filter={u("rough")} fill={INK} className="font-brand">
           <text x="84" y="41" textAnchor="middle" fontSize="24" letterSpacing="5" fontWeight="500" stroke={INK} strokeWidth="1.2">
-            SHIPPED
+            {label.toUpperCase()}
           </text>
           <text x="20" y="36" textAnchor="middle" fontSize="8">★</text>
           <text x="148" y="36" textAnchor="middle" fontSize="8">★</text>

@@ -322,20 +322,26 @@ export function Reasons({ items }: { items: string[] }) {
 
 /**
  * An iteration or design option, every one laid out the same: label, title and notes on
- * the left, the preview image on the right filling the card's full height (below on
- * phones). The one that shipped has a dark border and is stamped SHIPPED.
+ * the left, the preview on the right filling the card's full height (below on phones).
+ * `src` shows a real screen, fitted whole on a dark ground so desktop and mobile frames
+ * stay readable; without it, a placeholder named `image`. A chosen option has a dark
+ * border and a stamp — SHIPPED, or `stamp` for another status such as "In test".
  */
 export function OptionCard({
   label,
   title,
   shipped,
+  stamp = "Shipped",
   image,
+  src,
   children,
 }: {
   label: string;
   title?: string;
   shipped?: boolean;
+  stamp?: string;
   image: string;
+  src?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -357,15 +363,25 @@ export function OptionCard({
           {children}
         </div>
         <div className="flex overflow-hidden rounded-[10px]">
-          <ImagePlaceholder
-            label={image}
-            aspect="aspect-[4/3] md:aspect-auto md:h-full md:min-h-[280px]"
-            radius="rounded-[10px]"
-          />
+          {src ? (
+            <div className="flex w-full items-center justify-center bg-[#111214] p-[12px] md:min-h-[280px]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt={image} className="block h-auto w-full" />
+            </div>
+          ) : (
+            <ImagePlaceholder
+              label={image}
+              aspect="aspect-[4/3] md:aspect-auto md:h-full md:min-h-[280px]"
+              radius="rounded-[10px]"
+            />
+          )}
         </div>
       </div>
       {shipped && (
-        <ShippedStamp className="absolute right-[16px] top-[20px] h-[52px] w-[136px] md:right-[28px] md:top-[28px] md:h-[64px] md:w-[168px]" />
+        <ShippedStamp
+          label={stamp}
+          className="absolute right-[16px] top-[20px] h-[52px] w-[136px] md:right-[28px] md:top-[28px] md:h-[64px] md:w-[168px]"
+        />
       )}
     </div>
   );
