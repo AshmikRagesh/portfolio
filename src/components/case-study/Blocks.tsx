@@ -391,9 +391,34 @@ export function OptionCard({
  * Points set as open editorial columns instead of cards — no box or rule, just a large
  * grape number, a title and a line. It's text, so it sits in the reading column (inside
  * Copy, 32px under the paragraph like Stats); two or three side by side from tablet up,
- * stacked on phones. For reasons and takeaways that follow a run of cards.
+ * stacked on phones. `stacked` sets them one per row with the number beside, for three
+ * or more in the text column. For reasons and takeaways that follow a run of cards.
  */
-export function NumberedPoints({ items }: { items: { title: string; description: string }[] }) {
+export function NumberedPoints({
+  items,
+  stacked,
+}: {
+  items: { title: string; description: string }[];
+  stacked?: boolean;
+}) {
+  // Stacked: one per row with the number beside it — for three or more in the text column
+  if (stacked) {
+    return (
+      <ol className="m-0 mt-[32px] flex list-none flex-col gap-[32px] p-0">
+        {items.map(({ title, description }, i) => (
+          <li key={title} className="grid grid-cols-[48px_1fr] gap-[16px] md:grid-cols-[64px_1fr] md:gap-[24px]">
+            <span className="font-heading text-[40px] font-normal leading-none tracking-[-2px] text-grape">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <div className="flex flex-col gap-[8px]">
+              <h4 className="font-heading text-[24px] leading-[30px] tracking-[0px] text-heading">{title}</h4>
+              <p className="font-body text-[18px] leading-[30px] text-secondary">{description}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    );
+  }
   return (
     <ol
       className={`m-0 mt-[32px] grid list-none grid-cols-1 gap-[32px] p-0 md:gap-[40px] ${
