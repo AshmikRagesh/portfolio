@@ -45,20 +45,21 @@ function Overview() {
     <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
-          Designed a new step in the TCS World Travel &ldquo;Find a Trip&rdquo;
-          menu. After picking a continent, travellers now choose between
-          exploring the destination or browsing trips. Both designs shipped as
-          variants in an A/B/C test.
+          TCS World Travel plans luxury trips around the world. This was my
+          first project on the Helix team. I designed a new step in the
+          website&apos;s main menu. After picking a continent, travellers can
+          now explore the destination or browse trips. Both of my designs were
+          approved for an A/B/C test.
         </p>
         <Meta
           role={
             <>
-              Product Designer. Owned the interaction design, both test
-              variants and the responsive behaviour, through to dev handoff.
+              Product Designer. My first project on Helix. Owned both test
+              designs, from first prototype to developer handoff.
             </>
           }
           team="Rohit Rayala (CRO), Sharayu Jadhav (Product Owner), Hriday Gami (Design), Sandy Tang (Content)"
-          timeline={<>4 weeks design, Jun–Jul 2026<br />Ready for dev 15 Jul 2026</>}
+          timeline={<>4 weeks, Jun–Jul 2026<br />Ready for development 15 Jul 2026</>}
         />
       </Copy>
       <Visual>
