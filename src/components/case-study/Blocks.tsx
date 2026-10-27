@@ -1,6 +1,7 @@
 import { Check, X } from "lucide-react";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
+import AutoplayVideo from "./AutoplayVideo";
 import ImagePlaceholder from "./ImagePlaceholder";
 import ShippedStamp from "./ShippedStamp";
 import TrendUpArrow from "./TrendUpArrow";
@@ -54,9 +55,10 @@ export function Visual({ narrow, children }: { narrow?: boolean; children: React
 }
 
 /**
- * Screenshot with an optional label centred below it, then a caption. Without `src` it
- * shows a placeholder named `name` (defaults to the label). `impact` is the green
- * result line some solution screens carry.
+ * Screenshot or clip with an optional label centred below it, then a caption. `video`
+ * plays a muted loop while on screen (with `poster` as its first frame); `src` shows an
+ * image; with neither it shows a placeholder named `name` (defaults to the label).
+ * `impact` is the green result line some solution screens carry.
  */
 export function Figure({
   label,
@@ -65,6 +67,8 @@ export function Figure({
   impact,
   src,
   alt,
+  video,
+  poster,
   aspect = "aspect-[16/9]",
 }: {
   label?: string;
@@ -73,13 +77,17 @@ export function Figure({
   impact?: string;
   src?: string;
   alt?: string;
+  video?: string;
+  poster?: string;
   aspect?: string;
 }) {
   const title = name ?? label ?? "Image";
   return (
     <figure className="m-0 min-w-0">
       <div className="overflow-hidden rounded-[4px] bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]">
-        {src ? (
+        {video ? (
+          <AutoplayVideo src={video} poster={poster} label={alt ?? title} />
+        ) : src ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={src} alt={alt ?? title} className="block h-auto w-full" />
         ) : (
