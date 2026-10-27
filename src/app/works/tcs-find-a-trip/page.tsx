@@ -499,9 +499,9 @@ function Solution() {
 // ─────────────────────────────────────────────────────────────────────────────
 // The three arms of the test; the two variants are the point, the control is today's menu
 const TEST_ARMS: Parameters<typeof StatTiles>[0]["items"] = [
-  { tag: "Control", stat: "34%", label: "of visitors keep today's menu, straight to a list of trips" },
-  { tag: "Variant 2", stat: "33%", label: "of visitors get text links that open under the continent", tone: "key" },
-  { tag: "Variant 3", stat: "33%", label: "of visitors get image cards that open under the continent", tone: "key" },
+  { stat: "34%", label: "of visitors keep today's menu, the control" },
+  { stat: "33%", label: "of visitors get Variant 2, the text links", tone: "key" },
+  { stat: "33%", label: "of visitors get Variant 3, the image cards", tone: "key" },
 ];
 
 // What developers received, matched in length so the columns sit level
