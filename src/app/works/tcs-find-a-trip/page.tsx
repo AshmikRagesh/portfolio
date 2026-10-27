@@ -353,16 +353,17 @@ const REVIEW_CHANGES = [
 ];
 
 // Numbered points, not cards, in the reading column: the takeaway after the variant cards
+// Two reasons, matched in length so the columns sit level
 const WHY_BOTH = [
   {
-    title: "Different strengths",
+    title: "No clear winner",
     description:
-      "The links stay light and work for every continent. The cards make exploring a place feel inviting.",
+      "Each design had its own strength. The links stay light and work everywhere; the cards make exploring a place feel inviting.",
   },
   {
-    title: "Let the test decide",
+    title: "An open question",
     description:
-      "The hypothesis asked whether image cards draw more clicks than text links. Running both against the current menu lets the numbers answer that, not opinion.",
+      "The hypothesis asked if image cards draw more clicks than text links. Only real visitors, not a meeting, could answer that.",
   },
 ];
 
