@@ -1,37 +1,52 @@
 import { ArrowRight } from "lucide-react";
 
 /**
- * Case study hero — a grey stand-in image for now (a video later), with the date
- * and optional live link over the title, set left in the reading column over a midnight fade rising
- * from the bottom.
+ * Case study hero — the case study's image (`image`, cropped to fill; `imagePosition` picks
+ * the part to keep) or a grey stand-in until one exists, with the date and optional live
+ * link over the title, set left in the reading column over a midnight fade rising from the
+ * bottom.
  */
 export default function Hero({
   title,
   date,
   link,
+  image,
+  imagePosition = "center",
 }: {
   title: string;
   date: string;
   link?: { href: string; label: string };
+  image?: string;
+  imagePosition?: string;
 }) {
   return (
     <header data-cs-hero className="relative isolate h-[520px] overflow-hidden bg-placeholder">
-      <svg
-        width="32"
-        height="32"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        className="absolute left-1/2 top-[112px] -translate-x-1/2 text-muted opacity-50"
-      >
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <circle cx="9" cy="9" r="2" />
-        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-      </svg>
+      {image ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={image}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: imagePosition }}
+        />
+      ) : (
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className="absolute left-1/2 top-[112px] -translate-x-1/2 text-muted opacity-50"
+        >
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <circle cx="9" cy="9" r="2" />
+          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+        </svg>
+      )}
 
       {/* The same fade the expanded reel uses on phones */}
       <div
