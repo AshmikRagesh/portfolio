@@ -175,23 +175,21 @@ export function CardGrid({
 /**
  * The problem statement on a guestbook notepad page: ruled cream paper, a punched hole,
  * a slight tilt that straightens as it lifts on hover. The situation reads in grey; the
- * consequence is marked in solid grape with white text. `label` reuses the page for
- * another key statement, such as the hypothesis.
+ * consequence is marked in solid grape with white text. Kept for the problem statement
+ * alone; other key statements use PullQuote.
  */
 export function ProblemStatement({
   situation,
   consequence,
-  label = "The Problem Statement",
 }: {
   situation: string;
   consequence: string;
-  label?: string;
 }) {
   return (
     <div className="-rotate-[0.35deg] rounded-[4px] border border-line p-[20px] shadow-[0_4px_18px_rgba(30,5,37,0.10)] [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] hover:rotate-0 md:p-[32px] motion-reduce:transform-none motion-reduce:transition-none">
       <div className="mb-[20px] flex items-center justify-between border-b border-line/60 pb-[10px]">
         <h3 className="font-brand text-[16px] font-medium uppercase leading-[20px] tracking-[0px] text-heading">
-          {label}
+          The Problem Statement
         </h3>
         <PunchHole index={2} light />
       </div>
@@ -201,6 +199,70 @@ export function ProblemStatement({
           {consequence}
         </mark>
       </p>
+    </div>
+  );
+}
+
+/**
+ * A key statement that isn't the problem — a hypothesis, a principle. A grape rule on the
+ * left, a grey tag, then the line in the heading face with its key half in grape.
+ */
+export function PullQuote({
+  label,
+  text,
+  emphasis,
+}: {
+  label: string;
+  text: string;
+  emphasis: string;
+}) {
+  return (
+    <div className="border-l-[4px] border-grape pl-[24px] md:pl-[32px]">
+      <Tag tone="grey">{label}</Tag>
+      <p className="mt-[16px] font-heading text-[22px] leading-[32px] text-heading md:text-[26px] md:leading-[38px]">
+        {text} <span className="text-grape">{emphasis}</span>
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Two numbers set against each other — what there was vs what was missing. The second
+ * tile is the point: light grape, its number in grape.
+ */
+export function Compare({
+  items,
+}: {
+  items: [
+    { tag: string; stat: string; label: string },
+    { tag: string; stat: string; label: string },
+  ];
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-[16px] md:grid-cols-2 md:gap-[24px]">
+      {items.map(({ tag, stat, label }, i) => {
+        const key = i === 1;
+        return (
+          <div
+            key={tag}
+            className={`flex flex-col gap-[16px] rounded-[16px] p-[24px] md:p-[32px] ${
+              key ? "bg-grape-light/60" : "border border-line-soft bg-white"
+            }`}
+          >
+            <div>
+              <Tag tone={key ? "grape" : "grey"}>{tag}</Tag>
+            </div>
+            <span
+              className={`font-heading text-[80px] font-medium leading-none tracking-[-4px] md:text-[96px] ${
+                key ? "text-grape" : "text-heading"
+              }`}
+            >
+              {stat}
+            </span>
+            <p className="font-body text-[18px] leading-[28px] text-secondary">{label}</p>
+          </div>
+        );
+      })}
     </div>
   );
 }

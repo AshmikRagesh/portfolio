@@ -10,6 +10,8 @@ export {
   Quotes,
   CardGrid,
   ProblemStatement,
+  PullQuote,
+  Compare,
   ProsCons,
   Reasons,
   OptionCard,
