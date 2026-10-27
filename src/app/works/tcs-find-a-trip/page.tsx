@@ -21,6 +21,9 @@ import {
   OptionCard,
   Stats,
   Footnote,
+  VariantProvider,
+  VariantToggle,
+  VariantFigure,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1270. Copy is a starting point to edit section by section;
@@ -446,30 +449,57 @@ const SOLUTION_ITEMS = [
   },
 ];
 
+// The two designs in test; the toggle swaps every Solution visual between them
+const TEST_VARIANTS = [
+  { id: "links", label: "Text links" },
+  { id: "cards", label: "Image cards" },
+];
+
 function Solution() {
   return (
     <Chapter id="solution" num={4} title="How the final designs work">
-      <Copy>
-        <p>
-          Both test designs share one flow: pick a continent, choose how to
-          explore it, and land on the right page. These four details make that
-          flow work.
-        </p>
-      </Copy>
-      <Visual>
-        <Figure label="The flow: pick a continent, choose a path, land on the page" />
-      </Visual>
-      {SOLUTION_ITEMS.map(({ num, title, body }) => (
-        <div key={num} className="cs-sub">
-          <Copy>
-            <h3>{num}. {title}</h3>
-            <p>{body}</p>
-          </Copy>
-          <Visual>
-            <Figure name={`Solution ${num} — ${title}`} />
-          </Visual>
-        </div>
-      ))}
+      <VariantProvider variants={TEST_VARIANTS}>
+        <Copy>
+          <p>
+            Both test designs share one flow: pick a continent, choose how to
+            explore it, and land on the right page. These four details make
+            that flow work. Switch between the two designs to see each one.
+          </p>
+          <VariantToggle label="Show the design" />
+        </Copy>
+        <Visual>
+          <VariantFigure
+            names={{
+              links: "Flow — text links: pick a continent, choose a path, land on the page",
+              cards: "Flow — image cards: pick a continent, choose a path, land on the page",
+            }}
+          />
+        </Visual>
+        {SOLUTION_ITEMS.map(({ num, title, body }) => (
+          <div key={num} className="cs-sub">
+            <Copy>
+              <h3>{num}. {title}</h3>
+              <p>{body}</p>
+            </Copy>
+            <Visual>
+              {num === 3 ? (
+                // The layout rule is a comparison, so both designs sit side by side
+                <div className="grid grid-cols-1 gap-[16px] md:grid-cols-2 md:gap-[24px]">
+                  <Figure name="Text links — stacked" label="Text links" aspect="aspect-[4/3]" />
+                  <Figure name="Image cards — side by side" label="Image cards" aspect="aspect-[4/3]" />
+                </div>
+              ) : (
+                <VariantFigure
+                  names={{
+                    links: `Solution ${num} — ${title} (text links)`,
+                    cards: `Solution ${num} — ${title} (image cards)`,
+                  }}
+                />
+              )}
+            </Visual>
+          </div>
+        ))}
+      </VariantProvider>
     </Chapter>
   );
 }
