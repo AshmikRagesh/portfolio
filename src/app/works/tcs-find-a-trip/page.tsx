@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { ArrowRight, Compass, Gem, Scale, MapPinOff, Images } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { Compass, Diamond, GlobeX, Images, Scales } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -20,7 +21,6 @@ import {
   Stats,
   Footnote,
 } from "@/components/case-study";
-import { Tag } from "@/components/Tag";
 
 // DRAFT — first pass at TCSWT-1270. Copy is a starting point to edit section by section;
 // figures are placeholders until the Figma exports are in.
@@ -118,75 +118,86 @@ const MENU = [
 ];
 
 const MENU_TILES: Parameters<typeof StatTiles>[0]["items"] = [
-  { tag: "Trip search", stat: "11", label: "of 11 menu links send people straight to a list of trips" },
+  { tag: "Trip search", stat: "11 of 11", label: "menu links send people straight to a list of trips" },
   { tag: "Destination pages", stat: "0", label: "menu links lead to a destination page, though 9 categories had one", tone: "key" },
   { tag: "Estimated drop-off", stat: "~40%", label: "of people leave the trip list without opening a trip", tone: "estimate" },
 ];
 
 /** Each menu category, where its link goes, and whether a destination page was waiting */
 function MenuMap() {
+  const th = "pb-[12px] pr-[16px] font-brand text-[12px] font-normal uppercase leading-[16px] text-muted";
+  const td = "py-[14px] pr-[16px] align-top";
   return (
-    <div className="flex flex-col gap-[4px]">
-      <div className="hidden grid-cols-[1fr_120px_200px] gap-x-[16px] px-[12px] pb-[4px] font-brand text-[12px] uppercase leading-[16px] text-muted md:grid">
-        <span>Menu category</span>
-        <span>Links to</span>
-        <span>Destination page</span>
-      </div>
-      {MENU.map(({ name, page }, i) => (
-        <div
-          key={name}
-          className={`grid grid-cols-[1fr_auto] items-center gap-x-[16px] gap-y-[6px] rounded-[8px] px-[12px] py-[10px] md:grid-cols-[1fr_120px_200px] ${
-            i % 2 === 0 ? "bg-background" : ""
-          }`}
-        >
-          <span className="font-body text-[16px] leading-[24px] text-heading">{name}</span>
-          <span className="flex items-center gap-[6px]">
-            <ArrowRight size={14} className="text-muted" aria-hidden="true" />
-            <Tag tone="grey">Trips</Tag>
-          </span>
-          <span className="col-span-2 md:col-span-1">
-            {page ? (
-              <span className="inline-flex h-[24px] items-center rounded-[2px] border border-dashed border-grape px-[8px] font-brand text-[12px] uppercase leading-[16px] text-grape">
-                Exists · not linked
+    <table className="w-full border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
+      <thead>
+        <tr className="border-b border-line">
+          <th scope="col" className={th}>Menu category</th>
+          <th scope="col" className={th}>Link goes to</th>
+          <th scope="col" className={`${th} pr-0`}>Destination page</th>
+        </tr>
+      </thead>
+      <tbody>
+        {MENU.map(({ name, page }) => (
+          <tr key={name} className="border-b border-line-soft">
+            <th scope="row" className={`${td} font-normal text-heading`}>{name}</th>
+            <td className={`${td} text-secondary`}>
+              <span className="inline-flex items-center gap-[6px] whitespace-nowrap">
+                <ArrowRight size={14} aria-hidden="true" className="text-muted" />
+                Trip list
               </span>
-            ) : (
-              <span className="font-body text-[14px] leading-[20px] text-muted">No page</span>
-            )}
-          </span>
-        </div>
-      ))}
-    </div>
+            </td>
+            <td className={`${td} pr-0`}>
+              {page ? (
+                <span className="inline-flex items-center gap-[8px] text-grape">
+                  <span aria-hidden="true" className="size-[8px] shrink-0 rounded-full bg-grape" />
+                  Exists, not linked
+                </span>
+              ) : (
+                <span className="text-muted">No page</span>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th scope="row" className="pt-[16px] pr-[16px] text-left font-medium text-heading">Total</th>
+          <td className="pt-[16px] pr-[16px] font-medium text-heading">11 to trips</td>
+          <td className="pt-[16px] font-medium text-grape">9 not linked</td>
+        </tr>
+      </tfoot>
+    </table>
   );
 }
 
 // Three on top (the people and the choice), two below (the constraints)
 const CONTEXT_CARDS = [
   {
-    icon: <Gem size={26} className="text-grape" strokeWidth={2} />,
+    icon: <Diamond size={28} weight="fill" className="text-grape" />,
     title: "A long, careful decision",
     description:
       "Featured TCS expeditions start at $135k per person and are planned months ahead. People explore a place long before they choose a trip.",
   },
   {
-    icon: <Compass size={26} className="text-grape" strokeWidth={2} />,
+    icon: <Compass size={28} weight="fill" className="text-grape" />,
     title: "Two kinds of visitor, one path",
     description:
       "The team believed visitors came in two moods: exploring a place, or planning a trip. The menu only served the planners.",
   },
   {
-    icon: <Scale size={26} className="text-grape" strokeWidth={2} />,
+    icon: <Scales size={28} weight="fill" className="text-grape" />,
     title: "Neither path should win by design",
     description:
       "I asked if the design should favour Destinations, since the test measures it. We agreed to treat both equally, so the test measures intent, not my layout.",
   },
   {
-    icon: <MapPinOff size={26} className="text-grape" strokeWidth={2} />,
+    icon: <GlobeX size={28} weight="fill" className="text-grape" />,
     title: "Not every continent has a destination page",
     description:
       "North America and Golf only have trips. The design had to fall back cleanly, with no broken or empty option.",
   },
   {
-    icon: <Images size={26} className="text-grape" strokeWidth={2} />,
+    icon: <Images size={28} weight="fill" className="text-grape" />,
     title: "The images had to exist first",
     description:
       "The photo-card version needed an approved image for every continent. It couldn't be finished until the content team supplied them.",
@@ -201,14 +212,12 @@ function Context() {
           This was my first project on the Helix team. The CRO team came with
           a hypothesis, not data.
         </p>
-      </Copy>
-      <Visual>
         <PullQuote
           label="Hypothesis"
           text="If travellers get a clear choice after picking a continent, more of them will keep going,"
           emphasis="because explorers can learn about the place first, and planners can go straight to trips."
         />
-      </Visual>
+      </Copy>
       <Copy>
         <h3>The menu hid the pages explorers needed</h3>
         <p>
