@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { Compass, Diamond, GlobeX, Images, Scales } from "@phosphor-icons/react/dist/ssr";
+import { ArrowsSplit, FileX, HourglassMedium, Image as ImageIcon, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -173,31 +173,31 @@ function MenuMap() {
 // Three on top (the people and the choice), two below (the constraints)
 const CONTEXT_CARDS = [
   {
-    icon: <Diamond size={28} weight="fill" className="text-grape" />,
+    icon: <HourglassMedium size={28} weight="fill" className="text-grape" />,
     title: "A long, careful decision",
     description:
       "Featured TCS expeditions start at $135k per person and are planned months ahead. People explore a place long before they choose a trip.",
   },
   {
-    icon: <Compass size={28} weight="fill" className="text-grape" />,
+    icon: <Users size={28} weight="fill" className="text-grape" />,
     title: "Two kinds of visitor, one path",
     description:
       "The team believed visitors came in two moods: exploring a place, or planning a trip. The menu only served the planners.",
   },
   {
-    icon: <Scales size={28} weight="fill" className="text-grape" />,
+    icon: <ArrowsSplit size={28} weight="fill" className="text-grape" />,
     title: "Neither path should win by design",
     description:
       "I asked if the design should favour Destinations, since the test measures it. We agreed to treat both equally, so the test measures intent, not my layout.",
   },
   {
-    icon: <GlobeX size={28} weight="fill" className="text-grape" />,
+    icon: <FileX size={28} weight="fill" className="text-grape" />,
     title: "Not every continent has a destination page",
     description:
       "North America and Golf only have trips. The design had to fall back cleanly, with no broken or empty option.",
   },
   {
-    icon: <Images size={28} weight="fill" className="text-grape" />,
+    icon: <ImageIcon size={28} weight="fill" className="text-grape" />,
     title: "The images had to exist first",
     description:
       "The photo-card version needed an approved image for every continent. It couldn't be finished until the content team supplied them.",
@@ -230,7 +230,7 @@ function Context() {
       </Copy>
       <Visual>
         <StatTiles items={MENU_TILES} />
-        <MoreDetail label="See the research behind these numbers">
+        <MoreDetail label="Research behind these numbers">
           <div className="flex flex-col gap-[32px]">
             <div>
               <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
