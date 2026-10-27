@@ -41,8 +41,8 @@ export function Meta({
     <dl className="mb-[28px] mt-[48px] grid grid-cols-1 gap-[20px] md:grid-cols-[1fr_1.5fr_1.4fr] md:gap-[28px]">
       {items.map(({ label, value }) => (
         <div key={label}>
-          <dt className="mb-[8px] font-body text-[16px] font-medium leading-[24px] text-heading">{label}</dt>
-          <dd className="font-body text-[16px] leading-[24px] text-secondary">{value}</dd>
+          <dt className="mb-[8px] font-body text-[18px] font-medium leading-[28px] text-heading">{label}</dt>
+          <dd className="font-body text-[18px] leading-[28px] text-secondary">{value}</dd>
         </div>
       ))}
     </dl>
@@ -164,7 +164,7 @@ export function CardGrid({
           <div className="shrink-0">{icon}</div>
           <div className="flex flex-col gap-[12px]">
             <h4 className="font-heading text-[20px] leading-[26px] tracking-[0px] text-heading">{title}</h4>
-            <p className="font-body text-[16px] leading-[26px] text-muted">{description}</p>
+            <p className="font-body text-[18px] leading-[30px] text-muted">{description}</p>
           </div>
         </div>
       ))}
@@ -219,7 +219,7 @@ function Mark({ tone, children }: { tone: "pro" | "con" | "reason"; children: Re
   );
 }
 
-const NOTE = "flex gap-[12px] font-body text-[16px] leading-[26px] text-secondary";
+const NOTE = "flex gap-[12px] font-body text-[18px] leading-[30px] text-secondary";
 
 /** What worked (green tick) and what didn't (red cross) */
 export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: string[] }) {
@@ -317,7 +317,7 @@ export function Metrics({ items }: { items: { stat: string; label: string }[] })
             <TrendUpArrow />
           </div>
           <div className="flex flex-1 flex-col gap-[12px]">
-            <p className="font-body text-[16px] leading-[26px] text-secondary">{label}</p>
+            <p className="font-body text-[18px] leading-[30px] text-secondary">{label}</p>
             <span className="mt-auto font-heading text-stat font-medium text-heading md:text-stat-md lg:text-stat-lg">
               {stat}
             </span>
@@ -337,7 +337,7 @@ export function Stats({ items }: { items: { stat: string; label: string }[] }) {
           <span className="font-heading text-stat font-medium leading-none text-heading md:text-stat-md lg:text-stat-lg">
             {stat}
           </span>
-          <p className="font-body text-[16px] leading-[26px] text-muted">{label}</p>
+          <p className="font-body text-[18px] leading-[30px] text-muted">{label}</p>
         </div>
       ))}
     </div>
@@ -351,7 +351,7 @@ export function ImpactList({ items }: { items: string[] }) {
       <p className="font-brand text-[12px] font-medium uppercase tracking-[1px] text-success">Impact</p>
       <ul className="flex list-disc flex-col gap-[8px] pl-[20px]">
         {items.map((i) => (
-          <li key={i} className="font-body text-[16px] leading-[26px] text-muted">
+          <li key={i} className="font-body text-[18px] leading-[30px] text-muted">
             {i}
           </li>
         ))}

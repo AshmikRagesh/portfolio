@@ -347,7 +347,7 @@
      boxes inside it keep their own type */
   .cs-copy > p,
   .cs-copy > ul > li {
-    @apply font-body text-[16px] leading-[26px] text-secondary;
+    @apply font-body text-[18px] leading-[30px] text-secondary;
   }
   .cs-copy > p + p {
     @apply mt-[20px];
@@ -356,7 +356,7 @@
     @apply mb-[16px] mt-[56px] font-heading text-[24px] font-normal leading-[30px] tracking-[0px] text-heading;
   }
   .cs-copy > h4 {
-    @apply mb-[8px] mt-[32px] font-body text-[18px] font-medium leading-[26px] text-heading;
+    @apply mb-[8px] mt-[32px] font-body text-[20px] font-medium leading-[28px] text-heading;
   }
   .cs-copy strong {
     @apply font-medium text-heading;
