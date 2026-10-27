@@ -146,19 +146,21 @@ export function Quotes({ items }: { items: { text: React.ReactNode; attribution:
   );
 }
 
-/** Icon cards — research insights, challenges, fronts. Five go three over two. */
+/** Icon cards — research insights, challenges, fronts, reasons. Three sit in one row;
+ * five go three over two; the rest pair up. */
 export function CardGrid({
   items,
 }: {
   items: { icon: React.ReactNode; title: string; description: string }[];
 }) {
-  const threeOverTwo = items.length === 5;
+  const layout =
+    items.length === 5
+      ? "md:grid-cols-6 md:[&>*:nth-child(-n+3)]:col-span-2 md:[&>*]:col-span-3"
+      : items.length === 3
+        ? "md:grid-cols-3"
+        : "md:grid-cols-2";
   return (
-    <div
-      className={`grid grid-cols-1 gap-[16px] md:gap-[24px] ${
-        threeOverTwo ? "md:grid-cols-6 md:[&>*:nth-child(-n+3)]:col-span-2 md:[&>*]:col-span-3" : "md:grid-cols-2"
-      }`}
-    >
+    <div className={`grid grid-cols-1 gap-[16px] md:gap-[24px] ${layout}`}>
       {items.map(({ icon, title, description }) => (
         <div key={title} className="flex flex-col gap-[16px] rounded-[16px] border border-line-soft bg-white p-[20px]">
           <div className="shrink-0">{icon}</div>
