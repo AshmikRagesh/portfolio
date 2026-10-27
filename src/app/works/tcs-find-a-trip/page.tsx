@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { ArrowsSplit, FileX, HourglassMedium, Image as ImageIcon, Users } from "@phosphor-icons/react/dist/ssr";
+import { ArrowsSplit, ChartBar, FileX, HourglassMedium, Image as ImageIcon, Question, Shapes, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -50,17 +50,16 @@ function Overview() {
     <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
-          TCS World Travel plans luxury trips around the world. This was my
-          first project on the Helix team. I designed a new step in the
-          website&apos;s main menu. After picking a continent, travellers can
+          TCS World Travel plans luxury trips around the world. I designed a
+          new step in the website&apos;s main menu. After picking a continent, travellers can
           now explore the destination or browse trips. Both of my designs were
           approved for an A/B/C test.
         </p>
         <Meta
           role={
             <>
-              Product Designer. My first project on Helix. Owned both test
-              designs, from first prototype to developer handoff.
+              Product Designer. Owned both test designs, from first
+              prototype to developer handoff.
             </>
           }
           team="Rohit Rayala (CRO), Sharayu Jadhav (Product Owner), Hriday Gami (Design), Sandy Tang (Content)"
@@ -209,8 +208,7 @@ function Context() {
     <Chapter id="discovery" num={2} title="What we knew going in">
       <Copy>
         <p>
-          This was my first project on the Helix team. The CRO team came with
-          a hypothesis, not data.
+          The CRO team came with a hypothesis, not data.
         </p>
         <PullQuote
           label="Hypothesis"
@@ -353,15 +351,31 @@ const REVIEW_CHANGES = [
   "List Explore Trips first, then Explore Destination",
 ];
 
+// Same filled icon cards as Discovery, one row of three
 const WHY_BOTH = [
-  "Each design had a different strength: the links stay light, and the cards make exploring feel inviting",
-  "The hypothesis itself asked whether image cards would draw more clicks than text links",
-  "Running both against the current menu settles that with data, not opinion",
+  {
+    icon: <Shapes size={28} weight="fill" className="text-grape" />,
+    title: "Different strengths",
+    description:
+      "The links stay light and work for every continent. The cards make exploring a place feel inviting.",
+  },
+  {
+    icon: <Question size={28} weight="fill" className="text-grape" />,
+    title: "The hypothesis asked",
+    description:
+      "Would image cards draw more clicks than text links? Only a test could answer that.",
+  },
+  {
+    icon: <ChartBar size={28} weight="fill" className="text-grape" />,
+    title: "Data over opinion",
+    description:
+      "Running both against the current menu lets the numbers decide, not the meeting room.",
+  },
 ];
 
 function Exploration() {
   return (
-    <Chapter id="exploration" num={3} title="A choice that had to work on a phone too">
+    <Chapter id="exploration" num={3} title="What we explored, and the three we showed the business">
       <Copy>
         <p>
           I started with quick prototypes to test how the choice should behave,
@@ -403,8 +417,8 @@ function Exploration() {
             between them.
           </p>
         </Copy>
-        <Visual narrow>
-          <Reasons items={WHY_BOTH} />
+        <Visual>
+          <CardGrid items={WHY_BOTH} />
         </Visual>
       </div>
     </Chapter>
