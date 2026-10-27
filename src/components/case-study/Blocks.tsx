@@ -1,4 +1,5 @@
-import { Check, X } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Check, ChevronRight, X } from "lucide-react";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
 import AutoplayVideo from "./AutoplayVideo";
@@ -262,7 +263,7 @@ export function StatTiles({
       {items.map(({ tag, stat, label, tone = "plain" }) => {
         const look = TILE[tone];
         return (
-          <div key={tag ?? label} className={`flex flex-col gap-[16px] rounded-[16px] p-[24px] ${look.box}`}>
+          <div key={label} className={`flex flex-col gap-[16px] rounded-[16px] p-[24px] ${look.box}`}>
             {tag && (
               <div>
                 <Tag tone={look.tag}>{tag}</Tag>
@@ -437,6 +438,100 @@ export function NumberedPoints({
         </li>
       ))}
     </ol>
+  );
+}
+
+/**
+ * A journey as steps in a row — white tiles joined by chevrons, the step that counts as
+ * success in light grape. `branch` is the way out that's also watched, set below in a
+ * dashed tile. Stacks with the chevrons turning down on phones.
+ */
+export function Funnel({
+  steps,
+  branch,
+}: {
+  steps: { label: string; note: string; goal?: boolean }[];
+  branch?: { label: string; note: string };
+}) {
+  return (
+    <div className="flex flex-col gap-[16px]">
+      <ol className="m-0 flex list-none flex-col items-stretch gap-[8px] p-0 md:flex-row md:items-stretch">
+        {steps.map(({ label, note, goal }, i) => (
+          <li key={label} className="flex flex-col items-center gap-[8px] md:flex-1 md:flex-row">
+            <div
+              className={`flex w-full flex-1 flex-col gap-[8px] self-stretch rounded-[16px] p-[20px] ${
+                goal ? "bg-grape-light/60" : "border border-line-soft bg-white"
+              }`}
+            >
+              <span className={`font-brand text-[12px] uppercase leading-[16px] ${goal ? "text-grape" : "text-muted"}`}>
+                {goal ? "Main measure" : `Step ${i + 1}`}
+              </span>
+              <span className="font-heading text-[20px] leading-[28px] text-heading">{label}</span>
+              <span className="font-body text-[16px] leading-[24px] text-secondary">{note}</span>
+            </div>
+            {i < steps.length - 1 && (
+              <ChevronRight
+                size={18}
+                aria-hidden="true"
+                className="shrink-0 rotate-90 text-muted md:rotate-0"
+              />
+            )}
+          </li>
+        ))}
+      </ol>
+      {branch && (
+        <div className="flex flex-col gap-[4px] rounded-[16px] border border-dashed border-line bg-white p-[20px] md:flex-row md:items-baseline md:gap-[16px]">
+          <span className="font-brand text-[12px] uppercase leading-[16px] text-muted">Also watched</span>
+          <span className="font-body text-[16px] leading-[24px] text-secondary">
+            <span className="text-heading">{branch.label}</span> — {branch.note}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * The way on to the next case study at the end of the page: one wide white card — label,
+ * title and line on the left, its cover on the right — that lifts on hover like the Works
+ * cards, its arrow nudging right.
+ */
+export function NextCaseStudy({
+  href,
+  title,
+  description,
+  image,
+}: {
+  href: string;
+  title: string;
+  description: string;
+  image: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group grid grid-cols-1 overflow-hidden rounded-[16px] border border-line-soft bg-white transition-[transform,box-shadow] duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] hover:shadow-[0_2px_0_rgba(200,204,212,0.45),0_16px_40px_rgba(30,5,37,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape md:grid-cols-2"
+    >
+      <div className="flex flex-col gap-[16px] p-[24px] md:p-[40px]">
+        <span className="font-brand text-[12px] uppercase leading-[16px] text-muted">Next case study</span>
+        <span className="font-heading text-[28px] leading-[34px] tracking-[-1px] text-heading md:text-[32px] md:leading-[38px]">
+          {title}
+        </span>
+        <span className="font-body text-[18px] leading-[30px] text-secondary">{description}</span>
+        <span className="mt-auto inline-flex items-center gap-[8px] pt-[8px] font-brand text-[14px] uppercase tracking-[1px] text-heading transition-colors duration-200 group-hover:text-grape">
+          Read the case study
+          <ArrowRight
+            size={16}
+            aria-hidden="true"
+            className="transition-transform duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-[4px] motion-reduce:transition-none"
+          />
+        </span>
+      </div>
+      <div className="relative min-h-[220px] bg-placeholder md:min-h-[320px]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      </div>
+    </Link>
   );
 }
 

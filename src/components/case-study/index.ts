@@ -17,6 +17,8 @@ export {
   ProsCons,
   Reasons,
   NumberedPoints,
+  Funnel,
+  NextCaseStudy,
   OptionCard,
   Metrics,
   Stats,
