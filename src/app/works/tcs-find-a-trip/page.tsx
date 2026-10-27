@@ -123,65 +123,50 @@ const MENU_TILES: Parameters<typeof StatTiles>[0]["items"] = [
   { tag: "Estimated drop-off", stat: "~40%", label: "of people leave the trip list without opening a trip", tone: "estimate" },
 ];
 
-/**
- * Each menu category, where its link goes, and whether a destination page was waiting.
- * A soft-framed table: a light header band, rows ruled by hairlines (no column rules),
- * the destination status as small pills, and a tinted total row. On phones the middle
- * column (the same "Trip list" on every row) drops out to make room.
- */
+/** Each menu category, where its link goes, and whether a destination page was waiting */
 function MenuMap() {
-  const cell = "px-[12px] py-[14px] align-middle md:px-[20px]";
-  const pill = "inline-flex h-[28px] items-center gap-[8px] whitespace-nowrap rounded-full px-[12px] text-[14px] leading-[20px]";
+  const th = "pb-[12px] pr-[16px] font-brand text-[12px] font-normal uppercase leading-[16px] text-muted";
+  const td = "py-[14px] pr-[16px] align-top";
   return (
-    <div className="overflow-hidden rounded-[12px] border border-line-soft bg-white">
-      <table className="w-full border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
-        <thead className="bg-background">
-          <tr>
-            {["Menu category", "Link goes to", "Destination page"].map((h, i) => (
-              <th
-                key={h}
-                scope="col"
-                className={`${cell} py-[12px] font-brand text-[12px] font-normal uppercase leading-[16px] text-muted ${
-                  i === 1 ? "hidden md:table-cell" : ""
-                }`}
-              >
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {MENU.map(({ name, page }) => (
-            <tr key={name} className="border-t border-line-soft">
-              <th scope="row" className={`${cell} font-normal text-heading`}>{name}</th>
-              <td className={`${cell} hidden text-secondary md:table-cell`}>
-                <span className="inline-flex items-center gap-[6px] whitespace-nowrap">
-                  <ArrowRight size={14} aria-hidden="true" className="text-muted" />
-                  Trip list
+    <table className="w-full border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
+      <thead>
+        <tr className="border-b border-line">
+          <th scope="col" className={th}>Menu category</th>
+          <th scope="col" className={th}>Link goes to</th>
+          <th scope="col" className={`${th} pr-0`}>Destination page</th>
+        </tr>
+      </thead>
+      <tbody>
+        {MENU.map(({ name, page }) => (
+          <tr key={name} className="border-b border-line-soft">
+            <th scope="row" className={`${td} font-normal text-heading`}>{name}</th>
+            <td className={`${td} text-secondary`}>
+              <span className="inline-flex items-center gap-[6px] whitespace-nowrap">
+                <ArrowRight size={14} aria-hidden="true" className="text-muted" />
+                Trip list
+              </span>
+            </td>
+            <td className={`${td} pr-0`}>
+              {page ? (
+                <span className="inline-flex items-center gap-[8px] text-grape">
+                  <span aria-hidden="true" className="size-[8px] shrink-0 rounded-full bg-grape" />
+                  Exists, not linked
                 </span>
-              </td>
-              <td className={cell}>
-                {page ? (
-                  <span className={`${pill} bg-grape-light/70 text-grape`}>
-                    <span aria-hidden="true" className="size-[6px] shrink-0 rounded-full bg-grape" />
-                    Not linked
-                  </span>
-                ) : (
-                  <span className={`${pill} bg-background text-muted`}>No page</span>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr className="border-t border-line bg-background">
-            <th scope="row" className={`${cell} font-medium text-heading`}>Total</th>
-            <td className={`${cell} hidden font-medium text-heading md:table-cell`}>11 to trips</td>
-            <td className={`${cell} font-medium text-grape`}>9 pages not linked</td>
+              ) : (
+                <span className="text-muted">No page</span>
+              )}
+            </td>
           </tr>
-        </tfoot>
-      </table>
-    </div>
+        ))}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th scope="row" className="pt-[16px] pr-[16px] text-left font-medium text-heading">Total</th>
+          <td className="pt-[16px] pr-[16px] font-medium text-heading">11 to trips</td>
+          <td className="pt-[16px] font-medium text-grape">9 not linked</td>
+        </tr>
+      </tfoot>
+    </table>
   );
 }
 
