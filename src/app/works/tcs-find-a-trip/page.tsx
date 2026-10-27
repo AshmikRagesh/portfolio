@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 const SECTIONS: CaseStudySection[] = [
   { id: "overview",    label: "Overview"    },
   { id: "the-problem", label: "The Problem" },
-  { id: "context",     label: "Context"     },
+  { id: "discovery",   label: "Discovery"   },
   { id: "exploration", label: "Exploration" },
   { id: "solution",    label: "Solution"    },
   { id: "output",      label: "What Shipped" },
@@ -99,7 +99,7 @@ function TheProblem() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Context  (research / inputs)
+// Section: Discovery  (research / inputs)
 // ─────────────────────────────────────────────────────────────────────────────
 // The Find a Trip menu as it is live (tcsworldtravel.com, Oct 2026): every category links
 // to a trip search; the destination pages come from the ticket's image mapping
@@ -206,7 +206,7 @@ const CONTEXT_CARDS = [
 
 function Context() {
   return (
-    <Chapter id="context" num={2} title="What we knew going in">
+    <Chapter id="discovery" num={2} title="What we knew going in">
       <Copy>
         <p>
           This was my first project on the Helix team. The CRO team came with
