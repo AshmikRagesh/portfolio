@@ -1,4 +1,4 @@
-import { Check, ChevronDown, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
 import ImagePlaceholder from "./ImagePlaceholder";
@@ -264,40 +264,6 @@ export function StatTiles({
         );
       })}
     </div>
-  );
-}
-
-/**
- * Extra research tucked behind a toggle — a native <details>, so it opens without JS and
- * with the keyboard. The toggle is a white pill like the hero's date chip, centred, that
- * fills blackcurrant on hover; its label swaps and the chevron turns when open. The
- * research drops in below on its own white panel.
- */
-export function MoreDetail({
-  label,
-  openLabel = "Hide the research",
-  children,
-}: {
-  label: string;
-  openLabel?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <details className="group">
-      <summary className="mx-auto flex w-fit cursor-pointer list-none items-center gap-[8px] rounded-full border border-line bg-white px-[18px] py-[10px] font-body text-[16px] leading-[20px] text-heading transition-colors duration-200 hover:border-primary hover:bg-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape [&::-webkit-details-marker]:hidden">
-        <span className="group-open:hidden">{label}</span>
-        <span className="hidden group-open:inline">{openLabel}</span>
-        <ChevronDown
-          size={16}
-          strokeWidth={2}
-          aria-hidden="true"
-          className="-mr-[2px] shrink-0 transition-transform duration-[260ms] group-open:rotate-180 motion-reduce:transition-none"
-        />
-      </summary>
-      <div className="cs-reveal mt-[24px] rounded-[16px] border border-line-soft bg-white p-[20px] md:p-[32px]">
-        {children}
-      </div>
-    </details>
   );
 }
 

@@ -370,13 +370,6 @@
   .cs-copy > .cs-lead {
     @apply mb-[24px] font-heading text-[26px] leading-[34px] text-heading md:text-[30px] md:leading-[38px];
   }
-  /* What MoreDetail reveals drops in a touch from above */
-  .cs-reveal {
-    animation: cs-reveal 0.36s cubic-bezier(0.23, 1, 0.32, 1) both;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .cs-reveal { animation: none; }
-  }
   .cs-copy > .cs-closing {
     @apply mt-[32px] border-t border-line-soft pt-[28px];
   }
@@ -446,7 +439,6 @@
   grid-area: 1 / 1;
   justify-self: start;
 }
-@keyframes cs-reveal { from { opacity: 0; transform: translateY(-8px); } }
 @keyframes cs-slot-in-up { from { opacity: 0; transform: translateY(16px); } }
 @keyframes cs-slot-in-down { from { opacity: 0; transform: translateY(-16px); } }
 @keyframes cs-slot-out-up { to { opacity: 0; transform: translateY(-16px); } }
