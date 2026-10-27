@@ -125,26 +125,36 @@ const MENU_TILES: Parameters<typeof StatTiles>[0]["items"] = [
 
 /**
  * Each menu category, where its link goes, and whether a destination page was waiting.
- * A bordered table: grey header row, ruled rows and columns, and a light grape total row.
+ * A soft-framed table: a light header band, rows ruled by hairlines (no column rules),
+ * the destination status as small pills, and a tinted total row. On phones the middle
+ * column (the same "Trip list" on every row) drops out to make room.
  */
 function MenuMap() {
-  const cell = "border-l border-line-soft px-[12px] py-[12px] align-top first:border-l-0 md:px-[16px]";
-  const th = `${cell} font-brand text-[12px] font-normal uppercase leading-[16px] text-muted`;
+  const cell = "px-[12px] py-[14px] align-middle md:px-[20px]";
+  const pill = "inline-flex h-[28px] items-center gap-[8px] whitespace-nowrap rounded-full px-[12px] text-[14px] leading-[20px]";
   return (
-    <div className="overflow-x-auto rounded-[12px] border border-line">
+    <div className="overflow-hidden rounded-[12px] border border-line-soft bg-white">
       <table className="w-full border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
         <thead className="bg-background">
-          <tr className="border-b border-line">
-            <th scope="col" className={th}>Menu category</th>
-            <th scope="col" className={th}>Link goes to</th>
-            <th scope="col" className={th}>Destination page</th>
+          <tr>
+            {["Menu category", "Link goes to", "Destination page"].map((h, i) => (
+              <th
+                key={h}
+                scope="col"
+                className={`${cell} py-[12px] font-brand text-[12px] font-normal uppercase leading-[16px] text-muted ${
+                  i === 1 ? "hidden md:table-cell" : ""
+                }`}
+              >
+                {h}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
           {MENU.map(({ name, page }) => (
-            <tr key={name} className="border-b border-line-soft last:border-b-0">
+            <tr key={name} className="border-t border-line-soft">
               <th scope="row" className={`${cell} font-normal text-heading`}>{name}</th>
-              <td className={`${cell} text-secondary`}>
+              <td className={`${cell} hidden text-secondary md:table-cell`}>
                 <span className="inline-flex items-center gap-[6px] whitespace-nowrap">
                   <ArrowRight size={14} aria-hidden="true" className="text-muted" />
                   Trip list
@@ -152,22 +162,22 @@ function MenuMap() {
               </td>
               <td className={cell}>
                 {page ? (
-                  <span className="inline-flex items-center gap-[8px] text-grape">
-                    <span aria-hidden="true" className="size-[8px] shrink-0 rounded-full bg-grape" />
-                    Exists, not linked
+                  <span className={`${pill} bg-grape-light/70 text-grape`}>
+                    <span aria-hidden="true" className="size-[6px] shrink-0 rounded-full bg-grape" />
+                    Not linked
                   </span>
                 ) : (
-                  <span className="text-muted">No page</span>
+                  <span className={`${pill} bg-background text-muted`}>No page</span>
                 )}
               </td>
             </tr>
           ))}
         </tbody>
-        <tfoot className="bg-grape-light/40">
-          <tr className="border-t border-line">
+        <tfoot>
+          <tr className="border-t border-line bg-background">
             <th scope="row" className={`${cell} font-medium text-heading`}>Total</th>
-            <td className={`${cell} font-medium text-heading`}>11 to trips</td>
-            <td className={`${cell} font-medium text-grape`}>9 not linked</td>
+            <td className={`${cell} hidden font-medium text-heading md:table-cell`}>11 to trips</td>
+            <td className={`${cell} font-medium text-grape`}>9 pages not linked</td>
           </tr>
         </tfoot>
       </table>
