@@ -77,21 +77,16 @@ function TheProblem() {
     <Chapter id="the-problem" num={1} title="One click, and you were already shopping">
       <Copy>
         <p>
-          The &ldquo;Find a Trip&rdquo; menu is how most people start looking
-          on tcsworldtravel.com. Clicking a continent took you straight to a
-          list of trips, with prices, dates and itineraries to compare.
-        </p>
-        <p>
-          That works if you already know where you&apos;re going. But TCS sells
-          luxury journeys people think about for months. Many visitors are
-          still picking a destination, not a trip. The menu had nothing for
-          them, and they had nowhere useful to go but out.
+          On the TCS website, clicking a continent in the menu took you
+          straight to a list of trips. That works if you already know where
+          you want to go. But luxury trips take months to plan. Many people
+          start by dreaming about a place, not by comparing trips.
         </p>
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Picking a continent in “Find a Trip” sent every visitor straight to a list of trips, even those still deciding where to go."
-          consequence="Travellers who weren't ready to compare itineraries hit a page built for buyers and left — losing TCS the leads it needs from the very top of the funnel."
+          situation="Picking a continent sent every visitor straight to a list of trips, even people still deciding where to go."
+          consequence="We believed many of them left before finding anything to explore, and TCS lost leads at the very first step."
         />
       </Visual>
     </Chapter>
