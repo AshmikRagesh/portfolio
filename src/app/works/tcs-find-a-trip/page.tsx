@@ -266,6 +266,14 @@ function Context() {
           </div>
         </MoreDetail>
       </Visual>
+      <Copy>
+        <h3>What shaped the design</h3>
+        <p>
+          Before drawing anything, five things set the rules: three about the
+          people using the menu, and two constraints the design had to work
+          within.
+        </p>
+      </Copy>
       <Visual>
         <CardGrid items={CONTEXT_CARDS} />
       </Visual>
