@@ -418,40 +418,47 @@ function Exploration() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Solution  (the decisions)
+// Section: Solution  (how the final designs work)
 // ─────────────────────────────────────────────────────────────────────────────
+// Only what a visitor experiences, and the reason behind each detail. The decisions that
+// set these up (equal weight, the layout rule, the missing pages) are told in Discovery
+// and Exploration, so here they show up as the finished behaviour, not again as reasons.
 const SOLUTION_ITEMS = [
   {
     num: 1,
-    title: "Equal weight, with Trips listed first",
-    body: "Both paths share one visual treatment, so the test compares what people intend, not how loudly each option is styled. Explore Trips comes first because it's the existing behaviour, so returning users find what they expect in the usual place.",
+    title: "The choice opens where you clicked",
+    body: "Pick a continent and the two paths unfold right under it. The continent stays highlighted, and closing the menu or picking another continent works without a reload, so you never lose your place.",
   },
   {
     num: 2,
-    title: "Side by side on desktop, stacked on mobile",
-    body: "Side by side reads best on a wide screen. On a phone it squeezed the tap targets, so the paths stack there instead. One rule, two layouts, and nothing too small to tap.",
+    title: "Two labels that start the same way",
+    body: "Renaming Find Trips to Explore Trips gave both paths the same verb, so they read as equals. Trips sits first, as agreed in review, so the old route to trips is still the first thing you see.",
   },
   {
     num: 3,
-    title: "A clean fallback where there's no destination page",
-    body: "North America and Golf go straight to trips, exactly as they did before. No greyed-out option, no broken link, and no image without a page behind it.",
+    title: "Cards side by side, links stacked",
+    body: "Both test designs follow the rule from Variant 1 on every screen. The image cards are big enough to sit next to each other, even on a phone. The text links stack, so each one stays easy to tap.",
   },
   {
     num: 4,
-    title: "Photos and links that change with the continent",
-    body: "In the image-card variant, each continent swaps in its own approved photos and links. Africa looks like Africa. The prototype was wired up for Africa so reviewers could click through the real thing.",
+    title: "Every continent gets its own pair",
+    body: "Each continent swaps in its own approved photos and links, so Africa looks like Africa. North America and Golf have no destination page, so they skip the choice and open their trips as before.",
   },
 ];
 
 function Solution() {
   return (
-    <Chapter id="solution" num={4} title="Small decisions that keep the test fair">
+    <Chapter id="solution" num={4} title="How the final designs work">
       <Copy>
         <p>
-          The visual design was the easy part. The decisions that mattered were
-          about keeping the test honest and making it work on every screen.
+          Both test designs share one flow: pick a continent, choose how to
+          explore it, and land on the right page. These four details make that
+          flow work.
         </p>
       </Copy>
+      <Visual>
+        <Figure label="The flow: pick a continent, choose a path, land on the page" />
+      </Visual>
       {SOLUTION_ITEMS.map(({ num, title, body }) => (
         <div key={num} className="cs-sub">
           <Copy>
