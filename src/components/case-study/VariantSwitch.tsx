@@ -4,11 +4,12 @@ import { createContext, useContext, useState } from "react";
 import { Figure } from "./Blocks";
 
 /**
- * Visuals that show two designs. VariantProvider names the designs (with an icon each);
+ * Visuals that show two designs. VariantProvider names the designs (a full name and a short
+ * tag such as "V2", matching the variant tags earlier in the case study);
  * every VariantFigure carries its own switch in its top-right corner, so the reader flips
  * the design right where they're looking instead of scrolling back to a control.
  */
-type Variant = { id: string; label: string; icon: React.ReactNode };
+type Variant = { id: string; label: string; short: string };
 
 const VariantContext = createContext<Variant[] | null>(null);
 
@@ -18,8 +19,8 @@ export function VariantProvider({ variants, children }: { variants: Variant[]; c
 
 /**
  * The switch — a white pill track with a hairline border and a blackcurrant thumb that
- * slides under the picked design's icon. No words on it: each icon names its design to
- * screen readers and on hover.
+ * slides under the picked design's short tag (brand mono, white when picked, grape on
+ * hover). The full name goes to screen readers and shows on hover.
  */
 function VariantSwitch({
   variants,
@@ -39,8 +40,8 @@ function VariantSwitch({
     >
       <span
         aria-hidden="true"
-        className="absolute left-[4px] top-[4px] size-[32px] rounded-full bg-primary transition-transform duration-[300ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-        style={{ transform: `translateX(${index * 32}px)` }}
+        className="absolute left-[4px] top-[4px] h-[32px] w-[36px] rounded-full bg-primary transition-transform duration-[300ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+        style={{ transform: `translateX(${index * 36}px)` }}
       />
       {variants.map((v) => {
         const on = v.id === current;
@@ -53,11 +54,11 @@ function VariantSwitch({
             aria-label={v.label}
             title={v.label}
             onClick={() => onChange(v.id)}
-            className={`relative flex size-[32px] items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape ${
+            className={`relative flex h-[32px] w-[36px] items-center justify-center rounded-full font-brand text-[12px] tracking-[0.5px] transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape ${
               on ? "text-white" : "text-muted hover:text-grape"
             }`}
           >
-            {v.icon}
+            {v.short}
           </button>
         );
       })}
