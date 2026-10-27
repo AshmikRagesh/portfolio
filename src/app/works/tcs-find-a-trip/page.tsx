@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Compass, Gem, Scale, MapPinOff } from "lucide-react";
+import { Compass, Gem, Scale, MapPinOff, Images } from "lucide-react";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -15,6 +15,7 @@ import {
   Reasons,
   OptionCard,
   Stats,
+  Footnote,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1270. Copy is a starting point to edit section by section;
@@ -96,30 +97,45 @@ function TheProblem() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Context  (research / inputs)
 // ─────────────────────────────────────────────────────────────────────────────
+// Counted on the live menu (tcsworldtravel.com, Oct 2026) and taken from TCS trip pages
+const MENU_STATS = [
+  { stat: "32", label: "Links in the menu that lead to a trip search" },
+  { stat: "0", label: "Links in the menu that lead to a destination page" },
+  { stat: "9 of 11", label: "Menu categories that already had a destination page" },
+  { stat: "$135k", label: "Starting price per person for a featured TCS expedition" },
+];
+
+// Three on top (the people and the choice), two below (the constraints)
 const CONTEXT_CARDS = [
   {
     icon: <Gem size={26} className="text-grape" strokeWidth={2} />,
     title: "A long, careful decision",
     description:
-      "These are once-in-a-lifetime trips. People research a place and build confidence before they ever look at an itinerary.",
+      "Trips at this price are planned months ahead. People explore a place long before they choose a trip.",
   },
   {
     icon: <Compass size={26} className="text-grape" strokeWidth={2} />,
     title: "Two kinds of visitor, one path",
     description:
-      "Dreamers wanted to learn about the destination; shoppers wanted the trip list. The menu only served the second group.",
+      "The team believed visitors came in two moods: exploring a place, or planning a trip. The menu only served the planners.",
   },
   {
     icon: <Scale size={26} className="text-grape" strokeWidth={2} />,
     title: "Neither path should win by design",
     description:
-      "I asked whether to visually favour Destinations, since the test measures it. The answer: treat both equally, so the test measures intent, not my layout.",
+      "I asked if the design should favour Destinations, since the test measures it. We agreed to treat both equally, so the test measures intent, not my layout.",
   },
   {
     icon: <MapPinOff size={26} className="text-grape" strokeWidth={2} />,
     title: "Not every continent has a destination page",
     description:
-      "North America and Golf only have trips. Any design had to fall back cleanly, with no broken or empty option.",
+      "North America and Golf only have trips. The design had to fall back cleanly, with no broken or empty option.",
+  },
+  {
+    icon: <Images size={26} className="text-grape" strokeWidth={2} />,
+    title: "The images had to exist first",
+    description:
+      "The photo-card version needed an approved image for every continent. It couldn't be finished until the content team supplied them.",
   },
 ];
 
@@ -128,20 +144,59 @@ function Context() {
     <Chapter id="context" num={2} title="What we knew going in">
       <Copy>
         <p>
-          The CRO team&apos;s hypothesis was simple. Give people a clear choice
-          after they pick a continent, and more of them will keep going. Those
-          looking for inspiration head to destination content, and those ready
-          to buy head to trips.
+          This was my first project on the Helix team. The CRO team came with
+          a hypothesis, not data.
         </p>
+      </Copy>
+      <Visual>
+        <ProblemStatement
+          label="The Hypothesis"
+          situation="If travellers get a clear choice after picking a continent, more of them will keep going,"
+          consequence="because explorers can learn about the place first, and planners can go straight to trips."
+        />
+      </Visual>
+      <Copy>
+        <h3>The menu hid the pages explorers needed</h3>
         <p>
-          This was my first project on the Helix team. Before drawing anything
-          I needed to settle one question, because the test results would
-          depend on it: should the two paths carry equal weight?
+          The live menu made this easy to check. Every continent link pointed
+          to a trip search. Not one pointed to a destination page, even though
+          most continents already had one.
         </p>
+        <Stats items={MENU_STATS} />
+
+        <h3>What we expected to find</h3>
+        <p>
+          We had no analytics on this. Based on travel industry averages, we
+          expected about 4 in 10 people to leave the trip list without opening
+          a trip. Some would go looking for the place another way, through
+          site search or Google.
+        </p>
+        <Footnote>
+          Estimates, not TCS data. Travel sites average a 43% bounce rate (
+          <a href="https://www.avidlyagency.com/blog/is-my-websites-bounce-rate-too-high-industry-data" target="_blank" rel="noreferrer">
+            Contentsquare, 2021
+          </a>
+          ), with a usual range of 40–60% (
+          <a href="https://plausible.io/blog/bounce-rate" target="_blank" rel="noreferrer">
+            Plausible
+          </a>
+          ). 83% of visits to travel sites come from direct and search traffic (
+          <a href="https://contentsquare.com/guides/travel-hospitality-digital-experience/traffic/" target="_blank" rel="noreferrer">
+            Contentsquare, 2026
+          </a>
+          ). Menu links and prices are from tcsworldtravel.com, October 2026.
+        </Footnote>
       </Copy>
       <Visual>
         <CardGrid items={CONTEXT_CARDS} />
       </Visual>
+      <Copy>
+        <p>
+          <strong>What success looked like:</strong> more people reaching a
+          real next page after picking a continent, either a destination page
+          or a list of trips.
+        </p>
+      </Copy>
     </Chapter>
   );
 }
