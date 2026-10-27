@@ -70,7 +70,11 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        <Figure label="Find a Trip — the two paths after picking a continent" />
+        <Figure
+          label="Find a Trip — the two paths after picking a continent"
+          video="/videos/tcs-find-a-trip/overview.mp4"
+          poster="/images/tcs-find-a-trip/overview-poster.jpg"
+        />
       </Visual>
     </Chapter>
   );
