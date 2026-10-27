@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Compass, Gem, Scale, MapPinOff, Images } from "lucide-react";
+import { ArrowRight, Compass, Gem, Scale, MapPinOff, Images } from "lucide-react";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -12,13 +12,15 @@ import {
   CardGrid,
   ProblemStatement,
   PullQuote,
-  Compare,
+  StatTiles,
+  MoreDetail,
   ProsCons,
   Reasons,
   OptionCard,
   Stats,
   Footnote,
 } from "@/components/case-study";
+import { Tag } from "@/components/Tag";
 
 // DRAFT — first pass at TCSWT-1270. Copy is a starting point to edit section by section;
 // figures are placeholders until the Figma exports are in.
@@ -99,11 +101,63 @@ function TheProblem() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Context  (research / inputs)
 // ─────────────────────────────────────────────────────────────────────────────
-// Counted on the live menu (tcsworldtravel.com, Oct 2026)
-const MENU_COMPARE: Parameters<typeof Compare>[0]["items"] = [
-  { tag: "Trip search", stat: "32", label: "menu links send people straight to a list of trips" },
-  { tag: "Destination pages", stat: "0", label: "menu links lead to a destination page, though 9 of 11 categories had one" },
+// The Find a Trip menu as it is live (tcsworldtravel.com, Oct 2026): every category links
+// to a trip search; the destination pages come from the ticket's image mapping
+const MENU = [
+  { name: "Around the World", page: true },
+  { name: "Africa", page: true },
+  { name: "Asia", page: true },
+  { name: "Australia & The Pacific", page: true },
+  { name: "Central America & Caribbean", page: true },
+  { name: "Europe", page: true },
+  { name: "India & The Middle East", page: true },
+  { name: "North America", page: false },
+  { name: "Polar Regions", page: true },
+  { name: "South America", page: true },
+  { name: "Golf", page: false },
 ];
+
+const MENU_TILES: Parameters<typeof StatTiles>[0]["items"] = [
+  { tag: "Trip search", stat: "11", label: "of 11 menu links send people straight to a list of trips" },
+  { tag: "Destination pages", stat: "0", label: "menu links lead to a destination page, though 9 categories had one", tone: "key" },
+  { tag: "Estimated drop-off", stat: "~40%", label: "of people leave the trip list without opening a trip", tone: "estimate" },
+];
+
+/** Each menu category, where its link goes, and whether a destination page was waiting */
+function MenuMap() {
+  return (
+    <div className="flex flex-col gap-[4px]">
+      <div className="hidden grid-cols-[1fr_120px_200px] gap-x-[16px] px-[12px] pb-[4px] font-brand text-[12px] uppercase leading-[16px] text-muted md:grid">
+        <span>Menu category</span>
+        <span>Links to</span>
+        <span>Destination page</span>
+      </div>
+      {MENU.map(({ name, page }, i) => (
+        <div
+          key={name}
+          className={`grid grid-cols-[1fr_auto] items-center gap-x-[16px] gap-y-[6px] rounded-[8px] px-[12px] py-[10px] md:grid-cols-[1fr_120px_200px] ${
+            i % 2 === 0 ? "bg-background" : ""
+          }`}
+        >
+          <span className="font-body text-[16px] leading-[24px] text-heading">{name}</span>
+          <span className="flex items-center gap-[6px]">
+            <ArrowRight size={14} className="text-muted" aria-hidden="true" />
+            <Tag tone="grey">Trips</Tag>
+          </span>
+          <span className="col-span-2 md:col-span-1">
+            {page ? (
+              <span className="inline-flex h-[24px] items-center rounded-[2px] border border-dashed border-grape px-[8px] font-brand text-[12px] uppercase leading-[16px] text-grape">
+                Exists · not linked
+              </span>
+            ) : (
+              <span className="font-body text-[14px] leading-[20px] text-muted">No page</span>
+            )}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 // Three on top (the people and the choice), two below (the constraints)
 const CONTEXT_CARDS = [
@@ -160,36 +214,49 @@ function Context() {
         <p>
           The live menu made this easy to check. Every continent link pointed
           to a trip search. Not one pointed to a destination page, even though
-          most continents already had one.
+          most continents already had one. We had no analytics on how many
+          people left as a result, so we estimated it from travel industry
+          averages.
         </p>
       </Copy>
       <Visual>
-        <Compare items={MENU_COMPARE} />
+        <StatTiles items={MENU_TILES} />
+        <MoreDetail label="See the research behind these numbers">
+          <div className="flex flex-col gap-[32px]">
+            <div>
+              <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
+                Where each menu link goes
+              </h4>
+              <MenuMap />
+            </div>
+            <div>
+              <h4 className="mb-[12px] font-body text-[18px] font-medium leading-[28px] text-heading">
+                How we estimated the drop-off
+              </h4>
+              <ul className="flex list-disc flex-col gap-[8px] pl-[20px] font-body text-[16px] leading-[26px] text-secondary">
+                <li>Travel sites average a 43% bounce rate, with a usual range of 40–60%.</li>
+                <li>We took the low end, about 40%, because people arriving from the menu are already browsing the site.</li>
+                <li>83% of visits to travel sites come from direct and search traffic, so people who can&apos;t find a place in the menu often go back to Google.</li>
+              </ul>
+              <Footnote>
+                Estimates, not TCS data. The test&apos;s exit tracking measures the real number. Sources:{" "}
+                <a href="https://www.avidlyagency.com/blog/is-my-websites-bounce-rate-too-high-industry-data" target="_blank" rel="noreferrer">
+                  Contentsquare, 2021
+                </a>
+                ,{" "}
+                <a href="https://plausible.io/blog/bounce-rate" target="_blank" rel="noreferrer">
+                  Plausible
+                </a>
+                ,{" "}
+                <a href="https://contentsquare.com/guides/travel-hospitality-digital-experience/traffic/" target="_blank" rel="noreferrer">
+                  Contentsquare, 2026
+                </a>
+                . Menu links and prices from tcsworldtravel.com, October 2026.
+              </Footnote>
+            </div>
+          </div>
+        </MoreDetail>
       </Visual>
-      <Copy>
-        <h3>What we expected to find</h3>
-        <p>
-          We had no analytics on this. Based on travel industry averages, we
-          expected about 4 in 10 people to leave the trip list without opening
-          a trip. Some would go looking for the place another way, through
-          site search or Google.
-        </p>
-        <Footnote>
-          Estimates, not TCS data. Travel sites average a 43% bounce rate (
-          <a href="https://www.avidlyagency.com/blog/is-my-websites-bounce-rate-too-high-industry-data" target="_blank" rel="noreferrer">
-            Contentsquare, 2021
-          </a>
-          ), with a usual range of 40–60% (
-          <a href="https://plausible.io/blog/bounce-rate" target="_blank" rel="noreferrer">
-            Plausible
-          </a>
-          ). 83% of visits to travel sites come from direct and search traffic (
-          <a href="https://contentsquare.com/guides/travel-hospitality-digital-experience/traffic/" target="_blank" rel="noreferrer">
-            Contentsquare, 2026
-          </a>
-          ). Menu links and prices are from tcsworldtravel.com, October 2026.
-        </Footnote>
-      </Copy>
       <Visual>
         <CardGrid items={CONTEXT_CARDS} />
       </Visual>
