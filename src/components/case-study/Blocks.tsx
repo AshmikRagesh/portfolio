@@ -381,12 +381,17 @@ export function OptionCard({
 
 /**
  * Points set as open editorial columns instead of cards — no box or rule, just a large
- * grape number, a title and a line. Side by side from tablet up (three in a
- * row), stacked on phones. For reasons and takeaways that follow a run of cards.
+ * grape number, a title and a line. It's text, so it sits in the reading column (inside
+ * Copy, 32px under the paragraph like Stats); two or three side by side from tablet up,
+ * stacked on phones. For reasons and takeaways that follow a run of cards.
  */
 export function NumberedPoints({ items }: { items: { title: string; description: string }[] }) {
   return (
-    <ol className="m-0 grid list-none grid-cols-1 gap-[32px] p-0 md:grid-cols-3 md:gap-[40px]">
+    <ol
+      className={`m-0 mt-[32px] grid list-none grid-cols-1 gap-[32px] p-0 md:gap-[40px] ${
+        items.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"
+      }`}
+    >
       {items.map(({ title, description }, i) => (
         <li key={title} className="flex flex-col gap-[12px]">
           <span className="font-heading text-[40px] font-normal leading-none tracking-[-2px] text-grape">
