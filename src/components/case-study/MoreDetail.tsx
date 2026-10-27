@@ -4,10 +4,9 @@ import { useId, useState } from "react";
 import { Plus } from "lucide-react";
 
 /**
- * Extra research tucked behind a toggle. The button is the site's secondary CTA — the nav
- * button's shape (brand mono caps, 42px, 10px corners) in white with a line border, going
- * grape on hover like the nav links, and stays grape while open. Its plus turns into a
- * cross when open. The panel
+ * Extra research tucked behind a toggle. The toggle is a text link in the nav links' style
+ * (brand mono caps), underlined; on hover, and while open, it turns grape with the nav's
+ * wavy underline. Its plus turns into a cross when open. The panel
  * opens and closes by easing its height (a 0fr → 1fr grid row) while fading and settling
  * in, so closing animates as smoothly as opening; reduced motion skips straight to the end.
  */
@@ -21,11 +20,17 @@ export default function MoreDetail({ label, children }: { label: string; childre
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((o) => !o)}
-        className={`mx-auto flex h-[42px] items-center gap-[8px] whitespace-nowrap rounded-[10px] border bg-white px-[16px] font-brand text-[14px] font-medium uppercase tracking-[1px] transition-colors duration-200 hover:border-grape hover:text-grape active:border-grape active:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape ${
-          open ? "border-grape text-grape" : "border-line text-heading"
+        className={`group/more mx-auto flex items-center gap-[8px] whitespace-nowrap rounded-[2px] py-[8px] font-brand text-[14px] font-normal uppercase tracking-[1px] transition-colors duration-200 hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${
+          open ? "text-grape" : "text-heading"
         }`}
       >
-        {label}
+        <span
+          className={`underline underline-offset-[6px] group-hover/more:decoration-wavy ${
+            open ? "decoration-wavy" : "decoration-solid"
+          }`}
+        >
+          {label}
+        </span>
         <Plus
           size={16}
           strokeWidth={2}
