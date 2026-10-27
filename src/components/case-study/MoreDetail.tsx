@@ -4,39 +4,52 @@ import { useId, useState } from "react";
 import { Plus } from "lucide-react";
 
 /**
- * Extra research tucked behind a toggle. The toggle is a text link in the nav links' style
- * (brand mono caps), underlined; on hover, and while open, it turns grape with the nav's
- * wavy underline. Its plus turns into a cross when open. The panel
+ * Extra research tucked behind a toggle. The toggle is a left-aligned text link in the nav
+ * links' style (brand mono caps) over a thin underline. On hover a grape line draws in
+ * from the left as the text turns grape and the plus turns a quarter; while open it
+ * stays grape and the plus becomes a cross. The panel
  * opens and closes by easing its height (a 0fr → 1fr grid row) while fading and settling
  * in, so closing animates as smoothly as opening; reduced motion skips straight to the end.
  */
-export default function MoreDetail({ label, children }: { label: string; children: React.ReactNode }) {
+export default function MoreDetail({
+  label,
+  className = "",
+  children,
+}: {
+  label: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const id = useId();
   return (
-    <div>
+    <div className={className}>
       <button
         type="button"
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((o) => !o)}
-        className={`group/more mx-auto flex items-center gap-[8px] whitespace-nowrap rounded-[2px] py-[8px] font-brand text-[14px] font-normal uppercase tracking-[1px] transition-colors duration-200 hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${
+        className={`group/more flex items-center gap-[8px] whitespace-nowrap rounded-[2px] py-[8px] font-brand text-[14px] font-normal uppercase tracking-[1px] transition-colors duration-200 hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${
           open ? "text-grape" : "text-heading"
         }`}
       >
-        <span
-          className={`underline underline-offset-[6px] group-hover/more:decoration-wavy ${
-            open ? "decoration-wavy" : "decoration-solid"
-          }`}
-        >
+        <span className="relative pb-[4px]">
           {label}
+          {/* Resting underline, and the grape one that draws in over it */}
+          <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[1px] bg-current opacity-40" />
+          <span
+            aria-hidden="true"
+            className={`absolute inset-x-0 bottom-0 h-[2px] origin-left bg-grape transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/more:scale-x-100 motion-reduce:transition-none ${
+              open ? "scale-x-100" : "scale-x-0"
+            }`}
+          />
         </span>
         <Plus
           size={16}
           strokeWidth={2}
           aria-hidden="true"
           className={`shrink-0 transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-            open ? "rotate-45" : ""
+            open ? "rotate-45" : "group-hover/more:rotate-90"
           }`}
         />
       </button>

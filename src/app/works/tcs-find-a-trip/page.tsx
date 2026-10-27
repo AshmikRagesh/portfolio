@@ -227,10 +227,7 @@ function Context() {
             people left as a result, so we estimated it from travel industry
             averages.
           </p>
-        </Copy>
-        <Visual>
-          <StatTiles items={MENU_TILES} />
-          <MoreDetail label="Research behind these numbers">
+          <MoreDetail label="Research behind these numbers" className="mt-[20px]">
             <div className="flex flex-col gap-[32px]">
               <div>
                 <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
@@ -265,6 +262,9 @@ function Context() {
               </div>
             </div>
           </MoreDetail>
+        </Copy>
+        <Visual>
+          <StatTiles items={MENU_TILES} />
         </Visual>
       </div>
       <div className="cs-sub">
