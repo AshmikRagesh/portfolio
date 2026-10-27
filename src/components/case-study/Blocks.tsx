@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { ArrowRight, Check, ChevronRight, X } from "lucide-react";
+import { Check, ChevronRight, X } from "lucide-react";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
 import AutoplayVideo from "./AutoplayVideo";
@@ -488,50 +487,6 @@ export function Funnel({
         </div>
       )}
     </div>
-  );
-}
-
-/**
- * The way on to the next case study at the end of the page: one wide white card — label,
- * title and line on the left, its cover on the right — that lifts on hover like the Works
- * cards, its arrow nudging right.
- */
-export function NextCaseStudy({
-  href,
-  title,
-  description,
-  image,
-}: {
-  href: string;
-  title: string;
-  description: string;
-  image: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group grid grid-cols-1 overflow-hidden rounded-[16px] border border-line-soft bg-white transition-[transform,box-shadow] duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] hover:shadow-[0_2px_0_rgba(200,204,212,0.45),0_16px_40px_rgba(30,5,37,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape md:grid-cols-2"
-    >
-      <div className="flex flex-col gap-[16px] p-[24px] md:p-[40px]">
-        <span className="font-brand text-[12px] uppercase leading-[16px] text-muted">Next case study</span>
-        <span className="font-heading text-[28px] leading-[34px] tracking-[-1px] text-heading md:text-[32px] md:leading-[38px]">
-          {title}
-        </span>
-        <span className="font-body text-[18px] leading-[30px] text-secondary">{description}</span>
-        <span className="mt-auto inline-flex items-center gap-[8px] pt-[8px] font-brand text-[14px] uppercase tracking-[1px] text-heading transition-colors duration-200 group-hover:text-grape">
-          Read the case study
-          <ArrowRight
-            size={16}
-            aria-hidden="true"
-            className="transition-transform duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-[4px] motion-reduce:transition-none"
-          />
-        </span>
-      </div>
-      <div className="relative min-h-[220px] bg-placeholder md:min-h-[320px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      </div>
-    </Link>
   );
 }
 

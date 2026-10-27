@@ -18,7 +18,6 @@ export {
   Reasons,
   NumberedPoints,
   Funnel,
-  NextCaseStudy,
   OptionCard,
   Metrics,
   Stats,

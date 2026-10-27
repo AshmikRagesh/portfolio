@@ -3,6 +3,8 @@ import { ArrowRight } from "lucide-react";
 import { ArrowsSplit, FileX, HourglassMedium, Image as ImageIcon, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
+import { FeaturedCard } from "@/components/Works";
+import { featuredWorks, roomFor } from "@/content/works";
 import {
   Hero,
   Chapter,
@@ -18,7 +20,6 @@ import {
   ProsCons,
   NumberedPoints,
   Funnel,
-  NextCaseStudy,
   OptionCard,
   Footnote,
   VariantProvider,
@@ -562,13 +563,6 @@ const JOURNEY = [
   { label: "Lands on the page", note: "The trip list or the destination page loads", goal: true },
 ];
 
-// Where the results go once the test reads out; dashed until then
-const RESULTS: Parameters<typeof StatTiles>[0]["items"] = [
-  { tag: "Pending", stat: "—", label: "Path completion, Variant 2 against the control", tone: "estimate" },
-  { tag: "Pending", stat: "—", label: "Path completion, Variant 3 against the control", tone: "estimate" },
-  { tag: "Pending", stat: "—", label: "Share of visitors who chose Explore Destination", tone: "estimate" },
-];
-
 function Outcome() {
   return (
     <Chapter id="outcome" num={6} title="How we'll know it worked">
@@ -588,18 +582,6 @@ function Outcome() {
           }}
         />
       </Visual>
-      <div className="cs-sub">
-        <Copy>
-          <h3>Results</h3>
-          <p>
-            These fill in when the test reads out. Until then, they stay
-            empty rather than guessed.
-          </p>
-        </Copy>
-        <Visual>
-          <StatTiles items={RESULTS} />
-        </Visual>
-      </div>
     </Chapter>
   );
 }
@@ -639,6 +621,8 @@ function Reflection() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────────────────────────────────────
+const NEXT_WORK = featuredWorks.find((w) => w.href === "/works/artemis-design-system")!;
+
 export default function TcsFindATripPage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels["tcs-find-a-trip"]}>
@@ -656,15 +640,16 @@ export default function TcsFindATripPage() {
       <Output />
       <Outcome />
       <Reflection />
-      <section className="cs-chapter">
-        <Visual>
-          <NextCaseStudy
-            href="/works/artemis-design-system"
-            title="Creating and maintaining the Artemis Design System"
-            description="Three years of building one accessible design system for Enchanting Travels' tools."
-            image="/images/works-cover.png"
-          />
-        </Visual>
+      {/* The way on: the homepage's own card for the next case study */}
+      <section className="cs-chapter" aria-labelledby="next-case-study">
+        <div className="cs-column">
+          <p id="next-case-study" className="mb-[24px] font-brand text-[12px] uppercase leading-[16px] text-muted">
+            Next case study
+          </p>
+        </div>
+        <div className="cs-visual !mt-0">
+          <FeaturedCard work={NEXT_WORK} room={roomFor(NEXT_WORK)} />
+        </div>
       </section>
     </CaseStudyLayout>
   );
