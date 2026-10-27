@@ -352,7 +352,7 @@ const REVIEW_CHANGES = [
   "List Explore Trips first, then Explore Destination",
 ];
 
-// Set as numbered columns, not cards, so they read as the takeaway after the variant cards
+// Numbered points, not cards, in the reading column: the takeaway after the variant cards
 const WHY_BOTH = [
   {
     title: "Different strengths",
@@ -360,14 +360,9 @@ const WHY_BOTH = [
       "The links stay light and work for every continent. The cards make exploring a place feel inviting.",
   },
   {
-    title: "The hypothesis asked",
+    title: "Let the test decide",
     description:
-      "Would image cards draw more clicks than text links? Only a test could answer that.",
-  },
-  {
-    title: "Data over opinion",
-    description:
-      "Running both against the current menu lets the numbers decide, not the meeting room.",
+      "The hypothesis asked whether image cards draw more clicks than text links. Running both against the current menu lets the numbers answer that, not opinion.",
   },
 ];
 
@@ -414,10 +409,8 @@ function Exploration() {
             links stack. That left two good designs, and no reason to guess
             between them.
           </p>
-        </Copy>
-        <Visual>
           <NumberedPoints items={WHY_BOTH} />
-        </Visual>
+        </Copy>
       </div>
     </Chapter>
   );
