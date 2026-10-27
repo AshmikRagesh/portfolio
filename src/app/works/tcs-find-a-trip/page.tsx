@@ -74,7 +74,7 @@ function Overview() {
 // ─────────────────────────────────────────────────────────────────────────────
 function TheProblem() {
   return (
-    <Chapter id="the-problem" num={1} title="One click, and you were already shopping">
+    <Chapter id="the-problem" num={1} title="One click, and straight to the trips, even if you were still exploring">
       <Copy>
         <p>
           On the TCS website, clicking a continent in the menu took you
