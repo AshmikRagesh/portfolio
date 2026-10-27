@@ -19,7 +19,6 @@ import {
   Reasons,
   NumberedPoints,
   OptionCard,
-  Stats,
   Footnote,
   VariantProvider,
   VariantFigure,
@@ -40,7 +39,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "discovery",   label: "Discovery"   },
   { id: "exploration", label: "Exploration" },
   { id: "solution",    label: "Solution"    },
-  { id: "output",      label: "What Shipped" },
+  { id: "output",      label: "Handoff"     },
   { id: "outcome",     label: "Outcome"     },
   { id: "reflection",  label: "Reflection"  },
 ];
@@ -496,32 +495,57 @@ function Solution() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: What shipped  (output)
+// Section: Handoff  (output — nothing is live yet, so this is what went to development)
 // ─────────────────────────────────────────────────────────────────────────────
-const OUTPUT_STATS = [
-  { stat: "3", label: "Test arms — the current menu plus both of my prototypes" },
-  { stat: "34/33/33", label: "Traffic split across control, text links and image cards" },
-  { stat: "11", label: "Continents and categories, each with its own images and links" },
-  { stat: "2", label: "Categories with no destination page, falling back to trips" },
+// The three arms of the test; the two variants are the point, the control is today's menu
+const TEST_ARMS: Parameters<typeof StatTiles>[0]["items"] = [
+  { tag: "Control", stat: "34%", label: "of visitors keep today's menu, straight to a list of trips" },
+  { tag: "Variant 2", stat: "33%", label: "of visitors get text links that open under the continent", tone: "key" },
+  { tag: "Variant 3", stat: "33%", label: "of visitors get image cards that open under the continent", tone: "key" },
+];
+
+// What developers received, matched in length so the columns sit level
+const HANDOFF = [
+  {
+    title: "Both variants, every screen",
+    description:
+      "Desktop and phone designs for text links and image cards, from the prototype the team clicked through for Africa.",
+  },
+  {
+    title: "Photos for every continent",
+    description:
+      "Each continent got its approved trips and destination photos. North America and Golf stay trips-only, with no empty card.",
+  },
+  {
+    title: "The behaviour, written down",
+    description:
+      "How the paths open, stay highlighted and close without a reload. Rohit turned it into ten checks for development.",
+  },
 ];
 
 function Output() {
   return (
-    <Chapter id="output" num={5} title="An A/B/C test, ready for development">
+    <Chapter id="output" num={5} title="What went to development">
       <Copy>
         <p>
-          Both prototypes went into the test as separate variants, alongside
-          the current menu as the control. I handed off the responsive designs
-          with the approved images for each continent. Rohit turned the agreed
-          behaviour into acceptance criteria.
+          Nothing is live yet. Both designs were approved on 15 July 2026 to
+          run as an A/B/C test against the current menu, splitting visitors
+          three ways.
         </p>
       </Copy>
       <Visual>
-        <Stats items={OUTPUT_STATS} />
+        <StatTiles items={TEST_ARMS} />
       </Visual>
-      <Visual>
-        <Figure label="Text links (left) and image cards (right)" />
-      </Visual>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What I handed over</h3>
+          <p>
+            Three things went to the developers with the designs, so both
+            variants could be built and tested the same way.
+          </p>
+          <NumberedPoints items={HANDOFF} stacked />
+        </Copy>
+      </div>
     </Chapter>
   );
 }
