@@ -299,70 +299,118 @@ function Context() {
 type IterationItem = {
   label: string;
   title: string;
-  shipped?: boolean;
+  chosen?: boolean;
+  src?: string;
   worked: string[];
   didntWork: string[];
 };
 
+// The one that didn't go forward first, then the two that went into the test
 const ITERATIONS: IterationItem[] = [
   {
-    label: "Prototype 1",
-    title: "Inline accordion — options expand under the continent",
-    shipped: true,
+    label: "Variant 1",
+    title: "Text links side by side, on every screen",
     worked: [
-      "Click a continent and the two paths open right where you're looking",
-      "Selected continent stays highlighted, so you never lose your place",
-      "Lightweight — fits the existing menu with no new panel",
+      "On desktop, both paths sit next to each other at equal weight",
     ],
     didntWork: [
-      "Text links are easy to read past; the choice can feel like small print",
+      "On a phone, the two links got cramped next to each other",
+      "The tap areas became too small to hit reliably",
     ],
   },
   {
-    label: "Prototype 2",
-    title: "Side panel — two image cards beside the menu",
-    shipped: true,
+    label: "Variant 2",
+    title: "Text links that open under the continent",
+    chosen: true,
+    src: "/images/tcs-find-a-trip/variant-text-links.webp",
     worked: [
-      "Photos for each continent make the choice feel inspiring, not administrative",
-      "Bigger targets — the two paths are impossible to miss",
+      "The choice opens right under the continent you clicked",
+      "The selected continent stays highlighted while its paths are open",
+      "Stacked links work the same way on desktop and on a phone",
+      "Needs no new images, so it works for every continent from day one",
     ],
     didntWork: [
-      "Needs a full approved image set for every continent before it can ship",
-      "Hover-to-open doesn't exist on touch screens; mobile needed its own pattern",
+      "Plain links are quieter; the team expected them to draw fewer clicks than images",
     ],
   },
   {
-    label: "Exploration",
-    title: "Side-by-side paths on every screen",
+    label: "Variant 3",
+    title: "Image cards that open under the continent",
+    chosen: true,
+    src: "/images/tcs-find-a-trip/variant-image-cards.webp",
     worked: [
-      "On desktop, both paths sit at equal weight at a glance",
+      "A photo for each path makes exploring a place feel inviting",
+      "Two big cards side by side are easy to tap, even on a phone",
+      "Opens in place, with the selected continent highlighted",
     ],
     didntWork: [
-      "On mobile the links got cramped, and the tap areas got too small to hit reliably",
+      "Needs an approved pair of photos for every continent before it can ship",
+      "The cards push the rest of the continent list further down",
     ],
   },
 ];
 
+const REVIEW_CHANGES = [
+  "Add a version with the two paths side by side, not stacked",
+  "Rename \u201cFind Trips\u201d to \u201cExplore Trips\u201d",
+  "List Explore Trips first, then Explore Destination",
+];
+
+const WHY_BOTH = [
+  "Each design had a different strength: the links stay light, and the cards make exploring feel inviting",
+  "The hypothesis itself asked whether image cards would draw more clicks than text links",
+  "Running both against the current menu settles that with data, not opinion",
+];
+
 function Exploration() {
   return (
-    <Chapter id="exploration" num={3} title="Two prototypes, then a layout that broke on mobile">
+    <Chapter id="exploration" num={3} title="A choice that had to work on a phone too">
       <Copy>
         <p>
-          I built two interaction prototypes to feel out the behaviour, not to
-          polish the visuals. Rohit liked both enough to test them against each
-          other. He also asked for a side-by-side version, which is where the
-          mobile problem showed up.
+          I started with quick prototypes to test how the choice should behave,
+          not how it should look. The two paths open right under the continent
+          you click, so the menu never jumps away. In review, Rohit asked for
+          three changes:
+        </p>
+        <ul>
+          {REVIEW_CHANGES.map((c) => (
+            <li key={c}>{c}</li>
+          ))}
+        </ul>
+        <p>
+          The side-by-side version is where the phone problem showed up. In the
+          end, two designs were strong enough that we tested both.
         </p>
       </Copy>
-      {ITERATIONS.map(({ label, title, shipped, worked, didntWork }) => (
+      {ITERATIONS.map(({ label, title, chosen, src, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
-            <OptionCard label={label} title={title} shipped={shipped} image={`${label} — design preview`}>
+            <OptionCard
+              label={label}
+              title={title}
+              shipped={chosen}
+              stamp="In test"
+              src={src}
+              image={`${label} — ${title}`}
+            >
               <ProsCons pros={worked} cons={didntWork} />
             </OptionCard>
           </Visual>
         </div>
       ))}
+      <div className="cs-sub">
+        <Copy>
+          <h3>Why we tested both instead of choosing</h3>
+          <p>
+            Variant 1 taught us the layout rule: cards can sit side by side,
+            links stack. That left two good designs, and no reason to guess
+            between them.
+          </p>
+        </Copy>
+        <Visual narrow>
+          <Reasons items={WHY_BOTH} />
+        </Visual>
+      </div>
     </Chapter>
   );
 }
@@ -442,7 +490,7 @@ function Output() {
         <Stats items={OUTPUT_STATS} />
       </Visual>
       <Visual>
-        <Figure label="Variant 1 — text links (left) and Variant 2 — image cards (right)" />
+        <Figure label="Text links (left) and image cards (right)" />
       </Visual>
     </Chapter>
   );
