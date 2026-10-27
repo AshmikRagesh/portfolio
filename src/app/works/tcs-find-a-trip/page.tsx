@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LayoutGrid, List } from "lucide-react";
 import { ArrowsSplit, FileX, HourglassMedium, Image as ImageIcon, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
@@ -22,7 +22,6 @@ import {
   Stats,
   Footnote,
   VariantProvider,
-  VariantToggle,
   VariantFigure,
 } from "@/components/case-study";
 
@@ -449,10 +448,10 @@ const SOLUTION_ITEMS = [
   },
 ];
 
-// The two designs in test; the toggle swaps every Solution visual between them
+// The two designs in test; each Solution visual carries a switch between them
 const TEST_VARIANTS = [
-  { id: "links", label: "Text links" },
-  { id: "cards", label: "Image cards" },
+  { id: "links", label: "Text links", icon: <List size={16} strokeWidth={2} aria-hidden="true" /> },
+  { id: "cards", label: "Image cards", icon: <LayoutGrid size={16} strokeWidth={2} aria-hidden="true" /> },
 ];
 
 function Solution() {
@@ -463,9 +462,9 @@ function Solution() {
           <p>
             Both test designs share one flow: pick a continent, choose how to
             explore it, and land on the right page. These four details make
-            that flow work. Switch between the two designs to see each one.
+            that flow work. Each visual has a switch in its corner to flip
+            between text links and image cards.
           </p>
-          <VariantToggle label="Show the design" />
         </Copy>
         <Visual>
           <VariantFigure
@@ -482,20 +481,12 @@ function Solution() {
               <p>{body}</p>
             </Copy>
             <Visual>
-              {num === 3 ? (
-                // The layout rule is a comparison, so both designs sit side by side
-                <div className="grid grid-cols-1 gap-[16px] md:grid-cols-2 md:gap-[24px]">
-                  <Figure name="Text links — stacked" label="Text links" aspect="aspect-[4/3]" />
-                  <Figure name="Image cards — side by side" label="Image cards" aspect="aspect-[4/3]" />
-                </div>
-              ) : (
-                <VariantFigure
-                  names={{
-                    links: `Solution ${num} — ${title} (text links)`,
-                    cards: `Solution ${num} — ${title} (image cards)`,
-                  }}
-                />
-              )}
+              <VariantFigure
+                names={{
+                  links: `Solution ${num} — ${title} (text links)`,
+                  cards: `Solution ${num} — ${title} (image cards)`,
+                }}
+              />
             </Visual>
           </div>
         ))}
