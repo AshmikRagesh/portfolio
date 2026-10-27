@@ -379,6 +379,27 @@ export function OptionCard({
   );
 }
 
+/**
+ * Points set as open editorial columns instead of cards — no box, just a rule across the
+ * top, a large grape number, a title and a line. Side by side from tablet up (three in a
+ * row), stacked on phones. For reasons and takeaways that follow a run of cards.
+ */
+export function NumberedPoints({ items }: { items: { title: string; description: string }[] }) {
+  return (
+    <ol className="m-0 grid list-none grid-cols-1 gap-[32px] p-0 md:grid-cols-3 md:gap-[40px]">
+      {items.map(({ title, description }, i) => (
+        <li key={title} className="flex flex-col gap-[12px] border-t-2 border-heading pt-[20px]">
+          <span className="font-heading text-[40px] font-normal leading-none tracking-[-2px] text-grape">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <h4 className="mt-[8px] font-heading text-[24px] leading-[30px] tracking-[0px] text-heading">{title}</h4>
+          <p className="font-body text-[18px] leading-[30px] text-secondary">{description}</p>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 /** Headline results — green cards with an upward arrow; the numbers line up along the bottom */
 export function Metrics({ items }: { items: { stat: string; label: string }[] }) {
   return (

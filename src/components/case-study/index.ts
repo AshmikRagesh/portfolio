@@ -15,6 +15,7 @@ export {
   StatTiles,
   ProsCons,
   Reasons,
+  NumberedPoints,
   OptionCard,
   Metrics,
   Stats,
