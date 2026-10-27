@@ -248,13 +248,13 @@ const TILE = {
 const TILE_COLS = { 2: "md:grid-cols-2", 3: "md:grid-cols-3" } as const;
 
 /**
- * Two or three facts as tiles side by side — a tag, the number at the shared stat size,
+ * Two or three facts as tiles side by side — an optional tag, the number at the shared stat size,
  * a line saying what it counts. Mark the point `key` and any guess `estimate`.
  */
 export function StatTiles({
   items,
 }: {
-  items: { tag: string; stat: string; label: string; tone?: keyof typeof TILE }[];
+  items: { tag?: string; stat: string; label: string; tone?: keyof typeof TILE }[];
 }) {
   const cols = TILE_COLS[items.length as keyof typeof TILE_COLS] ?? TILE_COLS[3];
   return (
@@ -262,10 +262,12 @@ export function StatTiles({
       {items.map(({ tag, stat, label, tone = "plain" }) => {
         const look = TILE[tone];
         return (
-          <div key={tag} className={`flex flex-col gap-[16px] rounded-[16px] p-[24px] ${look.box}`}>
-            <div>
-              <Tag tone={look.tag}>{tag}</Tag>
-            </div>
+          <div key={tag ?? label} className={`flex flex-col gap-[16px] rounded-[16px] p-[24px] ${look.box}`}>
+            {tag && (
+              <div>
+                <Tag tone={look.tag}>{tag}</Tag>
+              </div>
+            )}
             <span className={`font-heading text-stat font-medium md:text-stat-md lg:text-stat-lg ${look.stat}`}>
               {stat}
             </span>
