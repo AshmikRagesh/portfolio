@@ -23,7 +23,7 @@ import {
 export const metadata: Metadata = {
   title: "Not everyone is ready to book · Ashmik Ragesh",
   description:
-    "Designed a two-path choice in the TCS World Travel “Find a Trip” menu — letting travellers still dreaming explore a destination, and travellers ready to compare go straight to trips. Shipped as an A/B/C test.",
+    "Designed a two-path choice in the TCS World Travel “Find a Trip” menu — letting travellers still exploring learn about a destination first, and travellers ready to compare go straight to trips. Approved as an A/B/C test.",
 };
 
 const SECTIONS: CaseStudySection[] = [
@@ -80,7 +80,7 @@ function TheProblem() {
           On the TCS website, clicking a continent in the menu took you
           straight to a list of trips. That works if you already know where
           you want to go. But luxury trips take months to plan. Many people
-          start by dreaming about a place, not by comparing trips.
+          start by exploring a place, not by comparing trips.
         </p>
       </Copy>
       <Visual>
