@@ -1,8 +1,8 @@
 import { ArrowRight } from "lucide-react";
 
 /**
- * Case study hero — a grey stand-in image for now (a video later), with the title, date
- * and optional live link set left in the reading column over a midnight fade rising
+ * Case study hero — a grey stand-in image for now (a video later), with the date
+ * and optional live link over the title, set left in the reading column over a midnight fade rising
  * from the bottom.
  */
 export default function Hero({
@@ -40,9 +40,7 @@ export default function Hero({
       />
 
       <div className="cs-column pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-start gap-[16px] pb-[40px] md:pb-[56px]">
-        <h1 className="text-balance text-left font-heading text-[40px] font-normal leading-[44px] tracking-[-2px] text-white md:text-[44px] md:leading-[48px] lg:text-[50px] lg:leading-[54px]">
-          {title}
-        </h1>
+        {/* Date (and live link) above the title — the context you read first */}
         <div className="flex flex-wrap items-center gap-[12px]">
           <span className="whitespace-nowrap rounded-full bg-white px-[18px] py-[10px] font-body text-[16px] leading-[20px] text-heading">
             {date}
@@ -63,6 +61,9 @@ export default function Hero({
             </a>
           )}
         </div>
+        <h1 className="text-balance text-left font-heading text-[40px] font-normal leading-[44px] tracking-[-2px] text-white md:text-[44px] md:leading-[48px] lg:text-[50px] lg:leading-[54px]">
+          {title}
+        </h1>
       </div>
     </header>
   );
