@@ -4,48 +4,60 @@ import { createContext, useContext, useState } from "react";
 import { Figure } from "./Blocks";
 
 /**
- * One switch for a whole chapter when it shows two designs: a segmented control picks the
- * variant, and every VariantFigure inside the provider swaps to that variant's visual
- * (fading in). Points where the comparison is the point use a plain two-up instead.
+ * Visuals that show two designs. VariantProvider names the designs (with an icon each);
+ * every VariantFigure carries its own switch in its top-right corner, so the reader flips
+ * the design right where they're looking instead of scrolling back to a control.
  */
-type Variant = { id: string; label: string };
+type Variant = { id: string; label: string; icon: React.ReactNode };
 
-const VariantContext = createContext<{ variants: Variant[]; current: string; set: (id: string) => void } | null>(
-  null,
-);
-
-function useVariants() {
-  const ctx = useContext(VariantContext);
-  if (!ctx) throw new Error("Variant components need a VariantProvider");
-  return ctx;
-}
+const VariantContext = createContext<Variant[] | null>(null);
 
 export function VariantProvider({ variants, children }: { variants: Variant[]; children: React.ReactNode }) {
-  const [current, set] = useState(variants[0].id);
-  return <VariantContext.Provider value={{ variants, current, set }}>{children}</VariantContext.Provider>;
+  return <VariantContext.Provider value={variants}>{children}</VariantContext.Provider>;
 }
 
 /**
- * The segmented control — the nav button's type (brand mono caps) in a white, line-bordered
- * track; the picked option fills blackcurrant, the others go grape on hover.
+ * The switch — a white pill track with a hairline border and a blackcurrant thumb that
+ * slides under the picked design's icon. No words on it: each icon names its design to
+ * screen readers and on hover.
  */
-export function VariantToggle({ label }: { label: string }) {
-  const { variants, current, set } = useVariants();
+function VariantSwitch({
+  variants,
+  current,
+  onChange,
+}: {
+  variants: Variant[];
+  current: string;
+  onChange: (id: string) => void;
+}) {
+  const index = variants.findIndex((v) => v.id === current);
   return (
-    <div role="group" aria-label={label} className="mt-[32px] inline-flex gap-[4px] rounded-[10px] border border-line bg-white p-[4px]">
+    <div
+      role="radiogroup"
+      aria-label="Show design"
+      className="relative flex rounded-full border border-line bg-white p-[4px] shadow-[0_2px_8px_rgba(30,5,37,0.08)]"
+    >
+      <span
+        aria-hidden="true"
+        className="absolute left-[4px] top-[4px] size-[32px] rounded-full bg-primary transition-transform duration-[300ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+        style={{ transform: `translateX(${index * 32}px)` }}
+      />
       {variants.map((v) => {
         const on = v.id === current;
         return (
           <button
             key={v.id}
             type="button"
-            aria-pressed={on}
-            onClick={() => set(v.id)}
-            className={`h-[34px] whitespace-nowrap rounded-[6px] px-[14px] font-brand text-[14px] font-normal uppercase tracking-[1px] transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape ${
-              on ? "bg-primary text-white" : "text-heading hover:text-grape"
+            role="radio"
+            aria-checked={on}
+            aria-label={v.label}
+            title={v.label}
+            onClick={() => onChange(v.id)}
+            className={`relative flex size-[32px] items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape ${
+              on ? "text-white" : "text-muted hover:text-grape"
             }`}
           >
-            {v.label}
+            {v.icon}
           </button>
         );
       })}
@@ -53,12 +65,19 @@ export function VariantToggle({ label }: { label: string }) {
   );
 }
 
-/** A figure that shows the visual for whichever variant is picked */
+/** A figure with its own design switch; the visual fades to the picked design */
 export function VariantFigure({ names }: { names: Record<string, string> }) {
-  const { current } = useVariants();
+  const variants = useContext(VariantContext);
+  if (!variants) throw new Error("VariantFigure needs a VariantProvider");
+  const [current, setCurrent] = useState(variants[0].id);
   return (
-    <div key={current} className="cs-fade">
-      <Figure name={names[current]} />
+    <div className="relative">
+      <div key={current} className="cs-fade">
+        <Figure name={names[current]} />
+      </div>
+      <div className="absolute right-[12px] top-[12px] z-10 md:right-[16px] md:top-[16px]">
+        <VariantSwitch variants={variants} current={current} onChange={setCurrent} />
+      </div>
     </div>
   );
 }
