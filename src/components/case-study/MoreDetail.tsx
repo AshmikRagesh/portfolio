@@ -6,7 +6,8 @@ import { Plus } from "lucide-react";
 /**
  * Extra research tucked behind a toggle. The button is the site's secondary CTA — the nav
  * button's shape (brand mono caps, 42px, 10px corners) in white with a line border, going
- * grape on hover like the nav links. Its plus turns into a cross when open. The panel
+ * grape on hover like the nav links, and stays grape while open. Its plus turns into a
+ * cross when open. The panel
  * opens and closes by easing its height (a 0fr → 1fr grid row) while fading and settling
  * in, so closing animates as smoothly as opening; reduced motion skips straight to the end.
  */
@@ -20,7 +21,9 @@ export default function MoreDetail({ label, children }: { label: string; childre
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((o) => !o)}
-        className="mx-auto flex h-[42px] items-center gap-[8px] whitespace-nowrap rounded-[10px] border border-line bg-white px-[16px] font-brand text-[14px] font-medium uppercase tracking-[1px] text-heading transition-colors duration-200 hover:border-grape hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
+        className={`mx-auto flex h-[42px] items-center gap-[8px] whitespace-nowrap rounded-[10px] border bg-white px-[16px] font-brand text-[14px] font-medium uppercase tracking-[1px] transition-colors duration-200 hover:border-grape hover:text-grape active:border-grape active:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape ${
+          open ? "border-grape text-grape" : "border-line text-heading"
+        }`}
       >
         {label}
         <Plus
