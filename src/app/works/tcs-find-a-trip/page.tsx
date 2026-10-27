@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowRight, LayoutGrid, List } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { ArrowsSplit, FileX, HourglassMedium, Image as ImageIcon, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
@@ -450,8 +450,8 @@ const SOLUTION_ITEMS = [
 
 // The two designs in test; each Solution visual carries a switch between them
 const TEST_VARIANTS = [
-  { id: "links", label: "Text links", icon: <List size={16} strokeWidth={2} aria-hidden="true" /> },
-  { id: "cards", label: "Image cards", icon: <LayoutGrid size={16} strokeWidth={2} aria-hidden="true" /> },
+  { id: "links", label: "Variant 2 · Text links", short: "V2" },
+  { id: "cards", label: "Variant 3 · Image cards", short: "V3" },
 ];
 
 function Solution() {
@@ -463,7 +463,7 @@ function Solution() {
             Both test designs share one flow: pick a continent, choose how to
             explore it, and land on the right page. These four details make
             that flow work. Each detail has a switch in its corner to flip
-            between text links and image cards.
+            between Variant 2 (text links) and Variant 3 (image cards).
           </p>
         </Copy>
         <Visual>
