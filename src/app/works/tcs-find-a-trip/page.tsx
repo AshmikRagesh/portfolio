@@ -582,6 +582,8 @@ export default function TcsFindATripPage() {
       <Hero
         title="Not everyone is ready to book. Letting travellers choose: explore a destination, or browse trips"
         date="July 2026"
+        image="/images/tcs-find-a-trip/hero.webp"
+        imagePosition="center 58%"
       />
       <Overview />
       <TheProblem />
