@@ -1,4 +1,4 @@
-import { Check, X } from "lucide-react";
+import { Check, ChevronDown, X } from "lucide-react";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
 import ImagePlaceholder from "./ImagePlaceholder";
@@ -226,37 +226,36 @@ export function PullQuote({
   );
 }
 
+// Stat tile looks: a plain fact, the key fact (light grape, number in grape), and an
+// estimate (dashed border, so a guess never passes for data)
+const TILE = {
+  plain: { box: "border border-line-soft bg-white", tag: "grey", stat: "text-heading" },
+  key: { box: "bg-grape-light/60", tag: "grape", stat: "text-grape" },
+  estimate: { box: "border border-dashed border-line bg-white", tag: "grey", stat: "text-heading" },
+} as const;
+
+const TILE_COLS = { 2: "md:grid-cols-2", 3: "md:grid-cols-3" } as const;
+
 /**
- * Two numbers set against each other — what there was vs what was missing. The second
- * tile is the point: light grape, its number in grape.
+ * Two or three facts as tiles side by side — a tag, the number at the shared stat size,
+ * a line saying what it counts. Mark the point `key` and any guess `estimate`.
  */
-export function Compare({
+export function StatTiles({
   items,
 }: {
-  items: [
-    { tag: string; stat: string; label: string },
-    { tag: string; stat: string; label: string },
-  ];
+  items: { tag: string; stat: string; label: string; tone?: keyof typeof TILE }[];
 }) {
+  const cols = TILE_COLS[items.length as keyof typeof TILE_COLS] ?? TILE_COLS[3];
   return (
-    <div className="grid grid-cols-1 gap-[16px] md:grid-cols-2 md:gap-[24px]">
-      {items.map(({ tag, stat, label }, i) => {
-        const key = i === 1;
+    <div className={`grid grid-cols-1 gap-[16px] md:gap-[24px] ${cols}`}>
+      {items.map(({ tag, stat, label, tone = "plain" }) => {
+        const look = TILE[tone];
         return (
-          <div
-            key={tag}
-            className={`flex flex-col gap-[16px] rounded-[16px] p-[24px] md:p-[32px] ${
-              key ? "bg-grape-light/60" : "border border-line-soft bg-white"
-            }`}
-          >
+          <div key={tag} className={`flex flex-col gap-[16px] rounded-[16px] p-[24px] ${look.box}`}>
             <div>
-              <Tag tone={key ? "grape" : "grey"}>{tag}</Tag>
+              <Tag tone={look.tag}>{tag}</Tag>
             </div>
-            <span
-              className={`font-heading text-[80px] font-medium leading-none tracking-[-4px] md:text-[96px] ${
-                key ? "text-grape" : "text-heading"
-              }`}
-            >
+            <span className={`font-heading text-stat font-medium md:text-stat-md lg:text-stat-lg ${look.stat}`}>
               {stat}
             </span>
             <p className="font-body text-[18px] leading-[28px] text-secondary">{label}</p>
@@ -264,6 +263,26 @@ export function Compare({
         );
       })}
     </div>
+  );
+}
+
+/**
+ * Extra research tucked behind a toggle — a native <details>, so it opens without JS
+ * and with the keyboard. The summary reads like a tag; the chevron turns when open.
+ */
+export function MoreDetail({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <details className="group rounded-[16px] border border-line-soft bg-white">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-[12px] rounded-[16px] px-[20px] py-[16px] font-brand text-[12px] uppercase leading-[16px] text-heading transition-colors hover:bg-grape-light/40 md:px-[24px] [&::-webkit-details-marker]:hidden">
+        {label}
+        <ChevronDown
+          size={18}
+          strokeWidth={2}
+          className="shrink-0 transition-transform duration-[260ms] group-open:rotate-180 motion-reduce:transition-none"
+        />
+      </summary>
+      <div className="border-t border-line-soft p-[20px] md:p-[24px]">{children}</div>
+    </details>
   );
 }
 
