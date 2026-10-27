@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { ArrowsSplit, ChartBar, FileX, HourglassMedium, Image as ImageIcon, Question, Shapes, Users } from "@phosphor-icons/react/dist/ssr";
+import { ArrowsSplit, FileX, HourglassMedium, Image as ImageIcon, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -17,6 +17,7 @@ import {
   MoreDetail,
   ProsCons,
   Reasons,
+  NumberedPoints,
   OptionCard,
   Stats,
   Footnote,
@@ -122,50 +123,55 @@ const MENU_TILES: Parameters<typeof StatTiles>[0]["items"] = [
   { tag: "Estimated drop-off", stat: "~40%", label: "of people leave the trip list without opening a trip", tone: "estimate" },
 ];
 
-/** Each menu category, where its link goes, and whether a destination page was waiting */
+/**
+ * Each menu category, where its link goes, and whether a destination page was waiting.
+ * A bordered table: grey header row, ruled rows and columns, and a light grape total row.
+ */
 function MenuMap() {
-  const th = "pb-[12px] pr-[16px] font-brand text-[12px] font-normal uppercase leading-[16px] text-muted";
-  const td = "py-[14px] pr-[16px] align-top";
+  const cell = "border-l border-line-soft px-[12px] py-[12px] align-top first:border-l-0 md:px-[16px]";
+  const th = `${cell} font-brand text-[12px] font-normal uppercase leading-[16px] text-muted`;
   return (
-    <table className="w-full border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
-      <thead>
-        <tr className="border-b border-line">
-          <th scope="col" className={th}>Menu category</th>
-          <th scope="col" className={th}>Link goes to</th>
-          <th scope="col" className={`${th} pr-0`}>Destination page</th>
-        </tr>
-      </thead>
-      <tbody>
-        {MENU.map(({ name, page }) => (
-          <tr key={name} className="border-b border-line-soft">
-            <th scope="row" className={`${td} font-normal text-heading`}>{name}</th>
-            <td className={`${td} text-secondary`}>
-              <span className="inline-flex items-center gap-[6px] whitespace-nowrap">
-                <ArrowRight size={14} aria-hidden="true" className="text-muted" />
-                Trip list
-              </span>
-            </td>
-            <td className={`${td} pr-0`}>
-              {page ? (
-                <span className="inline-flex items-center gap-[8px] text-grape">
-                  <span aria-hidden="true" className="size-[8px] shrink-0 rounded-full bg-grape" />
-                  Exists, not linked
-                </span>
-              ) : (
-                <span className="text-muted">No page</span>
-              )}
-            </td>
+    <div className="overflow-x-auto rounded-[12px] border border-line">
+      <table className="w-full border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
+        <thead className="bg-background">
+          <tr className="border-b border-line">
+            <th scope="col" className={th}>Menu category</th>
+            <th scope="col" className={th}>Link goes to</th>
+            <th scope="col" className={th}>Destination page</th>
           </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <tr>
-          <th scope="row" className="pt-[16px] pr-[16px] text-left font-medium text-heading">Total</th>
-          <td className="pt-[16px] pr-[16px] font-medium text-heading">11 to trips</td>
-          <td className="pt-[16px] font-medium text-grape">9 not linked</td>
-        </tr>
-      </tfoot>
-    </table>
+        </thead>
+        <tbody>
+          {MENU.map(({ name, page }) => (
+            <tr key={name} className="border-b border-line-soft last:border-b-0">
+              <th scope="row" className={`${cell} font-normal text-heading`}>{name}</th>
+              <td className={`${cell} text-secondary`}>
+                <span className="inline-flex items-center gap-[6px] whitespace-nowrap">
+                  <ArrowRight size={14} aria-hidden="true" className="text-muted" />
+                  Trip list
+                </span>
+              </td>
+              <td className={cell}>
+                {page ? (
+                  <span className="inline-flex items-center gap-[8px] text-grape">
+                    <span aria-hidden="true" className="size-[8px] shrink-0 rounded-full bg-grape" />
+                    Exists, not linked
+                  </span>
+                ) : (
+                  <span className="text-muted">No page</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot className="bg-grape-light/40">
+          <tr className="border-t border-line">
+            <th scope="row" className={`${cell} font-medium text-heading`}>Total</th>
+            <td className={`${cell} font-medium text-heading`}>11 to trips</td>
+            <td className={`${cell} font-medium text-grape`}>9 not linked</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
   );
 }
 
@@ -351,22 +357,19 @@ const REVIEW_CHANGES = [
   "List Explore Trips first, then Explore Destination",
 ];
 
-// Same filled icon cards as Discovery, one row of three
+// Set as numbered columns, not cards, so they read as the takeaway after the variant cards
 const WHY_BOTH = [
   {
-    icon: <Shapes size={28} weight="fill" className="text-grape" />,
     title: "Different strengths",
     description:
       "The links stay light and work for every continent. The cards make exploring a place feel inviting.",
   },
   {
-    icon: <Question size={28} weight="fill" className="text-grape" />,
     title: "The hypothesis asked",
     description:
       "Would image cards draw more clicks than text links? Only a test could answer that.",
   },
   {
-    icon: <ChartBar size={28} weight="fill" className="text-grape" />,
     title: "Data over opinion",
     description:
       "Running both against the current menu lets the numbers decide, not the meeting room.",
@@ -418,7 +421,7 @@ function Exploration() {
           </p>
         </Copy>
         <Visual>
-          <CardGrid items={WHY_BOTH} />
+          <NumberedPoints items={WHY_BOTH} />
         </Visual>
       </div>
     </Chapter>
