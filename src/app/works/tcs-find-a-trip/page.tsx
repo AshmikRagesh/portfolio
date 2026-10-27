@@ -462,17 +462,13 @@ function Solution() {
           <p>
             Both test designs share one flow: pick a continent, choose how to
             explore it, and land on the right page. These four details make
-            that flow work. Each visual has a switch in its corner to flip
+            that flow work. Each detail has a switch in its corner to flip
             between text links and image cards.
           </p>
         </Copy>
         <Visual>
-          <VariantFigure
-            names={{
-              links: "Flow — text links: pick a continent, choose a path, land on the page",
-              cards: "Flow — image cards: pick a continent, choose a path, land on the page",
-            }}
-          />
+          {/* One flow for both designs, so this one needs no switch */}
+          <Figure label="The flow: pick a continent, choose a path, land on the page" />
         </Visual>
         {SOLUTION_ITEMS.map(({ num, title, body }) => (
           <div key={num} className="cs-sub">
