@@ -370,6 +370,13 @@
   .cs-copy > .cs-lead {
     @apply mb-[24px] font-heading text-[26px] leading-[34px] text-heading md:text-[30px] md:leading-[38px];
   }
+  /* A switched visual fades in (VariantFigure) */
+  .cs-fade {
+    animation: cs-fade 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cs-fade { animation: none; }
+  }
   .cs-copy > .cs-closing {
     @apply mt-[32px] border-t border-line-soft pt-[28px];
   }
@@ -439,6 +446,7 @@
   grid-area: 1 / 1;
   justify-self: start;
 }
+@keyframes cs-fade { from { opacity: 0; } }
 @keyframes cs-slot-in-up { from { opacity: 0; transform: translateY(16px); } }
 @keyframes cs-slot-in-down { from { opacity: 0; transform: translateY(-16px); } }
 @keyframes cs-slot-out-up { to { opacity: 0; transform: translateY(-16px); } }
