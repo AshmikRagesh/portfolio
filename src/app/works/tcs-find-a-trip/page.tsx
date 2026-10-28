@@ -21,6 +21,7 @@ import {
   ProsCons,
   NumberedPoints,
   Timeline,
+  ProcessStrip,
   Stats,
   OptionCard,
   Footnote,
@@ -530,6 +531,9 @@ const TEST_ARMS: Parameters<typeof StatTiles>[0]["items"] = [
   { stat: "33%", label: "of visitors get Variant 3, the image cards", tone: "key" },
 ];
 
+// The path the code took, in order
+const BUILD_STEPS = ["Branch off main", "Build both variants", "Code review", "Merge to main"];
+
 // What went into the build — open icon columns, kept short so three fit the text column
 const HANDOFF = [
   {
@@ -564,13 +568,16 @@ function Output() {
       </Visual>
       <div className="cs-sub">
         <Copy>
-          <h3>What went into the build</h3>
+          <h3>How it was built</h3>
           <p>
-            I built both variants with <HelixLink /> on their own branch of
-            the site&apos;s code, using only the design system&apos;s
-            components and tokens. Then I opened a pull request, the
-            developers reviewed the front end, and once they approved it I
-            merged it into the main codebase.
+            Both variants were designed in high fidelity with <HelixLink />,
+            so every screen was built only from the design system&apos;s
+            components and tokens. From there, the code went through the same
+            review as any developer&apos;s:
+          </p>
+          <ProcessStrip steps={BUILD_STEPS} />
+          <p className="!mt-[24px]">
+            Once it was merged, the developers picked it up to set up the test.
           </p>
           <div className="mt-[32px]">
             <CardGrid items={HANDOFF} plain />
