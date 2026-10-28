@@ -23,7 +23,9 @@ const PALETTES = {
   grey: { pale: "#F3F4F6", mid: "#D1D5DB", deep: "#6B7280" },
 };
 // Tone thresholds on the (field − hidden) value; seven tones, so six cuts
-const CUTS = [0.62, 0.68, 0.74, 0.82, 0.9, 0.98];
+// The first cut sets how far the clouds reach; the later ones are close together so more
+// of the cloud turns grape (or dark grey) without the cloud growing
+const CUTS = [0.62, 0.67, 0.71, 0.75, 0.79, 0.84];
 const STEPS = 6; // the reveal moves in this many visible jumps
 const IN_MS = 420;
 const OUT_MS = 320;
