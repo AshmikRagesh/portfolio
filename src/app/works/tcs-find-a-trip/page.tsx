@@ -34,7 +34,7 @@ import {
 export const metadata: Metadata = {
   title: "Not everyone is ready to book · Ashmik Ragesh",
   description:
-    "Designed a two-path choice in the TCS World Travel “Find a Trip” menu — letting travellers still exploring learn about a destination first, and travellers ready to compare go straight to trips. Approved as an A/B/C test.",
+    "Designed and built a two-path choice in the TCS World Travel “Find a Trip” menu, so travellers still exploring can learn about a destination first and those ready to compare go straight to trips. Both variants are built for an A/B/C test.",
 };
 
 // Helix, the design-system skill on Claude Code — linked to its own case study
@@ -57,7 +57,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "discovery",   label: "Discovery"   },
   { id: "exploration", label: "Exploration" },
   { id: "solution",    label: "Solution"    },
-  { id: "output",      label: "Handoff"     },
+  { id: "output",      label: "Build"       },
   { id: "outcome",     label: "Where it stands" },
   { id: "reflection",  label: "Reflection"  },
 ];
@@ -70,20 +70,21 @@ function Overview() {
     <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
-          TCS World Travel plans luxury trips around the world. I designed a
-          new step in the website&apos;s main menu. After picking a continent, travellers can
-          now explore the destination or browse trips. Both of my designs were
-          approved for an A/B/C test.
+          TCS World Travel plans luxury trips around the world. I designed and
+          built a new step in the website&apos;s main menu: after picking a
+          continent, travellers choose to explore the destination or browse
+          trips. Both variants are built in code, ready to test against the
+          current menu.
         </p>
         <Meta
           role={
             <>
-              Product Designer. Owned both test designs, from first
-              prototype to developer handoff.
+              Product Designer. Owned both variants end to end, from the
+              first prototype to the front-end code.
             </>
           }
           team="Rohit Rayala (CRO), Sharayu Jadhav (Product Owner), Hriday Gami (Design), Sandy Tang (Content)"
-          timeline={<>4 weeks, Jun–Jul 2026<br />Ready for development 15 Jul 2026</>}
+          timeline={<>4 weeks of design, Jun–Jul 2026<br />Designs approved 15 Jul 2026</>}
         />
       </Copy>
       <Visual>
@@ -409,7 +410,7 @@ function Exploration() {
         </ul>
         <p>
           The side-by-side version is where the phone problem showed up. In the
-          end, two designs were strong enough that we tested both.
+          end, two designs were strong enough that we chose to test both.
         </p>
       </Copy>
       {ITERATIONS.map(({ label, title, chosen, worked, didntWork }) => (
@@ -515,7 +516,7 @@ function Solution() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Handoff  (output — nothing is live yet, so this is what went to development)
+// Section: Build  (output — the two variants, built in code and ready to test)
 // ─────────────────────────────────────────────────────────────────────────────
 // The three arms of the test; the two variants are the point, the control is today's menu
 const TEST_ARMS: Parameters<typeof StatTiles>[0]["items"] = [
@@ -524,7 +525,7 @@ const TEST_ARMS: Parameters<typeof StatTiles>[0]["items"] = [
   { stat: "33%", label: "of visitors get Variant 3, the image cards", tone: "key" },
 ];
 
-// What developers received — open icon columns, kept short so three fit the text column
+// What went into the build — open icon columns, kept short so three fit the text column
 const HANDOFF = [
   {
     icon: <Devices size={28} weight="fill" className="text-grape" />,
@@ -539,18 +540,18 @@ const HANDOFF = [
   {
     icon: <ListChecks size={28} weight="fill" className="text-grape" />,
     title: "The behaviour, written down",
-    description: "How the paths open, highlight and close, turned into ten checks.",
+    description: "How the paths open, highlight and close, checked against ten criteria.",
   },
 ];
 
 function Output() {
   return (
-    <Chapter id="output" num={5} title="What went to development">
+    <Chapter id="output" num={5} title="Built in code, ready to test">
       <Copy>
         <p>
-          Nothing is live yet. Both designs were approved on 15 July 2026 to
-          run as an A/B/C test against the current menu, splitting visitors
-          three ways.
+          Both designs were approved on 15 July 2026, and I built them in code
+          as two variants of the menu. The test splits visitors three ways
+          against the current menu.
         </p>
       </Copy>
       <Visual>
@@ -558,12 +559,12 @@ function Output() {
       </Visual>
       <div className="cs-sub">
         <Copy>
-          <h3>What I handed over</h3>
+          <h3>What went into the build</h3>
           <p>
             Both variants were built with <HelixLink /> on Claude Code. It
             only uses the design system&apos;s own components and tokens, and
-            writes code the way our developers do, so they received working
-            front-end code instead of a file to rebuild.
+            writes code the way our developers do, so the developers reviewed
+            working front-end code instead of rebuilding a design.
           </p>
           <div className="mt-[32px]">
             <CardGrid items={HANDOFF} plain />
@@ -580,7 +581,7 @@ function Output() {
 // Real impact now, as plain numbers
 const IMPACT_SO_FAR = [
   { stat: "8", label: "new tracking events, so TCS can see how people use the menu" },
-  { stat: "3 weeks", label: "from the first question to two approved, test-ready designs" },
+  { stat: "3 weeks", label: "from the first question to two approved designs" },
 ];
 
 // What follows once the test reads out, in order
@@ -595,9 +596,9 @@ function Outcome() {
     <Chapter id="outcome" num={6} title="Where it stands">
       <Copy>
         <p>
-          Both designs are approved and waiting for development, so there are
-          no results yet. When the test runs, a journey counts as complete
-          only when the next page actually loads.
+          Both variants are built and reviewed, so the test is ready to run.
+          There are no results to share yet. When they come in, a journey
+          counts as complete only when the next page actually loads.
         </p>
       </Copy>
       <div className="cs-sub">
@@ -637,8 +638,8 @@ function Reflection() {
         </p>
         <p>
           <strong>Design the edge cases early.</strong> The cramped phone
-          layout and the missing destination pages were solved in the designs,
-          so development started with those questions already answered.
+          layout and the missing destination pages were solved in the
+          prototypes, so the build started with those questions answered.
         </p>
       </Copy>
     </Chapter>
