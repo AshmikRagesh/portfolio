@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { ArrowsSplit, FileX, HourglassMedium, Image as ImageIcon, Users } from "@phosphor-icons/react/dist/ssr";
+import { ArrowsSplit, Devices, FileX, HourglassMedium, Image as ImageIcon, Images, ListChecks, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import { FeaturedCard } from "@/components/Works";
 import { featuredWorks, roomFor } from "@/content/works";
-import { Tag } from "@/components/Tag";
 import {
   Hero,
   Chapter,
@@ -20,7 +19,8 @@ import {
   MoreDetail,
   ProsCons,
   NumberedPoints,
-  Funnel,
+  Timeline,
+  Stats,
   OptionCard,
   Footnote,
   VariantProvider,
@@ -507,22 +507,22 @@ const TEST_ARMS: Parameters<typeof StatTiles>[0]["items"] = [
   { stat: "33%", label: "of visitors get Variant 3, the image cards", tone: "key" },
 ];
 
-// What developers received, matched in length so the columns sit level
+// What developers received — open icon columns, kept short so three fit the text column
 const HANDOFF = [
   {
+    icon: <Devices size={28} weight="fill" className="text-grape" />,
     title: "Both variants, every screen",
-    description:
-      "Desktop and phone designs for text links and image cards, from the prototype the team clicked through for Africa.",
+    description: "Desktop and phone designs for the text links and the image cards.",
   },
   {
+    icon: <Images size={28} weight="fill" className="text-grape" />,
     title: "Photos for every continent",
-    description:
-      "Each continent got its approved trips and destination photos. North America and Golf stay trips-only, with no empty card.",
+    description: "An approved photo pair each; North America and Golf stay trips-only.",
   },
   {
+    icon: <ListChecks size={28} weight="fill" className="text-grape" />,
     title: "The behaviour, written down",
-    description:
-      "How the paths open, stay highlighted and close without a reload. Rohit turned it into ten checks for development.",
+    description: "How the paths open, highlight and close, turned into ten checks.",
   },
 ];
 
@@ -546,7 +546,9 @@ function Output() {
             Three things went to the developers with the designs, so both
             variants could be built and tested the same way.
           </p>
-          <NumberedPoints items={HANDOFF} stacked />
+          <div className="mt-[32px]">
+            <CardGrid items={HANDOFF} plain />
+          </div>
         </Copy>
       </div>
     </Chapter>
@@ -556,82 +558,41 @@ function Output() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Outcome  (where it stands: status, the goal it answers, impact so far, next)
 // ─────────────────────────────────────────────────────────────────────────────
-// The journey the test tracks, from the ticket's AB Tasty goals
-const JOURNEY = [
-  { label: "Opens Find a Trip", note: "Counted for everyone, in all three arms" },
-  { label: "Picks a continent", note: "The continent is recorded with each click" },
-  { label: "Chooses a path", note: "Explore Trips or Explore Destination, in the variants" },
-  { label: "Lands on the page", note: "The trip list or the destination page loads", goal: true },
-];
-
-// Real impact now, matched in length so the two columns sit level
+// Real impact now, as plain numbers
 const IMPACT_SO_FAR = [
-  {
-    title: "First data on this menu",
-    description:
-      "The test adds eight tracking events, so for the first time TCS will see how people actually use Find a Trip.",
-  },
-  {
-    title: "One test, not a debate",
-    description:
-      "After three weeks of design, both variants were approved, so text links against image cards gets settled with real data.",
-  },
+  { stat: "8", label: "new tracking events, so TCS can see how people use the menu" },
+  { stat: "3 weeks", label: "from the first question to two approved, test-ready designs" },
 ];
 
+// What follows once the test reads out, in order
 const NEXT_STEPS = [
-  {
-    title: "Read the results",
-    description: "Compare path completion across all three arms, and check that leaving without choosing doesn't rise.",
-  },
-  {
-    title: "Ship the winner",
-    description: "Roll the stronger variant out to every visitor, or keep today's menu if neither one beats it.",
-  },
-  {
-    title: "Take the choice further",
-    description: "If Explore Destination draws clicks, offer the same choice at other entry points across the site.",
-  },
+  { title: "Read the results", description: "Compare how many people reach a page in each arm." },
+  { title: "Ship the winner", description: "Roll it out to everyone, or keep today's menu." },
+  { title: "Take it further", description: "If destinations draw clicks, offer the choice elsewhere." },
 ];
 
 function Outcome() {
   return (
     <Chapter id="outcome" num={6} title="Where it stands">
       <Copy>
-        <div className="mb-[20px]">
-          <Tag tone="grey">Approved · waiting for development</Tag>
-        </div>
-        <p>We set out to test one idea, and the test is built to answer it.</p>
-        <PullQuote
-          label="The goal"
-          text="If travellers get a clear choice after picking a continent,"
-          emphasis="more of them will keep going."
-        />
         <p>
-          A journey only counts as complete when the next page actually
-          loads, so all three arms are judged the same way.
+          Both designs are approved and waiting for development, so there are
+          no results yet. When the test runs, a journey counts as complete
+          only when the next page actually loads.
         </p>
       </Copy>
-      <Visual>
-        <Funnel
-          steps={JOURNEY}
-          branch={{
-            label: "Leaving without choosing",
-            note: "to see whether the extra step costs anyone",
-          }}
-        />
-      </Visual>
       <div className="cs-sub">
         <Copy>
           <h3>Impact so far</h3>
           <p>Before a single result comes in, the work has already changed two things.</p>
-          <NumberedPoints items={IMPACT_SO_FAR} />
+          <Stats items={IMPACT_SO_FAR} />
         </Copy>
       </div>
       <div className="cs-sub">
         <Copy>
           <h3>What happens next</h3>
           <p>Once the test reads out, three steps follow.</p>
-          <NumberedPoints items={NEXT_STEPS} stacked />
+          <Timeline items={NEXT_STEPS} />
         </Copy>
       </div>
     </Chapter>
@@ -641,30 +602,25 @@ function Outcome() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Reflection
 // ─────────────────────────────────────────────────────────────────────────────
-const LESSONS = [
-  {
-    title: "Ask before you draw",
-    description:
-      "One question on 24 June, whether both paths deserved equal weight, shaped every layout after it and kept bias out of the test.",
-  },
-  {
-    title: "Let the screen decide",
-    description:
-      "Building the side-by-side version settled the layout in a day. Each screen got the layout that suits it, not one for every screen.",
-  },
-  {
-    title: "Ask for baseline data",
-    description:
-      "This menu had no tracking, so the problem rested on a hypothesis. Next time I'd ask for baseline data before the first sketch.",
-  },
-];
-
 function Reflection() {
   return (
     <Chapter id="reflection" num={7} title="What I learned">
       <Copy>
-        <p>Three things I&apos;d carry into the next test.</p>
-        <NumberedPoints items={LESSONS} stacked />
+        <p>
+          <strong>Ask before you draw.</strong> One question on 24 June,
+          whether both paths deserved equal weight, shaped every layout after
+          it and kept bias out of the test.
+        </p>
+        <p>
+          <strong>Let the screen decide.</strong> Building the side-by-side
+          version settled the layout in a day. Each screen got the layout that
+          suits it, not one for every screen.
+        </p>
+        <p>
+          <strong>Ask for baseline data.</strong> There was no data on how
+          people used this menu, so the problem rested on a hypothesis. Next time I&apos;d ask for
+          baseline data before the first sketch.
+        </p>
       </Copy>
     </Chapter>
   );
