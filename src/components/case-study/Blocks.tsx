@@ -453,24 +453,34 @@ export function NumberedPoints({
 }
 
 /**
- * Steps that happen in order, on a line — a grape dot per step joined by a hairline, the
- * title and a short line under each. Across from tablet up; down the left on phones.
+ * Steps that happen in order, on a track — a numbered marker per step joined by a line.
+ * The first step, the one up next, is filled blackcurrant; the rest are outlined in grape
+ * and wait their turn. Across from tablet up; down the left on phones.
  */
 export function Timeline({ items }: { items: { title: string; description: string }[] }) {
   return (
-    <ol className="m-0 mt-[32px] grid list-none grid-cols-1 gap-[24px] p-0 md:grid-cols-3 md:gap-[32px]">
+    <ol className="m-0 mt-[32px] grid list-none grid-cols-1 gap-[32px] p-0 md:grid-cols-3 md:gap-[24px]">
       {items.map(({ title, description }, i) => (
-        <li key={title} className="relative flex flex-col gap-[8px] pl-[28px] md:pl-0 md:pt-[28px]">
-          {/* The line runs on to the next step; the dot marks this one */}
+        <li key={title} className="relative grid grid-cols-[32px_1fr] gap-x-[16px] md:block">
+          {/* The track runs from this marker to the next one */}
           {i < items.length - 1 && (
             <span
               aria-hidden="true"
-              className="absolute bottom-[-24px] left-[5px] top-[12px] w-[2px] bg-line md:bottom-auto md:left-[12px] md:right-[-32px] md:top-[5px] md:h-[2px] md:w-auto"
+              className="absolute bottom-[-32px] left-[15px] top-[40px] w-[2px] rounded-full bg-line md:bottom-auto md:left-[44px] md:right-[-12px] md:top-[15px] md:h-[2px] md:w-auto"
             />
           )}
-          <span aria-hidden="true" className="absolute left-0 top-[6px] size-[12px] rounded-full bg-grape md:top-0" />
-          <h4 className="font-heading text-[20px] leading-[28px] tracking-[0px] text-heading">{title}</h4>
-          <p className="font-body text-[18px] leading-[30px] text-secondary">{description}</p>
+          <span
+            aria-hidden="true"
+            className={`relative z-[1] flex size-[32px] items-center justify-center rounded-full font-brand text-[14px] leading-none ${
+              i === 0 ? "bg-primary text-white" : "border-2 border-grape bg-background text-grape"
+            }`}
+          >
+            {i + 1}
+          </span>
+          <div className="flex flex-col gap-[8px] md:mt-[20px]">
+            <h4 className="font-heading text-[20px] leading-[28px] tracking-[0px] text-heading">{title}</h4>
+            <p className="font-body text-[18px] leading-[30px] text-secondary">{description}</p>
+          </div>
         </li>
       ))}
     </ol>
