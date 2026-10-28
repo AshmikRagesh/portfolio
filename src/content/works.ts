@@ -25,12 +25,24 @@ export const featuredWorks: FeaturedWork[] = [
   {
     type: "Case study",
     discipline: "Design systems",
-    title: "Creating and maintaining the Artemis Design System for Enchanting Travels",
+    title: "Helix: keeping the TCS design system in code",
     description:
-      "Building accessible digital products is tough. It requires product designers to dive deep into guidelines, run extensive user testing, and manually audit every component. We fixed that.",
+      "A design-system skill for Claude Code that lets designers build straight from our components and tokens, so what we design is what developers ship.",
     image: "/images/works-cover.png",
-    imageAlt: "Artemis Design System preview",
-    href: "/works/artemis-design-system",
+    imageAlt: "Helix preview",
+    href: "/works/helix",
+    layout: "flagship",
+  },
+  {
+    type: "Case study",
+    discipline: "Product design",
+    title: "Letting TCS travellers explore a destination before they browse trips",
+    description:
+      "Designed and built a two-path choice in the Find a Trip menu, so travellers still exploring can learn about a place first. Both variants are built for an A/B/C test.",
+    image: "/images/tcs-find-a-trip/hero.webp",
+    imageAlt: "TCS World Travel Find a Trip menu preview",
+    imagePosition: "center 58%",
+    href: "/works/tcs-find-a-trip",
     layout: "flagship",
   },
   {
@@ -69,5 +81,26 @@ export const featuredWorks: FeaturedWork[] = [
   },
 ];
 
+// The Artemis Design System case study stays live at its URL but is off the homepage list
+export const artemisDesignSystem: FeaturedWork = {
+  type: "Case study",
+  discipline: "Design systems",
+  title: "Creating and maintaining the Artemis Design System for Enchanting Travels",
+  description:
+    "Building accessible digital products is tough. It requires product designers to dive deep into guidelines, run extensive user testing, and manually audit every component. We fixed that.",
+  image: "/images/works-cover.png",
+  imageAlt: "Artemis Design System preview",
+  href: "/works/artemis-design-system",
+  layout: "flagship",
+};
+
 // Each card's room number on its key tag (101, 102, …), by its place in the list
-export const roomFor = (work: FeaturedWork) => String(101 + featuredWorks.indexOf(work));
+export const roomFor = (work: FeaturedWork) => String(101 + Math.max(0, featuredWorks.indexOf(work)));
+
+// The case study that comes after this one on the homepage — skipping works without a
+// page and wrapping round to the start; a page that isn't listed leads to the first
+export function nextWork(href: string): FeaturedWork {
+  const pages = featuredWorks.filter((w) => w.href !== "#");
+  const i = pages.findIndex((w) => w.href === href);
+  return pages[(i + 1) % pages.length];
+}

@@ -13,12 +13,19 @@ export interface Reel {
 const PLACEHOLDER = "2rs_wDV_0Ww";
 
 export const reels = {
-  "artemis-design-system": {
+  helix: {
     youtubeId: PLACEHOLDER,
-    title: "Creating and maintaining the Artemis Design System for Enchanting Travels",
+    title: "Helix: keeping the TCS design system in code",
     description:
-      "Building accessible digital products is tough. It requires product designers to dive deep into guidelines, run extensive user testing, and manually audit every component. We fixed that.",
-    href: "/works/artemis-design-system",
+      "A design-system skill for Claude Code that lets designers build straight from our components and tokens, so what we design is what developers ship.",
+    href: "/works/helix",
+  },
+  "tcs-find-a-trip": {
+    youtubeId: PLACEHOLDER,
+    title: "Letting TCS travellers explore a destination before they browse trips",
+    description:
+      "Designed and built a two-path choice in the Find a Trip menu, so travellers still exploring can learn about a place first. Both variants are built for an A/B/C test.",
+    href: "/works/tcs-find-a-trip",
   },
   "artemis-reservations": {
     youtubeId: PLACEHOLDER,
@@ -34,13 +41,14 @@ export const reels = {
       "Designed and shipped in 4 weeks — drove insurance adoption from 7% to 52% and generated $125K in Q1 revenue by embedding coverage directly into checkout.",
     href: "/works/artemis-insurance",
   },
-  "tcs-find-a-trip": {
+  "artemis-design-system": {
     youtubeId: PLACEHOLDER,
-    title: "Letting travellers choose: explore a destination, or browse trips",
+    title: "Creating and maintaining the Artemis Design System for Enchanting Travels",
     description:
-      "Designed a new step in the TCS World Travel “Find a Trip” menu. After picking a continent, travellers now choose between exploring the destination or browsing trips.",
-    href: "/works/tcs-find-a-trip",
+      "Building accessible digital products is tough. It requires product designers to dive deep into guidelines, run extensive user testing, and manually audit every component. We fixed that.",
+    href: "/works/artemis-design-system",
   },
 } satisfies Record<string, Reel>;
 
-export const reelOrder: Reel[] = Object.values(reels);
+// The homepage plays the reels of the listed works, in homepage order
+export const reelOrder: Reel[] = [reels.helix, reels["tcs-find-a-trip"], reels["artemis-reservations"], reels["artemis-insurance"]];

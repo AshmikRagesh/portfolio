@@ -3,8 +3,6 @@ import { ArrowRight } from "lucide-react";
 import { ArrowsSplit, FileX, HourglassMedium, Image as ImageIcon, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
-import { FeaturedCard } from "@/components/Works";
-import { featuredWorks, roomFor } from "@/content/works";
 import {
   Hero,
   Chapter,
@@ -18,6 +16,7 @@ import {
   StatTiles,
   MoreDetail,
   PreviewLink,
+  NextCase,
   ProsCons,
   NumberedPoints,
   Timeline,
@@ -665,7 +664,6 @@ function Reflection() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────────────────────────────────────
-const NEXT_WORK = featuredWorks.find((w) => w.href === "/works/artemis-design-system")!;
 
 export default function TcsFindATripPage() {
   return (
@@ -684,17 +682,7 @@ export default function TcsFindATripPage() {
       <Output />
       <Outcome />
       <Reflection />
-      {/* The way on: the homepage's own card for the next case study */}
-      <section className="cs-chapter" aria-labelledby="next-case-study">
-        <div className="cs-column">
-          <p id="next-case-study" className="mb-[24px] font-brand text-[12px] uppercase leading-[16px] text-muted">
-            Next case study
-          </p>
-        </div>
-        <div className="cs-visual !mt-0">
-          <FeaturedCard work={NEXT_WORK} room={roomFor(NEXT_WORK)} />
-        </div>
-      </section>
+      <NextCase current="/works/tcs-find-a-trip" />
     </CaseStudyLayout>
   );
 }

@@ -3,6 +3,7 @@ export { default as Chapter } from "./Chapter";
 export { default as ImagePlaceholder } from "./ImagePlaceholder";
 export { default as MoreDetail } from "./MoreDetail";
 export { default as PreviewLink } from "./PreviewLink";
+export { default as NextCase } from "./NextCase";
 export { VariantProvider, VariantFigure } from "./VariantSwitch";
 export {
   Copy,
