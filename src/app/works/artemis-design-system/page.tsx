@@ -14,6 +14,7 @@ import {
   Metrics,
   Stats,
   ImpactList,
+  NextCase,
 } from "@/components/case-study";
 
 export const metadata: Metadata = {
@@ -23,13 +24,13 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS: CaseStudySection[] = [
-  { id: "overview",         label: "Overview"         },
-  { id: "why-artemis",      label: "Why Artemis"      },
-  { id: "audit",            label: "Audit"            },
-  { id: "five-fronts",      label: "Five Fronts"      },
-  { id: "my-contributions", label: "My Contributions" },
-  { id: "adoption",         label: "Adoption"         },
-  { id: "reflection",       label: "Reflection"       },
+  { id: "overview", label: "Overview" },
+  { id: "the-problem", label: "The Problem" },
+  { id: "discovery", label: "Discovery" },
+  { id: "solution", label: "Solution" },
+  { id: "output", label: "Build" },
+  { id: "outcome", label: "Where it stands" },
+  { id: "reflection", label: "Reflection" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -71,7 +72,7 @@ function Overview() {
 // ─────────────────────────────────────────────────────────────────────────────
 function WhyArtemis() {
   return (
-    <Chapter id="why-artemis" num={1} title="Why Artemis">
+    <Chapter id="the-problem" num={1} title="Why Artemis">
       <Copy>
         <p>
           By early 2023, Enchanting Travels was running on a fragmented
@@ -126,7 +127,7 @@ const AUDIT_QUOTES = [
 
 function Audit() {
   return (
-    <Chapter id="audit" num={2} title="Mapping the system before redesigning it">
+    <Chapter id="discovery" num={2} title="Mapping the system before redesigning it">
       <Copy>
         <p>
           The risk in starting a design system without an audit is obvious:
@@ -195,7 +196,7 @@ const FRONT_CARDS = [
 
 function FiveFronts() {
   return (
-    <Chapter id="five-fronts" num={3} title="The five fronts">
+    <Chapter id="solution" num={3} title="The five fronts">
       <Copy>
         <p>Each one showed up across every tool, in different combinations.</p>
       </Copy>
@@ -413,7 +414,7 @@ const CONTRIBUTION_ITEMS: ContributionItem[] = [
 function MyContributions() {
   return (
     <Chapter
-      id="my-contributions"
+      id="output"
       num={4}
       title="Six pillars that grew Artemis from a Figma file into a system every Enchanting Travels product runs on"
     >
@@ -474,7 +475,7 @@ const METRICS: { stat: string; label: string }[] = [
 
 function Adoption() {
   return (
-    <Chapter id="adoption" num={5} title="Three years on — where Artemis sits today">
+    <Chapter id="outcome" num={5} title="Three years on — where Artemis sits today">
       <Copy>
         <p>
           The per-pillar impacts above are the inputs. These are the
@@ -548,6 +549,7 @@ export default function ArtemisDesignSystemPage() {
       <MyContributions />
       <Adoption />
       <Reflection />
+      <NextCase current="/works/artemis-design-system" />
     </CaseStudyLayout>
   );
 }
