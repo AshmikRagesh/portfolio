@@ -5,6 +5,7 @@ import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout"
 import { reels } from "@/content/reels";
 import { FeaturedCard } from "@/components/Works";
 import { featuredWorks, roomFor } from "@/content/works";
+import { Tag } from "@/components/Tag";
 import {
   Hero,
   Chapter,
@@ -42,7 +43,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "exploration", label: "Exploration" },
   { id: "solution",    label: "Solution"    },
   { id: "output",      label: "Handoff"     },
-  { id: "outcome",     label: "Outcome"     },
+  { id: "outcome",     label: "Where it stands" },
   { id: "reflection",  label: "Reflection"  },
 ];
 
@@ -553,7 +554,7 @@ function Output() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Outcome  (how the test will be read; results to come)
+// Section: Outcome  (where it stands: status, the goal it answers, impact so far, next)
 // ─────────────────────────────────────────────────────────────────────────────
 // The journey the test tracks, from the ticket's AB Tasty goals
 const JOURNEY = [
@@ -563,14 +564,51 @@ const JOURNEY = [
   { label: "Lands on the page", note: "The trip list or the destination page loads", goal: true },
 ];
 
+// Real impact now, matched in length so the two columns sit level
+const IMPACT_SO_FAR = [
+  {
+    title: "First data on this menu",
+    description:
+      "The test adds eight tracking events, so for the first time TCS will see how people actually use Find a Trip.",
+  },
+  {
+    title: "One test, not a debate",
+    description:
+      "After three weeks of design, both variants were approved, so text links against image cards gets settled with real data.",
+  },
+];
+
+const NEXT_STEPS = [
+  {
+    title: "Read the results",
+    description: "Compare path completion across all three arms, and check that leaving without choosing doesn't rise.",
+  },
+  {
+    title: "Ship the winner",
+    description: "Roll the stronger variant out to every visitor, or keep today's menu if neither one beats it.",
+  },
+  {
+    title: "Take the choice further",
+    description: "If Explore Destination draws clicks, offer the same choice at other entry points across the site.",
+  },
+];
+
 function Outcome() {
   return (
-    <Chapter id="outcome" num={6} title="How we'll know it worked">
+    <Chapter id="outcome" num={6} title="Where it stands">
       <Copy>
+        <div className="mb-[20px]">
+          <Tag tone="grey">Approved · waiting for development</Tag>
+        </div>
+        <p>We set out to test one idea, and the test is built to answer it.</p>
+        <PullQuote
+          label="The goal"
+          text="If travellers get a clear choice after picking a continent,"
+          emphasis="more of them will keep going."
+        />
         <p>
-          The test isn&apos;t live yet, so there are no results. This is how it
-          will be read. A journey only counts as complete when the next page
-          actually loads, so all three arms are judged the same way.
+          A journey only counts as complete when the next page actually
+          loads, so all three arms are judged the same way.
         </p>
       </Copy>
       <Visual>
@@ -582,6 +620,20 @@ function Outcome() {
           }}
         />
       </Visual>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Impact so far</h3>
+          <p>Before a single result comes in, the work has already changed two things.</p>
+          <NumberedPoints items={IMPACT_SO_FAR} />
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What happens next</h3>
+          <p>Once the test reads out, three steps follow.</p>
+          <NumberedPoints items={NEXT_STEPS} stacked />
+        </Copy>
+      </div>
     </Chapter>
   );
 }
