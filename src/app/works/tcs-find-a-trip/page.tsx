@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ArrowsSplit, Devices, FileX, HourglassMedium, Image as ImageIcon, Images, ListChecks, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
@@ -18,6 +17,7 @@ import {
   PullQuote,
   StatTiles,
   MoreDetail,
+  PreviewLink,
   ProsCons,
   NumberedPoints,
   Timeline,
@@ -37,17 +37,22 @@ export const metadata: Metadata = {
     "Designed and built a two-path choice in the TCS World Travel “Find a Trip” menu, so travellers still exploring can learn about a destination first and those ready to compare go straight to trips. Both variants are built for an A/B/C test.",
 };
 
-// Helix, the design-system skill on Claude Code — linked to its own case study
+// Helix, the design-system skill on Claude Code — linked to its own case study, which it
+// previews on hover. The case study isn't published yet, so the preview says so.
 const HELIX_CASE_STUDY = "/works/helix";
 
 function HelixLink() {
   return (
-    <Link
+    <PreviewLink
       href={HELIX_CASE_STUDY}
-      className="text-heading underline decoration-grape decoration-[2px] underline-offset-[4px] transition-colors duration-200 hover:text-grape"
+      preview={{
+        tag: "Coming soon",
+        title: "Helix: our design system, in code",
+        description: "How a Claude Code skill keeps every design built from the TCS components and tokens.",
+      }}
     >
-      Helix
-    </Link>
+      Helix on Claude Code
+    </PreviewLink>
   );
 }
 
@@ -398,8 +403,8 @@ function Exploration() {
       <Copy>
         <p>
           I started with quick prototypes to test how the choice should behave,
-          not how it should look. I built them with <HelixLink /> on Claude
-          Code, so the business could click through each one. The two paths
+          not how it should look. I built them with <HelixLink />, so the
+          business could click through each one. The two paths
           open right under the continent you click, so the menu never jumps
           away. In review, Rohit asked for three changes:
         </p>
@@ -561,10 +566,11 @@ function Output() {
         <Copy>
           <h3>What went into the build</h3>
           <p>
-            Both variants were built with <HelixLink /> on Claude Code. It
-            only uses the design system&apos;s own components and tokens, and
-            writes code the way our developers do, so the developers reviewed
-            working front-end code instead of rebuilding a design.
+            I built both variants with <HelixLink /> on their own branch of
+            the site&apos;s code, using only the design system&apos;s
+            components and tokens. Then I opened a pull request, the
+            developers reviewed the front end, and once they approved it I
+            merged it into the main codebase.
           </p>
           <div className="mt-[32px]">
             <CardGrid items={HANDOFF} plain />
@@ -586,7 +592,7 @@ const IMPACT_SO_FAR = [
 
 // What follows once the test reads out, in order
 const NEXT_STEPS = [
-  { title: "Read the results", description: "Compare how many people reach a page in each arm." },
+  { title: "Read the results", description: "Check those three numbers in every arm of the test." },
   { title: "Ship the winner", description: "Roll it out to everyone, or keep today's menu." },
   { title: "Take it further", description: "If destinations draw clicks, offer the choice elsewhere." },
 ];
@@ -597,8 +603,7 @@ function Outcome() {
       <Copy>
         <p>
           Both variants are built and reviewed, so the test is ready to run.
-          There are no results to share yet. When they come in, a journey
-          counts as complete only when the next page actually loads.
+          There are no results to share yet.
         </p>
       </Copy>
       <div className="cs-sub">
@@ -611,7 +616,13 @@ function Outcome() {
       <div className="cs-sub">
         <Copy>
           <h3>What happens next</h3>
-          <p>Once the test reads out, three steps follow.</p>
+          <p>
+            When the test reads out, we&apos;ll compare three things across the
+            control and both variants: how many people reach a page after
+            picking a continent, which path they choose, and how many leave
+            without choosing. A journey only counts when the next page
+            actually loads. Then three steps follow.
+          </p>
           <Timeline items={NEXT_STEPS} />
         </Copy>
       </div>
