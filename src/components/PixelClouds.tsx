@@ -9,8 +9,8 @@ import { useEffect, useRef } from "react";
 //   clear · pale dither · pale · pink dither · pink · grape dither · grape
 // where a "dither" is a 2px checkerboard of the two tones either side of it. On the first
 // frame of a hover the clouds roll in from the edges in a few chunky steps, keep drifting
-// while the pointer stays, and roll back out when it leaves. The centre stays clear so the
-// work itself is still visible.
+// while the pointer stays, and roll back out when it leaves. They hug the edges: the middle
+// half stays clear and the noise is weighted lightly, so the work itself stays visible.
 //
 // Hover is read from the card (the nearest .group). Touch screens never hover, so they
 // never see it; with reduced motion the clouds appear and leave without drifting.
@@ -27,6 +27,7 @@ const STEPS = 6; // the reveal moves in this many visible jumps
 const IN_MS = 420;
 const OUT_MS = 320;
 const DRIFT = 0.6; // cells per second
+const CLEAR = 0.62; // no clouds inside this distance from the centre (0 = centre, 1 = corners)
 
 function hash(x: number, y: number, seed: number) {
   let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 982451653)) | 0;
@@ -126,8 +127,10 @@ export default function PixelClouds({
           const ex = ((c + 0.5) * CELL) / w - 0.5;
           const ey = ((r + 0.5) * CELL) / h - 0.5;
           const edge = Math.min(1, Math.hypot(ex * 1.6, ey * 1.8));
+          // The middle stays clear: clouds only gather in the outer band
+          if (edge < CLEAR) continue;
           const field =
-            0.75 * fbm((c + drift) * 0.14, r * 0.2, seed) + 0.5 * edge * edge + 0.08 * hash(c, r, seed + 3) - (1 - shown) * 0.7;
+            0.45 * fbm((c + drift) * 0.14, r * 0.2, seed) + 0.66 * edge * edge + 0.06 * hash(c, r, seed + 3) - (1 - shown) * 0.7;
           let tone = 0;
           while (tone < CUTS.length && field >= CUTS[tone]) tone++;
           if (!tone) continue;
