@@ -16,6 +16,7 @@ import {
   Reasons,
   OptionCard,
   Metrics,
+  NextCase,
 } from "@/components/case-study";
 
 export const metadata: Metadata = {
@@ -25,15 +26,13 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS: CaseStudySection[] = [
-  { id: "overview",    label: "Overview"    },
-  { id: "background",  label: "Background"  },
-  { id: "research",    label: "Research"    },
-  { id: "challenges",  label: "Insights"    },
+  { id: "overview", label: "Overview" },
   { id: "the-problem", label: "The Problem" },
-  { id: "process",     label: "Process"     },
-  { id: "solution",    label: "Solution"    },
-  { id: "impact",      label: "Impact"      },
-  { id: "reflection",  label: "Reflection"  },
+  { id: "discovery", label: "Discovery" },
+  { id: "exploration", label: "Exploration" },
+  { id: "solution", label: "Solution" },
+  { id: "outcome", label: "Where it stands" },
+  { id: "reflection", label: "Reflection" },
 ];
 
 // TODO: Replace placeholders with permanent assets — the Figma asset URLs these
@@ -76,7 +75,7 @@ function Overview() {
 // ─────────────────────────────────────────────────────────────────────────────
 function Background() {
   return (
-    <Chapter id="background" num={1} title="Reservations Module: Core of Artemis">
+    <Chapter id="discovery" num={2} title="Reservations Module: Core of Artemis">
       <Copy>
         <p>
           Artemis is Enchanting Travels&apos; internal platform for
@@ -96,6 +95,8 @@ function Background() {
       <Visual>
         <Figure label="Artemis Reservations — background context image" />
       </Visual>
+      <Research />
+      <Challenges />
     </Chapter>
   );
 }
@@ -119,7 +120,10 @@ const RESEARCH_QUOTES = [
 
 function Research() {
   return (
-    <Chapter id="research" num={2} title="Listening to the people who live in Artemis daily">
+    <div className="cs-sub">
+      <Copy>
+        <h3>Listening to the people who live in Artemis daily</h3>
+      </Copy>
       <Copy>
         <p>
           Before sketching a single screen, I spent the first week
@@ -159,7 +163,7 @@ function Research() {
       <Visual>
         <Quotes items={RESEARCH_QUOTES} />
       </Visual>
-    </Chapter>
+    </div>
   );
 }
 
@@ -216,7 +220,10 @@ const CHALLENGE_CARDS = [
 
 function Challenges() {
   return (
-    <Chapter id="challenges" num={3} title="Where the System Fell Short">
+    <div className="cs-sub">
+      <Copy>
+        <h3>Where the System Fell Short</h3>
+      </Copy>
       <Copy>
         <p>
           Across interviews with ResCos, support ticket reviews, and Slack
@@ -227,7 +234,7 @@ function Challenges() {
       <Visual>
         <CardGrid items={CHALLENGE_CARDS} />
       </Visual>
-    </Chapter>
+    </div>
   );
 }
 
@@ -236,7 +243,7 @@ function Challenges() {
 // ─────────────────────────────────────────────────────────────────────────────
 function TheProblem() {
   return (
-    <Chapter id="the-problem" num={4} title="A System That Relied Too Much on Manual Effort">
+    <Chapter id="the-problem" num={1} title="A System That Relied Too Much on Manual Effort">
       <Copy>
         <p>
           Five recurring themes from research mapped to one root cause:
@@ -365,7 +372,7 @@ const DESIGN_DECISIONS: DesignDecision[] = [
 
 function Process() {
   return (
-    <Chapter id="process" num={5} title="Designing at v0 speed, then earning Figma fidelity">
+    <Chapter id="exploration" num={3} title="Designing at v0 speed, then earning Figma fidelity">
       <Copy>
         <p>
           With the five insights synthesised and the problem statement
@@ -494,7 +501,7 @@ function Solution() {
   return (
     <Chapter
       id="solution"
-      num={6}
+      num={4}
       title="Redesigning Bookings to Enable Speed, Clarity & Confidence"
     >
       <Copy>
@@ -542,7 +549,7 @@ const METRICS: { stat: string; label: string }[] = [
 
 function Impact() {
   return (
-    <Chapter id="impact" num={7} title="Measuring the Outcomes That Mattered">
+    <Chapter id="outcome" num={5} title="Measuring the Outcomes That Mattered">
       <Copy>
         <p>
           Three numbers from usability testing and pilot — each tied directly to a pain point
@@ -577,7 +584,7 @@ function Impact() {
 // ─────────────────────────────────────────────────────────────────────────────
 function Reflection() {
   return (
-    <Chapter id="reflection" num={8} title="What I learned">
+    <Chapter id="reflection" num={6} title="What I learned">
       <Copy>
         <p>
           The biggest surprise was how much of the real problem lived in workarounds. ResCos
@@ -617,14 +624,13 @@ export default function ArtemisReservationsPage() {
         date="08/11/2024"
       />
       <Overview />
-      <Background />
-      <Research />
-      <Challenges />
       <TheProblem />
+      <Background />
       <Process />
       <Solution />
       <Impact />
       <Reflection />
+      <NextCase current="/works/artemis-reservations" />
     </CaseStudyLayout>
   );
 }
