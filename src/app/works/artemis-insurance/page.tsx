@@ -15,6 +15,7 @@ import {
   ProsCons,
   OptionCard,
   Metrics,
+  NextCase,
 } from "@/components/case-study";
 
 export const metadata: Metadata = {
@@ -24,15 +25,13 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS: CaseStudySection[] = [
-  { id: "overview",    label: "Overview"    },
-  { id: "background",  label: "Background"  },
-  { id: "research",    label: "Research"    },
-  { id: "insights",    label: "Insights"    },
+  { id: "overview", label: "Overview" },
   { id: "the-problem", label: "The Problem" },
-  { id: "process",     label: "Process"     },
-  { id: "solution",    label: "Solution"    },
-  { id: "impact",      label: "Impact"      },
-  { id: "reflection",  label: "Reflection"  },
+  { id: "discovery", label: "Discovery" },
+  { id: "exploration", label: "Exploration" },
+  { id: "solution", label: "Solution" },
+  { id: "outcome", label: "Where it stands" },
+  { id: "reflection", label: "Reflection" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -70,7 +69,7 @@ function Overview() {
 // ─────────────────────────────────────────────────────────────────────────────
 function Background() {
   return (
-    <Chapter id="background" num={1} title="The guest booking flow — and the gap in it">
+    <Chapter id="discovery" num={2} title="The guest booking flow — and the gap in it">
       <Copy>
         <p>
           The guest booking flow is Enchanting Travels&apos; only direct
@@ -88,6 +87,8 @@ function Background() {
       <Visual>
         <Figure label="Artemis booking flow — before state" />
       </Visual>
+      <Research />
+      <Insights />
     </Chapter>
   );
 }
@@ -108,7 +109,10 @@ const RESEARCH_QUOTES = [
 
 function Research() {
   return (
-    <Chapter id="research" num={2} title="Finding the leak before designing the fix">
+    <div className="cs-sub">
+      <Copy>
+        <h3>Finding the leak before designing the fix</h3>
+      </Copy>
       <Copy>
         <p>
           Before touching a frame, I needed to understand where guests were
@@ -147,7 +151,7 @@ function Research() {
           insurance, 80% said yes.
         </p>
       </Copy>
-    </Chapter>
+    </div>
   );
 }
 
@@ -183,7 +187,10 @@ const INSIGHT_CARDS = [
 
 function Insights() {
   return (
-    <Chapter id="insights" num={3} title="Four signals pointing to the same gap">
+    <div className="cs-sub">
+      <Copy>
+        <h3>Four signals pointing to the same gap</h3>
+      </Copy>
       <Copy>
         <p>
           Every research track — analytics, support logs, TC interviews —
@@ -194,7 +201,7 @@ function Insights() {
       <Visual>
         <CardGrid items={INSIGHT_CARDS} />
       </Visual>
-    </Chapter>
+    </div>
   );
 }
 
@@ -203,7 +210,7 @@ function Insights() {
 // ─────────────────────────────────────────────────────────────────────────────
 function TheProblem() {
   return (
-    <Chapter id="the-problem" num={4} title="Insurance was available — just nowhere to be found">
+    <Chapter id="the-problem" num={1} title="Insurance was available — just nowhere to be found">
       <Copy>
         <p>
           Enchanting Travels offered insurance. Guests wanted it. The
@@ -284,7 +291,7 @@ const ITERATIONS: IterationItem[] = [
 
 function Process() {
   return (
-    <Chapter id="process" num={5} title="Three iterations to find the right integration point">
+    <Chapter id="exploration" num={3} title="Three iterations to find the right integration point">
       <Copy>
         <p>
           With the problem defined, the design question became: where in the
@@ -339,7 +346,7 @@ const SOLUTION_ITEMS = [
 
 function Solution() {
   return (
-    <Chapter id="solution" num={6} title="Embedded, trustworthy, and easy to skip">
+    <Chapter id="solution" num={4} title="Embedded, trustworthy, and easy to skip">
       <Copy>
         <p>
           The final solution wasn&apos;t about designing a better insurance
@@ -386,7 +393,7 @@ const METRICS: { stat: string; label: string }[] = [
 
 function Impact() {
   return (
-    <Chapter id="impact" num={7} title="Numbers from the first quarter post-launch">
+    <Chapter id="outcome" num={5} title="Numbers from the first quarter post-launch">
       <Copy>
         <p>
           Three metrics — each mapping directly to one of the gaps research
@@ -406,7 +413,7 @@ function Impact() {
 // ─────────────────────────────────────────────────────────────────────────────
 function Reflection() {
   return (
-    <Chapter id="reflection" num={8} title="What I learned">
+    <Chapter id="reflection" num={6} title="What I learned">
       <Copy>
         <p>
           The biggest lesson was about placement over polish. The first
@@ -449,14 +456,13 @@ export default function ArtemisInsurancePage() {
         date="November 2024"
       />
       <Overview />
-      <Background />
-      <Research />
-      <Insights />
       <TheProblem />
+      <Background />
       <Process />
       <Solution />
       <Impact />
       <Reflection />
+      <NextCase current="/works/artemis-insurance" />
     </CaseStudyLayout>
   );
 }
