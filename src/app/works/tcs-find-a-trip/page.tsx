@@ -534,7 +534,7 @@ const TEST_ARMS: Parameters<typeof StatTiles>[0]["items"] = [
 // The path the code took, in order
 const BUILD_STEPS = ["Branch off main", "Build both variants", "Code review", "Merge to main"];
 
-// What went into the build — numbered points, one row on desktop
+// What went into the build — numbered points, one below the other
 const HANDOFF = [
   {
     title: "Both variants, in code",
@@ -578,7 +578,7 @@ function Output() {
           </p>
           {/* A wider pause before the points (32px more on top of their own 32px) */}
           <div className="pt-[32px]">
-            <NumberedPoints items={HANDOFF} />
+            <NumberedPoints items={HANDOFF} stacked />
           </div>
         </Copy>
       </div>
