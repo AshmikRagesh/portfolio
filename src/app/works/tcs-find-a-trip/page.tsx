@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ArrowsSplit, Devices, FileX, HourglassMedium, Image as ImageIcon, Images, ListChecks, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
@@ -35,6 +36,20 @@ export const metadata: Metadata = {
   description:
     "Designed a two-path choice in the TCS World Travel “Find a Trip” menu — letting travellers still exploring learn about a destination first, and travellers ready to compare go straight to trips. Approved as an A/B/C test.",
 };
+
+// Helix, the design-system skill on Claude Code — linked to its own case study
+const HELIX_CASE_STUDY = "/works/helix";
+
+function HelixLink() {
+  return (
+    <Link
+      href={HELIX_CASE_STUDY}
+      className="text-heading underline decoration-grape decoration-[2px] underline-offset-[4px] transition-colors duration-200 hover:text-grape"
+    >
+      Helix
+    </Link>
+  );
+}
 
 const SECTIONS: CaseStudySection[] = [
   { id: "overview",    label: "Overview"    },
@@ -382,9 +397,10 @@ function Exploration() {
       <Copy>
         <p>
           I started with quick prototypes to test how the choice should behave,
-          not how it should look. The two paths open right under the continent
-          you click, so the menu never jumps away. In review, Rohit asked for
-          three changes:
+          not how it should look. I built them with <HelixLink /> on Claude
+          Code, so the business could click through each one. The two paths
+          open right under the continent you click, so the menu never jumps
+          away. In review, Rohit asked for three changes:
         </p>
         <ul>
           {REVIEW_CHANGES.map((c) => (
@@ -512,8 +528,8 @@ const TEST_ARMS: Parameters<typeof StatTiles>[0]["items"] = [
 const HANDOFF = [
   {
     icon: <Devices size={28} weight="fill" className="text-grape" />,
-    title: "Both variants, every screen",
-    description: "Desktop and phone designs for the text links and the image cards.",
+    title: "Both variants, in code",
+    description: "Desktop and phone front end for the text links and the image cards.",
   },
   {
     icon: <Images size={28} weight="fill" className="text-grape" />,
@@ -544,8 +560,10 @@ function Output() {
         <Copy>
           <h3>What I handed over</h3>
           <p>
-            Three things went to the developers with the designs, so both
-            variants could be built and tested the same way.
+            Both variants were built with <HelixLink /> on Claude Code. It
+            only uses the design system&apos;s own components and tokens, and
+            writes code the way our developers do, so they received working
+            front-end code instead of a file to rebuild.
           </p>
           <div className="mt-[32px]">
             <CardGrid items={HANDOFF} plain />
