@@ -6,8 +6,9 @@ import { Tag } from "@/components/Tag";
 
 /**
  * An inline link to another case study that previews it on hover or keyboard focus: a
- * small white card (no pointer) drops in under the link with the case study's cover, a
- * tag, its title and a line. The card stays open while the pointer moves onto it, and it
+ * small white card (no pointer) springs in under the link — rising and scaling up from
+ * its top-left with a slight overshoot — with the case study's cover, a tag, its title
+ * and a line. The card stays open while the pointer moves onto it, and it
  * closes a beat after leaving. Built from spans so it can sit inside a paragraph. On
  * touch screens the link simply navigates.
  */
@@ -44,8 +45,10 @@ export default function PreviewLink({
       <span
         role="tooltip"
         aria-hidden={!open}
-        className={`absolute left-0 top-full z-50 block w-[320px] pt-[12px] transition-[opacity,transform] duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-          open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-[4px] opacity-0"
+        className={`absolute left-0 top-full z-50 block w-[272px] origin-top-left pt-[10px] transition-[opacity,transform] motion-reduce:transition-none ${
+          open
+            ? "pointer-events-auto translate-y-0 scale-100 opacity-100 duration-[420ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+            : "pointer-events-none translate-y-[8px] scale-[0.92] opacity-0 duration-[180ms] ease-out"
         }`}
       >
         <Link
@@ -53,18 +56,18 @@ export default function PreviewLink({
           tabIndex={-1}
           className="block overflow-hidden rounded-[16px] border border-line-soft bg-white shadow-[0_2px_0_rgba(200,204,212,0.45),0_16px_40px_rgba(30,5,37,0.08)]"
         >
-          <span className="relative block h-[148px] bg-placeholder">
+          <span className="relative block h-[112px] bg-placeholder">
             {preview.image && (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={preview.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
             )}
           </span>
-          <span className="flex flex-col gap-[8px] p-[16px]">
+          <span className="flex flex-col gap-[6px] p-[14px]">
             <span className="block">
               <Tag tone="grey">{preview.tag}</Tag>
             </span>
-            <span className="block font-heading text-[20px] leading-[28px] text-heading">{preview.title}</span>
-            <span className="block font-body text-[16px] leading-[24px] text-secondary">{preview.description}</span>
+            <span className="block font-heading text-[18px] leading-[24px] text-heading">{preview.title}</span>
+            <span className="block font-body text-[14px] leading-[22px] text-secondary">{preview.description}</span>
           </span>
         </Link>
       </span>

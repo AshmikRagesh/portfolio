@@ -1,4 +1,4 @@
-import { Check, X } from "lucide-react";
+import { ArrowRight, Check, X } from "lucide-react";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
 import AutoplayVideo from "./AutoplayVideo";
@@ -494,6 +494,25 @@ export function Timeline({ items }: { items: { title: string; description: strin
             <h4 className="font-heading text-[20px] leading-[28px] tracking-[0px] text-heading">{title}</h4>
             <p className="font-body text-[18px] leading-[30px] text-secondary">{description}</p>
           </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/**
+ * A short process as a strip of steps — white pills with a hairline border joined by
+ * arrows, so the order reads at a glance. Wraps on narrow screens.
+ */
+export function ProcessStrip({ steps }: { steps: string[] }) {
+  return (
+    <ol className="m-0 mt-[24px] flex list-none flex-wrap items-center gap-x-[8px] gap-y-[12px] p-0">
+      {steps.map((step, i) => (
+        <li key={step} className="flex items-center gap-[8px]">
+          <span className="inline-flex h-[40px] items-center rounded-full border border-line bg-white px-[14px] font-body text-[16px] leading-[24px] text-heading">
+            {step}
+          </span>
+          {i < steps.length - 1 && <ArrowRight size={16} aria-hidden="true" className="shrink-0 text-muted" />}
         </li>
       ))}
     </ol>

@@ -19,6 +19,7 @@ export {
   Reasons,
   NumberedPoints,
   Timeline,
+  ProcessStrip,
   OptionCard,
   Metrics,
   Stats,
