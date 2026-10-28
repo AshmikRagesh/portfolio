@@ -576,10 +576,10 @@ function Output() {
             review as any developer&apos;s:
           </p>
           <ProcessStrip steps={BUILD_STEPS} />
-          <p className="!mt-[24px]">
+          <p className="!mt-[32px]">
             Once it was merged, the developers picked it up to set up the test.
           </p>
-          <div className="mt-[32px]">
+          <div className="mt-[48px]">
             <CardGrid items={HANDOFF} plain />
           </div>
         </Copy>
@@ -626,9 +626,9 @@ function Outcome() {
           <p>
             When the test reads out, we&apos;ll compare three things across the
             control and both variants: how many people reach a page after
-            picking a continent, which path they choose, and how many leave
-            without choosing. A journey only counts when the next page
-            actually loads. Then three steps follow.
+            picking a continent, which path they choose, and the drop-off
+            rate, meaning how many leave without choosing. A journey only
+            counts when the next page actually loads. Then three steps follow.
           </p>
           <Timeline items={NEXT_STEPS} />
         </Copy>

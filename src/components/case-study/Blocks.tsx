@@ -506,7 +506,7 @@ export function Timeline({ items }: { items: { title: string; description: strin
  */
 export function ProcessStrip({ steps }: { steps: string[] }) {
   return (
-    <ol className="m-0 mt-[24px] flex list-none flex-wrap items-center gap-x-[8px] gap-y-[12px] p-0">
+    <ol className="m-0 mt-[32px] flex list-none flex-wrap items-center gap-x-[8px] gap-y-[12px] p-0">
       {steps.map((step, i) => (
         <li key={step} className="flex items-center gap-[8px]">
           <span className="inline-flex h-[40px] items-center rounded-full border border-line bg-white px-[14px] font-body text-[16px] leading-[24px] text-heading">
