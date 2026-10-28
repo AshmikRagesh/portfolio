@@ -17,7 +17,7 @@ export {
   ProsCons,
   Reasons,
   NumberedPoints,
-  Funnel,
+  Timeline,
   OptionCard,
   Metrics,
   Stats,

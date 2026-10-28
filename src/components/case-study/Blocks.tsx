@@ -1,4 +1,4 @@
-import { Check, ChevronRight, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
 import AutoplayVideo from "./AutoplayVideo";
@@ -158,8 +158,11 @@ export function Quotes({ items }: { items: { text: React.ReactNode; attribution:
  * five go three over two; the rest pair up. */
 export function CardGrid({
   items,
+  plain,
 }: {
   items: { icon: React.ReactNode; title: string; description: string }[];
+  /** No box — icon, title and line sit open on the page, for lists that aren't cards */
+  plain?: boolean;
 }) {
   const layout =
     items.length === 5
@@ -168,12 +171,21 @@ export function CardGrid({
         ? "md:grid-cols-3"
         : "md:grid-cols-2";
   return (
-    <div className={`grid grid-cols-1 gap-[16px] md:gap-[24px] ${layout}`}>
+    <div className={`grid grid-cols-1 ${plain ? "gap-[32px] md:gap-[40px]" : "gap-[16px] md:gap-[24px]"} ${layout}`}>
       {items.map(({ icon, title, description }) => (
-        <div key={title} className="flex flex-col gap-[16px] rounded-[16px] border border-line-soft bg-white p-[20px]">
+        <div
+          key={title}
+          className={`flex flex-col ${plain ? "gap-[12px]" : "gap-[16px] rounded-[16px] border border-line-soft bg-white p-[20px]"}`}
+        >
           <div className="shrink-0">{icon}</div>
-          <div className="flex flex-col gap-[12px]">
-            <h4 className="font-heading text-[24px] leading-[30px] tracking-[0px] text-heading">{title}</h4>
+          <div className={`flex flex-col ${plain ? "gap-[8px]" : "gap-[12px]"}`}>
+            <h4
+              className={`font-heading tracking-[0px] text-heading ${
+                plain ? "text-[20px] leading-[28px]" : "text-[24px] leading-[30px]"
+              }`}
+            >
+              {title}
+            </h4>
             <p className="font-body text-[18px] leading-[30px] text-muted">{description}</p>
           </div>
         </div>
@@ -441,52 +453,27 @@ export function NumberedPoints({
 }
 
 /**
- * A journey as steps in a row — white tiles joined by chevrons, the step that counts as
- * success in light grape. `branch` is the way out that's also watched, set below in a
- * dashed tile. Stacks with the chevrons turning down on phones.
+ * Steps that happen in order, on a line — a grape dot per step joined by a hairline, the
+ * title and a short line under each. Across from tablet up; down the left on phones.
  */
-export function Funnel({
-  steps,
-  branch,
-}: {
-  steps: { label: string; note: string; goal?: boolean }[];
-  branch?: { label: string; note: string };
-}) {
+export function Timeline({ items }: { items: { title: string; description: string }[] }) {
   return (
-    <div className="flex flex-col gap-[16px]">
-      <ol className="m-0 flex list-none flex-col items-stretch gap-[8px] p-0 md:flex-row md:items-stretch">
-        {steps.map(({ label, note, goal }, i) => (
-          <li key={label} className="flex flex-col items-center gap-[8px] md:flex-1 md:flex-row">
-            <div
-              className={`flex w-full flex-1 flex-col gap-[8px] self-stretch rounded-[16px] p-[20px] ${
-                goal ? "bg-grape-light/60" : "border border-line-soft bg-white"
-              }`}
-            >
-              <span className={`font-brand text-[12px] uppercase leading-[16px] ${goal ? "text-grape" : "text-muted"}`}>
-                {goal ? "Main measure" : `Step ${i + 1}`}
-              </span>
-              <span className="font-heading text-[20px] leading-[28px] text-heading">{label}</span>
-              <span className="font-body text-[16px] leading-[24px] text-secondary">{note}</span>
-            </div>
-            {i < steps.length - 1 && (
-              <ChevronRight
-                size={18}
-                aria-hidden="true"
-                className="shrink-0 rotate-90 text-muted md:rotate-0"
-              />
-            )}
-          </li>
-        ))}
-      </ol>
-      {branch && (
-        <div className="flex flex-col gap-[4px] rounded-[16px] border border-dashed border-line bg-white p-[20px] md:flex-row md:items-baseline md:gap-[16px]">
-          <span className="font-brand text-[12px] uppercase leading-[16px] text-muted">Also watched</span>
-          <span className="font-body text-[16px] leading-[24px] text-secondary">
-            <span className="text-heading">{branch.label}</span> — {branch.note}
-          </span>
-        </div>
-      )}
-    </div>
+    <ol className="m-0 mt-[32px] grid list-none grid-cols-1 gap-[24px] p-0 md:grid-cols-3 md:gap-[32px]">
+      {items.map(({ title, description }, i) => (
+        <li key={title} className="relative flex flex-col gap-[8px] pl-[28px] md:pl-0 md:pt-[28px]">
+          {/* The line runs on to the next step; the dot marks this one */}
+          {i < items.length - 1 && (
+            <span
+              aria-hidden="true"
+              className="absolute bottom-[-24px] left-[5px] top-[12px] w-[2px] bg-line md:bottom-auto md:left-[12px] md:right-[-32px] md:top-[5px] md:h-[2px] md:w-auto"
+            />
+          )}
+          <span aria-hidden="true" className="absolute left-0 top-[6px] size-[12px] rounded-full bg-grape md:top-0" />
+          <h4 className="font-heading text-[20px] leading-[28px] tracking-[0px] text-heading">{title}</h4>
+          <p className="font-body text-[18px] leading-[30px] text-secondary">{description}</p>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -515,7 +502,7 @@ export function Metrics({ items }: { items: { stat: string; label: string }[] })
 /** Plain numbers with no card — matter-of-fact counts, not results */
 export function Stats({ items }: { items: { stat: string; label: string }[] }) {
   return (
-    <div className="mt-[32px] grid grid-cols-2 gap-[24px] md:grid-cols-4 md:gap-[32px]">
+    <div className={`mt-[32px] grid grid-cols-2 gap-[24px] md:gap-[32px] ${items.length === 2 ? "" : "md:grid-cols-4"}`}>
       {items.map(({ stat, label }) => (
         <div key={label} className="flex flex-col gap-[8px]">
           <span className="font-heading text-stat font-medium leading-none text-heading md:text-stat-md lg:text-stat-lg">
