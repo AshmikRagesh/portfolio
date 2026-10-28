@@ -56,8 +56,9 @@ export function Visual({ narrow, children }: { narrow?: boolean; children: React
 
 /**
  * Screenshot or clip with an optional label centred below it, then a caption. `video`
- * plays a muted loop while on screen (with `poster` as its first frame); `src` shows an
- * image; with neither it shows a placeholder named `name` (defaults to the label).
+ * plays a muted loop while on screen (with `poster` as its first frame) — or, with
+ * `narrated`, waits for the reader with a play button and controls so the voice is heard;
+ * `src` shows an image; with neither it shows a placeholder named `name` (defaults to the label).
  * `impact` is the green result line some solution screens carry.
  */
 export function Figure({
@@ -69,6 +70,7 @@ export function Figure({
   alt,
   video,
   poster,
+  narrated,
   aspect = "aspect-[16/9]",
 }: {
   label?: string;
@@ -79,13 +81,24 @@ export function Figure({
   alt?: string;
   video?: string;
   poster?: string;
+  narrated?: boolean;
   aspect?: string;
 }) {
   const title = name ?? label ?? "Image";
   return (
     <figure className="m-0 min-w-0">
       <div className="overflow-hidden rounded-[4px] bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]">
-        {video ? (
+        {video && narrated ? (
+          <video
+            src={video}
+            poster={poster}
+            aria-label={alt ?? title}
+            controls
+            playsInline
+            preload="none"
+            className="block h-auto w-full"
+          />
+        ) : video ? (
           <AutoplayVideo src={video} poster={poster} label={alt ?? title} />
         ) : src ? (
           // eslint-disable-next-line @next/next/no-img-element
