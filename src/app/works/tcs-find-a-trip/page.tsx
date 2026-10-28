@@ -607,19 +607,19 @@ function Reflection() {
     <Chapter id="reflection" num={7} title="What I learned">
       <Copy>
         <p>
-          <strong>Ask before you draw.</strong> One question on 24 June,
-          whether both paths deserved equal weight, shaped every layout after
-          it and kept bias out of the test.
+          <strong>Fairness is a design decision.</strong> In an A/B test the
+          layout can tip the result. Settling early that both paths carry equal
+          weight meant the test measures intent, not my emphasis.
         </p>
         <p>
-          <strong>Let the screen decide.</strong> Building the side-by-side
-          version settled the layout in a day. Each screen got the layout that
-          suits it, not one for every screen.
+          <strong>Prototype the behaviour, not pixels.</strong> Two rough
+          interaction prototypes let the team compare how each choice felt in a
+          single review, and decide to test both instead of debating one.
         </p>
         <p>
-          <strong>Ask for baseline data.</strong> There was no data on how
-          people used this menu, so the problem rested on a hypothesis. Next time I&apos;d ask for
-          baseline data before the first sketch.
+          <strong>Design the edge cases early.</strong> The cramped phone
+          layout and the missing destination pages were solved in the designs,
+          so development started with those questions already answered.
         </p>
       </Copy>
     </Chapter>
