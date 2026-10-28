@@ -10,8 +10,8 @@ import { useEffect, useRef } from "react";
 // where a "dither" is a 2px checkerboard of the two tones either side of it. On the first
 // frame of a hover the clouds roll in from the edges in a few chunky steps, keep drifting
 // while the pointer stays, and roll back out when it leaves. They stay light and hug the
-// edges: the middle stays clear, the noise is weighted lightly and the tones stop at pink,
-// so the work itself stays in view.
+// edges: the middle stays clear and the noise is weighted lightly, so grape (or dark grey)
+// only shows at the outer peaks and the work itself stays in view.
 //
 // Hover is read from the card (the nearest .group). Touch screens never hover, so they
 // never see it; with reduced motion the clouds appear and leave without drifting.
@@ -28,7 +28,7 @@ const STEPS = 6; // the reveal moves in this many visible jumps
 const IN_MS = 420;
 const OUT_MS = 320;
 const DRIFT = 0.6; // cells per second
-const MAX_TONE = 4; // stop at the solid pink: no grape, so the clouds stay light
+const MAX_TONE = 6; // all seven tones; the deepest only reach the outermost peaks
 const CLEAR = 0.72; // no clouds inside this distance from the centre (0 = centre, 1 = corners)
 
 function hash(x: number, y: number, seed: number) {
