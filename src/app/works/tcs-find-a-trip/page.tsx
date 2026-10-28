@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { ArrowsSplit, Devices, FileX, HourglassMedium, Image as ImageIcon, Images, ListChecks, Users } from "@phosphor-icons/react/dist/ssr";
+import { ArrowsSplit, FileX, HourglassMedium, Image as ImageIcon, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import { FeaturedCard } from "@/components/Works";
@@ -534,20 +534,17 @@ const TEST_ARMS: Parameters<typeof StatTiles>[0]["items"] = [
 // The path the code took, in order
 const BUILD_STEPS = ["Branch off main", "Build both variants", "Code review", "Merge to main"];
 
-// What went into the build — open icon columns, kept short so three fit the text column
+// What went into the build — numbered points, one row on desktop
 const HANDOFF = [
   {
-    icon: <Devices size={28} weight="fill" className="text-grape" />,
     title: "Both variants, in code",
     description: "Desktop and phone front end for the text links and the image cards.",
   },
   {
-    icon: <Images size={28} weight="fill" className="text-grape" />,
     title: "Photos for every continent",
     description: "An approved photo pair each; North America and Golf stay trips-only.",
   },
   {
-    icon: <ListChecks size={28} weight="fill" className="text-grape" />,
     title: "The behaviour, written down",
     description: "How the paths open, highlight and close, checked against ten criteria.",
   },
@@ -579,8 +576,9 @@ function Output() {
           <p className="!mt-[32px]">
             Once it was merged, the developers picked it up to set up the test.
           </p>
-          <div className="mt-[48px]">
-            <CardGrid items={HANDOFF} plain />
+          {/* A wider pause before the points (32px more on top of their own 32px) */}
+          <div className="pt-[32px]">
+            <NumberedPoints items={HANDOFF} />
           </div>
         </Copy>
       </div>

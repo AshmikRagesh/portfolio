@@ -417,8 +417,8 @@ export function OptionCard({
 /**
  * Points set as open editorial columns instead of cards — no box or rule, just a large
  * grape number, a title and a line. It's text, so it sits in the reading column (inside
- * Copy, 32px under the paragraph like Stats); two or three side by side from tablet up,
- * stacked on phones. `stacked` sets them one per row with the number beside, for three
+ * Copy, 32px under the paragraph like Stats); two sit side by side from tablet up, three
+ * from desktop up (they break to rows on tablets and phones). `stacked` sets them one per row with the number beside, for three
  * or more in the text column. For reasons and takeaways that follow a run of cards.
  */
 export function NumberedPoints({
@@ -449,7 +449,7 @@ export function NumberedPoints({
   return (
     <ol
       className={`m-0 mt-[32px] grid list-none grid-cols-1 gap-[32px] p-0 md:gap-[40px] ${
-        items.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"
+        items.length === 2 ? "md:grid-cols-2" : "lg:grid-cols-3"
       }`}
     >
       {items.map(({ title, description }, i) => (
