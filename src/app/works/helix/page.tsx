@@ -48,11 +48,13 @@ function Overview() {
     <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
-          Helix is a skill for Claude Code that holds the design system of every
-          Travelopia brand as code. Designers use it to explore, lay out and
-          build screens from the brand&apos;s own components and tokens, so a
-          component is built once, in code, instead of once in Figma and again
-          by a developer.
+          Helix is a skill on Claude Code that holds the design system of every
+          Travelopia brand. Designers use it for the whole job: exploring and
+          brainstorming, wireframing, laying out pages, building screens, and
+          auditing and maintaining the system. Because we build with the same
+          components our developers use, what we design is what ships, and when
+          something&apos;s off we fix it ourselves and send it for review. Our
+          designs now ship in about half the time.
         </p>
         <Meta
           role="Product Designer. One of the first designers on Helix; moved three brands onto it"
@@ -72,22 +74,23 @@ function Overview() {
 // ─────────────────────────────────────────────────────────────────────────────
 function TheProblem() {
   return (
-    <Chapter id="the-problem" num={1} title="Every component was built twice">
+    <Chapter id="the-problem" num={1} title="Small misses, slow fixes">
       <Copy>
         <p>
-          Figma did its job well. The waste was in what came after it. A
-          designer drew each component in Figma, and then a developer built it
-          again in code. The handoff was a rebuild, not a review.
+          Our designs were well documented, and developers built from them
+          carefully. Even so, small details got missed in the build: a padding
+          here, a core value there.
         </p>
         <p>
-          Delivering the designs for a ticket took one to two weeks, and the
-          same work was being done twice, by two people, in two tools.
+          Each miss meant writing it up in a bug ticket or document and handing
+          it back. The fix then waited for a developer to pick it up, so a
+          ticket&apos;s designs took one to two weeks to land.
         </p>
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Each component was designed in Figma, then rebuilt in code by a developer."
-          consequence="A ticket's designs took one to two weeks, and the same work was done twice."
+          situation="Even with well-documented designs, details like padding and core values got missed in the build, and every miss went back to developers as a bug ticket."
+          consequence="Fixes waited in the developers' queue, so a ticket's designs took one to two weeks to land."
         />
       </Visual>
     </Chapter>
