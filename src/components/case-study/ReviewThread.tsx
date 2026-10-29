@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Who does what, drawn as a GitHub pull request page, in Geist and GitHub's own greys:
  * the pull request's title with its state label (Open, turning to Merged when the merge
- * event plays), then the timeline. Comments sit beside a 40px avatar in a box with a grey
- * header and a small caret pointing at the avatar; events (approved, merged) sit on the
+ * event plays), then the timeline. Comments sit beside a 32px avatar in a box with a grey
+ * header (name and verb, then the time and GitHub's ··· menu) and a small caret pointing at
+ * the avatar; a box being typed in gets GitHub's blue focus edge; events (approved, merged) sit on the
  * timeline line with GitHub's badge icon and a line of text.
  * Avatars are GitHub's default identicons: a mirrored 5×5 pattern, one colour per person.
  * When it scrolls into view it plays once. Each comment's header first reads "is typing…",
@@ -51,6 +52,7 @@ const OCTICON = {
     "M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z",
   merge:
     "M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218ZM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm8.5-4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM5 3.25a.75.75 0 1 0 0 .005V3.25Z",
+  kebab: "M8 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM1.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm13 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z",
   pull: "M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354ZM3.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0 9.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm8.25.75a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Z",
 };
 
@@ -68,7 +70,7 @@ const IDENTICON: Record<Who, { cells: string[]; color: string }> = {
   developer: { cells: ["110", "001", "111", "010", "100"], color: "#5b2a6e" },
 };
 
-function Avatar({ who, size }: { who: Who; size: 40 }) {
+function Avatar({ who, size }: { who: Who; size: 32 }) {
   const { cells, color } = IDENTICON[who];
   return (
     <svg
@@ -196,7 +198,7 @@ export default function ReviewThread({
           const link = i < items.length - 1 && (
             <span
               aria-hidden="true"
-              className={`absolute bottom-0 left-[72px] top-0 w-[2px] -translate-x-1/2 bg-[#d0d7de] origin-top transition-transform duration-[500ms] ease-out motion-reduce:transition-none ${
+              className={`absolute bottom-0 left-[64px] top-0 w-[2px] -translate-x-1/2 bg-[#d0d7de] origin-top transition-transform duration-[500ms] ease-out motion-reduce:transition-none ${
                 i + 1 <= active ? "scale-y-100" : "scale-y-0"
               }`}
             />
@@ -207,15 +209,15 @@ export default function ReviewThread({
             return (
               <li key={item.text} className={`relative py-[16px] ${fade}`}>
                 {link}
-                <div className="relative flex items-center gap-[8px] pl-[60px]">
+                <div className="relative flex items-center gap-[12px] pl-[54px]">
                   <span
-                    className={`flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full text-white ring-4 ring-surface transition-transform delay-[100ms] duration-[500ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+                    className={`flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-white ring-4 ring-surface transition-transform delay-[100ms] duration-[500ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
                       done || live ? "scale-100" : "scale-50"
                     } ${
                       approved ? GH.green : GH.purple
                     }`}
                   >
-                    <Octicon d={approved ? OCTICON.check : OCTICON.merge} size={12} />
+                    <Octicon d={approved ? OCTICON.check : OCTICON.merge} size={10} />
                   </span>
                   <p className={`m-0 text-[14px] leading-[20px] ${GH.muted}`}>
                     <span className={`font-medium ${GH.text}`}>{item.name}</span> {item.text}
@@ -232,20 +234,25 @@ export default function ReviewThread({
             <li key={item.text} className={`relative pb-[16px] ${fade}`}>
               {link}
               <div className="relative flex items-start gap-[16px]">
-                <Avatar who={item.who} size={40} />
-                <div className={`relative min-w-0 flex-1 rounded-[6px] border bg-white ${GH.border}`}>
+                <Avatar who={item.who} size={32} />
+                <div
+                  className={`relative min-w-0 flex-1 rounded-[6px] border bg-white shadow-[0_1px_0_rgba(31,35,40,0.04),0_8px_24px_-16px_rgba(31,35,40,0.24)] transition-[border-color,box-shadow] duration-[400ms] ${
+                    waiting || typingNow ? "border-[#0969da]/50 shadow-[0_0_0_3px_rgba(9,105,218,0.12)]" : "border-[#d0d7de]"
+                  }`}
+                >
                   {/* The caret pointing at the avatar: a border-coloured triangle under a header-coloured one */}
                   <span
                     aria-hidden="true"
-                    className="absolute left-[-8px] top-[12px] h-0 w-0 border-y-[8px] border-r-[8px] border-y-transparent border-r-[#d0d7de]"
+                    className="absolute left-[-8px] top-[8px] h-0 w-0 border-y-[8px] border-r-[8px] border-y-transparent border-r-[#d0d7de]"
                   />
                   <span
                     aria-hidden="true"
-                    className="absolute left-[-6px] top-[14px] h-0 w-0 border-y-[6px] border-r-[6px] border-y-transparent border-r-[#f6f8fa]"
+                    className="absolute left-[-6px] top-[10px] h-0 w-0 border-y-[6px] border-r-[6px] border-y-transparent border-r-[#f6f8fa]"
                   />
-                  <p
-                    className={`m-0 rounded-t-[6px] border-b px-[16px] py-[8px] text-[14px] leading-[24px] ${GH.border} ${GH.header} ${GH.muted}`}
+                  <div
+                    className={`flex items-center justify-between gap-[12px] rounded-t-[6px] border-b px-[16px] py-[6px] text-[14px] leading-[24px] ${GH.border} ${GH.header} ${GH.muted}`}
                   >
+                    <p className="m-0 min-w-0">
                     <span className={`font-medium ${GH.text}`}>{item.name}</span>{" "}
                     <span aria-hidden="true">
                       {waiting || typingNow ? (
@@ -266,7 +273,12 @@ export default function ReviewThread({
                       )}
                     </span>
                     <span className="sr-only">{item.verb}</span>
-                  </p>
+                    </p>
+                    <span aria-hidden="true" className="flex shrink-0 items-center gap-[12px] text-[12px]">
+                      {done || (live && phase === "done") ? "just now" : ""}
+                      <Octicon d={OCTICON.kebab} size={16} />
+                    </span>
+                  </div>
                   <div className="relative p-[16px]">
                     <p className="invisible m-0 text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
                       <span className="sr-only !visible">{item.text}</span>
