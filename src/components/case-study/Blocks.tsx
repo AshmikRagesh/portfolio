@@ -1,8 +1,8 @@
 import { ArrowRight, Check, X } from "lucide-react";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
-import AutoplayVideo from "./AutoplayVideo";
 import ImagePlaceholder from "./ImagePlaceholder";
+import Media from "./Media";
 import ShippedStamp from "./ShippedStamp";
 import TrendUpArrow from "./TrendUpArrow";
 
@@ -55,10 +55,11 @@ export function Visual({ narrow, children }: { narrow?: boolean; children: React
 }
 
 /**
- * Screenshot or clip with an optional label centred below it, then a caption. `video`
- * plays a muted loop while on screen (with `poster` as its first frame) — or, with
- * `narrated`, waits for the reader with a play button and controls so the voice is heard;
- * `src` shows an image; with neither it shows a placeholder named `name` (defaults to the label).
+ * Screenshot or clip with an optional label centred below it, then a caption. Both open
+ * larger on click (see Media). `video` plays a muted loop while on screen (with `poster` as
+ * its first frame) — or, with `narrated`, waits for the reader and plays with sound; either
+ * way it has play / pause and speed controls. `src` shows an image; with neither it shows a
+ * placeholder named `name` (defaults to the label).
  * `impact` is the green result line some solution screens carry.
  */
 export function Figure({
@@ -88,21 +89,8 @@ export function Figure({
   return (
     <figure className="m-0 min-w-0">
       <div className="overflow-hidden rounded-[4px] bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]">
-        {video && narrated ? (
-          <video
-            src={video}
-            poster={poster}
-            aria-label={alt ?? title}
-            controls
-            playsInline
-            preload="none"
-            className="block h-auto w-full"
-          />
-        ) : video ? (
-          <AutoplayVideo src={video} poster={poster} label={alt ?? title} />
-        ) : src ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={src} alt={alt ?? title} className="block h-auto w-full" />
+        {video || src ? (
+          <Media src={src} video={video} poster={poster} label={alt ?? title} narrated={narrated} />
         ) : (
           <ImagePlaceholder label={title} aspect={aspect} />
         )}
