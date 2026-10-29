@@ -97,10 +97,11 @@ export const artemisDesignSystem: FeaturedWork = {
 // Each card's room number on its key tag (101, 102, …), by its place in the list
 export const roomFor = (work: FeaturedWork) => String(101 + Math.max(0, featuredWorks.indexOf(work)));
 
-// The case study that comes after this one on the homepage — skipping works without a
-// page and wrapping round to the start; a page that isn't listed leads to the first
-export function nextWork(href: string): FeaturedWork {
+// The case studies that come after this one on the homepage — skipping works without a
+// page and wrapping round to the start; a page that isn't listed leads to the first ones
+export function nextWorks(href: string, count = 2): FeaturedWork[] {
   const pages = featuredWorks.filter((w) => w.href !== "#");
   const i = pages.findIndex((w) => w.href === href);
-  return pages[(i + 1) % pages.length];
+  const others = [...pages.slice(i + 1), ...pages.slice(0, Math.max(i, 0))];
+  return others.slice(0, count);
 }

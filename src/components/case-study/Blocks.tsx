@@ -569,3 +569,63 @@ export function ImpactList({ items }: { items: string[] }) {
     </div>
   );
 }
+
+/**
+ * Approaches checked against the same needs — one row per approach, a tick or cross per
+ * need with a short reason. Mark the approach that was chosen `chosen`. From xl the rows
+ * line up as a grid (280px + 3 × 240px = the 1000px Visual); below that each row stacks
+ * and every cell carries its need as a label.
+ */
+export function Comparison({
+  needs,
+  rows,
+}: {
+  needs: string[];
+  rows: { name: string; note?: string; chosen?: boolean; cells: { ok: boolean; text: string }[] }[];
+}) {
+  const grid = "xl:grid xl:grid-cols-[280px_repeat(3,240px)]";
+  return (
+    <div className="overflow-hidden rounded-[16px] bg-white ring-1 ring-line-soft">
+      <div className={`hidden border-b border-line-soft ${grid}`} aria-hidden="true">
+        <span className="p-[24px] font-brand text-[12px] uppercase leading-[16px] text-muted">Approach</span>
+        {needs.map((need) => (
+          <span key={need} className="p-[24px] font-brand text-[12px] uppercase leading-[16px] text-muted">
+            {need}
+          </span>
+        ))}
+      </div>
+      {rows.map(({ name, note, chosen, cells }) => (
+        <div
+          key={name}
+          className={`flex flex-col gap-[20px] border-t border-line-soft p-[24px] first-of-type:border-t-0 xl:gap-0 xl:p-0 ${grid} ${
+            chosen ? "bg-grape-light/40" : ""
+          }`}
+        >
+          <div className="flex flex-col gap-[8px] xl:p-[24px]">
+            <h4 className="font-heading text-[20px] leading-[28px] tracking-[0px] text-heading">{name}</h4>
+            {note && <p className="font-body text-[16px] leading-[26px] text-secondary">{note}</p>}
+            {chosen && (
+              <span className="mt-[4px]">
+                <Tag tone="grape">In use</Tag>
+              </span>
+            )}
+          </div>
+          {cells.map(({ ok, text }, i) => (
+            <div key={needs[i]} className="flex flex-col gap-[8px] xl:p-[24px]">
+              <span className="font-brand text-[12px] uppercase leading-[16px] text-muted xl:hidden">{needs[i]}</span>
+              <p className="flex gap-[12px] font-body text-[16px] leading-[26px] text-secondary">
+                <Mark tone={ok ? "pro" : "con"}>
+                  {ok ? <Check size={14} strokeWidth={2.5} /> : <X size={14} strokeWidth={2.5} />}
+                </Mark>
+                <span>
+                  <span className="sr-only">{ok ? "Meets it: " : "Misses it: "}</span>
+                  {text}
+                </span>
+              </p>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}

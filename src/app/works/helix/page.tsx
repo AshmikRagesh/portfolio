@@ -10,8 +10,7 @@ import {
   Figure,
   ProblemStatement,
   NumberedPoints,
-  OptionCard,
-  ProsCons,
+  Comparison,
   ProcessStrip,
   Timeline,
   Metrics,
@@ -34,7 +33,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "overview",    label: "Overview"        },
   { id: "the-problem", label: "The Problem"     },
   { id: "discovery",   label: "Discovery"       },
-  { id: "exploration", label: "Exploration"     },
+  { id: "exploration", label: "Approaches"      },
   { id: "solution",    label: "Solution"        },
   { id: "output",      label: "Build"           },
   { id: "outcome",     label: "Where it stands" },
@@ -140,64 +139,51 @@ function Discovery() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Exploration
 // ─────────────────────────────────────────────────────────────────────────────
+const NEEDS = ["One source", "Developers' code", "Nothing off-system"];
+
 const APPROACHES = [
   {
-    label: "Way 1",
-    title: "Design in Figma, rebuild in code",
-    worked: ["Familiar to every designer", "Good for fast visual exploration"],
-    didntWork: [
-      "Every component built twice",
-      "Developers translate specs by hand",
+    name: "Figma handoff",
+    note: "How every ticket was delivered",
+    cells: [
+      { ok: false, text: "Two copies, Figma and code" },
+      { ok: false, text: "Rebuilt by hand from the file" },
+      { ok: false, text: "On-system in Figma, slipped in the build" },
     ],
   },
   {
-    label: "Way 2",
-    title: "Designers work in the codebase directly",
-    worked: ["Built once, reviewed as code", "Developers review instead of rebuild"],
-    didntWork: [
-      "Needs each designer to know the codebase",
-      "Nothing keeps the work inside the design system",
+    name: "Claude Code with the Figma MCP",
+    note: "My first try, on Enchanting Travels",
+    cells: [
+      { ok: false, text: "Still read from Figma" },
+      { ok: true, text: "Real code, reviewed in a pull request" },
+      { ok: false, text: "Drifted, so every build needed fixes" },
     ],
   },
   {
-    label: "Way 3",
-    title: "Helix: a design-system skill on Claude Code",
+    name: "Helix",
+    note: "A skill on Claude Code, built by a developer",
     chosen: true,
-    worked: [
-      "Built once, in the developers' own language",
-      "Only the brand's components and tokens can be used",
-      "Works the same way for every designer and brand",
+    cells: [
+      { ok: true, text: "Each brand's system, once, in code" },
+      { ok: true, text: "The same TypeScript components" },
+      { ok: true, text: "Only the brand's parts can be used" },
     ],
-    didntWork: ["Tokens and foundations had to be set up first"],
   },
 ];
 
 function Exploration() {
   return (
-    <Chapter id="exploration" num={3} title="Three ways to get a design into code">
+    <Chapter id="exploration" num={3} title="Three ways, one test">
       <Copy>
         <p>
-          By then we had seen two ways of working side by side: the Figma
-          handoff most of the team used, and the in-code workflow I used on
-          Enchanting. Helix took the best of the second and added the guardrails
-          it lacked.
+          We had now worked two ways, and Helix was the third. Here is how each
+          one did against the three needs.
         </p>
       </Copy>
-      {APPROACHES.map(({ label, title, chosen, worked, didntWork }) => (
-        <div key={label} className="cs-sub">
-          <Visual>
-            <OptionCard
-              label={label}
-              title={title}
-              shipped={chosen}
-              stamp="In use"
-              image={`${label} — ${title}`}
-            >
-              <ProsCons pros={worked} cons={didntWork} />
-            </OptionCard>
-          </Visual>
-        </div>
-      ))}
+      <Visual>
+        <Comparison needs={NEEDS} rows={APPROACHES} />
+      </Visual>
     </Chapter>
   );
 }
