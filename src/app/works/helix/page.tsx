@@ -12,6 +12,7 @@ import {
   CardGrid,
   ProblemStatement,
   Roles,
+  ProcessRail,
   NumberedPoints,
   MoreDetail,
   RolloutTracks,
@@ -37,7 +38,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "discovery",   label: "Discovery"       },
   { id: "solution",    label: "Solution"        },
   { id: "approach",    label: "Approaches"      },
-  { id: "output",      label: "How it runs"     },
+  { id: "output",      label: "Governance"      },
   { id: "outcome",     label: "Where it stands" },
   { id: "reflection",  label: "Reflection"      },
 ];
@@ -276,7 +277,7 @@ function Approach() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: How it runs today  (output: governance and adoption)
+// Section: Who keeps it right  (output: governance and adoption)
 // ─────────────────────────────────────────────────────────────────────────────
 const ROLES = [
   {
@@ -289,16 +290,19 @@ const ROLES = [
   },
 ];
 
+const CHANGE_PATH = ["A ticket needs it", "Built in Helix", "Developers review", "Merged for the brand"];
+
 function Output() {
   return (
-    <Chapter id="output" num={5} title="How it runs today">
+    <Chapter id="output" num={5} title="Who keeps it right">
       <Copy>
         <p>
           A design system only stays right if every change to it is checked.
-          New components and fixes go through the same review, and once a
-          change is merged, every designer on that brand can use it.
+          In Helix, designers make the change and developers check it, for new
+          components and fixes alike.
         </p>
         <Roles items={ROLES} />
+        <ProcessRail steps={CHANGE_PATH} />
       </Copy>
       <div className="cs-sub">
         <Copy>

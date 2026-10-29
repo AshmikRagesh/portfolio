@@ -23,6 +23,7 @@ export {
   Timeline,
   ProcessStrip,
   Roles,
+  ProcessRail,
   OptionCard,
   Metrics,
   Stats,
