@@ -285,14 +285,14 @@ const THREAD: ThreadItem[] = [
     kind: "comment",
     who: "designer",
     name: "Designer",
-    verb: "opened a pull request",
+    verb: "commented",
     text: "Built the new component in Helix, using the brand's own tokens and components. Ready for review.",
   },
   {
     kind: "comment",
     who: "developer",
     name: "Developer",
-    verb: "reviewed",
+    verb: "commented",
     text: "Checked it against our codebase. Looks good to me 👍",
   },
   { kind: "event", icon: "approved", who: "developer", name: "Developer", text: "approved these changes" },
@@ -317,7 +317,7 @@ function Output() {
           and approve it or ask for changes. Once it&apos;s merged into main,
           every designer on that brand can use it.
         </p>
-        <ReviewThread items={THREAD} />
+        <ReviewThread title="New component, built in Helix" items={THREAD} />
         <ProcessRail steps={CHANGE_PATH} />
       </Copy>
       <div className="cs-sub">
