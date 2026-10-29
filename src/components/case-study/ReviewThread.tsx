@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
  * the pull request's title with its state label (Open, turning to Merged when the merge
  * event plays), then the timeline. Comments sit beside a 40px avatar in a box with a grey
  * header and a small caret pointing at the avatar; events (approved, merged) sit on the
- * timeline line with GitHub's badge icon, the person's small avatar and a line of text.
+ * timeline line with GitHub's badge icon and a line of text.
  * Avatars are GitHub's default identicons: a mirrored 5×5 pattern, one colour per person.
  * When it scrolls into view it plays once. Each comment's header first reads "is typing…",
  * then the message types out with a human rhythm (uneven gaps between characters, longer
@@ -64,10 +64,10 @@ function Octicon({ d, size }: { d: string; size: number }) {
 // Fixed identicon patterns (columns 0–2 of a 5×5 grid, mirrored), one per person
 const IDENTICON: Record<Who, { cells: string[]; color: string }> = {
   designer: { cells: ["101", "011", "110", "011", "101"], color: "#9D136A" },
-  developer: { cells: ["010", "111", "101", "100", "111"], color: "#32073e" },
+  developer: { cells: ["110", "001", "111", "010", "100"], color: "#5b2a6e" },
 };
 
-function Avatar({ who, size }: { who: Who; size: 20 | 40 }) {
+function Avatar({ who, size }: { who: Who; size: 40 }) {
   const { cells, color } = IDENTICON[who];
   return (
     <svg
@@ -188,7 +188,6 @@ export default function ReviewThread({ title, items }: { title: string; items: T
                   >
                     <Octicon d={approved ? OCTICON.check : OCTICON.merge} size={12} />
                   </span>
-                  <Avatar who={item.who} size={20} />
                   <p className={`m-0 text-[14px] leading-[20px] ${GH.muted}`}>
                     <span className={`font-medium ${GH.text}`}>{item.name}</span> {item.text}
                   </p>
