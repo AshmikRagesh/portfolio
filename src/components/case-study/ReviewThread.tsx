@@ -12,7 +12,8 @@ import { useEffect, useRef, useState } from "react";
  * When it scrolls into view it plays once. Each comment's header first reads "is typing…",
  * then the message types out with a human rhythm (uneven gaps between characters, longer
  * pauses after punctuation) and a caret. Events fade in after the comment before them, and
- * the timeline line grows down to each item as it appears.
+ * the timeline line grows down to each item as it appears. Under the thread, the path a change
+ * takes (a segmented bar, one solid segment per step) fills in step with it.
  * Best practice for typed text: every message keeps its full text in the layout (invisible)
  * with the typed part laid over it, so nothing shifts while it types; the animated text is
  * hidden from screen readers, which read the full message; and with reduced motion the
@@ -87,7 +88,20 @@ function Avatar({ who, size }: { who: Who; size: 40 }) {
   );
 }
 
-export default function ReviewThread({ title, items }: { title: string; items: ThreadItem[] }) {
+// The bar's segments, light grape to Blackcurrant (solid, no gradient)
+const STEP_TONE = ["bg-grape-light", "bg-grape/40", "bg-grape", "bg-primary"];
+
+export default function ReviewThread({
+  title,
+  branch,
+  items,
+  steps,
+}: {
+  title: string;
+  branch: string;
+  items: ThreadItem[];
+  steps: { title: string; text: string }[];
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(-1); // the item playing (-1: not started)
   const [phase, setPhase] = useState<"wait" | "type" | "done">("wait");
@@ -108,7 +122,7 @@ export default function ReviewThread({ title, items }: { title: string; items: T
           io.disconnect();
         }
       },
-      { threshold: 0.4 },
+      { threshold: 0.25 },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -141,6 +155,11 @@ export default function ReviewThread({ title, items }: { title: string; items: T
   // The label flips to Merged once the merge event has shown
   const mergeAt = items.findIndex((it) => it.kind === "event" && it.icon === "merged");
   const merged = mergeAt >= 0 && active >= mergeAt;
+  // The bar fills as the thread plays: needed when it starts, built once the designer's
+  // comment is in, reviewed at the approval, merged at the merge
+  const approveAt = items.findIndex((it) => it.kind === "event" && it.icon === "approved");
+  const litAt = [0, 1, approveAt, mergeAt];
+  const lit = (step: number) => active >= (litAt[step] ?? items.length);
 
   return (
     <div ref={ref} className={`mt-[40px] font-geist ${GH.text}`}>
@@ -148,13 +167,21 @@ export default function ReviewThread({ title, items }: { title: string; items: T
       <div className={`flex flex-col items-start gap-[12px] border-b pb-[16px] ${GH.border}`}>
         <p className="m-0 text-[20px] font-normal leading-[28px] md:text-[24px] md:leading-[32px]">{title}</p>
         <span
-          className={`inline-flex h-[32px] items-center gap-[4px] rounded-full px-[12px] text-[14px] font-medium leading-[20px] text-white transition-colors duration-[300ms] ${
+          key={merged ? "merged" : "open"}
+          className={`inline-flex h-[32px] items-center gap-[4px] rounded-full px-[12px] text-[14px] font-medium leading-[20px] text-white ${
+            merged ? "animate-[thread-pop_500ms_cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:animate-none" : ""
+          } ${
             merged ? GH.purple : GH.green
           }`}
         >
           <Octicon d={merged ? OCTICON.merge : OCTICON.pull} size={16} />
           {merged ? "Merged" : "Open"}
         </span>
+        <p className={`m-0 text-[14px] leading-[20px] ${GH.muted}`}>
+          <span className={`font-medium ${GH.text}`}>Designer</span> {merged ? "merged 1 commit into" : "wants to merge 1 commit into"}{" "}
+          <code className="whitespace-nowrap rounded-[6px] bg-[#ddf4ff] px-[6px] py-[2px] font-mono text-[12px] text-[#0969da]">main</code> from{" "}
+          <code className="whitespace-nowrap rounded-[6px] bg-[#ddf4ff] px-[6px] py-[2px] font-mono text-[12px] text-[#0969da]">{branch}</code>
+        </p>
       </div>
 
       <ol className="relative m-0 mt-[24px] list-none p-0">
@@ -162,15 +189,15 @@ export default function ReviewThread({ title, items }: { title: string; items: T
           const done = i < active;
           const live = i === active;
           const fade = `transition-[opacity,transform] duration-[400ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
-            done || live ? "translate-y-0 opacity-100" : "translate-y-[8px] opacity-0"
+            done || live ? "translate-y-0 scale-100 opacity-100" : "translate-y-[12px] scale-[0.98] opacity-0"
           }`;
-          // The timeline: GitHub runs it 16px in from the comment boxes' left edge, from
-          // this item down to the next, drawn once the next shows
+          // The timeline: GitHub runs it 16px in from the comment boxes' left edge. Each piece
+          // draws down from this item to the next as the next appears
           const link = i < items.length - 1 && (
             <span
               aria-hidden="true"
-              className={`absolute bottom-0 left-[72px] top-0 w-[2px] -translate-x-1/2 bg-[#d0d7de] transition-opacity duration-[400ms] motion-reduce:transition-none ${
-                i + 1 <= active ? "opacity-100" : "opacity-0"
+              className={`absolute bottom-0 left-[72px] top-0 w-[2px] -translate-x-1/2 bg-[#d0d7de] origin-top transition-transform duration-[500ms] ease-out motion-reduce:transition-none ${
+                i + 1 <= active ? "scale-y-100" : "scale-y-0"
               }`}
             />
           );
@@ -182,7 +209,9 @@ export default function ReviewThread({ title, items }: { title: string; items: T
                 {link}
                 <div className="relative flex items-center gap-[8px] pl-[60px]">
                   <span
-                    className={`flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full text-white ring-4 ring-surface ${
+                    className={`flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full text-white ring-4 ring-surface transition-transform delay-[100ms] duration-[500ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+                      done || live ? "scale-100" : "scale-50"
+                    } ${
                       approved ? GH.green : GH.purple
                     }`}
                   >
@@ -218,7 +247,24 @@ export default function ReviewThread({ title, items }: { title: string; items: T
                     className={`m-0 rounded-t-[6px] border-b px-[16px] py-[8px] text-[14px] leading-[24px] ${GH.border} ${GH.header} ${GH.muted}`}
                   >
                     <span className={`font-medium ${GH.text}`}>{item.name}</span>{" "}
-                    <span aria-hidden="true">{waiting || typingNow ? "is typing…" : item.verb}</span>
+                    <span aria-hidden="true">
+                      {waiting || typingNow ? (
+                        <>
+                          is typing
+                          <span className="ml-[4px] inline-flex gap-[2px]">
+                            {[0, 1, 2].map((d) => (
+                              <span
+                                key={d}
+                                className="inline-block h-[4px] w-[4px] animate-[thread-dot_1s_ease-in-out_infinite] rounded-full bg-current"
+                                style={{ animationDelay: `${d * 160}ms` }}
+                              />
+                            ))}
+                          </span>
+                        </>
+                      ) : (
+                        item.verb
+                      )}
+                    </span>
                     <span className="sr-only">{item.verb}</span>
                   </p>
                   <div className="relative p-[16px]">
@@ -241,6 +287,29 @@ export default function ReviewThread({ title, items }: { title: string; items: T
             </li>
           );
         })}
+      </ol>
+
+      {/* The path a change takes, filling in step with the thread */}
+      <ol className="m-0 mt-[64px] grid list-none grid-cols-1 gap-[16px] p-0 md:mt-[80px] md:grid-cols-4 md:gap-[8px]">
+        {steps.map((step, i) => (
+          <li key={step.title} className="flex gap-[16px] md:flex-col">
+            <span aria-hidden="true" className="relative w-[4px] shrink-0 overflow-hidden rounded-full bg-[#d0d7de]/50 md:h-[8px] md:w-full">
+              <span
+                className={`absolute inset-0 rounded-full transition-transform duration-[600ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
+                  STEP_TONE[i % STEP_TONE.length]
+                } origin-top md:origin-left ${lit(i) ? "scale-100" : "scale-y-0 md:scale-x-0 md:scale-y-100"}`}
+              />
+            </span>
+            <div className="flex flex-col gap-[4px]">
+              <span
+                className={`text-[16px] font-medium leading-[24px] transition-colors duration-[400ms] ${lit(i) ? GH.text : GH.muted}`}
+              >
+                {step.title}
+              </span>
+              <span className={`text-[14px] leading-[22px] ${GH.muted}`}>{step.text}</span>
+            </div>
+          </li>
+        ))}
       </ol>
     </div>
   );

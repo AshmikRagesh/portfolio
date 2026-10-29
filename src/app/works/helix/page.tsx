@@ -13,7 +13,6 @@ import {
   ProblemStatement,
   ReviewThread,
   type ThreadItem,
-  ProcessRail,
   NumberedPoints,
   MoreDetail,
   RolloutTracks,
@@ -317,8 +316,7 @@ function Output() {
           and approve it or ask for changes. Once it&apos;s merged into main,
           every designer on that brand can use it.
         </p>
-        <ReviewThread title="New component, built in Helix" items={THREAD} />
-        <ProcessRail steps={CHANGE_PATH} />
+        <ReviewThread title="New component, built in Helix" branch="new-component" items={THREAD} steps={CHANGE_PATH} />
       </Copy>
       <div className="cs-sub">
         <Copy>
