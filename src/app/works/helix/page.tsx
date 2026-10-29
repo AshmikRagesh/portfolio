@@ -102,16 +102,16 @@ function TheProblem() {
 // ─────────────────────────────────────────────────────────────────────────────
 const REQUIREMENTS = [
   {
-    title: "Make the design system the only source",
-    description: "One copy per brand, in code, where it ships.",
+    title: "One source",
+    description: "Each brand's design system lives once, in code.",
   },
   {
-    title: "Write code the way our developers do",
-    description: "The same TypeScript components they already maintain.",
+    title: "Developers' code",
+    description: "The same TypeScript components they maintain.",
   },
   {
-    title: "Use only the brand's own parts",
-    description: "Components and tokens only, and flag a gap instead of improvising.",
+    title: "Nothing off-system",
+    description: "Only the brand's components and tokens.",
   },
 ];
 
@@ -127,18 +127,7 @@ function Discovery() {
           corrections. Having the design system as a reference wasn&apos;t
           enough. The AI had to be limited to it.
         </p>
-        <p>
-          <a
-            href="https://www.bill.com/engineering/how-we-made-our-design-system-bilingual"
-            target="_blank"
-            rel="noreferrer"
-          >
-            BILL&apos;s design-system team
-          </a>{" "}
-          reported the same in 2026: AI given the docs still hard-coded values
-          and built its own controls.
-        </p>
-        <h3>So the fix had to do three things</h3>
+        <h3>What the fix needed</h3>
         <NumberedPoints items={REQUIREMENTS} stacked />
       </Copy>
       <Visual>
