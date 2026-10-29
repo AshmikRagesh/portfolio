@@ -488,41 +488,6 @@ export function Timeline({ items }: { items: { title: string; description: strin
   );
 }
 
-// Paper colours for the notes: Post-it's canary yellow and a soft pink
-const NOTE_PAPER = ["bg-[#FFF0A0]", "bg-[#FFD6E4]"];
-const NOTE_TILT = ["-rotate-[2deg]", "rotate-[1.5deg]"];
-
-/**
- * Who does what, written on sticky notes: one square note per role in the handwriting
- * font, tilted a little. Each has the darker adhesive strip along its top edge and a
- * lifted bottom corner (a skewed shadow tucked under the right-hand corner). They
- * straighten up on hover. Side by side from md, stacked below.
- */
-export function Roles({ items }: { items: { role: string; does: string }[] }) {
-  return (
-    <div className="mt-[40px] grid grid-cols-1 justify-items-center gap-[40px] md:grid-cols-2 md:gap-[48px]">
-      {items.map(({ role, does }, i) => (
-        <div
-          key={role}
-          className={`relative isolate aspect-square w-full max-w-[300px] transition-transform duration-[300ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:rotate-0 motion-reduce:transition-none ${NOTE_TILT[i % 2]}`}
-        >
-          {/* The lifted corner's shadow, under the note */}
-          <span
-            aria-hidden="true"
-            className="absolute bottom-[10px] right-[8px] -z-10 h-[40%] w-[60%] rotate-[4deg] skew-x-[6deg] shadow-[0_14px_16px_rgba(30,5,37,0.28)]"
-          />
-          <div
-            className={`flex h-full flex-col gap-[12px] p-[28px] shadow-[0_1px_2px_rgba(30,5,37,0.14)] [background-image:linear-gradient(180deg,rgba(0,0,0,0.05),transparent_36px),linear-gradient(135deg,transparent_72%,rgba(0,0,0,0.05))] ${NOTE_PAPER[i % 2]}`}
-          >
-            <h4 className="m-0 font-handwriting text-[40px] font-normal leading-[40px] text-primary">{role}</h4>
-            <p className="m-0 font-handwriting text-[28px] leading-[32px] text-primary/80">{does}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 /**
  * A short process drawn minimally: dots on one thin grape line, a label under each. The
  * last dot is the dark primary (where the change ends up). Four steps fit in a row even on

@@ -11,7 +11,7 @@ import {
   Figure,
   CardGrid,
   ProblemStatement,
-  Roles,
+  ReviewThread,
   ProcessRail,
   NumberedPoints,
   MoreDetail,
@@ -279,14 +279,16 @@ function Approach() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Who keeps it right  (output: governance and adoption)
 // ─────────────────────────────────────────────────────────────────────────────
-const ROLES = [
+const THREAD = [
   {
-    role: "Designers",
-    does: "Build the change in Helix and open a pull request.",
+    from: "Designer",
+    role: "designer" as const,
+    text: "I've built the change in Helix and opened a pull request. Could you take a look?",
   },
   {
-    role: "Developers",
-    does: "Review it, then approve it or ask for changes. One of them looks after Helix itself.",
+    from: "Developer",
+    role: "developer" as const,
+    text: "Reviewed. It's approved, or I'll ask for changes before it goes in.",
   },
 ];
 
@@ -301,7 +303,7 @@ function Output() {
           In Helix, designers make the change and developers check it, for new
           components and fixes alike.
         </p>
-        <Roles items={ROLES} />
+        <ReviewThread messages={THREAD} />
         <ProcessRail steps={CHANGE_PATH} />
       </Copy>
       <div className="cs-sub">

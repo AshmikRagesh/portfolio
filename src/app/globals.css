@@ -773,3 +773,7 @@
   .reel-modal-ui, .reel-slot, .reel-layer, .reel-info > * { animation: none !important; }
 }
 
+
+/* Helix review thread: the typing indicator's dots and the caret while a message types */
+@keyframes thread-dot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-4px); opacity: 1; } }
+@keyframes thread-caret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
