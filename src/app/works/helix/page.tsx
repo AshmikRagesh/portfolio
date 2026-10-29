@@ -12,6 +12,7 @@ import {
   CardGrid,
   ProblemStatement,
   ProcessStrip,
+  Roles,
   NumberedPoints,
   MoreDetail,
   RolloutTracks,
@@ -37,7 +38,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "discovery",   label: "Discovery"       },
   { id: "solution",    label: "Solution"        },
   { id: "approach",    label: "Approaches"      },
-  { id: "output",      label: "A ticket"        },
+  { id: "output",      label: "How it runs"     },
   { id: "outcome",     label: "Where it stands" },
   { id: "reflection",  label: "Reflection"      },
 ];
@@ -276,30 +277,63 @@ function Approach() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: A ticket, start to finish  (output)
+// Section: How it runs today  (output: governance and adoption)
 // ─────────────────────────────────────────────────────────────────────────────
+const ROLES = [
+  {
+    role: "Designers",
+    does: "Each of us looks after a set of brands. We build the components and screens in Helix, fix any misses ourselves, and open the pull request.",
+  },
+  {
+    role: "Brand developers",
+    does: "Every brand has four to five developers. We tag them on the pull request, and they approve it or ask for changes.",
+  },
+  {
+    role: "Helix's maintainer",
+    does: "A developer looks after Helix itself, so the code it writes keeps matching the developers' codebase.",
+  },
+];
+
 const WORKFLOW = [
-  "Brief",
-  "Explore in Helix",
-  "Pick a direction",
-  "Build with the brand's components",
+  "A ticket needs it",
+  "Build it in Helix",
   "Pull request",
-  "Developer review",
-  "Merge",
+  "Brand developers review",
+  "Merge to main",
 ];
 
 function Output() {
   return (
-    <Chapter id="output" num={5} title="A ticket, start to finish">
+    <Chapter id="output" num={5} title="How it runs today">
       <Copy>
         <p>
-          Every ticket now runs the same way, from the brief to the merge.{" "}
-          <a href="/works/tcs-find-a-trip">Find a Trip</a> for TCS was the first:
-          both test variants were explored, built and reviewed in Helix, then
-          merged.
+          A design system only stays right if every change to it is checked.
+          In Helix, designers make the change and developers check it.
         </p>
-        <ProcessStrip steps={WORKFLOW} />
+        <Roles items={ROLES} />
       </Copy>
+      <div className="cs-sub">
+        <Copy>
+          <h3>How a change gets in</h3>
+          <p>
+            New components and fixes take the same path. Once a change is
+            merged, every designer on that brand can use it.
+          </p>
+          <ProcessStrip steps={WORKFLOW} />
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>In use on every brand</h3>
+          <p>
+            Every Travelopia brand&apos;s design system is in Helix, and every
+            new ticket is designed in it.{" "}
+            <a href="/works/tcs-find-a-trip">Find a Trip</a> for TCS was one of
+            the first: both test variants were explored, built and reviewed in
+            Helix, then merged.
+          </p>
+        </Copy>
+      </div>
       <Visual>
         <Figure label="Find a Trip, explored and built in Helix" />
       </Visual>

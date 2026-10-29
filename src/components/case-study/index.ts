@@ -22,6 +22,7 @@ export {
   NumberedPoints,
   Timeline,
   ProcessStrip,
+  Roles,
   OptionCard,
   Metrics,
   Stats,
