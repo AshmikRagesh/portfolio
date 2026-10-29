@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Check, Code, GitMerge, PenNib } from "@phosphor-icons/react/dist/ssr";
+import { useEffect, useId, useRef, useState } from "react";
 
 /**
  * Who does what, as a pull request's timeline, all in Geist: comments (an avatar beside a
@@ -20,7 +19,7 @@ import { Check, Code, GitMerge, PenNib } from "@phosphor-icons/react/dist/ssr";
 type Who = "designer" | "developer";
 export type ThreadItem =
   | { kind: "comment"; who: Who; name: string; verb: string; text: string }
-  | { kind: "event"; icon: "approved" | "merged"; name: string; text: string };
+  | { kind: "event"; icon: "approved" | "merged"; who: Who; name: string; text: string };
 
 const START_MS = 700; // "is typing…" before a message
 const AFTER_MS = 550; // pause after an item, before the next
@@ -33,15 +32,79 @@ function delayAfter(ch: string) {
   return 16 + Math.random() * 26;
 }
 
-const AVATAR: Record<Who, { icon: typeof Code; tone: string }> = {
-  designer: { icon: PenNib, tone: "bg-grape-light text-grape" },
-  developer: { icon: Code, tone: "bg-primary text-white" },
+// GitHub's own timeline icons (Octicons check-16 and git-merge-16) in GitHub's colours, so
+// the events read exactly as they do on a real pull request
+const OCTICON = {
+  approved: {
+    color: "bg-[#1f883d]",
+    path: "M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z",
+  },
+  merged: {
+    color: "bg-[#8250df]",
+    path: "M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218ZM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm8.5-4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM5 3.25a.75.75 0 1 0 0 .005V3.25Z",
+  },
 };
 
-const EVENT: Record<"approved" | "merged", { icon: typeof Check; tone: string }> = {
-  approved: { icon: Check, tone: "bg-success text-white" },
-  merged: { icon: GitMerge, tone: "bg-grape text-white" },
-};
+/**
+ * The profile pictures, in the hero's pencil-sketch style: the designer is the hero portrait
+ * itself, cropped to the face; the developer is drawn to match, in Blackcurrant line with a
+ * slight pencil wobble (a turbulence filter), curly hair, glasses and a hoodie.
+ */
+function Avatar({ who, size }: { who: Who; size: 20 | 48 }) {
+  const id = useId();
+  return (
+    <span
+      aria-hidden="true"
+      className="relative block shrink-0 overflow-hidden rounded-full bg-grape-light ring-4 ring-surface"
+      style={{ width: size, height: size }}
+    >
+      {who === "designer" ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src="/images/portrait-sketch.png"
+          alt=""
+          className="absolute left-1/2 top-[-6%] h-[180%] w-[180%] max-w-none -translate-x-1/2 object-cover"
+        />
+      ) : (
+        <svg viewBox="0 0 96 96" className="h-full w-full" fill="none">
+          <filter id={id}>
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="4" />
+            <feDisplacementMap in="SourceGraphic" scale="1.6" />
+          </filter>
+          <g
+            filter={`url(#${id})`}
+            stroke="#32073e"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            {/* Hoodie, strings and neck */}
+            <path d="M10 98C14 78 30 71 48 71s34 7 38 27" />
+            <path d="M40 75l-2 12M56 75l2 12" />
+            <path d="M41 61v10M55 61v10" />
+            {/* Face and ears */}
+            <path d="M31 41c0-15 34-15 34 0 0 15-8 25-17 25s-17-10-17-25Z" fill="#F9E4FF" />
+            <path d="M31 43c-5 0-5 9 0 9M65 43c5 0 5 9 0 9" />
+            {/* Curly hair, with pencil hatching */}
+            <path
+              d="M29 41c-5-14 3-25 13-24 4-5 14-5 18 0 10 1 14 12 7 24-3-6-8-9-14-9-8 0-18 2-24 9Z"
+              fill="#32073e"
+              fillOpacity="0.85"
+            />
+            <path d="M33 23c2-4 6-4 8 0M45 18c2-4 6-4 8 0M57 22c2-4 6-3 7 1" strokeWidth="1.6" />
+            {/* Glasses, eyes and a smile */}
+            <rect x="34" y="40" width="11" height="8" rx="2" />
+            <rect x="51" y="40" width="11" height="8" rx="2" />
+            <path d="M45 43h6" />
+            <path d="M43 56c3 3 7 3 10 0" />
+          </g>
+          <circle cx="39.5" cy="44" r="1.4" fill="#32073e" />
+          <circle cx="56.5" cy="44" r="1.4" fill="#32073e" />
+        </svg>
+      )}
+    </span>
+  );
+}
 
 export default function ReviewThread({ items }: { items: ThreadItem[] }) {
   const ref = useRef<HTMLOListElement>(null);
@@ -103,7 +166,7 @@ export default function ReviewThread({ items }: { items: ThreadItem[] }) {
         const link = i < items.length - 1 && (
           <span
             aria-hidden="true"
-            className={`absolute left-[20px] top-[20px] -bottom-[24px] w-[2px] -translate-x-1/2 bg-line-soft transition-opacity duration-[400ms] motion-reduce:transition-none ${
+            className={`absolute left-[24px] top-[24px] -bottom-[24px] w-[2px] -translate-x-1/2 bg-line-soft transition-opacity duration-[400ms] motion-reduce:transition-none ${
               i + 1 <= active ? "opacity-100" : "opacity-0"
             }`}
           />
@@ -113,36 +176,33 @@ export default function ReviewThread({ items }: { items: ThreadItem[] }) {
         }`;
 
         if (item.kind === "event") {
-          const { icon: Icon, tone } = EVENT[item.icon];
+          const icon = OCTICON[item.icon];
           return (
-            <li key={item.text} className={`relative flex items-center gap-[16px] pl-[8px] ${fade}`}>
+            <li key={item.text} className={`relative flex items-center gap-[16px] pl-[12px] ${fade}`}>
               {link}
               <span
                 aria-hidden="true"
-                className={`relative flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full ring-4 ring-surface ${tone}`}
+                className={`relative flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full text-white ring-4 ring-surface ${icon.color}`}
               >
-                <Icon size={14} weight="bold" />
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+                  <path d={icon.path} />
+                </svg>
               </span>
-              <p className="m-0 text-[14px] leading-[20px] text-secondary">
+              <Avatar who={item.who} size={20} />
+              <p className="m-0 -ml-[8px] text-[14px] leading-[20px] text-secondary">
                 <span className="font-medium text-heading">{item.name}</span> {item.text}
               </p>
             </li>
           );
         }
 
-        const { icon: Icon, tone } = AVATAR[item.who];
         const waiting = live && phase === "wait";
         const typingNow = live && phase === "type";
         const typed = done || (live && phase === "done") ? item.text : typingNow ? item.text.slice(0, chars) : "";
         return (
           <li key={item.text} className={`relative flex items-start gap-[16px] ${fade}`}>
             {link}
-            <span
-              aria-hidden="true"
-              className={`relative flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full ring-4 ring-surface ${tone}`}
-            >
-              <Icon size={20} />
-            </span>
+            <Avatar who={item.who} size={48} />
             <div className="relative min-w-0 flex-1 overflow-hidden rounded-[12px] border border-line bg-white">
               <p className="m-0 border-b border-line-soft bg-surface px-[16px] py-[10px] text-[14px] leading-[20px] text-secondary">
                 <span className="font-medium text-heading">{item.name}</span>{" "}

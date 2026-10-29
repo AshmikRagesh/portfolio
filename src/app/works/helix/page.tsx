@@ -295,8 +295,8 @@ const THREAD: ThreadItem[] = [
     verb: "reviewed",
     text: "Checked it against our codebase. Looks good to me 👍",
   },
-  { kind: "event", icon: "approved", name: "Developer", text: "approved these changes" },
-  { kind: "event", icon: "merged", name: "Designer", text: "merged into main" },
+  { kind: "event", icon: "approved", who: "developer", name: "Developer", text: "approved these changes" },
+  { kind: "event", icon: "merged", who: "designer", name: "Designer", text: "merged into main" },
 ];
 
 const CHANGE_PATH = [
