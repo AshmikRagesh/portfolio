@@ -10,7 +10,6 @@ import {
   Figure,
   ProblemStatement,
   NumberedPoints,
-  Comparison,
   ProcessStrip,
   Timeline,
   Metrics,
@@ -139,50 +138,46 @@ function Discovery() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Exploration
 // ─────────────────────────────────────────────────────────────────────────────
-const NEEDS = ["One source", "Developers' code", "Nothing off-system"];
-
-const APPROACHES = [
+const APPROACH = [
   {
-    name: "Figma handoff",
-    note: "How every ticket was delivered",
-    cells: [
-      { ok: false, text: "Two copies, Figma and code" },
-      { ok: false, text: "Rebuilt by hand from the file" },
-      { ok: false, text: "On-system in Figma, slipped in the build" },
-    ],
+    title: "Foundations first",
+    description:
+      "Tickets kept coming, so we couldn't stop to migrate everything. We set up every brand's foundations first: all the primary tokens and values, exactly right.",
   },
   {
-    name: "Claude Code with the Figma MCP",
-    note: "My first try, on Enchanting Travels",
-    cells: [
-      { ok: false, text: "Still read from Figma" },
-      { ok: true, text: "Real code, reviewed in a pull request" },
-      { ok: false, text: "Drifted, so every build needed fixes" },
-    ],
+    title: "Components as we go",
+    description:
+      "Existing components moved into Helix whenever there was time. When a ticket needed a new one, we built it on those foundations.",
   },
   {
-    name: "Helix",
-    note: "A skill on Claude Code, built by a developer",
-    chosen: true,
-    cells: [
-      { ok: true, text: "Each brand's system, once, in code" },
-      { ok: true, text: "The same TypeScript components" },
-      { ok: true, text: "Only the brand's parts can be used" },
-    ],
+    title: "Built to our developers' standards",
+    description:
+      "A developer built Helix and maintains it, so every component uses the same code and best practices as our codebase.",
+  },
+  {
+    title: "Limited to the system",
+    description:
+      "Helix can only use the brand's own components and tokens. If something is missing, we add it to the system instead of improvising.",
+  },
+  {
+    title: "One skill, every brand kept separate",
+    description:
+      "Every Travelopia brand lives in one skill, and work on one brand only uses that brand's system.",
   },
 ];
 
 function Exploration() {
   return (
-    <Chapter id="exploration" num={3} title="Three ways, one test">
+    <Chapter id="exploration" num={3} title="How we approached it">
       <Copy>
         <p>
-          We had now worked two ways, and Helix was the third. Here is how each
-          one did against the three needs.
+          Helix had to meet those three needs without pausing the work already
+          in flight. Five choices shaped it.
         </p>
+        <NumberedPoints items={APPROACH} stacked />
       </Copy>
       <Visual>
-        <Comparison needs={NEEDS} rows={APPROACHES} />
+        <Figure label="One brand's foundations in Helix" />
       </Visual>
     </Chapter>
   );

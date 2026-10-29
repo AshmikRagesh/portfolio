@@ -26,5 +26,4 @@ export {
   Stats,
   ImpactList,
   Footnote,
-  Comparison,
 } from "./Blocks";
