@@ -226,21 +226,32 @@ const ROLLOUT = [
 
 const MONTHS = ["Jun", "Jul", "Aug", "Sep"];
 
-const TRACKS = [
+const LANES = [
   {
-    title: "Live tickets",
-    kind: "tickets" as const,
-    start: 0.1,
-    end: 4,
-    stops: [
-      { at: 0.25, label: "Find a Trip for TCS, my first Helix ticket" },
-      { at: 1.05, label: "Quark cabin lightbox, explored in Helix" },
-      { at: 3.1, label: "TCS form dropdowns, reusing the existing combobox" },
+    name: "Foundations",
+    segments: [
+      { start: 1, end: 2, tone: "dark" as const, label: "Every brand", detail: "Every brand's primary tokens and values went in first, exactly right." },
     ],
   },
-  { title: "Foundations", kind: "solid" as const, start: 1, end: 1.9, bar: "Every brand" },
-  { title: "Existing components", kind: "soft" as const, start: 1.5, end: 2.9, bar: "When there was time" },
-  { title: "New tickets in Helix", kind: "open" as const, start: 2, end: 4, bar: "All of them" },
+  {
+    name: "Existing components",
+    segments: [
+      { start: 1.5, end: 3, tone: "soft" as const, label: "When there was time", detail: "Components we already had moved from Figma into Helix between tickets. My three brands took about a month." },
+    ],
+  },
+  {
+    name: "New components",
+    segments: [
+      { start: 1.5, end: 4, tone: "grape" as const, open: true, label: "As tickets needed them", detail: "Built on the foundations, reviewed by a developer as a pull request, and merged to main." },
+    ],
+  },
+  {
+    name: "Tickets in Helix",
+    segments: [
+      { start: 0, end: 2, tone: "pale" as const, label: "The first few", detail: "The first tickets were designed in Helix while the rest still used Figma." },
+      { start: 2, end: 4, tone: "grape" as const, open: true, label: "Every ticket", detail: "Every new ticket was designed in Helix, and nothing new in Figma." },
+    ],
+  },
 ];
 
 function Approach() {
@@ -251,7 +262,7 @@ function Approach() {
         <MoreDetail label="The rollout, month by month" className="mt-[32px]">
           <RolloutTracks
             months={MONTHS}
-            tracks={TRACKS}
+            lanes={LANES}
             milestone={{ at: 2, label: "August: every new ticket designed in Helix" }}
           />
         </MoreDetail>
