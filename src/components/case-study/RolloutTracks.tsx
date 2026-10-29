@@ -7,9 +7,9 @@ import { useRef, useState } from "react";
  * month axis; each lane holds one or more rounded segments. Move along the chart (pointer,
  * drag on touch, or arrow keys once focused) and a grape crosshair snaps to each half-month,
  * the segments running then stay lit while the rest fade, and the readout under the chart
- * lists what was happening. On phones (where lane names sit over the bars) the rules are
- * hidden and a tap just lights the bars and fills the readout. A screen-reader table carries
- * the same content.
+ * lists what was happening. Phones have no hover, so there every lane is laid out in full
+ * instead: a slim bar on the month axis, the lane's name, and each segment's span and story.
+ * A screen-reader table carries the same content.
  * Positions are in month units: 0 is the start of the first month, 1 of the second.
  */
 type Tone = "dark" | "grape" | "soft" | "pale";
@@ -46,6 +46,14 @@ export default function RolloutTracks({
   const cols = { gridTemplateColumns: `repeat(${months.length}, minmax(0, 1fr))` };
   const lane = "grid grid-cols-1 gap-[8px] md:grid-cols-[152px_minmax(0,1fr)] md:items-center md:gap-[16px]";
 
+  // "Jul", "Mid Jul – Aug", "Aug onwards": a segment's span in words, for the phone layout
+  const when = (s: Segment) => {
+    const from = `${s.start % 1 >= 0.5 ? "Mid " : ""}${months[Math.floor(s.start)]}`;
+    if (s.open) return `${from} onwards`;
+    const to = months[Math.ceil(s.end) - 1];
+    return to === months[Math.floor(s.start)] ? from : `${from} – ${to}`;
+  };
+
   const t = step === null ? null : steps[step].at;
   const live = (s: Segment) => t !== null && s.start <= t && t < s.end;
   const active = t === null ? [] : lanes.flatMap((l) => l.segments.filter(live).map((s) => ({ lane: l.name, ...s })));
@@ -67,110 +75,163 @@ export default function RolloutTracks({
 
   return (
     <div className="font-geist">
-      <div
-        role="group"
-        tabIndex={0}
-        aria-label="Rollout by month. Use the left and right arrow keys to move through it."
-        onKeyDown={onKey}
-        onBlur={() => setStep(null)}
-        className="rounded-[12px] bg-grape-light/30 p-[16px] pt-[40px] outline-none focus-visible:ring-2 focus-visible:ring-grape md:p-[24px] md:pt-[44px]"
-      >
-        {/* Month axis */}
-        <div className={`${lane} mb-[4px]`}>
-          <span className="hidden md:block" />
-          <div className="grid" style={cols}>
-            {months.map((m) => (
-              <span key={m} className="pb-[8px] text-[12px] font-medium uppercase leading-[16px] tracking-[0px] text-muted">
-                {m}
-              </span>
-            ))}
-          </div>
+      {/* Phones: no hover, so every lane shows its bar and what happened, all at once */}
+      <div className="rounded-[12px] bg-grape-light/30 p-[16px] md:hidden">
+        <div className="grid pb-[4px]" style={cols}>
+          {months.map((m) => (
+            <span key={m} className="text-[12px] font-medium uppercase leading-[16px] text-muted">
+              {m}
+            </span>
+          ))}
         </div>
+        <ol className="m-0 flex list-none flex-col p-0">
+          {lanes.map(({ name, segments }) => (
+            <li key={name} className="flex flex-col gap-[12px] border-t border-primary/10 py-[16px] first:border-t-0">
+              <div className="relative h-[8px] rounded-full bg-primary/5">
+                {segments.map((s) => (
+                  <span
+                    key={s.label}
+                    className={`absolute inset-y-0 rounded-full ${TONE[s.tone].bar} ${s.open ? "[mask-image:linear-gradient(to_right,black_70%,transparent)]" : ""}`}
+                    style={span(s.start, s.end)}
+                  />
+                ))}
+                {milestone && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute -inset-y-[4px] border-l-2 border-dashed border-grape/50"
+                    style={{ left: pos(milestone.at) }}
+                  />
+                )}
+              </div>
+              <span className="text-[16px] font-medium leading-[24px] text-heading">{name}</span>
+              <ul className="m-0 flex list-none flex-col gap-[8px] p-0">
+                {segments.map((s) => (
+                  <li key={s.label} className="flex flex-col gap-[2px]">
+                    <span className="text-[12px] font-medium uppercase leading-[16px] text-grape">
+                      {s.label} · {when(s)}
+                    </span>
+                    <span className="text-[14px] leading-[22px] text-secondary">{s.detail}</span>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ol>
+        {milestone && (
+          <p className="m-0 flex items-center gap-[8px] border-t border-primary/10 pt-[12px] text-[14px] leading-[22px] text-secondary">
+            <span aria-hidden="true" className="inline-block h-[14px] border-l-2 border-dashed border-grape/50" />
+            {milestone.label}
+          </p>
+        )}
+      </div>
 
-        <div className="relative">
-          <ol className="m-0 flex list-none flex-col gap-[12px] p-0 md:gap-[8px]">
-            {lanes.map(({ name, segments }) => (
-              <li key={name} className={lane}>
-                <span className="text-[14px] font-medium leading-[20px] text-heading">{name}</span>
-                <div className="relative h-[32px]">
-                  <div aria-hidden="true" className="absolute inset-0 grid" style={cols}>
-                    {months.map((m, i) => (
-                      <span key={m} className={i ? "border-l border-primary/10" : ""} />
+      {/* Tablet and up: the interactive roadmap */}
+      <div className="hidden md:block">
+        <div
+          role="group"
+          tabIndex={0}
+          aria-label="Rollout by month. Use the left and right arrow keys to move through it."
+          onKeyDown={onKey}
+          onBlur={() => setStep(null)}
+          className="rounded-[12px] bg-grape-light/30 p-[16px] pt-[40px] outline-none focus-visible:ring-2 focus-visible:ring-grape md:p-[24px] md:pt-[44px]"
+        >
+          {/* Month axis */}
+          <div className={`${lane} mb-[4px]`}>
+            <span className="hidden md:block" />
+            <div className="grid" style={cols}>
+              {months.map((m) => (
+                <span key={m} className="pb-[8px] text-[12px] font-medium uppercase leading-[16px] tracking-[0px] text-muted">
+                  {m}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="relative">
+            <ol className="m-0 flex list-none flex-col gap-[12px] p-0 md:gap-[8px]">
+              {lanes.map(({ name, segments }) => (
+                <li key={name} className={lane}>
+                  <span className="text-[14px] font-medium leading-[20px] text-heading">{name}</span>
+                  <div className="relative h-[32px]">
+                    <div aria-hidden="true" className="absolute inset-0 grid" style={cols}>
+                      {months.map((m, i) => (
+                        <span key={m} className={i ? "border-l border-primary/10" : ""} />
+                      ))}
+                    </div>
+                    {segments.map((s) => (
+                      <span
+                        key={s.label}
+                        className={`absolute inset-y-0 flex items-center overflow-hidden whitespace-nowrap rounded-[8px] px-[10px] text-[12px] font-medium leading-[16px] transition-opacity duration-200 motion-reduce:transition-none ${
+                          TONE[s.tone].bar
+                        } ${s.open ? "[mask-image:linear-gradient(to_right,black_75%,transparent)]" : ""} ${
+                          t !== null && !live(s) ? "opacity-30" : "opacity-100"
+                        }`}
+                        style={span(s.start, s.end)}
+                      >
+                        <span className="hidden md:inline">{s.label}</span>
+                      </span>
                     ))}
                   </div>
-                  {segments.map((s) => (
-                    <span
-                      key={s.label}
-                      className={`absolute inset-y-0 flex items-center overflow-hidden whitespace-nowrap rounded-[8px] px-[10px] text-[12px] font-medium leading-[16px] transition-opacity duration-200 motion-reduce:transition-none ${
-                        TONE[s.tone].bar
-                      } ${s.open ? "[mask-image:linear-gradient(to_right,black_75%,transparent)]" : ""} ${
-                        t !== null && !live(s) ? "opacity-30" : "opacity-100"
-                      }`}
-                      style={span(s.start, s.end)}
-                    >
-                      <span className="hidden md:inline">{s.label}</span>
-                    </span>
-                  ))}
-                </div>
-              </li>
-            ))}
-          </ol>
+                </li>
+              ))}
+            </ol>
 
-          {/* The tracking area sits over the bars (not the labels) and draws the crosshair */}
-          <div aria-hidden="true" className={`pointer-events-none absolute inset-0 ${lane}`}>
-            <span className="hidden md:block" />
-            <div
-              ref={area}
-              onPointerMove={(e) => track(e.clientX)}
-              onPointerDown={(e) => track(e.clientX)}
-              onPointerLeave={(e) => e.pointerType === "mouse" && setStep(null)}
-              className="pointer-events-auto relative h-full touch-pan-y"
-            >
-              {milestone && (
-                <span className="absolute -inset-y-[8px] hidden border-l-2 border-dashed border-grape/50 md:block" style={{ left: pos(milestone.at) }} />
-              )}
-              {t !== null && (
-                <span className="absolute -inset-y-[8px] hidden w-0 border-l-2 border-grape md:block" style={{ left: pos(t) }}>
-                  <span className="absolute -top-[56px] left-0 -translate-x-1/2 whitespace-nowrap rounded-full bg-grape px-[8px] py-[2px] text-[12px] font-medium leading-[16px] text-white">
-                    {steps[step!].name}
+            {/* The tracking area sits over the bars (not the labels) and draws the crosshair */}
+            <div aria-hidden="true" className={`pointer-events-none absolute inset-0 ${lane}`}>
+              <span className="hidden md:block" />
+              <div
+                ref={area}
+                onPointerMove={(e) => track(e.clientX)}
+                onPointerDown={(e) => track(e.clientX)}
+                onPointerLeave={(e) => e.pointerType === "mouse" && setStep(null)}
+                className="pointer-events-auto relative h-full touch-pan-y"
+              >
+                {milestone && (
+                  <span className="absolute -inset-y-[8px] hidden border-l-2 border-dashed border-grape/50 md:block" style={{ left: pos(milestone.at) }} />
+                )}
+                {t !== null && (
+                  <span className="absolute -inset-y-[8px] hidden w-0 border-l-2 border-grape md:block" style={{ left: pos(t) }}>
+                    <span className="absolute -top-[56px] left-0 -translate-x-1/2 whitespace-nowrap rounded-full bg-grape px-[8px] py-[2px] text-[12px] font-medium leading-[16px] text-white">
+                      {steps[step!].name}
+                    </span>
                   </span>
-                </span>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Readout: what was happening at the crosshair */}
-      <div aria-live="polite" className="mt-[16px] min-h-[96px] md:min-h-[176px]">
-        {t === null ? (
-          <p className="m-0 flex flex-col gap-[8px] text-[14px] leading-[22px] text-muted">
-            <span>Move along the months to see what was happening.</span>
-            {milestone && (
-              <span className="inline-flex items-center gap-[8px]">
-                <span aria-hidden="true" className="inline-block h-[14px] border-l-2 border-dashed border-grape/50" />
-                {milestone.label}
-              </span>
-            )}
-          </p>
-        ) : (
-          <div className="flex flex-col gap-[12px]">
-            <p className="m-0 text-[14px] font-medium leading-[20px] text-heading">{steps[step!].name}</p>
-            <ul className="m-0 grid list-none grid-cols-1 gap-[12px] p-0 md:grid-cols-2">
-              {active.map(({ lane: l, label, detail, tone }) => (
-                <li key={l + label} className="flex gap-[12px]">
-                  <span aria-hidden="true" className={`mt-[4px] size-[12px] shrink-0 rounded-[4px] ${TONE[tone].dot}`} />
-                  <span className="flex flex-col gap-[2px]">
-                    <span className="text-[14px] font-medium leading-[20px] text-heading">
-                      {l} · {label}
+        {/* Readout: what was happening at the crosshair */}
+        <div aria-live="polite" className="mt-[16px] min-h-[96px] md:min-h-[176px]">
+          {t === null ? (
+            <p className="m-0 flex flex-col gap-[8px] text-[14px] leading-[22px] text-muted">
+              <span>Move along the months to see what was happening.</span>
+              {milestone && (
+                <span className="inline-flex items-center gap-[8px]">
+                  <span aria-hidden="true" className="inline-block h-[14px] border-l-2 border-dashed border-grape/50" />
+                  {milestone.label}
+                </span>
+              )}
+            </p>
+          ) : (
+            <div className="flex flex-col gap-[12px]">
+              <p className="m-0 text-[14px] font-medium leading-[20px] text-heading">{steps[step!].name}</p>
+              <ul className="m-0 grid list-none grid-cols-1 gap-[12px] p-0 md:grid-cols-2">
+                {active.map(({ lane: l, label, detail, tone }) => (
+                  <li key={l + label} className="flex gap-[12px]">
+                    <span aria-hidden="true" className={`mt-[4px] size-[12px] shrink-0 rounded-[4px] ${TONE[tone].dot}`} />
+                    <span className="flex flex-col gap-[2px]">
+                      <span className="text-[14px] font-medium leading-[20px] text-heading">
+                        {l} · {label}
+                      </span>
+                      <span className="text-[14px] leading-[22px] text-secondary">{detail}</span>
                     </span>
-                    <span className="text-[14px] leading-[22px] text-secondary">{detail}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* The same content for screen readers */}
