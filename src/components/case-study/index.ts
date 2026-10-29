@@ -5,7 +5,7 @@ export { default as MoreDetail } from "./MoreDetail";
 export { default as PreviewLink } from "./PreviewLink";
 export { default as NextCase } from "./NextCase";
 export { VariantProvider, VariantFigure } from "./VariantSwitch";
-export { default as SkillPanel } from "./SkillPanel";
+export { default as SkillBand } from "./SkillBand";
 export {
   Copy,
   Lead,
@@ -27,4 +27,5 @@ export {
   Stats,
   ImpactList,
   Footnote,
+  FlowCompare,
 } from "./Blocks";

@@ -569,3 +569,40 @@ export function ImpactList({ items }: { items: string[] }) {
     </div>
   );
 }
+
+/**
+ * The same task, before and after — two rows of steps. Before is a muted card with red-marked
+ * steps; after is a soft green card with green ones (green worked, red didn't). Steps wrap.
+ */
+export function FlowCompare({
+  before,
+  after,
+}: {
+  before: { label: string; steps: string[] };
+  after: { label: string; steps: string[] };
+}) {
+  const rows = [
+    { ...before, box: "border border-line-soft bg-white", tone: "con" as const },
+    { ...after, box: "bg-success-bg", tone: "pro" as const },
+  ];
+  return (
+    <div className="flex flex-col gap-[16px]">
+      {rows.map(({ label, steps, box, tone }) => (
+        <div key={label} className={`flex flex-col gap-[16px] rounded-[16px] p-[20px] md:p-[24px] ${box}`}>
+          <span className="font-brand text-[12px] uppercase leading-[16px] text-muted">{label}</span>
+          <ol className="m-0 flex list-none flex-wrap items-center gap-x-[8px] gap-y-[12px] p-0">
+            {steps.map((step, i) => (
+              <li key={step} className="flex items-center gap-[8px]">
+                <span className="inline-flex items-center gap-[8px] rounded-full border border-line bg-white py-[6px] pl-[8px] pr-[14px] font-body text-[16px] leading-[24px] text-heading">
+                  <Mark tone={tone}>{tone === "pro" ? <Check size={14} strokeWidth={2.5} /> : <X size={14} strokeWidth={2.5} />}</Mark>
+                  {step}
+                </span>
+                {i < steps.length - 1 && <ArrowRight size={16} aria-hidden="true" className="shrink-0 text-muted" />}
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
+    </div>
+  );
+}

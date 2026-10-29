@@ -11,13 +11,13 @@ import {
   Figure,
   CardGrid,
   ProblemStatement,
-  NumberedPoints,
   ProcessStrip,
   Timeline,
   Metrics,
   Footnote,
   NextCase,
-  SkillPanel,
+  SkillBand,
+  FlowCompare,
 } from "@/components/case-study";
 
 // DRAFT — angle chosen 29 Oct 2026: "build once, not twice", with Ashmik's own path
@@ -35,9 +35,9 @@ const SECTIONS: CaseStudySection[] = [
   { id: "overview",    label: "Overview"        },
   { id: "the-problem", label: "The Problem"     },
   { id: "discovery",   label: "Discovery"       },
-  { id: "exploration", label: "Approaches"      },
   { id: "solution",    label: "Solution"        },
-  { id: "output",      label: "Build"           },
+  { id: "approach",    label: "Approaches"      },
+  { id: "output",      label: "A ticket"        },
   { id: "outcome",     label: "Where it stands" },
   { id: "reflection",  label: "Reflection"      },
 ];
@@ -142,98 +142,106 @@ function Discovery() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Exploration
+// Section: Solution  (each problem raised earlier, and how Helix answers it)
 // ─────────────────────────────────────────────────────────────────────────────
-const APPROACH = [
+const PAIRS = [
   {
-    title: "Foundations first",
-    description:
-      "Tickets kept coming, so we couldn't stop to migrate everything. We set up every brand's foundations first: all the primary tokens and values, exactly right.",
+    num: 1,
+    problem: "Two copies of each design system drifted apart",
+    title: "One design system per brand, in code",
+    body: "Each brand's design system lives in Helix, and designers build in it directly. There is no second copy to keep in step, so there is nothing to drift.",
+    figure: "One brand's foundations in Helix: colour, type and spacing",
   },
   {
-    title: "Components as we go",
-    description:
-      "Existing components moved into Helix whenever there was time. When a ticket needed a new one, we built it on those foundations.",
+    num: 2,
+    problem: "Padding and colour values slipped in the build",
+    title: "Only the system's values",
+    body: "Helix can only use the brand's own tokens and components, so every value comes out exactly as the system defines it. If a component is missing, we add it to the system first instead of improvising.",
+    figure: "A component, with the token behind each value",
   },
   {
-    title: "Built to our developers' standards",
-    description:
-      "A developer built Helix and maintains it, so every component uses the same code and best practices as our codebase.",
+    num: 3,
+    problem: "Claude Code with the Figma MCP still drifted",
+    title: "Code the way our developers write it",
+    body: "A developer built Helix and maintains it, so it writes the same TypeScript web components our developers use and follows their best practices.",
+    figure: "A component next to its code",
   },
   {
-    title: "Limited to the system",
-    description:
-      "Helix can only use the brand's own components and tokens. If something is missing, we add it to the system instead of improvising.",
+    num: 4,
+    problem: "Every miss became a bug ticket only a developer could fix",
+    title: "Designers fix it, developers review",
+    body: "When a designer spots a miss, they fix it in Helix and send a pull request. A developer reviews it and merges it, so a small fix no longer waits in the queue.",
   },
   {
-    title: "One skill, every brand kept separate",
-    description:
-      "Every Travelopia brand lives in one skill, and work on one brand only uses that brand's system.",
+    num: 5,
+    problem: "A dozen brands to keep consistent",
+    title: "One skill, each brand kept separate",
+    body: "Every Travelopia brand lives in one skill, and work on one brand only uses that brand's system. TCS stays TCS, and Quark stays Quark.",
+    figure: "The same card, built for TCS, Quark and Kalos",
   },
 ];
 
-function Exploration() {
-  return (
-    <Chapter id="exploration" num={3} title="How we approached it">
-      <Copy>
-        <p>
-          Helix had to meet those three needs without pausing the work already
-          in flight. Five choices shaped it.
-        </p>
-        <NumberedPoints items={APPROACH} stacked />
-      </Copy>
-      <Visual>
-        <Figure label="One brand's foundations in Helix" />
-      </Visual>
-    </Chapter>
-  );
-}
+const FIX_BEFORE = ["Spot a miss", "Write a bug ticket", "Wait for a developer", "Check the fix"];
+const FIX_AFTER = ["Spot a miss", "Fix it in Helix", "Pull request", "Developer review", "Merge"];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Solution
-// ─────────────────────────────────────────────────────────────────────────────
 const SKILLS = [
-  {
-    title: "Explorations",
-    description: "Several variations of a screen, built from the brand's parts, to compare side by side.",
-  },
-  {
-    title: "Wireframing",
-    description: "A quick, low-detail structure to agree the flow before the detail.",
-  },
-  {
-    title: "Layout",
-    description: "Pages laid out on the brand's own grid and spacing.",
-  },
-  {
-    title: "Build",
-    description: "Components and screens in the codebase, ready for a pull request.",
-  },
-  {
-    title: "Audit",
-    description: "Checks work against the design system and flags anything off-system.",
-  },
+  { title: "Explorations", description: "Variations of a screen, side by side" },
+  { title: "Wireframing", description: "The flow agreed before the detail" },
+  { title: "Layout", description: "Pages on the brand's own grid" },
+  { title: "Build", description: "Components and screens, ready for a pull request" },
+  { title: "Audit", description: "Anything off-system, flagged" },
 ];
 
 function Solution() {
   return (
-    <Chapter id="solution" num={4} title="A skill for every step">
+    <Chapter id="solution" num={3} title="How Helix solves it">
       <Copy>
         <p>
-          Designers call Helix with <code>/helix</code> in Claude Code. It
-          isn&apos;t only for the build: it has a skill for each step of the
-          work, and every one of them uses the brand&apos;s own system.
+          Each problem from earlier has its own answer in Helix. Together they
+          meet the three needs: one source, our developers&apos; code, and
+          nothing off-system.
         </p>
       </Copy>
-      <Visual>
-        <SkillPanel command="/helix" skills={SKILLS} />
-      </Visual>
+      {PAIRS.map(({ num, problem, title, body, figure }) => (
+        <div key={num} className="cs-sub">
+          <Copy>
+            <p className="cs-problem">
+              <span className="font-brand text-[12px] uppercase leading-[16px] text-warning">Problem</span>
+              <span>{problem}</span>
+            </p>
+            <h3>
+              {num}. {title}
+            </h3>
+            <p>{body}</p>
+          </Copy>
+          <Visual>
+            {figure ? (
+              <Figure name={figure} />
+            ) : (
+              <FlowCompare
+                before={{ label: "Before", steps: FIX_BEFORE }}
+                after={{ label: "With Helix", steps: FIX_AFTER }}
+              />
+            )}
+          </Visual>
+        </div>
+      ))}
+      <div className="cs-sub">
+        <Visual>
+          <SkillBand
+            command="/helix"
+            title="Day to day, the whole job happens in Helix"
+            note="Every step uses only the brand's own system."
+            skills={SKILLS}
+          />
+        </Visual>
+      </div>
     </Chapter>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Build  (output)
+// Section: Approach  (how it was rolled out without pausing live work)
 // ─────────────────────────────────────────────────────────────────────────────
 const ROLLOUT = [
   {
@@ -242,22 +250,43 @@ const ROLLOUT = [
       "Helix was tried on live work first. My first Helix ticket was the Find a Trip test for TCS.",
   },
   {
-    title: "July: foundations",
+    title: "July: foundations first",
     description:
-      "Primitive tokens and foundation components were set up for every brand before anything else.",
+      "Tickets kept coming, so we couldn't stop to migrate everything. Every brand's primary tokens and values went in first, exactly right.",
   },
   {
-    title: "July–August: migration",
+    title: "July–August: components as we go",
     description:
-      "I moved three brands' Figma components into Helix in about a month, while running live tickets.",
+      "Existing components moved over whenever there was time, and new ones were built on the foundations when a ticket needed them. My three brands took about a month.",
   },
 ];
 
+function Approach() {
+  return (
+    <Chapter id="approach" num={4} title="How we rolled it out">
+      <Copy>
+        <p>
+          We couldn&apos;t pause the work to migrate, so Helix went in
+          alongside live tickets. From August, every new ticket was designed in
+          Helix.
+        </p>
+        <Timeline items={ROLLOUT} />
+      </Copy>
+      <Visual>
+        <Figure label="A brand's components, migrated into Helix" />
+      </Visual>
+    </Chapter>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section: A ticket, start to finish  (output)
+// ─────────────────────────────────────────────────────────────────────────────
 const WORKFLOW = [
   "Brief",
   "Explore in Helix",
   "Pick a direction",
-  "Build with DS components",
+  "Build with the brand's components",
   "Pull request",
   "Developer review",
   "Merge",
@@ -265,20 +294,18 @@ const WORKFLOW = [
 
 function Output() {
   return (
-    <Chapter id="output" num={5} title="Moving three brands onto Helix">
+    <Chapter id="output" num={5} title="A ticket, start to finish">
       <Copy>
         <p>
-          We didn&apos;t pause the work to migrate. Foundations went in first,
-          then each brand&apos;s components were rebuilt in Helix alongside the
-          tickets we were already running. From August, every new ticket was
-          designed in Helix.
+          Every ticket now runs the same way, from the brief to the merge.{" "}
+          <a href="/works/tcs-find-a-trip">Find a Trip</a> for TCS was the first:
+          both test variants were explored, built and reviewed in Helix, then
+          merged.
         </p>
-        <Timeline items={ROLLOUT} />
-        <h3>How a ticket ships now</h3>
         <ProcessStrip steps={WORKFLOW} />
       </Copy>
       <Visual>
-        <Figure label="A brand's components, migrated into Helix" />
+        <Figure label="Find a Trip, explored and built in Helix" />
       </Visual>
     </Chapter>
   );
@@ -352,8 +379,8 @@ export default function HelixPage() {
       <Overview />
       <TheProblem />
       <Discovery />
-      <Exploration />
       <Solution />
+      <Approach />
       <Output />
       <Outcome />
       <Reflection />
