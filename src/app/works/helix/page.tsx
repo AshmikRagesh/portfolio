@@ -17,7 +17,7 @@ import {
   Metrics,
   Footnote,
   NextCase,
-  SkillShowcase,
+  SkillPanel,
 } from "@/components/case-study";
 
 // DRAFT — angle chosen 29 Oct 2026: "build once, not twice", with Ashmik's own path
@@ -226,7 +226,7 @@ function Solution() {
         </p>
       </Copy>
       <Visual>
-        <SkillShowcase skills={SKILLS} />
+        <SkillPanel command="/helix" skills={SKILLS} />
       </Visual>
     </Chapter>
   );

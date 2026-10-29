@@ -5,7 +5,7 @@ export { default as MoreDetail } from "./MoreDetail";
 export { default as PreviewLink } from "./PreviewLink";
 export { default as NextCase } from "./NextCase";
 export { VariantProvider, VariantFigure } from "./VariantSwitch";
-export { default as SkillShowcase } from "./SkillShowcase";
+export { default as SkillPanel } from "./SkillPanel";
 export {
   Copy,
   Lead,

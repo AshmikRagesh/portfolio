@@ -773,7 +773,3 @@
   .reel-modal-ui, .reel-slot, .reel-layer, .reel-info > * { animation: none !important; }
 }
 
-/* Skill showcase — the active skill's bar fills, then the next skill takes over (SkillShowcase.tsx) */
-.skill-progress { transform-origin: left; animation: skill-progress var(--skill-duration, 8s) linear forwards; }
-@keyframes skill-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-@media (prefers-reduced-motion: reduce) { .skill-progress { animation: none; transform: scaleX(1); } }
