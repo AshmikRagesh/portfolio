@@ -351,7 +351,7 @@ function Player({
         <div className="group/scrub relative mx-[6px] flex h-[16px] items-center">
           <div className="relative h-[4px] w-full overflow-hidden rounded-full bg-white/25 transition-[height] duration-150 group-hover/scrub:h-[6px]">
             <div className="absolute inset-y-0 left-0 bg-white/30" style={{ width: `${loaded * 100}%` }} />
-            <div className="absolute inset-y-0 left-0 bg-pink" style={{ width: `${pct}%` }} />
+            <div className="absolute inset-y-0 left-0 bg-grape" style={{ width: `${pct}%` }} />
           </div>
           <span
             className="pointer-events-none absolute top-1/2 h-[14px] w-[14px] -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-white shadow-[0_1px_4px_rgba(0,0,0,0.4)] transition-transform duration-150 group-hover/scrub:scale-100 group-focus-within/scrub:scale-100"
@@ -375,9 +375,7 @@ function Player({
         </div>
 
         <div className="flex items-center gap-[2px] font-geist">
-          <button type="button" onClick={toggle} aria-label={playing ? "Pause" : "Play"} className={ICON_BTN}>
-            {playing ? <PauseIcon /> : <PlayIcon />}
-          </button>
+          {/* Play and pause live in the centre of the frame only */}
           {narrated && (
             <button type="button" onClick={() => setMuted((m) => !m)} aria-label={muted ? "Turn sound on" : "Turn sound off"} className={ICON_BTN}>
               {muted ? <SoundOffIcon /> : <SoundOnIcon />}

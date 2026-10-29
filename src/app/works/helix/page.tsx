@@ -12,11 +12,10 @@ import {
   CardGrid,
   ProblemStatement,
   ProcessStrip,
-  Timeline,
+  RolloutTracks,
   Metrics,
   Footnote,
   NextCase,
-  FlowCompare,
 } from "@/components/case-study";
 
 // DRAFT — angle chosen 29 Oct 2026: "build once, not twice", with Ashmik's own path
@@ -166,30 +165,9 @@ const PAIRS = [
     num: 4,
     title: "Designers fix it, developers review",
     body: "When I spot a miss, I fix it in Helix and send a pull request. A developer reviews it and merges it, so a small fix no longer waits in the queue.",
+    figure: "A pull request for a design fix, approved by a developer",
   },
 ];
-
-const FIX_BEFORE = {
-  label: "Before",
-  summary: "Two hand-offs and a wait",
-  steps: [
-    { text: "I spot a miss" },
-    { text: "I write it up in a bug ticket" },
-    { text: "It waits until a developer can pick it up", wait: true },
-    { text: "The developer fixes it" },
-    { text: "I check the fix" },
-  ],
-};
-const FIX_AFTER = {
-  label: "With Helix",
-  summary: "One hand-off, no wait",
-  steps: [
-    { text: "I spot a miss" },
-    { text: "I fix it in Helix" },
-    { text: "I send a pull request" },
-    { text: "A developer reviews and merges it" },
-  ],
-};
 
 function Solution() {
   return (
@@ -208,11 +186,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            {figure ? (
-              <Figure name={figure} />
-            ) : (
-              <FlowCompare before={FIX_BEFORE} after={FIX_AFTER} />
-            )}
+            <Figure name={figure} />
           </Visual>
         </div>
       ))}
@@ -223,21 +197,41 @@ function Solution() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Approach  (how it was rolled out without pausing live work)
 // ─────────────────────────────────────────────────────────────────────────────
-const ROLLOUT = [
+const MONTHS = ["Jun", "Jul", "Aug", "Sep"];
+
+const TRACKS = [
   {
-    title: "June: first tickets",
-    description:
-      "Helix was tried on live work first. My first Helix ticket was the Find a Trip test for TCS.",
+    title: "Live tickets, the whole way through",
+    note: "Work never stopped. New components were built in Helix as each ticket needed them.",
+    kind: "tickets" as const,
+    start: 0.1,
+    end: 4,
+    stops: [
+      { at: 0.2, label: "Find a Trip for TCS: my first Helix ticket" },
+      { at: 1.05, label: "Quark cabin lightbox: explored in Helix" },
+      { at: 3.1, label: "TCS form dropdowns: reused the existing combobox" },
+    ],
   },
   {
-    title: "July: foundations first",
-    description:
-      "Tickets kept coming, so we couldn't stop to migrate everything. Every brand's primary tokens and values went in first, exactly right.",
+    title: "Foundations for every brand",
+    note: "All the primary tokens and values, exactly right, before any component.",
+    kind: "solid" as const,
+    start: 1,
+    end: 1.9,
   },
   {
-    title: "July–August: components as we go",
-    description:
-      "Existing components moved over whenever there was time, and new ones were built on the foundations when a ticket needed them. My three brands took about a month.",
+    title: "Existing components, when there was time",
+    note: "Moved from Figma into Helix between tickets. My three brands took about a month.",
+    kind: "soft" as const,
+    start: 1.5,
+    end: 2.9,
+  },
+  {
+    title: "Every new ticket in Helix",
+    note: "From August on, nothing new was designed in Figma.",
+    kind: "open" as const,
+    start: 2,
+    end: 4,
   },
 ];
 
@@ -246,15 +240,22 @@ function Approach() {
     <Chapter id="approach" num={4} title="How we rolled it out">
       <Copy>
         <p>
-          We couldn&apos;t pause the work to migrate, so Helix went in
-          alongside live tickets. From August, every new ticket was designed in
-          Helix.
+          Tickets kept coming in, so we couldn&apos;t stop to migrate every
+          component from Figma at once. We built Helix up from the bottom,
+          alongside the live work.
         </p>
-        <Timeline items={ROLLOUT} />
       </Copy>
       <Visual>
-        <Figure label="A brand's components, migrated into Helix" />
+        <RolloutTracks months={MONTHS} tracks={TRACKS} />
       </Visual>
+      <Copy>
+        <p>
+          Getting the foundations right first is what made the rest possible.
+          Whenever a ticket needed a new component, we built it straight on them,
+          reviewed it with a developer and merged it to main. Today every
+          brand&apos;s design system is in good shape.
+        </p>
+      </Copy>
     </Chapter>
   );
 }
