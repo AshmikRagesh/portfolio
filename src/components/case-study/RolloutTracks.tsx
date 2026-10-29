@@ -32,10 +32,13 @@ export default function RolloutTracks({
   months,
   lanes,
   milestone,
+  now,
 }: {
   months: string[];
   lanes: Lane[];
   milestone?: { at: number; label: string };
+  /** Today on the axis: a solid Blackcurrant rule; open segments run up to it */
+  now?: { at: number; label: string };
 }) {
   const steps = months.flatMap((m, i) => HALVES.map((h, j) => ({ at: i + j * 0.5 + 0.25, name: `${h} ${m}` })));
   const [step, setStep] = useState<number | null>(null);
@@ -43,6 +46,7 @@ export default function RolloutTracks({
 
   const pos = (m: number) => `${(m / months.length) * 100}%`;
   const span = (a: number, b: number) => ({ left: pos(a), width: `calc(${pos(b)} - ${pos(a)})` });
+  const end = (s: Segment) => (s.open && now ? now.at : s.end);
   const cols = { gridTemplateColumns: `repeat(${months.length}, minmax(0, 1fr))` };
   const lane = "grid grid-cols-1 gap-[8px] md:grid-cols-[152px_minmax(0,1fr)] md:items-center md:gap-[16px]";
 
@@ -55,7 +59,7 @@ export default function RolloutTracks({
   };
 
   const t = step === null ? null : steps[step].at;
-  const live = (s: Segment) => t !== null && s.start <= t && t < s.end;
+  const live = (s: Segment) => t !== null && s.start <= t && t < end(s);
   const active = t === null ? [] : lanes.flatMap((l) => l.segments.filter(live).map((s) => ({ lane: l.name, ...s })));
 
   const track = (clientX: number) => {
@@ -91,8 +95,8 @@ export default function RolloutTracks({
                 {segments.map((s) => (
                   <span
                     key={s.label}
-                    className={`absolute inset-y-0 rounded-full ${TONE[s.tone].bar} ${s.open ? "[mask-image:linear-gradient(to_right,black_70%,transparent)]" : ""}`}
-                    style={span(s.start, s.end)}
+                    className={`absolute inset-y-0 rounded-full ${TONE[s.tone].bar} ${s.open && !now ? "[mask-image:linear-gradient(to_right,black_70%,transparent)]" : ""}`}
+                    style={span(s.start, end(s))}
                   />
                 ))}
                 {milestone && (
@@ -101,6 +105,9 @@ export default function RolloutTracks({
                     className="absolute -inset-y-[4px] border-l-2 border-dashed border-grape/50"
                     style={{ left: pos(milestone.at) }}
                   />
+                )}
+                {now && (
+                  <span aria-hidden="true" className="absolute -inset-y-[4px] border-l-2 border-primary" style={{ left: pos(now.at) }} />
                 )}
               </div>
               <span className="text-[16px] font-medium leading-[24px] text-heading">{name}</span>
@@ -117,12 +124,20 @@ export default function RolloutTracks({
             </li>
           ))}
         </ol>
-        {milestone && (
-          <p className="m-0 flex items-center gap-[8px] border-t border-primary/10 pt-[12px] text-[14px] leading-[22px] text-secondary">
-            <span aria-hidden="true" className="inline-block h-[14px] border-l-2 border-dashed border-grape/50" />
-            {milestone.label}
-          </p>
-        )}
+        <div className="flex flex-col gap-[8px] border-t border-primary/10 pt-[12px]">
+          {milestone && (
+            <p className="m-0 flex items-center gap-[8px] text-[14px] leading-[22px] text-secondary">
+              <span aria-hidden="true" className="inline-block h-[14px] border-l-2 border-dashed border-grape/50" />
+              {milestone.label}
+            </p>
+          )}
+          {now && (
+            <p className="m-0 flex items-center gap-[8px] text-[14px] leading-[22px] text-secondary">
+              <span aria-hidden="true" className="inline-block h-[14px] border-l-2 border-primary" />
+              {now.label}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Tablet and up: the interactive roadmap */}
@@ -163,10 +178,10 @@ export default function RolloutTracks({
                         key={s.label}
                         className={`absolute inset-y-0 flex items-center overflow-hidden whitespace-nowrap rounded-[8px] px-[10px] text-[12px] font-medium leading-[16px] transition-opacity duration-200 motion-reduce:transition-none ${
                           TONE[s.tone].bar
-                        } ${s.open ? "[mask-image:linear-gradient(to_right,black_75%,transparent)]" : ""} ${
+                        } ${s.open && !now ? "[mask-image:linear-gradient(to_right,black_75%,transparent)]" : ""} ${
                           t !== null && !live(s) ? "opacity-30" : "opacity-100"
                         }`}
-                        style={span(s.start, s.end)}
+                        style={span(s.start, end(s))}
                       >
                         <span className="hidden md:inline">{s.label}</span>
                       </span>
@@ -189,9 +204,16 @@ export default function RolloutTracks({
                 {milestone && (
                   <span className="absolute -inset-y-[8px] hidden border-l-2 border-dashed border-grape/50 md:block" style={{ left: pos(milestone.at) }} />
                 )}
+                {now && (
+                  <span className="absolute -inset-y-[8px] w-0 border-l-2 border-primary" style={{ left: pos(now.at) }}>
+                    <span className="absolute -top-[56px] left-0 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-[8px] py-[2px] text-[12px] font-medium leading-[16px] text-white">
+                      Now
+                    </span>
+                  </span>
+                )}
                 {t !== null && (
                   <span className="absolute -inset-y-[8px] hidden w-0 border-l-2 border-grape md:block" style={{ left: pos(t) }}>
-                    <span className="absolute -top-[56px] left-0 -translate-x-1/2 whitespace-nowrap rounded-full bg-grape px-[8px] py-[2px] text-[12px] font-medium leading-[16px] text-white">
+                    <span className="absolute -top-[56px] left-0 z-[1] -translate-x-1/2 whitespace-nowrap rounded-full bg-grape px-[8px] py-[2px] text-[12px] font-medium leading-[16px] text-white">
                       {steps[step!].name}
                     </span>
                   </span>
@@ -210,6 +232,12 @@ export default function RolloutTracks({
                 <span className="inline-flex items-center gap-[8px]">
                   <span aria-hidden="true" className="inline-block h-[14px] border-l-2 border-dashed border-grape/50" />
                   {milestone.label}
+                </span>
+              )}
+              {now && (
+                <span className="inline-flex items-center gap-[8px]">
+                  <span aria-hidden="true" className="inline-block h-[14px] border-l-2 border-primary" />
+                  {now.label}
                 </span>
               )}
             </p>
@@ -250,7 +278,7 @@ export default function RolloutTracks({
               <tr key={l.name + s.label}>
                 <th scope="row">{l.name}</th>
                 <td>
-                  {steps[Math.floor(s.start * 2)]?.name} to {s.open ? "today" : steps[Math.ceil(s.end * 2) - 1]?.name}
+                  {steps[Math.floor(s.start * 2)]?.name} to {s.open ? (now ? now.label : "today") : steps[Math.ceil(s.end * 2) - 1]?.name}
                 </td>
                 <td>
                   {s.label}: {s.detail}

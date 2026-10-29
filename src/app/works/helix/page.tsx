@@ -224,7 +224,10 @@ const ROLLOUT = [
   },
 ];
 
-const MONTHS = ["Jun", "Jul", "Aug", "Sep"];
+const MONTHS = ["Jun", "Jul", "Aug", "Sep", "Oct"];
+
+// Today, as a position on that axis (30 October)
+const NOW = 4 + 29 / 31;
 
 const LANES = [
   {
@@ -236,7 +239,7 @@ const LANES = [
   {
     name: "Existing components",
     segments: [
-      { start: 1.5, end: 3, tone: "soft" as const, label: "When there was time", detail: "Components we already had moved from Figma into Helix between tickets. My three brands took about a month." },
+      { start: 1.5, end: 3, tone: "soft" as const, label: "Between tickets", detail: "Components we already had moved from Figma into Helix between tickets. My three brands took about a month." },
     ],
   },
   {
@@ -264,6 +267,7 @@ function Approach() {
             months={MONTHS}
             lanes={LANES}
             milestone={{ at: 2, label: "August: every new ticket designed in Helix" }}
+            now={{ at: NOW, label: "Now: still running, on every brand" }}
           />
         </MoreDetail>
       </Copy>
