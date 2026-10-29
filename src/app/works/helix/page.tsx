@@ -316,7 +316,7 @@ function Output() {
           and approve it or ask for changes. Once it&apos;s merged into main,
           every designer on that brand can use it.
         </p>
-        <ReviewThread title="New component, built in Helix" branch="new-component" items={THREAD} steps={CHANGE_PATH} />
+        <ReviewThread title="feat(tcs): add filter chips component" branch="feat/tcs-filter-chips" items={THREAD} steps={CHANGE_PATH} />
       </Copy>
       <div className="cs-sub">
         <Copy>

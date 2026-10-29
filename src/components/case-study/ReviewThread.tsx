@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
  * the pull request's title with its state label (Open, turning to Merged when the merge
  * event plays), then the timeline. Comments sit beside a 32px avatar in a box with a grey
  * header (name and verb, then the time and GitHub's ··· menu) and a small caret pointing at
- * the avatar; a box being typed in gets GitHub's blue focus edge; events (approved, merged) sit on the
+ * the avatar; the pull request author's comments get GitHub's blue-tinted header; events (approved, merged) sit on the
  * timeline line with GitHub's badge icon and a line of text.
  * Avatars are GitHub's default identicons: a mirrored 5×5 pattern, one colour per person.
  * When it scrolls into view it plays once. Each comment's header first reads "is typing…",
@@ -167,7 +167,7 @@ export default function ReviewThread({
     <div ref={ref} className={`mt-[40px] font-geist ${GH.text}`}>
       {/* The pull request's title and state */}
       <div className={`flex flex-col items-start gap-[12px] border-b pb-[16px] ${GH.border}`}>
-        <p className="m-0 text-[20px] font-normal leading-[28px] md:text-[24px] md:leading-[32px]">{title}</p>
+        <p className="m-0 text-[24px] font-normal leading-[32px] md:text-[28px] md:leading-[36px]">{title}</p>
         <span
           key={merged ? "merged" : "open"}
           className={`inline-flex h-[32px] items-center gap-[4px] rounded-full px-[12px] text-[14px] font-medium leading-[20px] text-white ${
@@ -220,13 +220,15 @@ export default function ReviewThread({
                     <Octicon d={approved ? OCTICON.check : OCTICON.merge} size={10} />
                   </span>
                   <p className={`m-0 text-[14px] leading-[20px] ${GH.muted}`}>
-                    <span className={`font-medium ${GH.text}`}>{item.name}</span> {item.text}
+                    <span className={`font-semibold ${GH.text}`}>{item.name}</span> {item.text}
                   </p>
                 </div>
               </li>
             );
           }
 
+          // GitHub tints the pull request author's own comments blue
+          const author = item.who === "designer";
           const waiting = live && phase === "wait";
           const typingNow = live && phase === "type";
           const typed = done || (live && phase === "done") ? item.text : typingNow ? item.text.slice(0, chars) : "";
@@ -236,24 +238,26 @@ export default function ReviewThread({
               <div className="relative flex items-start gap-[16px]">
                 <Avatar who={item.who} size={32} />
                 <div
-                  className={`relative min-w-0 flex-1 rounded-[6px] border bg-white shadow-[0_1px_0_rgba(31,35,40,0.04),0_8px_24px_-16px_rgba(31,35,40,0.24)] transition-[border-color,box-shadow] duration-[400ms] ${
-                    waiting || typingNow ? "border-[#0969da]/50 shadow-[0_0_0_3px_rgba(9,105,218,0.12)]" : "border-[#d0d7de]"
+                  className={`relative min-w-0 flex-1 rounded-[6px] border bg-white shadow-[0_1px_0_rgba(31,35,40,0.04)] ${
+                    author ? "border-[#54aeff]/40" : "border-[#d0d7de]"
                   }`}
                 >
                   {/* The caret pointing at the avatar: a border-coloured triangle under a header-coloured one */}
                   <span
                     aria-hidden="true"
-                    className="absolute left-[-8px] top-[8px] h-0 w-0 border-y-[8px] border-r-[8px] border-y-transparent border-r-[#d0d7de]"
+                    className={`absolute left-[-8px] top-[8px] h-0 w-0 border-y-[8px] border-r-[8px] border-y-transparent ${author ? "border-r-[#54aeff]/40" : "border-r-[#d0d7de]"}`}
                   />
                   <span
                     aria-hidden="true"
-                    className="absolute left-[-6px] top-[10px] h-0 w-0 border-y-[6px] border-r-[6px] border-y-transparent border-r-[#f6f8fa]"
+                    className={`absolute left-[-6px] top-[10px] h-0 w-0 border-y-[6px] border-r-[6px] border-y-transparent ${author ? "border-r-[#ddf4ff]" : "border-r-[#f6f8fa]"}`}
                   />
                   <div
-                    className={`flex items-center justify-between gap-[12px] rounded-t-[6px] border-b px-[16px] py-[6px] text-[14px] leading-[24px] ${GH.border} ${GH.header} ${GH.muted}`}
+                    className={`flex items-center justify-between gap-[12px] rounded-t-[6px] border-b px-[16px] py-[6px] text-[14px] leading-[24px] ${GH.muted} ${
+                      author ? "border-[#54aeff]/40 bg-[#ddf4ff]" : `${GH.border} ${GH.header}`
+                    }`}
                   >
                     <p className="m-0 min-w-0">
-                    <span className={`font-medium ${GH.text}`}>{item.name}</span>{" "}
+                    <span className={`font-semibold ${GH.text}`}>{item.name}</span>{" "}
                     <span aria-hidden="true">
                       {waiting || typingNow ? (
                         <>
