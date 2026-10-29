@@ -73,23 +73,22 @@ function Overview() {
 // ─────────────────────────────────────────────────────────────────────────────
 function TheProblem() {
   return (
-    <Chapter id="the-problem" num={1} title="Small misses, slow fixes">
+    <Chapter id="the-problem" num={1} title="Two design systems that had to match">
       <Copy>
         <p>
-          Our designs were well documented, and developers built from them
-          carefully. Even so, small details got missed in the build: a padding
-          here, a core value there.
+          Every brand&apos;s design system lived in two places: our Figma
+          library and the developers&apos; coded components. Designs were well
+          documented, but small details like padding and colour values still
+          slipped between the two.
         </p>
         <p>
-          Each miss meant writing it up in a bug ticket or document and handing
-          it back. The fix then waited for a developer to pick it up, so a
-          ticket&apos;s designs took one to two weeks to land.
+          Each slip became a bug ticket that only a developer could fix.
         </p>
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Even with well-documented designs, details like padding and core values got missed in the build, and every miss went back to developers as a bug ticket."
-          consequence="Fixes waited in the developers' queue, so a ticket's designs took one to two weeks to land."
+          situation="Each brand's design system was kept twice: in Figma by designers, and in code by developers."
+          consequence="The two drifted apart, every mismatch became a bug for developers, and keeping a dozen brands consistent got slower with each change."
         />
       </Visual>
     </Chapter>
