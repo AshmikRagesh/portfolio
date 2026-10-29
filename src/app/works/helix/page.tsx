@@ -9,6 +9,7 @@ import {
   Visual,
   Figure,
   ProblemStatement,
+  NumberedPoints,
   OptionCard,
   ProsCons,
   ProcessStrip,
@@ -56,7 +57,7 @@ function Overview() {
           designs now ship in about half the time.
         </p>
         <Meta
-          role="Product Designer. One of the first designers on Helix; moved three brands onto it"
+          role="Product Designer. Tried designing with Claude Code before Helix, was one of the first designers on it, and moved three brands onto it"
           team="Ashmik Ragesh and Hriday Gami (Design), Travelopia's developers (Engineering)"
           timeline="Pilot in June 2026, rollout from July, in daily use since August"
         />
@@ -77,9 +78,10 @@ function TheProblem() {
       <Copy>
         <p>
           Every brand&apos;s design system lived in two places: our Figma
-          library and the developers&apos; coded components. Designs were well
-          documented, but small details like padding and colour values still
-          slipped between the two.
+          library and the developers&apos; coded components. Every ticket was
+          handed to developers as a Figma file. Designs were well documented,
+          but small details like padding and colour values still slipped
+          between the two.
         </p>
         <p>
           Each slip became a bug ticket that only a developer could fix.
@@ -98,24 +100,49 @@ function TheProblem() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Discovery
 // ─────────────────────────────────────────────────────────────────────────────
+const REQUIREMENTS = [
+  {
+    title: "Make the design system the only source",
+    description: "One copy per brand, in code, where it ships.",
+  },
+  {
+    title: "Write code the way our developers do",
+    description: "The same TypeScript components they already maintain.",
+  },
+  {
+    title: "Use only the brand's own parts",
+    description: "Components and tokens only, and flag a gap instead of improvising.",
+  },
+];
+
 function Discovery() {
   return (
-    <Chapter id="discovery" num={2} title="I was already designing in code">
+    <Chapter id="discovery" num={2} title="Claude Code alone wasn't enough">
       <Copy>
         <p>
-          Before Helix, I was already working this way on Enchanting Travels. I
-          created a branch, made the changes in the codebase, raised a pull
-          request, and once a developer approved it, merged it to main.
+          I started on Enchanting Travels by building with Claude Code, giving
+          it our Figma components through the Figma MCP server. The screens came
+          together fast, but they weren&apos;t consistent: spacing, colours and
+          components drifted from the system, and every build needed
+          corrections. Having the design system as a reference wasn&apos;t
+          enough. The AI had to be limited to it.
         </p>
         <p>
-          It worked. Developers reviewed real code instead of rebuilding a
-          drawing. But it depended on me knowing the codebase, and nothing
-          stopped a value that wasn&apos;t in the design system from slipping
-          in. To work for every designer and every brand, it needed guardrails.
+          <a
+            href="https://www.bill.com/engineering/how-we-made-our-design-system-bilingual"
+            target="_blank"
+            rel="noreferrer"
+          >
+            BILL&apos;s design-system team
+          </a>{" "}
+          reported the same in 2026: AI given the docs still hard-coded values
+          and built its own controls.
         </p>
+        <h3>So the fix had to do three things</h3>
+        <NumberedPoints items={REQUIREMENTS} stacked />
       </Copy>
       <Visual>
-        <Figure label="A pull request from the Enchanting Travels workflow" />
+        <Figure label="Claude Code with the Figma MCP, before Helix" />
       </Visual>
     </Chapter>
   );
