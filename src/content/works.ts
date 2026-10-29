@@ -25,7 +25,7 @@ export const featuredWorks: FeaturedWork[] = [
   {
     type: "Case study",
     discipline: "Design systems",
-    title: "Helix: keeping the TCS design system in code",
+    title: "Shipping designs in half the time with Helix",
     description:
       "A design-system skill for Claude Code that lets designers build straight from our components and tokens, so what we design is what developers ship.",
     image: "/images/works-cover.png",

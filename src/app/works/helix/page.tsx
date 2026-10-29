@@ -332,7 +332,7 @@ function Reflection() {
 export default function HelixPage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels.helix}>
-      <Hero title="One design system, built straight into the code" date="2026" />
+      <Hero title="Shipping designs in half the time with Helix" date="2026" />
       <Overview />
       <TheProblem />
       <Discovery />
