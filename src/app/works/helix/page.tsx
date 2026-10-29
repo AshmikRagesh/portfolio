@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
-import { Code, Cube, Layout, Lightbulb, ListChecks, PencilRuler, ShieldCheck, Stack } from "@phosphor-icons/react/dist/ssr";
+import { Code, ShieldCheck, Stack } from "@phosphor-icons/react/dist/ssr";
 import {
   Hero,
   Chapter,
@@ -17,6 +17,7 @@ import {
   Metrics,
   Footnote,
   NextCase,
+  SkillShowcase,
 } from "@/components/case-study";
 
 // DRAFT — angle chosen 29 Oct 2026: "build once, not twice", with Ashmik's own path
@@ -193,27 +194,22 @@ function Exploration() {
 // ─────────────────────────────────────────────────────────────────────────────
 const SKILLS = [
   {
-    icon: <Lightbulb size={28} weight="fill" className="text-grape" />,
     title: "Explorations",
     description: "Several variations of a screen, built from the brand's parts, to compare side by side.",
   },
   {
-    icon: <PencilRuler size={28} weight="fill" className="text-grape" />,
     title: "Wireframing",
     description: "A quick, low-detail structure to agree the flow before the detail.",
   },
   {
-    icon: <Layout size={28} weight="fill" className="text-grape" />,
     title: "Layout",
     description: "Pages laid out on the brand's own grid and spacing.",
   },
   {
-    icon: <Cube size={28} weight="fill" className="text-grape" />,
     title: "Build",
     description: "Components and screens in the codebase, ready for a pull request.",
   },
   {
-    icon: <ListChecks size={28} weight="fill" className="text-grape" />,
     title: "Audit",
     description: "Checks work against the design system and flags anything off-system.",
   },
@@ -230,8 +226,7 @@ function Solution() {
         </p>
       </Copy>
       <Visual>
-        <CardGrid items={SKILLS} />
-        <Figure label="Exploring variations with Helix" />
+        <SkillShowcase skills={SKILLS} />
       </Visual>
     </Chapter>
   );
