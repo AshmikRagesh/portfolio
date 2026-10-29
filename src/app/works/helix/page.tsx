@@ -16,7 +16,6 @@ import {
   Metrics,
   Footnote,
   NextCase,
-  SkillBand,
   FlowCompare,
 } from "@/components/case-study";
 
@@ -147,46 +146,50 @@ function Discovery() {
 const PAIRS = [
   {
     num: 1,
-    problem: "Two copies of each design system drifted apart, across a dozen brands",
     title: "One design system per brand, in code",
-    body: "Each brand's design system lives in Helix, written as the same TypeScript components our developers use. Designers build in it directly, so there is no second copy to drift. One skill holds every brand, and work on one brand only uses that brand's system.",
+    body: "Each brand's design system lives in Helix, written as the same TypeScript components our developers use. Designers build in it directly, so there is no second copy to drift.",
     figure: "One brand's foundations in Helix: colour, type and spacing",
   },
   {
     num: 2,
-    problem: "Padding and colour values slipped in the build",
     title: "Only the system's values",
     body: "Helix can only use the brand's own tokens and components, so every value comes out exactly as the system defines it. If a component is missing, we add it to the system first instead of improvising.",
     figure: "A component, with the token behind each value",
   },
   {
     num: 3,
-    problem: "Every miss became a bug ticket only a developer could fix",
+    title: "One skill, every brand kept separate",
+    body: "A dozen brands share one skill, but each keeps its own system. Work on TCS only uses TCS components and tokens, and work on Quark only uses Quark's.",
+    figure: "The same card, built for TCS, Quark and Kalos",
+  },
+  {
+    num: 4,
     title: "Designers fix it, developers review",
-    body: "When a designer spots a miss, they fix it in Helix and send a pull request. A developer reviews it and merges it, so a small fix no longer waits in the queue.",
+    body: "When I spot a miss, I fix it in Helix and send a pull request. A developer reviews it and merges it, so a small fix no longer waits in the queue.",
   },
 ];
 
-const FIX_BEFORE = [
-  { text: "Spot a miss", who: "Designer" },
-  { text: "Write it up in a bug ticket", who: "Designer" },
-  { text: "Wait for a developer to pick it up", who: "Developer", wait: true },
-  { text: "Fix it", who: "Developer" },
-  { text: "Check the fix", who: "Designer" },
-];
-const FIX_AFTER = [
-  { text: "Spot a miss", who: "Designer" },
-  { text: "Fix it in Helix", who: "Designer" },
-  { text: "Send a pull request", who: "Designer" },
-  { text: "Review and merge", who: "Developer" },
-];
-const SKILLS = [
-  { title: "Explorations", description: "Variations of a screen, side by side" },
-  { title: "Wireframing", description: "The flow agreed before the detail" },
-  { title: "Layout", description: "Pages on the brand's own grid" },
-  { title: "Build", description: "Components and screens, ready for a pull request" },
-  { title: "Audit", description: "Anything off-system, flagged" },
-];
+const FIX_BEFORE = {
+  label: "Before",
+  summary: "Two hand-offs and a wait",
+  steps: [
+    { text: "I spot a miss" },
+    { text: "I write it up in a bug ticket" },
+    { text: "It waits until a developer can pick it up", wait: true },
+    { text: "The developer fixes it" },
+    { text: "I check the fix" },
+  ],
+};
+const FIX_AFTER = {
+  label: "With Helix",
+  summary: "One hand-off, no wait",
+  steps: [
+    { text: "I spot a miss" },
+    { text: "I fix it in Helix" },
+    { text: "I send a pull request" },
+    { text: "A developer reviews and merges it" },
+  ],
+};
 
 function Solution() {
   return (
@@ -196,13 +199,9 @@ function Solution() {
           Each problem from earlier has its own answer in Helix.
         </p>
       </Copy>
-      {PAIRS.map(({ num, problem, title, body, figure }) => (
+      {PAIRS.map(({ num, title, body, figure }) => (
         <div key={num} className="cs-sub">
           <Copy>
-            <p className="cs-problem">
-              <span className="font-brand text-[12px] uppercase leading-[16px] text-warning">Problem</span>
-              <span>{problem}</span>
-            </p>
             <h3>
               {num}. {title}
             </h3>
@@ -212,24 +211,11 @@ function Solution() {
             {figure ? (
               <Figure name={figure} />
             ) : (
-              <FlowCompare
-                before={{ label: "Before", summary: "The fix waits in a developer's queue.", steps: FIX_BEFORE }}
-                after={{ label: "With Helix", summary: "The designer fixes it, a developer reviews it.", steps: FIX_AFTER }}
-              />
+              <FlowCompare before={FIX_BEFORE} after={FIX_AFTER} />
             )}
           </Visual>
         </div>
       ))}
-      <div className="cs-sub">
-        <Visual>
-          <SkillBand
-            command="/helix"
-            title="Day to day, the whole job happens in Helix"
-            note="Every step uses only the brand's own system."
-            skills={SKILLS}
-          />
-        </Visual>
-      </div>
     </Chapter>
   );
 }

@@ -381,13 +381,6 @@
   @media (prefers-reduced-motion: reduce) {
     .cs-fade, .cs-pop { animation: none; }
   }
-  /* The problem a solution answers — a small red label over the problem, above its h3 */
-  .cs-copy > p.cs-problem {
-    @apply mb-[12px] flex flex-col gap-[4px] font-body text-[16px] leading-[26px] text-muted md:flex-row md:items-baseline md:gap-[12px];
-  }
-  .cs-copy > p.cs-problem + h3 {
-    @apply mt-0;
-  }
   .cs-copy > .cs-closing {
     @apply mt-[32px] border-t border-line-soft pt-[28px];
   }
