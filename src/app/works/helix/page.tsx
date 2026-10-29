@@ -48,12 +48,11 @@ function Overview() {
     <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
-          Helix is a skill on Claude Code that holds the design system of every
-          Travelopia brand. Designers use it for the whole job: exploring and
-          brainstorming, wireframing, laying out pages, building screens, and
-          auditing and maintaining the system. Because we build with the same
-          components our developers use, what we design is what ships, and when
-          something&apos;s off we fix it ourselves and send it for review. Our
+          From first idea to finished screen, our designers now work in one
+          place. Helix is a skill on Claude Code that holds the design system of
+          every Travelopia brand, and it covers each step: exploring,
+          brainstorming, wireframing, layouts, building screens, and keeping the
+          system audited and up to date. What we build is what ships, and our
           designs now ship in about half the time.
         </p>
         <Meta
