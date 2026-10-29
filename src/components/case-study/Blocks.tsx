@@ -489,26 +489,6 @@ export function Timeline({ items }: { items: { title: string; description: strin
 }
 
 /**
- * Who does what — one row per role, split by hairlines: the role in small caps on the
- * left, what they do on the right. Stacks on phones.
- */
-export function Roles({ items }: { items: { role: string; does: string }[] }) {
-  return (
-    <dl className="m-0 mt-[32px] border-b border-line-soft">
-      {items.map(({ role, does }) => (
-        <div
-          key={role}
-          className="grid grid-cols-1 gap-[8px] border-t border-line-soft py-[20px] md:grid-cols-[200px_1fr] md:gap-[24px]"
-        >
-          <dt className="font-brand text-[12px] uppercase leading-[24px] text-muted">{role}</dt>
-          <dd className="m-0 font-body text-[18px] leading-[30px] text-secondary">{does}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
-/**
  * A short process as a strip of steps — white pills with a hairline border joined by
  * arrows, so the order reads at a glance. Wraps on narrow screens.
  */
