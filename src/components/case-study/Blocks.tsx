@@ -489,6 +489,23 @@ export function Timeline({ items }: { items: { title: string; description: strin
 }
 
 /**
+ * Who does what — the roles side by side as plain text on one light panel: each role's
+ * name in grape serif, what they do underneath. No cards, no labels. Stacks on phones.
+ */
+export function Roles({ items }: { items: { role: string; does: string }[] }) {
+  return (
+    <div className="mt-[32px] grid grid-cols-1 gap-[24px] rounded-[24px] bg-surface p-[24px] md:grid-cols-2 md:gap-[40px] md:p-[32px]">
+      {items.map(({ role, does }) => (
+        <div key={role} className="flex flex-col gap-[8px]">
+          <h4 className="m-0 font-heading text-[24px] font-normal leading-[32px] text-grape">{role}</h4>
+          <p className="m-0 font-body text-[18px] leading-[30px] text-secondary">{does}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/**
  * A short process as a strip of steps — white pills with a hairline border joined by
  * arrows, so the order reads at a glance. Wraps on narrow screens.
  */

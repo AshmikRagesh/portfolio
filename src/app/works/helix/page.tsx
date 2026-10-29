@@ -11,7 +11,7 @@ import {
   Figure,
   CardGrid,
   ProblemStatement,
-  ReviewLoop,
+  Roles,
   NumberedPoints,
   MoreDetail,
   RolloutTracks,
@@ -278,32 +278,16 @@ function Approach() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: How it runs today  (output: governance and adoption)
 // ─────────────────────────────────────────────────────────────────────────────
-const LOOP = {
-  stages: [
-    {
-      who: "Designers",
-      does: "Build the component or the fix in Helix, for the brands we look after, and open a pull request.",
-    },
-    {
-      who: "Developers",
-      does: "Review the pull request, then approve it or ask for changes.",
-    },
-    {
-      who: "Merged",
-      does: "From then on, every designer on that brand can use it.",
-    },
-  ] as [
-    { who: string; does: string },
-    { who: string; does: string },
-    { who: string; does: string },
-  ],
-  links: ["Pull request", "Approved"] as [string, string],
-  back: "Changes asked: back to the designer",
-  base: {
-    name: "Helix",
-    text: "Under every step. A developer looks after it, so the code it writes keeps matching the developers' codebase.",
+const ROLES = [
+  {
+    role: "Designers",
+    does: "Build the change in Helix and open a pull request.",
   },
-};
+  {
+    role: "Developers",
+    does: "Review it, then approve it or ask for changes. One of them looks after Helix itself.",
+  },
+];
 
 function Output() {
   return (
@@ -311,13 +295,11 @@ function Output() {
       <Copy>
         <p>
           A design system only stays right if every change to it is checked.
-          In Helix, designers make the change and developers check it. New
-          components and fixes take the same path.
+          New components and fixes go through the same review, and once a
+          change is merged, every designer on that brand can use it.
         </p>
+        <Roles items={ROLES} />
       </Copy>
-      <Visual>
-        <ReviewLoop {...LOOP} />
-      </Visual>
       <div className="cs-sub">
         <Copy>
           <h3>In use on every brand</h3>
