@@ -56,7 +56,7 @@ function Overview() {
         </p>
         <Meta
           role="Product Designer. One of the first designers on Helix; moved three brands onto it"
-          team="Designers across Travelopia's brands, and the developer who built and maintains Helix"
+          team="Ashmik Ragesh and Hriday Gami (Design), Travelopia's developers (Engineering)"
           timeline="Pilot in June 2026, rollout from July, in daily use since August"
         />
       </Copy>
