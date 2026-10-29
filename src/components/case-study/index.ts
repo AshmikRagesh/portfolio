@@ -6,7 +6,7 @@ export { default as PreviewLink } from "./PreviewLink";
 export { default as NextCase } from "./NextCase";
 export { VariantProvider, VariantFigure } from "./VariantSwitch";
 export { default as RolloutTracks } from "./RolloutTracks";
-export { default as ReviewThread } from "./ReviewThread";
+export { default as ReviewThread, type ThreadItem } from "./ReviewThread";
 export {
   Copy,
   Lead,

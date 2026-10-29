@@ -12,6 +12,7 @@ import {
   CardGrid,
   ProblemStatement,
   ReviewThread,
+  type ThreadItem,
   ProcessRail,
   NumberedPoints,
   MoreDetail,
@@ -279,31 +280,44 @@ function Approach() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Who keeps it right  (output: governance and adoption)
 // ─────────────────────────────────────────────────────────────────────────────
-const THREAD = [
+const THREAD: ThreadItem[] = [
   {
-    from: "Designer",
-    role: "designer" as const,
-    text: "I've built the change in Helix and opened a pull request. Could you take a look?",
+    kind: "comment",
+    who: "designer",
+    name: "Designer",
+    verb: "opened a pull request",
+    text: "Built the new component in Helix, using the brand's own tokens and components. Ready for review.",
   },
   {
-    from: "Developer",
-    role: "developer" as const,
-    text: "Reviewed. It's approved, or I'll ask for changes before it goes in.",
+    kind: "comment",
+    who: "developer",
+    name: "Developer",
+    verb: "reviewed",
+    text: "Checked it against our codebase. Looks good to me 👍",
   },
+  { kind: "event", icon: "approved", name: "Developer", text: "approved these changes" },
+  { kind: "event", icon: "merged", name: "Designer", text: "merged into main" },
 ];
 
-const CHANGE_PATH = ["A ticket needs it", "Built in Helix", "Developers review", "Merged for the brand"];
+const CHANGE_PATH = [
+  { title: "Needed", text: "A ticket calls for a new component or a fix" },
+  { title: "Built", text: "Made in Helix and sent as a pull request" },
+  { title: "Reviewed", text: "Developers approve it or ask for changes" },
+  { title: "Merged", text: "Ready for every designer on that brand" },
+];
 
 function Output() {
   return (
     <Chapter id="output" num={5} title="Who keeps it right">
       <Copy>
         <p>
-          A design system only stays right if every change to it is checked.
-          In Helix, designers make the change and developers check it, for new
-          components and fixes alike.
+          Helix keeps every brand consistent because nothing goes in unchecked.
+          Each new component or fix is built by a designer and sent as a pull
+          request. The brand&apos;s developers review it against their codebase
+          and approve it or ask for changes. Once it&apos;s merged into main,
+          every designer on that brand can use it.
         </p>
-        <ReviewThread messages={THREAD} />
+        <ReviewThread items={THREAD} />
         <ProcessRail steps={CHANGE_PATH} />
       </Copy>
       <div className="cs-sub">

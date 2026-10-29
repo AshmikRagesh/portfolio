@@ -488,29 +488,27 @@ export function Timeline({ items }: { items: { title: string; description: strin
   );
 }
 
+// Each step's segment is a shade darker than the last: light grape to Blackcurrant
+const RAIL_TONE = ["bg-grape-light", "bg-grape/40", "bg-grape", "bg-primary"];
+
 /**
- * A short process drawn minimally: dots on one thin grape line, a label under each. The
- * last dot is the dark primary (where the change ends up). Four steps fit in a row even on
- * phones; labels wrap.
+ * A short process as a segmented track: one solid segment per step, each darker than the
+ * last, with the step's name and a line under it. Made for four steps: from md they sit in a row; on
+ * phones each step is a row of its own, its segment a short bar down the left.
  */
-export function ProcessRail({ steps }: { steps: string[] }) {
+export function ProcessRail({ steps }: { steps: { title: string; text: string }[] }) {
   return (
-    <ol
-      className="relative m-0 mt-[48px] grid list-none p-0"
-      style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }}
-    >
-      <span
-        aria-hidden="true"
-        className="absolute top-[6px] h-[2px] -translate-y-1/2 bg-grape/40"
-        style={{ left: `${50 / steps.length}%`, right: `${50 / steps.length}%` }}
-      />
+    <ol className="m-0 mt-[64px] grid list-none grid-cols-1 gap-[16px] p-0 font-geist md:mt-[80px] md:grid-cols-4 md:gap-[8px]">
       {steps.map((step, i) => (
-        <li key={step} className="relative flex flex-col items-center gap-[12px] px-[4px] text-center">
+        <li key={step.title} className="flex gap-[16px] md:flex-col md:gap-[16px]">
           <span
             aria-hidden="true"
-            className={`h-[12px] w-[12px] rounded-full ring-4 ring-white ${i === steps.length - 1 ? "bg-primary" : "bg-grape"}`}
+            className={`w-[4px] shrink-0 rounded-full md:h-[8px] md:w-full ${RAIL_TONE[Math.min(i, RAIL_TONE.length - 1)]}`}
           />
-          <span className="font-body text-[16px] leading-[24px] text-secondary">{step}</span>
+          <div className="flex flex-col gap-[4px]">
+            <span className="text-[16px] font-medium leading-[24px] text-heading">{step.title}</span>
+            <span className="text-[14px] leading-[22px] text-secondary">{step.text}</span>
+          </div>
         </li>
       ))}
     </ol>
