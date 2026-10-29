@@ -34,7 +34,7 @@ const Svg = ({ size = 20, children }: { size?: number; children: React.ReactNode
 );
 const PlayIcon = ({ size }: { size?: number }) => (
   <Svg size={size}>
-    <path d="M7.5 5.6v12.8a1.1 1.1 0 0 0 1.66.94l10.4-6.4a1.1 1.1 0 0 0 0-1.88l-10.4-6.4A1.1 1.1 0 0 0 7.5 5.6Z" fill="currentColor" stroke="none" />
+    <path d="M6.6 5.6v12.8a1.1 1.1 0 0 0 1.66.94l10.4-6.4a1.1 1.1 0 0 0 0-1.88l-10.4-6.4A1.1 1.1 0 0 0 6.6 5.6Z" fill="currentColor" stroke="none" />
   </Svg>
 );
 const PauseIcon = ({ size }: { size?: number }) => (
@@ -336,7 +336,7 @@ function Player({
               expanded ? "h-[80px] w-[80px]" : "h-[64px] w-[64px]"
             } ${playing ? (active ? "opacity-100" : "pointer-events-none opacity-0") : "opacity-100"}`}
           >
-            {playing ? <PauseIcon size={expanded ? 32 : 28} /> : <span className="translate-x-[2px]"><PlayIcon size={expanded ? 32 : 28} /></span>}
+            {playing ? <PauseIcon size={expanded ? 32 : 28} /> : <PlayIcon size={expanded ? 32 : 28} />}
           </button>
         )}
       </div>
@@ -375,7 +375,9 @@ function Player({
         </div>
 
         <div className="flex items-center gap-[2px] font-geist">
-          {/* Play and pause live in the centre of the frame only */}
+          <button type="button" onClick={toggle} aria-label={playing ? "Pause" : "Play"} className={ICON_BTN}>
+            {playing ? <PauseIcon /> : <PlayIcon />}
+          </button>
           {narrated && (
             <button type="button" onClick={() => setMuted((m) => !m)} aria-label={muted ? "Turn sound on" : "Turn sound off"} className={ICON_BTN}>
               {muted ? <SoundOffIcon /> : <SoundOnIcon />}

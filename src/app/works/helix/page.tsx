@@ -12,6 +12,8 @@ import {
   CardGrid,
   ProblemStatement,
   ProcessStrip,
+  NumberedPoints,
+  MoreDetail,
   RolloutTracks,
   Metrics,
   Footnote,
@@ -197,64 +199,62 @@ function Solution() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Approach  (how it was rolled out without pausing live work)
 // ─────────────────────────────────────────────────────────────────────────────
+const ROLLOUT = [
+  {
+    title: "Live work never stopped",
+    description:
+      "Tickets kept coming in, so we couldn't pause to migrate every component from Figma at once. Helix went in alongside the live work.",
+  },
+  {
+    title: "Foundations first, for every brand",
+    description: "Every brand's primary tokens and values went in first, exactly right, before any component.",
+  },
+  {
+    title: "Existing components when there was time",
+    description: "Components we already had moved from Figma into Helix between tickets. My three brands took about a month.",
+  },
+  {
+    title: "New components as tickets needed them",
+    description:
+      "When a ticket needed something new, we built it on the foundations, shared it with a developer for review as a pull request, and merged it to main.",
+  },
+  {
+    title: "Every ticket in Helix",
+    description: "From August, nothing new was designed in Figma. Today every brand's design system is in good shape.",
+  },
+];
+
 const MONTHS = ["Jun", "Jul", "Aug", "Sep"];
 
 const TRACKS = [
   {
-    title: "Live tickets, the whole way through",
-    note: "Work never stopped. New components were built in Helix as each ticket needed them.",
+    title: "Live tickets",
     kind: "tickets" as const,
     start: 0.1,
     end: 4,
     stops: [
-      { at: 0.2, label: "Find a Trip for TCS: my first Helix ticket" },
-      { at: 1.05, label: "Quark cabin lightbox: explored in Helix" },
-      { at: 3.1, label: "TCS form dropdowns: reused the existing combobox" },
+      { at: 0.25, label: "Find a Trip for TCS, my first Helix ticket" },
+      { at: 1.05, label: "Quark cabin lightbox, explored in Helix" },
+      { at: 3.1, label: "TCS form dropdowns, reusing the existing combobox" },
     ],
   },
-  {
-    title: "Foundations for every brand",
-    note: "All the primary tokens and values, exactly right, before any component.",
-    kind: "solid" as const,
-    start: 1,
-    end: 1.9,
-  },
-  {
-    title: "Existing components, when there was time",
-    note: "Moved from Figma into Helix between tickets. My three brands took about a month.",
-    kind: "soft" as const,
-    start: 1.5,
-    end: 2.9,
-  },
-  {
-    title: "Every new ticket in Helix",
-    note: "From August on, nothing new was designed in Figma.",
-    kind: "open" as const,
-    start: 2,
-    end: 4,
-  },
+  { title: "Foundations", kind: "solid" as const, start: 1, end: 1.9, bar: "Every brand" },
+  { title: "Existing components", kind: "soft" as const, start: 1.5, end: 2.9, bar: "When there was time" },
+  { title: "New tickets in Helix", kind: "open" as const, start: 2, end: 4, bar: "All of them" },
 ];
 
 function Approach() {
   return (
     <Chapter id="approach" num={4} title="How we rolled it out">
       <Copy>
-        <p>
-          Tickets kept coming in, so we couldn&apos;t stop to migrate every
-          component from Figma at once. We built Helix up from the bottom,
-          alongside the live work.
-        </p>
-      </Copy>
-      <Visual>
-        <RolloutTracks months={MONTHS} tracks={TRACKS} />
-      </Visual>
-      <Copy>
-        <p>
-          Getting the foundations right first is what made the rest possible.
-          Whenever a ticket needed a new component, we built it straight on them,
-          reviewed it with a developer and merged it to main. Today every
-          brand&apos;s design system is in good shape.
-        </p>
+        <NumberedPoints items={ROLLOUT} stacked />
+        <MoreDetail label="The rollout, month by month" className="mt-[32px]">
+          <RolloutTracks
+            months={MONTHS}
+            tracks={TRACKS}
+            milestone={{ at: 2, label: "August: every new ticket designed in Helix" }}
+          />
+        </MoreDetail>
       </Copy>
     </Chapter>
   );
