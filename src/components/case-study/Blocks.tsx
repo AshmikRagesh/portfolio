@@ -1,4 +1,4 @@
-import { ArrowRight, Check, X } from "lucide-react";
+import { ArrowRight, Check, Hourglass, X } from "lucide-react";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
 import ImagePlaceholder from "./ImagePlaceholder";
@@ -570,36 +570,63 @@ export function ImpactList({ items }: { items: string[] }) {
   );
 }
 
+type FlowStep = { text: string; who: string; wait?: boolean };
+
 /**
- * The same task, before and after — two rows of steps. Before is a muted card with red-marked
- * steps; after is a soft green card with green ones (green worked, red didn't). Steps wrap.
+ * The same task, before and after, as two vertical step lists side by side (stacked on
+ * phones). Each step is a numbered node on a line, the step, and who does it. A `wait` step
+ * gets an hourglass and a long dashed line to show the time lost. Before sits on white with
+ * red marks; after on soft green with green ones — green worked, red didn't.
  */
 export function FlowCompare({
   before,
   after,
 }: {
-  before: { label: string; steps: string[] };
-  after: { label: string; steps: string[] };
+  before: { label: string; summary: string; steps: FlowStep[] };
+  after: { label: string; summary: string; steps: FlowStep[] };
 }) {
-  const rows = [
-    { ...before, box: "border border-line-soft bg-white", tone: "con" as const },
-    { ...after, box: "bg-success-bg", tone: "pro" as const },
+  const sides = [
+    { ...before, good: false, box: "bg-white ring-1 ring-line-soft", node: "bg-warning", line: "bg-line" },
+    { ...after, good: true, box: "bg-success-bg", node: "bg-success", line: "bg-success/40" },
   ];
   return (
-    <div className="flex flex-col gap-[16px]">
-      {rows.map(({ label, steps, box, tone }) => (
-        <div key={label} className={`flex flex-col gap-[16px] rounded-[16px] p-[20px] md:p-[24px] ${box}`}>
-          <span className="font-brand text-[12px] uppercase leading-[16px] text-muted">{label}</span>
-          <ol className="m-0 flex list-none flex-wrap items-center gap-x-[8px] gap-y-[12px] p-0">
-            {steps.map((step, i) => (
-              <li key={step} className="flex items-center gap-[8px]">
-                <span className="inline-flex items-center gap-[8px] rounded-full border border-line bg-white py-[6px] pl-[8px] pr-[14px] font-body text-[16px] leading-[24px] text-heading">
-                  <Mark tone={tone}>{tone === "pro" ? <Check size={14} strokeWidth={2.5} /> : <X size={14} strokeWidth={2.5} />}</Mark>
-                  {step}
-                </span>
-                {i < steps.length - 1 && <ArrowRight size={16} aria-hidden="true" className="shrink-0 text-muted" />}
-              </li>
-            ))}
+    <div className="grid grid-cols-1 gap-[16px] md:grid-cols-2 md:gap-[24px]">
+      {sides.map(({ label, summary, steps, good, box, node, line }) => (
+        <div key={label} className={`flex flex-col gap-[24px] rounded-[16px] p-[24px] md:p-[32px] ${box}`}>
+          <div className="flex flex-col gap-[8px]">
+            <span className="flex items-center gap-[8px] font-brand text-[12px] uppercase leading-[16px] text-muted">
+              <Mark tone={good ? "pro" : "con"}>{good ? <Check size={14} strokeWidth={2.5} /> : <X size={14} strokeWidth={2.5} />}</Mark>
+              {label}
+            </span>
+            <p className="m-0 font-heading text-[22px] leading-[30px] tracking-[0px] text-heading md:text-[24px] md:leading-[32px]">
+              {summary}
+            </p>
+          </div>
+          <ol className="m-0 flex list-none flex-col p-0">
+            {steps.map(({ text, who, wait }, i) => {
+              const last = i === steps.length - 1;
+              return (
+                <li key={text} className="grid grid-cols-[24px_minmax(0,1fr)] gap-x-[16px]">
+                  <div className="flex flex-col items-center">
+                    <span
+                      className={`flex size-[24px] shrink-0 items-center justify-center rounded-full font-brand text-[12px] leading-none text-white ${node}`}
+                    >
+                      {wait ? <Hourglass size={12} strokeWidth={2.5} aria-hidden="true" /> : i + 1}
+                    </span>
+                    {!last && (
+                      <span
+                        aria-hidden="true"
+                        className={`w-[2px] flex-1 ${wait ? "my-[4px] min-h-[56px] bg-[repeating-linear-gradient(to_bottom,currentColor_0_4px,transparent_4px_8px)] text-warning/60" : `min-h-[16px] ${line}`}`}
+                      />
+                    )}
+                  </div>
+                  <div className={`flex flex-wrap items-center gap-x-[12px] gap-y-[4px] self-start ${last ? "" : "pb-[16px]"}`}>
+                    <span className="font-body text-[16px] leading-[24px] text-heading md:text-[18px] md:leading-[24px]">{text}</span>
+                    <Tag tone={who === "Developer" ? "grey" : "grape"}>{who}</Tag>
+                  </div>
+                </li>
+              );
+            })}
           </ol>
         </div>
       ))}

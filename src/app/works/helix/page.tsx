@@ -147,9 +147,9 @@ function Discovery() {
 const PAIRS = [
   {
     num: 1,
-    problem: "Two copies of each design system drifted apart",
+    problem: "Two copies of each design system drifted apart, across a dozen brands",
     title: "One design system per brand, in code",
-    body: "Each brand's design system lives in Helix, and designers build in it directly. There is no second copy to keep in step, so there is nothing to drift.",
+    body: "Each brand's design system lives in Helix, written as the same TypeScript components our developers use. Designers build in it directly, so there is no second copy to drift. One skill holds every brand, and work on one brand only uses that brand's system.",
     figure: "One brand's foundations in Helix: colour, type and spacing",
   },
   {
@@ -161,29 +161,25 @@ const PAIRS = [
   },
   {
     num: 3,
-    problem: "Claude Code with the Figma MCP still drifted",
-    title: "Code the way our developers write it",
-    body: "A developer built Helix and maintains it, so it writes the same TypeScript web components our developers use and follows their best practices.",
-    figure: "A component next to its code",
-  },
-  {
-    num: 4,
     problem: "Every miss became a bug ticket only a developer could fix",
     title: "Designers fix it, developers review",
     body: "When a designer spots a miss, they fix it in Helix and send a pull request. A developer reviews it and merges it, so a small fix no longer waits in the queue.",
   },
-  {
-    num: 5,
-    problem: "A dozen brands to keep consistent",
-    title: "One skill, each brand kept separate",
-    body: "Every Travelopia brand lives in one skill, and work on one brand only uses that brand's system. TCS stays TCS, and Quark stays Quark.",
-    figure: "The same card, built for TCS, Quark and Kalos",
-  },
 ];
 
-const FIX_BEFORE = ["Spot a miss", "Write a bug ticket", "Wait for a developer", "Check the fix"];
-const FIX_AFTER = ["Spot a miss", "Fix it in Helix", "Pull request", "Developer review", "Merge"];
-
+const FIX_BEFORE = [
+  { text: "Spot a miss", who: "Designer" },
+  { text: "Write it up in a bug ticket", who: "Designer" },
+  { text: "Wait for a developer to pick it up", who: "Developer", wait: true },
+  { text: "Fix it", who: "Developer" },
+  { text: "Check the fix", who: "Designer" },
+];
+const FIX_AFTER = [
+  { text: "Spot a miss", who: "Designer" },
+  { text: "Fix it in Helix", who: "Designer" },
+  { text: "Send a pull request", who: "Designer" },
+  { text: "Review and merge", who: "Developer" },
+];
 const SKILLS = [
   { title: "Explorations", description: "Variations of a screen, side by side" },
   { title: "Wireframing", description: "The flow agreed before the detail" },
@@ -197,9 +193,7 @@ function Solution() {
     <Chapter id="solution" num={3} title="How Helix solves it">
       <Copy>
         <p>
-          Each problem from earlier has its own answer in Helix. Together they
-          meet the three needs: one source, our developers&apos; code, and
-          nothing off-system.
+          Each problem from earlier has its own answer in Helix.
         </p>
       </Copy>
       {PAIRS.map(({ num, problem, title, body, figure }) => (
@@ -219,8 +213,8 @@ function Solution() {
               <Figure name={figure} />
             ) : (
               <FlowCompare
-                before={{ label: "Before", steps: FIX_BEFORE }}
-                after={{ label: "With Helix", steps: FIX_AFTER }}
+                before={{ label: "Before", summary: "The fix waits in a developer's queue.", steps: FIX_BEFORE }}
+                after={{ label: "With Helix", summary: "The designer fixes it, a developer reviews it.", steps: FIX_AFTER }}
               />
             )}
           </Visual>
