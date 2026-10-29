@@ -16,7 +16,7 @@ import {
   NumberedPoints,
   MoreDetail,
   RolloutTracks,
-  Metrics,
+  BeforeAfter,
   Footnote,
   NextCase,
 } from "@/components/case-study";
@@ -340,10 +340,15 @@ function Output() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Where it stands  (outcome)
 // ─────────────────────────────────────────────────────────────────────────────
-const RESULTS = [
-  { stat: "~½", label: "the time to deliver a ticket's designs" },
-  { stat: "1 month", label: "to move three brands' components into Helix" },
-  { stat: "Every", label: "new ticket since August built in Helix" },
+const DELIVERY = [
+  { label: "Before Helix", value: "1–2 weeks", share: 1, tone: "before" as const },
+  { label: "With Helix", value: "About half", share: 0.5, tone: "after" as const },
+];
+
+const CHANGED_FOR = [
+  { who: "Designers", what: "Fix a miss themselves in Helix, instead of filing a bug and waiting." },
+  { who: "Developers", what: "Review working code built from their own components, instead of rebuilding a design." },
+  { who: "Brands", what: "Every brand's design system is in Helix, and every new ticket is built in it." },
 ];
 
 function Outcome() {
@@ -356,19 +361,19 @@ function Outcome() {
           Enchanting Travels.
         </p>
         <p>
-          Tickets that took one to two weeks to deliver now take about half
-          that. New work reuses what&apos;s already there: the country and state
-          dropdowns for the TCS forms reused the existing combobox component
-          instead of a new design.
+          The biggest change is time. A ticket&apos;s designs used to take one to
+          two weeks to deliver; now they take about half that. New work also
+          reuses what&apos;s already there: the country and state dropdowns for
+          the TCS forms reused the existing combobox component instead of a new
+          design.
         </p>
-      </Copy>
-      <Visual>
-        <Metrics items={RESULTS} />
+        <BeforeAfter rows={DELIVERY} groups={CHANGED_FOR} />
         <Footnote>
           Delivery time is my own estimate across my tickets, not a tracked
-          measure.
+          measure. Next, we&apos;d measure design bugs per release and review
+          time per pull request.
         </Footnote>
-      </Visual>
+      </Copy>
     </Chapter>
   );
 }
