@@ -213,15 +213,15 @@ export default function ReviewThread({
             return (
               <li key={item.text} className={`relative py-[16px] ${fade}`}>
                 {link}
-                <div className="relative flex items-center gap-[12px] pl-[52px]">
+                <div className="relative flex items-center gap-[12px] pl-[54px]">
                   <span
-                    className={`flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full text-white ring-2 ring-surface transition-transform delay-[100ms] duration-[500ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+                    className={`flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-white ring-2 ring-surface transition-transform delay-[100ms] duration-[500ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
                       done || live ? "scale-100" : "scale-50"
                     } ${
                       approved ? GH.green : GH.purple
                     }`}
                   >
-                    <Octicon d={approved ? OCTICON.check : OCTICON.merge} size={14} />
+                    <Octicon d={approved ? OCTICON.check : OCTICON.merge} size={12} />
                   </span>
                   <p className={`m-0 text-[14px] leading-[20px] ${GH.muted}`}>
                     <span className={`font-semibold ${GH.text}`}>{item.name}</span>{" "}
