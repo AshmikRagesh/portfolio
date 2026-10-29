@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
+import { Code, Cube, Layout, Lightbulb, ListChecks, PencilRuler, ShieldCheck, Stack } from "@phosphor-icons/react/dist/ssr";
 import {
   Hero,
   Chapter,
@@ -8,6 +9,7 @@ import {
   Meta,
   Visual,
   Figure,
+  CardGrid,
   ProblemStatement,
   NumberedPoints,
   ProcessStrip,
@@ -100,14 +102,17 @@ function TheProblem() {
 // ─────────────────────────────────────────────────────────────────────────────
 const REQUIREMENTS = [
   {
+    icon: <Stack size={28} weight="fill" className="text-grape" />,
     title: "One source",
     description: "Each brand's design system lives once, in code.",
   },
   {
+    icon: <Code size={28} weight="fill" className="text-grape" />,
     title: "Developers' code",
     description: "The same TypeScript components they maintain.",
   },
   {
+    icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
     title: "Nothing off-system",
     description: "Only the brand's components and tokens.",
   },
@@ -126,9 +131,9 @@ function Discovery() {
           enough. The AI had to be limited to it.
         </p>
         <h3>What the fix needed</h3>
-        <NumberedPoints items={REQUIREMENTS} stacked />
       </Copy>
       <Visual>
+        <CardGrid items={REQUIREMENTS} />
         <Figure label="Claude Code with the Figma MCP, before Helix" />
       </Visual>
     </Chapter>
@@ -186,28 +191,46 @@ function Exploration() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Solution
 // ─────────────────────────────────────────────────────────────────────────────
+const SKILLS = [
+  {
+    icon: <Lightbulb size={28} weight="fill" className="text-grape" />,
+    title: "Explorations",
+    description: "Several variations of a screen, built from the brand's parts, to compare side by side.",
+  },
+  {
+    icon: <PencilRuler size={28} weight="fill" className="text-grape" />,
+    title: "Wireframing",
+    description: "A quick, low-detail structure to agree the flow before the detail.",
+  },
+  {
+    icon: <Layout size={28} weight="fill" className="text-grape" />,
+    title: "Layout",
+    description: "Pages laid out on the brand's own grid and spacing.",
+  },
+  {
+    icon: <Cube size={28} weight="fill" className="text-grape" />,
+    title: "Build",
+    description: "Components and screens in the codebase, ready for a pull request.",
+  },
+  {
+    icon: <ListChecks size={28} weight="fill" className="text-grape" />,
+    title: "Audit",
+    description: "Checks work against the design system and flags anything off-system.",
+  },
+];
+
 function Solution() {
   return (
-    <Chapter id="solution" num={4} title="How Helix works">
+    <Chapter id="solution" num={4} title="A skill for every step">
       <Copy>
         <p>
-          A developer built Helix and keeps it up to date, so the code it writes
-          matches the codebase and language our developers use. Whoever uses it
-          can only reach for the brand&apos;s components, tokens and primitives,
-          so anything new follows that brand&apos;s design system.
-        </p>
-        <p>
-          It covers the whole design process, not just the build. It has skills
-          for exploring variations, wireframing, laying out pages and auditing
-          the design system.
-        </p>
-        <p>
-          For developers, the change is that a pull request arrives as working
-          code made from components they already know. They review it and fix
-          it where needed, instead of measuring a file and starting again.
+          Designers call Helix with <code>/helix</code> in Claude Code. It
+          isn&apos;t only for the build: it has a skill for each step of the
+          work, and every one of them uses the brand&apos;s own system.
         </p>
       </Copy>
       <Visual>
+        <CardGrid items={SKILLS} />
         <Figure label="Exploring variations with Helix" />
       </Visual>
     </Chapter>
