@@ -95,11 +95,13 @@ const STEP_TONE = ["bg-grape-light", "bg-grape/40", "bg-grape", "bg-primary"];
 
 export default function ReviewThread({
   title,
+  number,
   branch,
   items,
   steps,
 }: {
   title: string;
+  number: number;
   branch: string;
   items: ThreadItem[];
   steps: { title: string; text: string }[];
@@ -167,7 +169,9 @@ export default function ReviewThread({
     <div ref={ref} className={`mt-[40px] font-geist ${GH.text}`}>
       {/* The pull request's title and state */}
       <div className={`flex flex-col items-start gap-[12px] border-b pb-[16px] ${GH.border}`}>
-        <p className="m-0 text-[24px] font-normal leading-[32px] md:text-[28px] md:leading-[36px]">{title}</p>
+        <p className="m-0 text-[24px] font-normal leading-[32px] md:text-[28px] md:leading-[36px]">
+          {title} <span className={`font-light ${GH.muted}`}>#{number}</span>
+        </p>
         <span
           key={merged ? "merged" : "open"}
           className={`inline-flex h-[32px] items-center gap-[4px] rounded-full px-[12px] text-[14px] font-medium leading-[20px] text-white ${
@@ -209,18 +213,29 @@ export default function ReviewThread({
             return (
               <li key={item.text} className={`relative py-[16px] ${fade}`}>
                 {link}
-                <div className="relative flex items-center gap-[12px] pl-[54px]">
+                <div className="relative flex items-center gap-[12px] pl-[52px]">
                   <span
-                    className={`flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-white ring-4 ring-surface transition-transform delay-[100ms] duration-[500ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+                    className={`flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full text-white ring-2 ring-surface transition-transform delay-[100ms] duration-[500ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
                       done || live ? "scale-100" : "scale-50"
                     } ${
                       approved ? GH.green : GH.purple
                     }`}
                   >
-                    <Octicon d={approved ? OCTICON.check : OCTICON.merge} size={10} />
+                    <Octicon d={approved ? OCTICON.check : OCTICON.merge} size={14} />
                   </span>
                   <p className={`m-0 text-[14px] leading-[20px] ${GH.muted}`}>
-                    <span className={`font-semibold ${GH.text}`}>{item.name}</span> {item.text}
+                    <span className={`font-semibold ${GH.text}`}>{item.name}</span>{" "}
+                    {/* A commit hash shows in GitHub's bold mono */}
+                    {item.text.split(/\b([0-9a-f]{7})\b/).map((part, j) =>
+                      j % 2 ? (
+                        <code key={j} className={`font-mono text-[12px] font-semibold ${GH.text}`}>
+                          {part}
+                        </code>
+                      ) : (
+                        part
+                      ),
+                    )}{" "}
+                    <span className="whitespace-nowrap">just now</span>
                   </p>
                 </div>
               </li>

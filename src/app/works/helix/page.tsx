@@ -295,7 +295,7 @@ const THREAD: ThreadItem[] = [
     text: "Checked it against our codebase. Looks good to me 👍",
   },
   { kind: "event", icon: "approved", who: "developer", name: "Developer", text: "approved these changes" },
-  { kind: "event", icon: "merged", who: "designer", name: "Designer", text: "merged into main" },
+  { kind: "event", icon: "merged", who: "designer", name: "Designer", text: "merged commit 4f2a9c1 into main" },
 ];
 
 const CHANGE_PATH = [
@@ -316,7 +316,7 @@ function Output() {
           and approve it or ask for changes. Once it&apos;s merged into main,
           every designer on that brand can use it.
         </p>
-        <ReviewThread title="feat(tcs): add filter chips component" branch="feat/tcs-filter-chips" items={THREAD} steps={CHANGE_PATH} />
+        <ReviewThread title="feat: add a new component to the design system" number={482} branch="feat/new-component" items={THREAD} steps={CHANGE_PATH} />
       </Copy>
       <div className="cs-sub">
         <Copy>
