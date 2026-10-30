@@ -1,32 +1,33 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { FeaturedCard } from "@/components/Works";
 import { nextWorks, roomFor } from "@/content/works";
 
 /**
- * The end of every case study: the next two case studies on the homepage, side by side as
- * the homepage's own work cards (in their "standard" shape, keys and room numbers kept),
- * under a heading with a link back to all the work. From lg the pair splits the 1000px
- * Visual into 480px + 40px + 480px; below that they stack.
+ * The end of every case study: the next two case studies on the homepage, as the doors
+ * further down the hall. A dark Blackcurrant panel holds a short heading and a link back
+ * to all the work, then one wide row per case study: its cover, its room number and its
+ * title, with an arrow. Hovering a row lifts its cover a touch, lights the row and slides
+ * the arrow. From md the cover sits beside the text; on phones it sits on top.
  */
 export default function NextCase({ current }: { current: string }) {
   const works = nextWorks(current);
   return (
     <section className="cs-chapter" aria-labelledby="next-case-study">
-      <div className="cs-visual !mb-0 border-t border-line-soft pt-[40px] md:pt-[48px]">
+      <div className="cs-visual !mb-0 overflow-hidden rounded-[24px] bg-primary p-[24px] text-white md:p-[40px]">
         <div className="flex flex-col gap-[16px] md:flex-row md:items-end md:justify-between">
-          <div className="flex flex-col gap-[12px]">
-            <p className="font-brand text-[12px] uppercase leading-[16px] text-muted">Next case studies</p>
+          <div className="flex flex-col gap-[8px]">
+            <p className="m-0 font-body text-[14px] leading-[20px] text-white/60">Keep reading</p>
             <h2
               id="next-case-study"
-              className="m-0 font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[42px] md:leading-[44px]"
+              className="m-0 font-heading text-[34px] font-normal leading-[40px] tracking-[-2px] text-white md:text-[42px] md:leading-[48px]"
             >
               Down the hall
             </h2>
           </div>
           <Link
             href="/#works"
-            className="group inline-flex items-center gap-[8px] self-start font-brand text-[12px] uppercase leading-[16px] text-heading underline-offset-4 hover:underline md:self-auto"
+            className="group inline-flex items-center gap-[8px] self-start font-body text-[16px] leading-[24px] text-white/80 underline-offset-4 hover:text-white hover:underline md:self-auto"
           >
             All work
             <ArrowRight
@@ -36,11 +37,40 @@ export default function NextCase({ current }: { current: string }) {
             />
           </Link>
         </div>
-        <div className="mt-[8px] grid grid-cols-1 gap-[32px] lg:grid-cols-2 lg:gap-[40px]">
+
+        <ul className="m-0 mt-[32px] flex list-none flex-col p-0 md:mt-[40px]">
           {works.map((work) => (
-            <FeaturedCard key={work.href} work={{ ...work, layout: "standard" }} room={roomFor(work)} />
+            <li key={work.href} className="border-t border-white/10">
+              <Link
+                href={work.href}
+                className="group grid grid-cols-1 gap-[16px] rounded-[16px] py-[24px] transition-colors duration-[260ms] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape-light md:-mx-[16px] md:grid-cols-[240px_1fr_auto] md:items-center md:gap-[32px] md:px-[16px] md:hover:bg-white/5"
+              >
+                <span className="relative block h-[168px] overflow-hidden rounded-[12px] bg-white/10 md:h-[144px]">
+                  <Image
+                    src={work.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 240px, 100vw"
+                    style={{ objectPosition: work.imagePosition ?? "center" }}
+                    className="object-cover transition-transform duration-[500ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  />
+                </span>
+                <span className="flex flex-col gap-[8px]">
+                  <span className="font-body text-[14px] leading-[20px] text-grape-light">Room {roomFor(work)}</span>
+                  <span className="text-balance font-heading text-[24px] leading-[32px] text-white md:text-[28px] md:leading-[36px]">
+                    {work.title}
+                  </span>
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="hidden h-[48px] w-[48px] items-center justify-center rounded-full border border-white/20 transition-[transform,background-color,border-color,color] duration-[260ms] group-hover:translate-x-[4px] group-hover:border-white group-hover:bg-white group-hover:text-primary motion-reduce:transition-none md:flex"
+                >
+                  <ArrowRight size={20} />
+                </span>
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );
