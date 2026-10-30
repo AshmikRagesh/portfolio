@@ -15,7 +15,7 @@ import {
   type ThreadItem,
   NumberedPoints,
   MoreDetail,
-  RolloutTracks,
+  RolloutPhases,
   BeforeAfter,
   ComponentCount,
   Pointers,
@@ -227,36 +227,31 @@ const ROLLOUT = [
   },
 ];
 
-const MONTHS = ["Jun", "Jul", "Aug", "Sep", "Oct"];
-
-// Today, as a position on that axis (30 October)
-const NOW = 4 + 29 / 31;
-
-const LANES = [
+// The rollout in phases. `helix` is an illustrative count of 12 new tickets designed in Helix
+const PHASES = [
   {
-    name: "Foundations",
-    segments: [
-      { start: 1, end: 2, tone: "dark" as const, label: "Every brand", detail: "Every brand's primary tokens and values went in first, exactly right." },
-    ],
+    when: "Jun – Jul",
+    title: "Foundations first",
+    detail: "Live work kept going. Every brand's primary tokens and values went into Helix first, and the first few tickets were tried there.",
+    helix: 2,
   },
   {
-    name: "Existing components",
-    segments: [
-      { start: 1.5, end: 3, tone: "soft" as const, label: "Between tickets", detail: "Components we already had moved from Figma into Helix between tickets. Quark and TCS took about a month; Kalos is still moving across." },
-    ],
+    when: "Jul – Aug",
+    title: "Components move across",
+    detail: "Existing components moved from Figma between tickets, and new ones were built in Helix as tickets needed them.",
+    helix: 6,
   },
   {
-    name: "New components",
-    segments: [
-      { start: 1.5, end: 4, tone: "grape" as const, open: true, label: "As tickets needed them", detail: "Built on the foundations, reviewed by a developer as a pull request, and merged to main." },
-    ],
+    when: "August",
+    title: "Every ticket in Helix",
+    detail: "From August, every new ticket was designed in Helix. Nothing new was designed in Figma.",
+    helix: 12,
   },
   {
-    name: "Tickets in Helix",
-    segments: [
-      { start: 0, end: 2, tone: "pale" as const, label: "The first few", detail: "The first tickets were designed in Helix while the rest still used Figma." },
-      { start: 2, end: 4, tone: "grape" as const, open: true, label: "Every ticket", detail: "Every new ticket was designed in Helix, and nothing new in Figma." },
-    ],
+    when: "Now",
+    title: "Still growing",
+    detail: "Quark and TCS took about a month; Kalos is still moving across. New components keep arriving with tickets.",
+    helix: 12,
   },
 ];
 
@@ -266,12 +261,7 @@ function Approach() {
       <Copy>
         <NumberedPoints items={ROLLOUT} stacked />
         <MoreDetail label="The rollout, month by month" className="mt-[32px]">
-          <RolloutTracks
-            months={MONTHS}
-            lanes={LANES}
-            milestone={{ at: 2, label: "August: every new ticket designed in Helix" }}
-            now={{ at: NOW, label: "Now: still running, on every brand" }}
-          />
+          <RolloutPhases phases={PHASES} />
         </MoreDetail>
       </Copy>
     </Chapter>

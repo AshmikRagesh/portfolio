@@ -5,7 +5,7 @@ export { default as MoreDetail } from "./MoreDetail";
 export { default as PreviewLink } from "./PreviewLink";
 export { default as NextCase } from "./NextCase";
 export { VariantProvider, VariantFigure } from "./VariantSwitch";
-export { default as RolloutTracks } from "./RolloutTracks";
+export { default as RolloutPhases } from "./RolloutPhases";
 export { default as BeforeAfter } from "./BeforeAfter";
 export { default as ComponentCount } from "./ComponentCount";
 export { default as Pointers } from "./Pointers";
