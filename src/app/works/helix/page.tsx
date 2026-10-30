@@ -354,9 +354,9 @@ const DELIVERY = [
 ];
 
 const CHANGED_FOR = [
-  { who: "Designers", before: "Filed a bug and waited for a developer to fix it", now: "Fix the miss themselves in Helix and send it for review" },
-  { who: "Developers", before: "Rebuilt each design from a Figma file", now: "Review working code built from their own components" },
-  { who: "Brands", before: "Kept their design system twice, in Figma and in code", now: "One design system each, in code, used on every new ticket" },
+  { who: "Designers", before: "filed a bug and waited for a developer.", now: "Fix a miss themselves in Helix and send it for review." },
+  { who: "Developers", before: "rebuilt each design from a Figma file.", now: "Review working code built from their own components." },
+  { who: "Brands", before: "the design system lived twice, in Figma and in code.", now: "One design system each, in code, used on every new ticket." },
 ];
 
 function Outcome() {
