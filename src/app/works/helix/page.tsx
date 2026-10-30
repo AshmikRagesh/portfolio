@@ -18,6 +18,7 @@ import {
   RolloutTracks,
   BeforeAfter,
   ComponentCount,
+  Lessons,
   Footnote,
   NextCase,
 } from "@/components/case-study";
@@ -405,21 +406,47 @@ function Outcome() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Reflection
 // ─────────────────────────────────────────────────────────────────────────────
+const LESSONS = [
+  {
+    title: "AI needs limits to be useful",
+    text: "Claude Code on its own drifted from the design system. Holding it to each brand's own tokens and components is what made the output match.",
+  },
+  {
+    title: "Foundations first kept work moving",
+    text: "Getting every brand's tokens right before any components meant live tickets never had to stop for the migration.",
+  },
+  {
+    title: "The fastest fix is the designer's",
+    text: "Fixing a miss in Helix and sending it for review beats filing a bug and waiting for a developer.",
+  },
+];
+
 function Reflection() {
   return (
     <Chapter id="reflection" num={7} title="What I learned">
       <Copy>
-        <p>
-          The speed came from setup we did before any screen was built. Getting
-          the tokens and foundations right for every brand took time, and
-          everything after it depended on that work.
-        </p>
-        <p>
-          Designing inside a system also means you can only use what it has.
-          When something is missing, you add it to the design system instead of
-          drawing around it, which is slower once and faster every time after.
-        </p>
+        <Lessons items={LESSONS} />
       </Copy>
+      <div className="cs-sub">
+        <Copy>
+          <h3>The trade-off</h3>
+          <p>
+            Designing inside a system means you can only use what it has. When
+            something is missing, you add it to the design system instead of
+            drawing around it: slower once, faster every time after.
+          </p>
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What I&apos;d do differently</h3>
+          <p>
+            Track delivery time and design bugs from the first day. &ldquo;About
+            half the time&rdquo; is my honest estimate; with those numbers it
+            would be a measured one.
+          </p>
+        </Copy>
+      </div>
     </Chapter>
   );
 }
