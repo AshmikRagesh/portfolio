@@ -227,31 +227,31 @@ const ROLLOUT = [
   },
 ];
 
-// The rollout in phases. `helix` is an illustrative count of 12 new tickets designed in Helix
+// The rollout in phases. `helix` is an illustrative count of each phase's 4 new tickets designed in Helix
 const PHASES = [
   {
     when: "Jun – Jul",
     title: "Foundations first",
     detail: "Live work kept going. Every brand's primary tokens and values went into Helix first, and the first few tickets were tried there.",
-    helix: 2,
+    helix: 1,
   },
   {
     when: "Jul – Aug",
     title: "Components move across",
     detail: "Existing components moved from Figma between tickets, and new ones were built in Helix as tickets needed them.",
-    helix: 6,
+    helix: 2,
   },
   {
     when: "August",
     title: "Every ticket in Helix",
     detail: "From August, every new ticket was designed in Helix. Nothing new was designed in Figma.",
-    helix: 12,
+    helix: 4,
   },
   {
     when: "Now",
     title: "Still growing",
     detail: "Quark and TCS took about a month; Kalos is still moving across. New components keep arriving with tickets.",
-    helix: 12,
+    helix: 4,
   },
 ];
 
