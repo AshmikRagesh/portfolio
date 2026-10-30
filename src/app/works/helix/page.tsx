@@ -17,6 +17,7 @@ import {
   MoreDetail,
   RolloutTracks,
   BeforeAfter,
+  ComponentCount,
   Footnote,
   NextCase,
 } from "@/components/case-study";
@@ -39,7 +40,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "solution",    label: "Solution"        },
   { id: "approach",    label: "Approaches"      },
   { id: "output",      label: "Governance"      },
-  { id: "outcome",     label: "Where it stands" },
+  { id: "outcome",     label: "Impact"          },
   { id: "reflection",  label: "Reflection"      },
 ];
 
@@ -340,6 +341,12 @@ function Output() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Where it stands  (outcome)
 // ─────────────────────────────────────────────────────────────────────────────
+const COMPONENTS = [
+  { name: "Quark", count: 51, plus: true },
+  { name: "TCS", count: 25 },
+  { name: "Kalos", count: 16 },
+];
+
 const DELIVERY = [
   { label: "Before Helix", value: "1–2 weeks", share: 1, tone: "before" as const },
   { label: "With Helix", value: "About half", share: 0.5, tone: "after" as const },
@@ -353,27 +360,47 @@ const CHANGED_FOR = [
 
 function Outcome() {
   return (
-    <Chapter id="outcome" num={6} title="Where it stands">
+    <Chapter id="outcome" num={6} title="What changed">
       <Copy>
         <p>
           Every Travelopia brand now has its design system in Helix. I design
           for four of them: TCS World Travel, Quark Expeditions, Kalos Golf and
           Enchanting Travels.
         </p>
-        <p>
-          The biggest change is time. A ticket&apos;s designs used to take one to
-          two weeks to deliver; now they take about half that. New work also
-          reuses what&apos;s already there: the country and state dropdowns for
-          the TCS forms reused the existing combobox component instead of a new
-          design.
-        </p>
-        <BeforeAfter rows={DELIVERY} groups={CHANGED_FOR} />
-        <Footnote>
-          Delivery time is my own estimate across my tickets, not a tracked
-          measure. Next, we&apos;d measure design bugs per release and review
-          time per pull request.
-        </Footnote>
       </Copy>
+      <div className="cs-sub">
+        <Copy>
+          <h3>90+ components, in code</h3>
+          <p>
+            I moved every existing component for Quark, TCS and Kalos into
+            Helix in about a month, alongside live tickets. New ones were added
+            as tickets needed them, by Hriday and me.
+          </p>
+          <ComponentCount
+            total={{ count: 90, plus: true }}
+            label="components in Helix across three brands"
+            parts={COMPONENTS}
+          />
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Designs delivered in about half the time</h3>
+          <p>
+            A ticket&apos;s designs used to take one to two weeks to deliver; now
+            they take about half that. New work also reuses what&apos;s already
+            there: the country and state dropdowns for the TCS forms reused the
+            existing combobox component instead of a new design.
+          </p>
+          <BeforeAfter rows={DELIVERY} groups={CHANGED_FOR} />
+          <Footnote>
+            Component counts are from each brand&apos;s Helix in October 2026.
+            Delivery time is my own estimate across my tickets, not a tracked
+            measure. Next, we&apos;d measure design bugs per release and review
+            time per pull request.
+          </Footnote>
+        </Copy>
+      </div>
     </Chapter>
   );
 }
