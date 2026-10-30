@@ -15,6 +15,8 @@ import { useEffect, useRef } from "react";
 //
 // Hover is read from the card (the nearest .group). Touch screens never hover, so they
 // never see it; with reduced motion the clouds appear and leave without drifting.
+// `subtle` is for small covers: finer 8px cells, a wider clear middle, and no grape tones,
+// so only a light pink fringe drifts round the edge.
 const CELL = 16;
 const DOT = 2;
 // Brand clouds for open works; greys for NDA works, to match their greyed-out image
@@ -74,10 +76,12 @@ function checker(ctx: CanvasRenderingContext2D, a: string | null, b: string, px:
 export default function PixelClouds({
   seed = 1,
   palette = "brand",
+  subtle = false,
   className = "",
 }: {
   seed?: number;
   palette?: keyof typeof PALETTES;
+  subtle?: boolean;
   className?: string;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -89,6 +93,9 @@ export default function PixelClouds({
     if (!canvas || !card || !ctx) return;
 
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const cell = subtle ? 8 : CELL;
+    const clear = subtle ? 0.84 : CLEAR;
+    const maxTone = subtle ? 4 : MAX_TONE;
     let fills: (string | CanvasPattern)[] = [];
     let dpr = 1;
     let w = 0;
@@ -123,25 +130,25 @@ export default function PixelClouds({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const shown = Math.ceil(cover * STEPS) / STEPS;
       if (shown <= 0) return;
-      const cols = Math.ceil(w / CELL);
-      const rows = Math.ceil(h / CELL);
+      const cols = Math.ceil(w / cell);
+      const rows = Math.ceil(h / cell);
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           // Distance from the centre: 0 in the middle, ~1 in the corners
-          const ex = ((c + 0.5) * CELL) / w - 0.5;
-          const ey = ((r + 0.5) * CELL) / h - 0.5;
+          const ex = ((c + 0.5) * cell) / w - 0.5;
+          const ey = ((r + 0.5) * cell) / h - 0.5;
           const edge = Math.min(1, Math.hypot(ex * 1.6, ey * 1.8));
           // The middle stays clear: clouds only gather in the outer band
-          if (edge < CLEAR) continue;
+          if (edge < clear) continue;
           const field =
             0.4 * fbm((c + drift) * 0.14, r * 0.2, seed) + 0.6 * edge * edge + 0.05 * hash(c, r, seed + 3) - (1 - shown) * 0.7;
           let tone = 0;
-          while (tone < MAX_TONE && field >= CUTS[tone]) tone++;
+          while (tone < maxTone && field >= CUTS[tone]) tone++;
           if (!tone) continue;
           ctx.fillStyle = fills[tone];
-          const x = Math.round(c * CELL * dpr);
-          const y = Math.round(r * CELL * dpr);
-          ctx.fillRect(x, y, Math.round((c + 1) * CELL * dpr) - x, Math.round((r + 1) * CELL * dpr) - y);
+          const x = Math.round(c * cell * dpr);
+          const y = Math.round(r * cell * dpr);
+          ctx.fillRect(x, y, Math.round((c + 1) * cell * dpr) - x, Math.round((r + 1) * cell * dpr) - y);
         }
       }
     };
@@ -187,7 +194,7 @@ export default function PixelClouds({
       card.removeEventListener("pointerenter", onEnter);
       card.removeEventListener("pointerleave", onLeave);
     };
-  }, [seed, palette]);
+  }, [seed, palette, subtle]);
 
   return <canvas ref={ref} aria-hidden="true" className={`pointer-events-none absolute inset-0 h-full w-full ${className}`} />;
 }

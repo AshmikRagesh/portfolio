@@ -1,14 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import PixelClouds from "@/components/PixelClouds";
 import { nextWorks, roomFor } from "@/content/works";
 
 /**
  * The end of every case study: the next two case studies on the homepage, as the doors
- * further down the hall. A dark Blackcurrant panel holds a short heading and a link back
- * to all the work, then one wide row per case study: its cover, its room number and its
- * title, with an arrow. Hovering a row lifts its cover a touch, lights the row and slides
- * the arrow. From md the cover sits beside the text; on phones it sits on top.
+ * further down the hall. A dark Blackcurrant panel holds a mono eyebrow, the heading and
+ * the navbar's button (inverted to white) back to all the work, then one wide row per case
+ * study: its cover, its room number, its title and a line about it, with an arrow. Hovering
+ * a row zooms its cover a touch under a light fringe of pixel clouds, lights the row and
+ * slides the arrow. From md the cover sits beside the text; on phones it sits on top.
  */
 export default function NextCase({ current }: { current: string }) {
   const works = nextWorks(current);
@@ -17,7 +19,7 @@ export default function NextCase({ current }: { current: string }) {
       <div className="cs-visual !mb-0 overflow-hidden rounded-[24px] bg-primary p-[24px] text-white md:p-[40px]">
         <div className="flex flex-col gap-[16px] md:flex-row md:items-end md:justify-between">
           <div className="flex flex-col gap-[8px]">
-            <p className="m-0 font-body text-[14px] leading-[20px] text-white/60">Keep reading</p>
+            <p className="m-0 font-brand text-[12px] uppercase leading-[16px] tracking-[1px] text-white/60">Keep reading</p>
             <h2
               id="next-case-study"
               className="m-0 font-heading text-[34px] font-normal leading-[40px] tracking-[-2px] text-white md:text-[42px] md:leading-[48px]"
@@ -27,7 +29,7 @@ export default function NextCase({ current }: { current: string }) {
           </div>
           <Link
             href="/#works"
-            className="group inline-flex items-center gap-[8px] self-start font-body text-[16px] leading-[24px] text-white/80 underline-offset-4 hover:text-white hover:underline md:self-auto"
+            className="group inline-flex h-[42px] items-center gap-[8px] self-start whitespace-nowrap rounded-[10px] bg-white px-[16px] font-brand text-[14px] font-medium uppercase tracking-[1px] text-primary transition-colors duration-200 hover:bg-grape-light md:self-auto"
           >
             All work
             <ArrowRight
@@ -54,12 +56,16 @@ export default function NextCase({ current }: { current: string }) {
                     style={{ objectPosition: work.imagePosition ?? "center" }}
                     className="object-cover transition-transform duration-[500ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                   />
+                  <PixelClouds seed={Number(roomFor(work))} subtle className="z-[1]" />
                 </span>
                 <span className="flex flex-col gap-[8px]">
-                  <span className="font-body text-[14px] leading-[20px] text-grape-light">Room {roomFor(work)}</span>
+                  <span className="font-brand text-[12px] uppercase leading-[16px] tracking-[1px] text-grape-light">
+                    Room {roomFor(work)}
+                  </span>
                   <span className="text-balance font-heading text-[24px] leading-[32px] text-white md:text-[28px] md:leading-[36px]">
                     {work.title}
                   </span>
+                  <span className="line-clamp-2 font-body text-[16px] leading-[26px] text-white/60">{work.description}</span>
                 </span>
                 <span
                   aria-hidden="true"
