@@ -18,10 +18,10 @@ import useInView from "./useInView";
  * tickets in a wave, or lights the slots of one not reached yet. On the last phase the top
  * ticket keeps writing itself, since the rollout is still going. With reduced motion it
  * opens on the last phase and simply switches.
- * The tickets are illustrative: `helix` is how many of a phase's `perPhase` tickets were
- * designed in Helix.
+ * The tickets are illustrative: `tickets` is how many new tickets a phase had (out of
+ * `perPhase` slots, the default), and `helix` how many of them were designed in Helix.
  */
-type Phase = { when: string; title: string; detail: string; helix: number };
+type Phase = { when: string; title: string; detail: string; helix: number; tickets?: number };
 
 const DWELL = 3000;
 const EASE = "ease-[cubic-bezier(0.2,0.7,0.2,1)]";
@@ -181,9 +181,9 @@ export default function RolloutPhases({ phases, perPhase = 4 }: { phases: Phase[
                 {/* The current lane lifts a touch; an empty one previews its slots on hover */}
                 <span
                   aria-hidden="true"
-                  className={`flex w-full flex-col-reverse gap-[6px] rounded-lg border p-[6px] transition-[background-color,border-color,transform,box-shadow] duration-500 ${EASE} motion-reduce:transition-none md:gap-[8px] md:p-[8px] ${
+                  className={`flex w-full flex-col-reverse gap-[6px] rounded-lg border p-[6px] transition-[background-color,border-color,transform] duration-500 ${EASE} motion-reduce:transition-none md:gap-[8px] md:p-[8px] ${
                     on
-                      ? "-translate-y-[4px] border-grape/20 bg-grape-light/60 shadow-[0_16px_32px_-20px_rgba(157,19,106,0.55)]"
+                      ? "-translate-y-[4px] border-grape/20 bg-grape-light/60"
                       : reached
                         ? "border-transparent bg-grape-light/30 group-hover:bg-grape-light/50"
                         : "border-dashed border-primary/15 bg-transparent group-hover:border-grape/40"
@@ -195,27 +195,36 @@ export default function RolloutPhases({ phases, perPhase = 4 }: { phases: Phase[
                     return (
                       <span
                         key={k}
+                        // A reached lane's spare slots go clear, so a phase with fewer tickets
+                        // reads as a shorter stack rather than an empty card
                         className={`relative block h-[36px] rounded-md transition-colors duration-300 md:h-[40px] ${
-                          reached ? "bg-primary/[0.04]" : "bg-primary/[0.04] group-hover:bg-grape/10"
+                          !reached
+                            ? "bg-primary/[0.04] group-hover:bg-grape/10"
+                            : k < (p.tickets ?? perPhase)
+                              ? "bg-primary/[0.04]"
+                              : "bg-transparent"
                         }`}
                         style={{ transitionDelay: reached ? "0ms" : `${(perPhase - 1 - k) * 40}ms` }}
                       >
-                        {/* Lands with a squash and settle; lifts out with a quick fade */}
-                        <span
-                          className={`absolute inset-0 motion-reduce:animate-none motion-reduce:transition-none ${
-                            landed
-                              ? "animate-[rollout-land_700ms_cubic-bezier(0.2,0.7,0.2,1)_both]"
-                              : "-translate-y-[16px] rotate-[3deg] scale-95 opacity-0 transition-[opacity,transform] duration-[300ms] ease-in"
-                          }`}
-                          style={{ animationDelay: `${delay}ms`, transitionDelay: `${delay}ms` }}
-                        >
-                          <Ticket
-                            helix={k < p.helix}
-                            n={col * perPhase + k}
-                            live={col === last && active === last && k === perPhase - 1}
-                            lift={k * 40}
-                          />
-                        </span>
+                        {/* Lands with a squash and settle; lifts out with a quick fade. A phase
+                            with fewer tickets leaves its top slots empty */}
+                        {k < (p.tickets ?? perPhase) && (
+                          <span
+                            className={`absolute inset-0 motion-reduce:animate-none motion-reduce:transition-none ${
+                              landed
+                                ? "animate-[rollout-land_700ms_cubic-bezier(0.2,0.7,0.2,1)_both]"
+                                : "-translate-y-[16px] rotate-[3deg] scale-95 opacity-0 transition-[opacity,transform] duration-[300ms] ease-in"
+                            }`}
+                            style={{ animationDelay: `${delay}ms`, transitionDelay: `${delay}ms` }}
+                          >
+                            <Ticket
+                              helix={k < p.helix}
+                              n={col * perPhase + k}
+                              live={col === last && active === last && k === perPhase - 1}
+                              lift={k * 40}
+                            />
+                          </span>
+                        )}
                       </span>
                     );
                   })}

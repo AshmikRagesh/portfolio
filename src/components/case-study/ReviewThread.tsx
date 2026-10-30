@@ -198,15 +198,17 @@ export default function ReviewThread({
             done || live ? "translate-y-0 scale-100 opacity-100" : "translate-y-[12px] scale-[0.98] opacity-0"
           }`;
           // The timeline: GitHub runs it 16px in from the comment boxes' left edge. Each piece
-          // draws down from this item to the next as the next appears
-          const link = i < items.length - 1 && (
-            <span
-              aria-hidden="true"
-              className={`absolute bottom-0 left-[64px] top-0 w-[2px] -translate-x-1/2 bg-[#d0d7de] origin-top transition-transform duration-[500ms] ease-out motion-reduce:transition-none ${
-                i + 1 <= active ? "scale-y-100" : "scale-y-0"
-              }`}
-            />
-          );
+          // draws down from this item to the next as the next appears; a last event gets a
+          // short piece of its own, through its top padding to the middle of its badge
+          const line = "absolute left-[64px] top-0 w-[2px] -translate-x-1/2 bg-[#d0d7de] origin-top transition-transform duration-[500ms] ease-out motion-reduce:transition-none";
+          const link =
+            i < items.length - 1 ? (
+              <span aria-hidden="true" className={`${line} bottom-0 ${i + 1 <= active ? "scale-y-100" : "scale-y-0"}`} />
+            ) : (
+              item.kind === "event" && (
+                <span aria-hidden="true" className={`${line} h-[26px] ${i <= active ? "scale-y-100" : "scale-y-0"}`} />
+              )
+            );
 
           if (item.kind === "event") {
             const approved = item.icon === "approved";
