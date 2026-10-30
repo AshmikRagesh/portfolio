@@ -227,8 +227,7 @@ const ROLLOUT = [
   },
 ];
 
-// The rollout in phases. Illustrative: `tickets` is how many new tickets a phase had (4 unless set),
-// `helix` how many of them were designed in Helix
+// The rollout in phases. `helix` is an illustrative count of each phase's 4 new tickets designed in Helix
 const PHASES = [
   {
     when: "Jun – Jul",
@@ -246,7 +245,6 @@ const PHASES = [
     when: "August",
     title: "Every ticket in Helix",
     detail: "From August, every new ticket was designed in Helix. Nothing new was designed in Figma.",
-    tickets: 3,
     helix: 3,
   },
   {
