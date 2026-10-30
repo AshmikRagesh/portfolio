@@ -12,9 +12,12 @@ import useInView from "./useInView";
  * phase, and the grape rises column by column as Figma gives way to Helix.
  * When it scrolls into view it rises in and plays through every phase once on its own, the
  * current segment filling like a timer; clicking a column (or the arrow keys) takes over.
- * A phase's tickets drop into its lane from the bottom up, one after another; stepping back
- * lifts them out again, and the story slides in from the side it's heading to. With
- * reduced motion it opens on the last phase and simply switches.
+ * A phase's tickets drop into its lane from the bottom up, one after another, landing with
+ * a small squash and settle; stepping back lifts them out again, and the story slides in
+ * from the side it's heading to. The current lane lifts a touch; hovering a lane lifts its
+ * tickets in a wave, or lights the slots of one not reached yet. On the last phase the top
+ * ticket keeps writing itself, since the rollout is still going. With reduced motion it
+ * opens on the last phase and simply switches.
  * The tickets are illustrative: `helix` is how many of a phase's `perPhase` tickets were
  * designed in Helix.
  */
@@ -23,21 +26,38 @@ type Phase = { when: string; title: string; detail: string; helix: number };
 const DWELL = 3000;
 const EASE = "ease-[cubic-bezier(0.2,0.7,0.2,1)]";
 
-// One ticket card: two lines of text and, from md, an assignee
-function Ticket({ helix }: { helix: boolean }) {
+// Line lengths, so no two tickets in a lane read the same
+const TITLE = [80, 64, 88, 72, 76, 60];
+const META = [48, 36, 56, 40, 32, 52];
+
+// One ticket card: a title and a meta line and, from md, an assignee. `n` varies the
+// lines; `live` writes the lines over and over, for a ticket still in progress
+function Ticket({ helix, n, live, lift }: { helix: boolean; n: number; live: boolean; lift: number }) {
+  const line = "h-[4px] origin-left rounded-full";
   return (
     <span
-      className={`absolute inset-0 flex items-center gap-[8px] rounded-md px-[8px] md:px-[12px] ${
+      className={`absolute inset-0 flex items-center gap-[8px] rounded-md px-[8px] transition-transform duration-300 ease-out group-hover:-translate-y-[2px] motion-reduce:transition-none md:px-[12px] ${
         helix
           ? "bg-grape shadow-[0_1px_2px_rgba(50,7,62,0.24)]"
           : "bg-white shadow-[0_1px_2px_rgba(50,7,62,0.06)] ring-1 ring-inset ring-primary/10"
       }`}
+      style={{ transitionDelay: `${lift}ms` }}
     >
       <span className="flex min-w-0 flex-1 flex-col gap-[6px]">
-        <span className={`h-[4px] w-4/5 rounded-full ${helix ? "bg-white/80" : "bg-primary/20"}`} />
-        <span className={`h-[4px] w-1/2 rounded-full ${helix ? "bg-white/40" : "bg-primary/10"}`} />
+        <span
+          className={`${line} ${helix ? "bg-white/80" : "bg-primary/20"} ${live ? "animate-[rollout-write_2400ms_ease-in-out_infinite] motion-reduce:animate-none" : ""}`}
+          style={{ width: `${TITLE[n % TITLE.length]}%` }}
+        />
+        <span
+          className={`${line} ${helix ? "bg-white/40" : "bg-primary/10"} ${live ? "animate-[rollout-write_2400ms_ease-in-out_400ms_infinite] motion-reduce:animate-none" : ""}`}
+          style={{ width: `${META[n % META.length]}%` }}
+        />
       </span>
-      <span className={`hidden h-[14px] w-[14px] shrink-0 rounded-full md:block ${helix ? "bg-white/30" : "bg-primary/10"}`} />
+      <span
+        className={`hidden h-[14px] w-[14px] shrink-0 rounded-full md:block ${
+          helix ? (n % 2 ? "bg-white/45" : "bg-white/25") : n % 2 ? "bg-primary/[0.14]" : "bg-primary/[0.08]"
+        } ${live ? "animate-pulse motion-reduce:animate-none" : ""}`}
+      />
     </span>
   );
 }
@@ -95,9 +115,13 @@ export default function RolloutPhases({ phases, perPhase = 4 }: { phases: Phase[
 
   // When a ticket lands or lifts: new lanes go one after another, each from the bottom up;
   // lifted lanes go from the last back, each from the top down. The first lane waits for
-  // the board to rise in.
+  // the board to rise in. Tickets that aren't changing keep no delay, so a landed one never
+  // drops back into its delay and blinks.
+  const first = prev === active;
+  const changing = (col: number) => (first ? col <= active : col > Math.min(prev, active) && col <= Math.max(prev, active));
   const ticketDelay = (col: number, k: number) => {
-    if (forward) return 400 * Math.max(0, col - (prev === active ? 0 : prev + 1)) + 90 * k + (prev === active ? 500 : 0);
+    if (!changing(col)) return 0;
+    if (forward) return 400 * Math.max(0, col - (first ? 0 : prev + 1)) + 90 * k + (first ? 500 : 0);
     return 160 * (prev - col) + 50 * (perPhase - 1 - k);
   };
 
@@ -154,29 +178,43 @@ export default function RolloutPhases({ phases, perPhase = 4 }: { phases: Phase[
                 className="group flex flex-col gap-[12px] rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-4"
               >
                 {/* The lane, with a faint slot for every ticket it will hold */}
+                {/* The current lane lifts a touch; an empty one previews its slots on hover */}
                 <span
                   aria-hidden="true"
-                  className={`flex w-full flex-col-reverse gap-[6px] rounded-lg border p-[6px] transition-[background-color,border-color] duration-500 md:gap-[8px] md:p-[8px] ${
+                  className={`flex w-full flex-col-reverse gap-[6px] rounded-lg border p-[6px] transition-[background-color,border-color,transform,box-shadow] duration-500 ${EASE} motion-reduce:transition-none md:gap-[8px] md:p-[8px] ${
                     on
-                      ? "border-grape/20 bg-grape-light/60"
+                      ? "-translate-y-[4px] border-grape/20 bg-grape-light/60 shadow-[0_16px_32px_-20px_rgba(157,19,106,0.55)]"
                       : reached
-                        ? "border-transparent bg-grape-light/30"
+                        ? "border-transparent bg-grape-light/30 group-hover:bg-grape-light/50"
                         : "border-dashed border-primary/15 bg-transparent group-hover:border-grape/40"
                   }`}
                 >
                   {Array.from({ length: perPhase }, (_, k) => {
                     const landed = shown && reached;
+                    const delay = ticketDelay(col, k);
                     return (
-                      <span key={k} className="relative block h-[36px] rounded-md bg-primary/[0.04] md:h-[40px]">
+                      <span
+                        key={k}
+                        className={`relative block h-[36px] rounded-md transition-colors duration-300 md:h-[40px] ${
+                          reached ? "bg-primary/[0.04]" : "bg-primary/[0.04] group-hover:bg-grape/10"
+                        }`}
+                        style={{ transitionDelay: reached ? "0ms" : `${(perPhase - 1 - k) * 40}ms` }}
+                      >
+                        {/* Lands with a squash and settle; lifts out with a quick fade */}
                         <span
-                          className={`absolute inset-0 transition-[opacity,transform] motion-reduce:transition-none ${
+                          className={`absolute inset-0 motion-reduce:animate-none motion-reduce:transition-none ${
                             landed
-                              ? "translate-y-0 rotate-0 scale-100 opacity-100 duration-[600ms] ease-[cubic-bezier(0.34,1.4,0.64,1)]"
-                              : "-translate-y-[24px] -rotate-[4deg] scale-90 opacity-0 duration-[300ms] ease-in"
+                              ? "animate-[rollout-land_700ms_cubic-bezier(0.2,0.7,0.2,1)_both]"
+                              : "-translate-y-[16px] rotate-[3deg] scale-95 opacity-0 transition-[opacity,transform] duration-[300ms] ease-in"
                           }`}
-                          style={{ transitionDelay: `${ticketDelay(col, k)}ms` }}
+                          style={{ animationDelay: `${delay}ms`, transitionDelay: `${delay}ms` }}
                         >
-                          <Ticket helix={k < p.helix} />
+                          <Ticket
+                            helix={k < p.helix}
+                            n={col * perPhase + k}
+                            live={col === last && active === last && k === perPhase - 1}
+                            lift={k * 40}
+                          />
                         </span>
                       </span>
                     );
