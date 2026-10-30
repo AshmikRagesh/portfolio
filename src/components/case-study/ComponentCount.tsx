@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import useInView from "./useInView";
 
 /**
- * A headline count with its breakdown, in Geist: the total large on the left, and one row
- * per part on the right, each a name, a solid bar sized against the largest part, and its
- * own number. When it scrolls into view the numbers count up from zero and the bars grow
- * from the left, one after another; with reduced motion they're simply shown.
+ * A headline count with its breakdown: the total large in the heading serif on the left,
+ * and one row per part on the right, each a name (with an optional note, like "in
+ * progress"), a solid bar sized against the largest part, and its own number.
+ * When it scrolls into view the numbers count up from zero and the bars grow from the
+ * left, one after another; with reduced motion they're simply shown.
  */
-type Part = { name: string; count: number; plus?: boolean };
+type Part = { name: string; count: number; plus?: boolean; note?: string };
 
 const BAR_TONE = ["bg-primary", "bg-grape", "bg-grape/50", "bg-grape-light"];
 
@@ -60,7 +61,7 @@ export default function ComponentCount({
   return (
     <div
       ref={ref}
-      className="mt-[40px] grid grid-cols-1 items-center gap-[32px] font-geist text-heading md:grid-cols-[200px_1fr] md:gap-[48px]"
+      className="mt-[40px] grid grid-cols-1 items-center gap-[32px] font-body text-heading md:grid-cols-[200px_1fr] md:gap-[48px]"
     >
       <p className="m-0 flex flex-col gap-[8px]">
         <Count
@@ -68,15 +69,18 @@ export default function ComponentCount({
           plus={total.plus}
           run={shown}
           delay={0}
-          className="text-[72px] font-medium leading-[72px] tracking-[-2px] text-grape md:text-[88px] md:leading-[88px]"
+          className="font-heading text-[72px] font-normal leading-[72px] tracking-[-2px] text-grape md:text-[96px] md:leading-[96px]"
         />
         <span className="text-[14px] leading-[22px] text-secondary">{label}</span>
       </p>
 
       <dl className="m-0 flex flex-col gap-[16px]">
         {parts.map((p, i) => (
-          <div key={p.name} className="grid grid-cols-[64px_1fr_48px] items-center gap-[16px]">
-            <dt className="text-[14px] font-medium leading-[20px]">{p.name}</dt>
+          <div key={p.name} className="grid grid-cols-[96px_1fr_48px] items-center gap-[16px]">
+            <dt className="flex flex-col text-[16px] leading-[22px]">
+              {p.name}
+              {p.note && <span className="text-[12px] leading-[16px] text-muted">{p.note}</span>}
+            </dt>
             <dd className="m-0 h-[12px] overflow-hidden rounded-full bg-line-soft">
               <span
                 aria-hidden="true"
@@ -90,7 +94,7 @@ export default function ComponentCount({
                 }}
               />
             </dd>
-            <dd className="m-0 text-right text-[16px] font-medium leading-[24px]">
+            <dd className="m-0 text-right text-[16px] leading-[24px]">
               <Count to={p.count} plus={p.plus} run={shown} delay={200 + i * 200} className="" />
             </dd>
           </div>

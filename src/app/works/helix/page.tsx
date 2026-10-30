@@ -18,6 +18,7 @@ import {
   RolloutTracks,
   BeforeAfter,
   ComponentCount,
+  WhoChanged,
   Footnote,
   NextCase,
 } from "@/components/case-study";
@@ -213,7 +214,7 @@ const ROLLOUT = [
   },
   {
     title: "Existing components when there was time",
-    description: "Components we already had moved from Figma into Helix between tickets. My three brands took about a month.",
+    description: "Components we already had moved from Figma into Helix between tickets. Quark and TCS took about a month; Kalos is still moving across.",
   },
   {
     title: "New components as tickets needed them",
@@ -241,7 +242,7 @@ const LANES = [
   {
     name: "Existing components",
     segments: [
-      { start: 1.5, end: 3, tone: "soft" as const, label: "Between tickets", detail: "Components we already had moved from Figma into Helix between tickets. My three brands took about a month." },
+      { start: 1.5, end: 3, tone: "soft" as const, label: "Between tickets", detail: "Components we already had moved from Figma into Helix between tickets. Quark and TCS took about a month; Kalos is still moving across." },
     ],
   },
   {
@@ -344,7 +345,7 @@ function Output() {
 const COMPONENTS = [
   { name: "Quark", count: 51, plus: true },
   { name: "TCS", count: 25 },
-  { name: "Kalos", count: 16 },
+  { name: "Kalos", count: 16, note: "in progress" },
 ];
 
 const DELIVERY = [
@@ -353,9 +354,9 @@ const DELIVERY = [
 ];
 
 const CHANGED_FOR = [
-  { who: "Designers", what: "Fix a miss themselves in Helix, instead of filing a bug and waiting." },
-  { who: "Developers", what: "Review working code built from their own components, instead of rebuilding a design." },
-  { who: "Brands", what: "Every brand's design system is in Helix, and every new ticket is built in it." },
+  { who: "Designers", before: "Filed a bug and waited for a developer to fix it", now: "Fix the miss themselves in Helix and send it for review" },
+  { who: "Developers", before: "Rebuilt each design from a Figma file", now: "Review working code built from their own components" },
+  { who: "Brands", before: "Kept their design system twice, in Figma and in code", now: "One design system each, in code, used on every new ticket" },
 ];
 
 function Outcome() {
@@ -372,9 +373,10 @@ function Outcome() {
         <Copy>
           <h3>90+ components, in code</h3>
           <p>
-            I moved every existing component for Quark, TCS and Kalos into
-            Helix in about a month, alongside live tickets. New ones were added
-            as tickets needed them, by Hriday and me.
+            I moved the existing components for Quark and TCS into Helix in
+            about a month, alongside live tickets, and Kalos is still moving
+            across. When a ticket needed something new, Hriday and I built it
+            in Helix too.
           </p>
           <ComponentCount
             total={{ count: 90, plus: true }}
@@ -392,7 +394,8 @@ function Outcome() {
             there: the country and state dropdowns for the TCS forms reused the
             existing combobox component instead of a new design.
           </p>
-          <BeforeAfter rows={DELIVERY} groups={CHANGED_FOR} />
+          <BeforeAfter rows={DELIVERY} />
+          <WhoChanged rows={CHANGED_FOR} />
           <Footnote>
             Component counts are from each brand&apos;s Helix in October 2026.
             Delivery time is my own estimate across my tickets, not a tracked
