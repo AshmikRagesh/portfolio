@@ -18,7 +18,6 @@ import {
   RolloutTracks,
   BeforeAfter,
   ComponentCount,
-  WhoChanged,
   Footnote,
   NextCase,
 } from "@/components/case-study";
@@ -342,21 +341,17 @@ function Output() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Where it stands  (outcome)
 // ─────────────────────────────────────────────────────────────────────────────
+// PLACEHOLDER counts for TCS and Kalos (and so the total) until Ashmik sends the real
+// numbers. Counted from his recordings: Quark 51+, TCS 25, Kalos 16 (92 in all).
 const COMPONENTS = [
   { name: "Quark", count: 51, plus: true },
-  { name: "TCS", count: 25 },
-  { name: "Kalos", count: 16, note: "in progress" },
+  { name: "TCS", count: 36 },
+  { name: "Kalos", count: 25, note: "in progress" },
 ];
 
 const DELIVERY = [
   { label: "Before Helix", value: "1–2 weeks", share: 1, tone: "before" as const },
   { label: "With Helix", value: "About half", share: 0.5, tone: "after" as const },
-];
-
-const CHANGED_FOR = [
-  { who: "Designers", before: "filed a bug and waited for a developer.", now: "Fix a miss themselves in Helix and send it for review." },
-  { who: "Developers", before: "rebuilt each design from a Figma file.", now: "Review working code built from their own components." },
-  { who: "Brands", before: "the design system lived twice, in Figma and in code.", now: "One design system each, in code, used on every new ticket." },
 ];
 
 function Outcome() {
@@ -371,7 +366,7 @@ function Outcome() {
       </Copy>
       <div className="cs-sub">
         <Copy>
-          <h3>90+ components, in code</h3>
+          <h3>110+ components, in code</h3>
           <p>
             I moved the existing components for Quark and TCS into Helix in
             about a month, alongside live tickets, and Kalos is still moving
@@ -379,7 +374,7 @@ function Outcome() {
             in Helix too.
           </p>
           <ComponentCount
-            total={{ count: 90, plus: true }}
+            total={{ count: 110, plus: true }}
             label="components in Helix across three brands"
             parts={COMPONENTS}
           />
@@ -395,7 +390,6 @@ function Outcome() {
             existing combobox component instead of a new design.
           </p>
           <BeforeAfter rows={DELIVERY} />
-          <WhoChanged rows={CHANGED_FOR} />
           <Footnote>
             Component counts are from each brand&apos;s Helix in October 2026.
             Delivery time is my own estimate across my tickets, not a tracked

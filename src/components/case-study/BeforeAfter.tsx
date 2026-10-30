@@ -3,8 +3,9 @@
 import useInView from "./useInView";
 
 /**
- * A before-and-after comparison: one row per state, each a label over a solid, softly
- * rounded bar sized to its share of the longest, with its value right at the bar's end.
+ * A before-and-after comparison: one row per state, each a label over a solid, rounded
+ * bar sized to its share of the longest, with its value right at the bar's end in the
+ * heading serif (muted for the before, grape for the after).
  * The bars grow from the left once, when the chart scrolls into view (the second after a
  * short delay, so the drop reads), and each value fades in once its bar is drawn. With
  * reduced motion they're simply drawn.
@@ -25,7 +26,7 @@ export default function BeforeAfter({ rows }: { rows: Row[] }) {
           <dd className="m-0 flex items-center gap-[16px]">
             <span
               aria-hidden="true"
-              className={`h-[40px] shrink-0 origin-left rounded-[16px] transition-transform duration-[900ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${TONE[row.tone]}`}
+              className={`h-[40px] shrink-0 origin-left rounded-[12px] transition-transform duration-[900ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${TONE[row.tone]}`}
               style={{
                 width: `calc(${row.share} * (100% - 136px))`,
                 transform: `scaleX(${shown ? 1 : 0})`,
@@ -33,9 +34,9 @@ export default function BeforeAfter({ rows }: { rows: Row[] }) {
               }}
             />
             <span
-              className={`whitespace-nowrap text-[16px] leading-[24px] transition-opacity duration-[400ms] md:text-[18px] md:leading-[28px] ${
-                shown ? "opacity-100" : "opacity-0"
-              }`}
+              className={`whitespace-nowrap font-heading text-[22px] leading-[28px] transition-opacity duration-[400ms] md:text-[26px] md:leading-[32px] ${
+                row.tone === "after" ? "text-grape" : "text-secondary"
+              } ${shown ? "opacity-100" : "opacity-0"}`}
               style={{ transitionDelay: `${i * 300 + 500}ms` }}
             >
               {row.value}
