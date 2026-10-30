@@ -9,11 +9,12 @@ import { nextWorks, roomFor } from "@/content/works";
 /**
  * The end of every case study: the next two case studies on the homepage, as the doors
  * further down the hall. A dark Blackcurrant panel, with the same paper tooth as the
- * footer and the guestbook, holds a mono eyebrow, the heading and
- * the navbar's button (inverted to white) back to all the work, then one wide row per case
- * study: its cover, its room number, its title and a line about it, with an arrow. Hovering
- * a row zooms its cover a touch under a light fringe of pixel clouds, drops (then swings)
- * the room's key onto its hook, lights the row and slides the arrow. From md the cover sits beside the text; on phones it sits on top.
+ * footer and the guestbook, holds a mono eyebrow, the heading and the light button the
+ * reel player uses on dark, back to all the work. Then one wide row per case study: its
+ * cover, its room number, its title and a line about it, with a round arrow button.
+ * Hovering a row zooms its cover a touch under a light fringe of pixel clouds, drops
+ * (then swings) the room's key, at three-quarter size, onto its hook, lights the row and
+ * slides the arrow. From md the cover sits beside the text; on phones it sits on top.
  */
 export default function NextCase({ current }: { current: string }) {
   const works = nextWorks(current);
@@ -35,7 +36,7 @@ export default function NextCase({ current }: { current: string }) {
           </div>
           <Link
             href="/#works"
-            className="group inline-flex h-[42px] items-center gap-[8px] self-start whitespace-nowrap rounded-lg bg-white px-[16px] font-brand text-[14px] font-medium uppercase tracking-[1px] text-primary transition-colors duration-200 hover:bg-grape-light md:self-auto"
+            className="group inline-flex h-[42px] items-center gap-[8px] self-start whitespace-nowrap rounded-lg bg-white px-[16px] font-brand text-[14px] uppercase tracking-[1px] text-midnight transition-colors duration-200 hover:bg-grape hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:self-auto"
           >
             All work
             <ArrowRight
@@ -57,7 +58,7 @@ export default function NextCase({ current }: { current: string }) {
                 <span className="relative block">
                   <KeyTag
                     room={roomFor(work)}
-                    className="absolute -top-[2px] right-[12px] z-[2]"
+                    className="absolute -top-[2px] right-[8px] z-[2] origin-top-right scale-75"
                   />
                   <span className="relative block h-[168px] overflow-hidden rounded-md bg-white/10 md:h-[144px]">
                     <Image
@@ -88,7 +89,7 @@ export default function NextCase({ current }: { current: string }) {
                 </span>
                 <span
                   aria-hidden="true"
-                  className="hidden h-[48px] w-[48px] items-center justify-center rounded-full border border-white/20 transition-[transform,background-color,border-color,color] duration-[260ms] group-hover:translate-x-[4px] group-hover:border-white group-hover:bg-white group-hover:text-primary motion-reduce:transition-none md:flex"
+                  className="hidden h-[48px] w-[48px] items-center justify-center rounded-full bg-white/10 text-white transition-[transform,background-color] duration-[260ms] group-hover:translate-x-[4px] group-hover:bg-white/20 motion-reduce:transition-none md:flex"
                 >
                   <ArrowRight size={20} />
                 </span>
