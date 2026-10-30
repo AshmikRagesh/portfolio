@@ -5,8 +5,9 @@ import useInView from "./useInView";
 
 /**
  * A headline count with its breakdown: the total large in the heading serif on the left,
- * and one row per part on the right, each a name (with an optional note, like "in
- * progress"), a solid bar sized against the largest part, and its own number.
+ * and one row per part on the right: its name (with an optional note, like "in
+ * progress") and its number on one line, and a slim bar sized against the largest part
+ * underneath.
  * When it scrolls into view the numbers count up from zero and the bars grow from the
  * left, one after another; with reduced motion they're simply shown.
  */
@@ -74,14 +75,18 @@ export default function ComponentCount({
         <span className="text-[14px] leading-[22px] text-secondary">{label}</span>
       </p>
 
-      <dl className="m-0 flex flex-col gap-[16px]">
+      <dl className="m-0 flex flex-col gap-[20px]">
         {parts.map((p, i) => (
-          <div key={p.name} className="grid grid-cols-[96px_1fr_48px] items-center gap-[16px]">
-            <dt className="flex flex-col text-[16px] leading-[22px]">
+          // Name (and note) on the left, the count on the right, the bar underneath across both
+          <div key={p.name} className="grid grid-cols-[1fr_auto] items-baseline gap-x-[16px] gap-y-[8px]">
+            <dt className="text-[16px] leading-[24px] text-heading">
               {p.name}
-              {p.note && <span className="text-[12px] leading-[16px] text-muted">{p.note}</span>}
+              {p.note && <span className="ml-[8px] text-[14px] text-muted">{p.note}</span>}
             </dt>
-            <dd className="m-0 h-[12px] overflow-hidden rounded-full bg-line-soft">
+            <dd className="m-0 font-heading text-[22px] leading-[28px] text-heading">
+              <Count to={p.count} plus={p.plus} run={shown} delay={200 + i * 200} className="" />
+            </dd>
+            <dd className="col-span-2 m-0 h-[8px] overflow-hidden rounded-full bg-line-soft">
               <span
                 aria-hidden="true"
                 className={`block h-full origin-left rounded-full transition-transform duration-[1000ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
@@ -93,9 +98,6 @@ export default function ComponentCount({
                   transitionDelay: `${200 + i * 200}ms`,
                 }}
               />
-            </dd>
-            <dd className="m-0 text-right text-[16px] leading-[24px]">
-              <Count to={p.count} plus={p.plus} run={shown} delay={200 + i * 200} className="" />
             </dd>
           </div>
         ))}

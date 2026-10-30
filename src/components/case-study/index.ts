@@ -8,7 +8,7 @@ export { VariantProvider, VariantFigure } from "./VariantSwitch";
 export { default as RolloutTracks } from "./RolloutTracks";
 export { default as BeforeAfter } from "./BeforeAfter";
 export { default as ComponentCount } from "./ComponentCount";
-export { default as Lessons } from "./Lessons";
+export { default as Pointers } from "./Pointers";
 export { default as ReviewThread, type ThreadItem } from "./ReviewThread";
 export {
   Copy,

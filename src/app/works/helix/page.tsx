@@ -18,7 +18,7 @@ import {
   RolloutTracks,
   BeforeAfter,
   ComponentCount,
-  Lessons,
+  Pointers,
   Footnote,
   NextCase,
 } from "@/components/case-study";
@@ -406,18 +406,29 @@ function Outcome() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Reflection
 // ─────────────────────────────────────────────────────────────────────────────
-const LESSONS = [
+const WORKED = [
   {
-    title: "AI needs limits to be useful",
+    lead: "AI needs limits to be useful.",
     text: "Claude Code on its own drifted from the design system. Holding it to each brand's own tokens and components is what made the output match.",
   },
   {
-    title: "Foundations first kept work moving",
+    lead: "Foundations first kept work moving.",
     text: "Getting every brand's tokens right before any components meant live tickets never had to stop for the migration.",
   },
   {
-    title: "The fastest fix is the designer's",
+    lead: "The fastest fix is the designer's.",
     text: "Fixing a miss in Helix and sending it for review beats filing a bug and waiting for a developer.",
+  },
+];
+
+const NEXT_TIME = [
+  {
+    lead: "You can only use what the system has.",
+    text: "When something is missing, you add it to the design system instead of drawing around it: slower once, faster every time after.",
+  },
+  {
+    lead: "I'd measure from day one.",
+    text: "\u201cAbout half the time\u201d is my honest estimate. Tracking delivery time and design bugs from the start would make it a measured number.",
   },
 ];
 
@@ -425,26 +436,13 @@ function Reflection() {
   return (
     <Chapter id="reflection" num={7} title="What I learned">
       <Copy>
-        <Lessons items={LESSONS} />
+        <h3>What worked</h3>
+        <Pointers items={WORKED} />
       </Copy>
       <div className="cs-sub">
         <Copy>
-          <h3>The trade-off</h3>
-          <p>
-            Designing inside a system means you can only use what it has. When
-            something is missing, you add it to the design system instead of
-            drawing around it: slower once, faster every time after.
-          </p>
-        </Copy>
-      </div>
-      <div className="cs-sub">
-        <Copy>
-          <h3>What I&apos;d do differently</h3>
-          <p>
-            Track delivery time and design bugs from the first day. &ldquo;About
-            half the time&rdquo; is my honest estimate; with those numbers it
-            would be a measured one.
-          </p>
+          <h3>The trade-off, and what I&apos;d change</h3>
+          <Pointers items={NEXT_TIME} />
         </Copy>
       </div>
     </Chapter>
