@@ -54,7 +54,7 @@ export default function PreviewLink({
         <Link
           href={href}
           tabIndex={-1}
-          className="block overflow-hidden rounded-[16px] border border-line-soft bg-white shadow-[0_2px_0_rgba(200,204,212,0.45),0_16px_40px_rgba(30,5,37,0.08)]"
+          className="block overflow-hidden rounded-xl border border-line-soft bg-white shadow-[0_2px_0_rgba(200,204,212,0.45),0_16px_40px_rgba(30,5,37,0.08)]"
         >
           <span className="relative block h-[112px] bg-placeholder">
             {preview.image && (

@@ -17,7 +17,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
   return (
     <Wrapper
       href={work.href as string}
-      className={`group relative flex h-full min-w-0 flex-col rounded-[4px] border border-line/40 bg-background shadow-[0_2px_0_rgba(200,204,212,0.45)] ${
+      className={`group relative flex h-full min-w-0 flex-col rounded-sm border border-line/40 bg-background shadow-[0_2px_0_rgba(200,204,212,0.45)] ${
         isFlagship ? "lg:grid lg:grid-cols-[min(640px,calc(62.5%_-_136px))_minmax(0,1fr)]" : ""
       } ${
         isLink
@@ -31,9 +31,9 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
       {/* Media — fixed even heights instead of aspect ratios so nothing lands on a fractional px.
           Flagship: 338px + 2px border = 340px card. */}
       <div
-        className={`relative h-[224px] shrink-0 overflow-hidden rounded-t-[4px] border-b border-line/40 bg-placeholder ${work.nda ? "stamp-thud" : ""} ${
+        className={`relative h-[224px] shrink-0 overflow-hidden rounded-t-sm border-b border-line/40 bg-placeholder ${work.nda ? "stamp-thud" : ""} ${
           isFlagship
-            ? "md:h-[400px] lg:col-start-2 lg:row-start-1 lg:h-full lg:min-h-[338px] lg:rounded-l-none lg:rounded-r-[4px] lg:border-b-0 lg:border-l"
+            ? "md:h-[400px] lg:col-start-2 lg:row-start-1 lg:h-full lg:min-h-[338px] lg:rounded-l-none lg:rounded-r-sm lg:border-b-0 lg:border-l"
             : "md:h-[400px] lg:h-[340px]"
         }`}
       >

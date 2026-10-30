@@ -10,7 +10,7 @@ export type ProjectType = "Case study" | "Side project" | "Exploration" | "Taste
 export type Discipline = "Design systems" | "Product design" | "Interaction design" | "UX research" | "AI";
 
 const BASE =
-  "inline-flex h-[24px] shrink-0 items-center whitespace-nowrap rounded-[2px] px-[8px] font-brand text-[12px] uppercase leading-[16px] tracking-[0px]";
+  "inline-flex h-[24px] shrink-0 items-center whitespace-nowrap rounded-xs px-[8px] font-brand text-[12px] uppercase leading-[16px] tracking-[0px]";
 
 const TONES = {
   grape: "bg-grape text-white",

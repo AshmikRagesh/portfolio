@@ -102,7 +102,7 @@ function Section({ id, title, intro, children }: { id: string; title: string; in
 function Stage({ height = 336, content, children }: { height?: number; content: number; children: ReactNode }) {
   const inner = height / 1.5;
   return (
-    <div className="relative overflow-hidden rounded-[12px] border border-line-soft bg-white" style={{ height }}>
+    <div className="relative overflow-hidden rounded-lg border border-line-soft bg-white" style={{ height }}>
       {/* Drawn at real navbar size, centred, then scaled up so the detail shows */}
       <div className="absolute left-1/2 top-0 origin-top -translate-x-1/2 scale-150" style={{ width: SCENE_WIDTH, height: inner }}>
         <SceneTop.Provider value={Math.max(0, (inner - content) / 2)}>{children}</SceneTop.Provider>
@@ -154,7 +154,7 @@ function Tip({ bubble }: { bubble: Bubble }) {
 
 function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
   return (
-    <div className="overflow-x-auto rounded-[12px] border border-line-soft">
+    <div className="overflow-x-auto rounded-lg border border-line-soft">
       <table className="w-full min-w-[640px] border-collapse text-left">
         <thead className="bg-surface">
           <tr>
@@ -182,7 +182,7 @@ function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
 }
 
 function Code({ children }: { children: ReactNode }) {
-  return <code className="rounded-[4px] bg-surface px-[6px] py-[2px] font-brand text-[12px] text-heading">{children}</code>;
+  return <code className="rounded-sm bg-surface px-[6px] py-[2px] font-brand text-[12px] text-heading">{children}</code>;
 }
 
 // ── Sections ──────────────────────────────────────────────────────────────────
@@ -203,7 +203,7 @@ function Anatomy() {
   const width = 140 * scale;
   return (
     <div className="grid gap-[32px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start">
-      <div className="relative flex justify-center rounded-[12px] border border-line-soft bg-white py-[48px]">
+      <div className="relative flex justify-center rounded-lg border border-line-soft bg-white py-[48px]">
         <div className="relative" style={{ width, height: height + 60 }}>
           <HostCharacter holding style={{ width, height }} className="block" />
           {PARTS.map(([x, y], i) => (
@@ -249,7 +249,7 @@ function Palette() {
   return (
     <div className="grid gap-[12px] grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {SWATCHES.map(([name, hex, use]) => (
-        <div key={name} className="overflow-hidden rounded-[12px] border border-line-soft">
+        <div key={name} className="overflow-hidden rounded-lg border border-line-soft">
           <div className="h-[64px]" style={{ background: hex }} />
           <div className="p-[12px]">
             <p className="font-body font-medium text-[14px] leading-[20px] text-heading">{name}</p>
@@ -271,7 +271,7 @@ function Moods() {
   return (
     <div className="grid gap-[16px] md:grid-cols-3">
       {moods.map(([mood, name, note]) => (
-        <div key={mood} className="rounded-[12px] border border-line-soft p-[24px]">
+        <div key={mood} className="rounded-lg border border-line-soft p-[24px]">
           <div className="flex h-[140px] items-center justify-center">
             <HostCharacter mood={mood} style={{ width: 150, height: 140 }} className="block" />
           </div>
@@ -455,7 +455,7 @@ export default function HostStates() {
 
           <Section id="usage" title="Do's and don'ts">
             <div className="grid gap-[16px] md:grid-cols-2">
-              <div className="rounded-[12px] border border-line-soft p-[24px]">
+              <div className="rounded-lg border border-line-soft p-[24px]">
                 <p className="font-brand text-[12px] uppercase tracking-[1px] text-success">Do</p>
                 <ul className="mt-[12px] flex flex-col gap-[8px] font-body text-[14px] leading-[22px] text-secondary list-disc pl-[20px]">
                   <li>Keep it at 56px tall in the navbar.</li>
@@ -465,7 +465,7 @@ export default function HostStates() {
                   <li>Show one thing at a time below it: the board or a tooltip.</li>
                 </ul>
               </div>
-              <div className="rounded-[12px] border border-line-soft p-[24px]">
+              <div className="rounded-lg border border-line-soft p-[24px]">
                 <p className="font-brand text-[12px] uppercase tracking-[1px] text-warning">Don&apos;t</p>
                 <ul className="mt-[12px] flex flex-col gap-[8px] font-body text-[14px] leading-[22px] text-secondary list-disc pl-[20px]">
                   <li>Draw it smaller than 40px — the eyes stop reading.</li>

@@ -290,7 +290,7 @@ export default function TasteNotes() {
               onClick={() => open(i)}
               aria-haspopup="dialog"
               aria-label={`${n.title} — ${n.summary} ${n.date}, ${n.readTime}`}
-              className={`group block w-full cursor-pointer rounded-[4px] text-left transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:rotate-0 focus-visible:rotate-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-8 motion-reduce:transition-none ${
+              className={`group block w-full cursor-pointer rounded-sm text-left transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:rotate-0 focus-visible:rotate-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-8 motion-reduce:transition-none ${
                 active === i ? "!rotate-0" : TILTS[i % TILTS.length]
               }`}
             >
@@ -358,14 +358,14 @@ export default function TasteNotes() {
               className="absolute left-[calc(50%_-_min(360px,50vw_-_12px))] top-[max(72px,16vh)] h-[100vh] w-[min(720px,100vw_-_24px)] origin-center outline-none will-change-transform [transform-style:preserve-3d] md:top-[max(88px,28vh)] md:aspect-[1/1.414] md:h-auto"
             >
               {/* Back — blank, facing out of the mailer until it turns over */}
-              <div ref={back} aria-hidden="true" className="absolute inset-0 rounded-[8px] bg-[#eeeae0] shadow-[0_2px_8px_rgba(30,5,37,0.18)] [backface-visibility:hidden] [transform:rotateX(180deg)]">
+              <div ref={back} aria-hidden="true" className="absolute inset-0 rounded-md bg-[#eeeae0] shadow-[0_2px_8px_rgba(30,5,37,0.18)] [backface-visibility:hidden] [transform:rotateX(180deg)]">
                 <PaperTexture />
                 <PaperFolds />
               </div>
 
               {/* Front — warm sheet, soft corners, a little thickness at the edge, a
                   bow across its width, and the folds it was posted in */}
-              <div ref={front} className="absolute inset-0 overflow-hidden rounded-[8px] bg-[#f7f4ec] [backface-visibility:hidden] shadow-[0_1px_0_rgba(30,5,37,0.08),0_-8px_40px_rgba(30,5,37,0.22),0_30px_60px_rgba(30,5,37,0.18),inset_0_0_0_1px_rgba(120,100,70,0.08)]">
+              <div ref={front} className="absolute inset-0 overflow-hidden rounded-md bg-[#f7f4ec] [backface-visibility:hidden] shadow-[0_1px_0_rgba(30,5,37,0.08),0_-8px_40px_rgba(30,5,37,0.22),0_30px_60px_rgba(30,5,37,0.18),inset_0_0_0_1px_rgba(120,100,70,0.08)]">
                 <PaperTexture />
                 <div
                   aria-hidden="true"

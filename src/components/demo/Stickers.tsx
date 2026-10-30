@@ -17,8 +17,8 @@ export function Postcard({ flipped }: { flipped: boolean }) {
     <div className="flip h-[160px] w-[240px]" data-flipped={flipped}>
       <div className="flip-inner">
         {/* Front */}
-        <div className="flip-face overflow-hidden rounded-[4px] bg-vanilla p-[6px] shadow-[0_2px_6px_rgba(30,5,37,0.12)]">
-          <div className="relative flex h-full flex-col items-center justify-center rounded-[2px] border border-primary/20 bg-pink/40">
+        <div className="flip-face overflow-hidden rounded-sm bg-vanilla p-[6px] shadow-[0_2px_6px_rgba(30,5,37,0.12)]">
+          <div className="relative flex h-full flex-col items-center justify-center rounded-xs border border-primary/20 bg-pink/40">
             <span className="font-handwriting text-[24px] leading-[20px] text-grape">Greetings from</span>
             <span
               className="mt-1 font-heading text-[36px] font-medium uppercase leading-[36px] tracking-[0px] text-grape"
@@ -35,7 +35,7 @@ export function Postcard({ flipped }: { flipped: boolean }) {
 
         {/* Back */}
         <div
-          className="flip-face flip-back grid grid-cols-[1fr_1px_88px] gap-3 rounded-[4px] p-3 shadow-[0_2px_6px_rgba(30,5,37,0.12)]"
+          className="flip-face flip-back grid grid-cols-[1fr_1px_88px] gap-3 rounded-sm p-3 shadow-[0_2px_6px_rgba(30,5,37,0.12)]"
           style={{ background: PAPER }}
         >
           <p className="m-0 font-handwriting text-[20px] leading-[20px] text-primary">
@@ -143,7 +143,7 @@ export function DoNotDisturb({ calm }: { calm: boolean }) {
 /** Guest Wi-Fi card — the contact details. */
 export function WifiCard() {
   return (
-    <div className="h-[120px] w-[208px] rounded-[4px] border border-line/60 bg-white p-4 shadow-[0_2px_6px_rgba(30,5,37,0.12)]">
+    <div className="h-[120px] w-[208px] rounded-sm border border-line/60 bg-white p-4 shadow-[0_2px_6px_rgba(30,5,37,0.12)]">
       <div className="mb-3 flex items-center justify-between">
         <span className="font-brand text-[10px] uppercase leading-[12px] tracking-[2px] text-grape">Guest Wi-Fi</span>
         <Wifi size={16} strokeWidth={1.8} className="text-grape" />
@@ -161,7 +161,7 @@ export function WifiCard() {
 /** Passport that fills with a stamp per room visited. */
 export function Passport({ count, total }: { count: number; total: number }) {
   return (
-    <div className="flex h-[168px] w-[120px] flex-col items-center justify-between rounded-[6px] bg-midnight px-3 py-4 text-pink shadow-[0_2px_6px_rgba(30,5,37,0.25)]">
+    <div className="flex h-[168px] w-[120px] flex-col items-center justify-between rounded-md bg-midnight px-3 py-4 text-pink shadow-[0_2px_6px_rgba(30,5,37,0.25)]">
       <span className="font-brand text-[10px] uppercase leading-[12px] tracking-[3px]">Passport</span>
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="scribble" aria-hidden="true">
         <circle cx="24" cy="24" r="22" stroke="#f8c2f7" strokeWidth="1.4" />

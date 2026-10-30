@@ -35,7 +35,7 @@ const entries: Entry[] = [
 export default function Guestbook() {
   return (
     <section id="guestbook" aria-labelledby="guestbook-heading" className="page-container section-spacing scroll-mt-24">
-      <div className="demo-lamp w-full rounded-[4px] bg-primary p-6 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)] md:p-8 lg:p-12">
+      <div className="demo-lamp w-full rounded-sm bg-primary p-6 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)] md:p-8 lg:p-12">
         <div className="mb-8 grid grid-cols-1 items-end gap-4 pb-5 shadow-[inset_0_-1px_0_rgba(255,255,255,0.22)] md:mb-10 md:grid-cols-[minmax(0,1fr)_160px] md:gap-12">
           <div>
             <span className="mb-3 block font-brand text-[12px] uppercase leading-[16px] tracking-[2px] text-pink">Notes left by past guests</span>
@@ -61,7 +61,7 @@ export default function Guestbook() {
           {entries.map((t, i) => (
             <li key={t.name} className="min-w-0">
               <figure
-                className={`relative m-0 flex h-full flex-col rounded-[4px] border border-white/25 [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] p-5 text-heading shadow-[0_4px_18px_rgba(30,5,37,0.16)] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-4px] hover:!rotate-0 md:p-6 motion-reduce:!transform-none motion-reduce:transition-none ${
+                className={`relative m-0 flex h-full flex-col rounded-sm border border-white/25 [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] p-5 text-heading shadow-[0_4px_18px_rgba(30,5,37,0.16)] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-4px] hover:!rotate-0 md:p-6 motion-reduce:!transform-none motion-reduce:transition-none ${
                   i === 0 ? "-rotate-[0.35deg]" : "rotate-[0.4deg]"
                 }`}
               >

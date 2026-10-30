@@ -44,7 +44,7 @@ function RoomCard({ work, room, stayed, onEnter }: { work: FeaturedWork; room: s
     <Wrapper
       href={work.href as string}
       onClick={isOpen ? onEnter : undefined}
-      className={`group relative flex h-full min-w-0 flex-col rounded-[4px] border border-line/60 bg-white shadow-[0_2px_0_rgba(200,204,212,0.45)] ${
+      className={`group relative flex h-full min-w-0 flex-col rounded-sm border border-line/60 bg-white shadow-[0_2px_0_rgba(200,204,212,0.45)] ${
         isFlagship ? "lg:grid lg:grid-cols-[480px_minmax(0,1fr)]" : ""
       } ${
         isOpen
@@ -56,9 +56,9 @@ function RoomCard({ work, room, stayed, onEnter }: { work: FeaturedWork; room: s
 
       {/* Media */}
       <div
-        className={`relative h-[200px] shrink-0 overflow-hidden rounded-t-[4px] border-b border-line/60 bg-placeholder ${
+        className={`relative h-[200px] shrink-0 overflow-hidden rounded-t-sm border-b border-line/60 bg-placeholder ${
           isFlagship
-            ? "md:h-[320px] lg:col-start-2 lg:row-start-1 lg:h-full lg:min-h-[338px] lg:rounded-l-none lg:rounded-r-[4px] lg:border-b-0 lg:border-l"
+            ? "md:h-[320px] lg:col-start-2 lg:row-start-1 lg:h-full lg:min-h-[338px] lg:rounded-l-none lg:rounded-r-sm lg:border-b-0 lg:border-l"
             : "md:h-[320px] lg:h-[340px]"
         }`}
       >

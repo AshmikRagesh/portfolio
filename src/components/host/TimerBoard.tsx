@@ -31,7 +31,7 @@ export const BOARD_WIDTH = 184;
 function Half({ value, half, tall = false, className = "" }: { value: string; half: "top" | "bottom"; tall?: boolean; className?: string }) {
   return (
     <span
-      className={`absolute inset-x-0 h-1/2 overflow-hidden ${half === "top" ? "top-0 rounded-t-[4px] bg-[#2f2d31]" : "bottom-0 rounded-b-[4px] bg-[#28262a]"} ${className}`}
+      className={`absolute inset-x-0 h-1/2 overflow-hidden ${half === "top" ? "top-0 rounded-t-sm bg-[#2f2d31]" : "bottom-0 rounded-b-sm bg-[#28262a]"} ${className}`}
     >
       {/* Laid out at full card height, then clipped to this half */}
       <span
@@ -60,7 +60,7 @@ function FlapDigit({ value, narrow = false, tall = false }: { value: string; nar
   }, [value]);
 
   return (
-    <span className={`relative block ${tall ? (narrow ? "w-[22px] h-[34px]" : "w-[26px] h-[34px]") : narrow ? "w-[20px] h-[26px]" : "w-[24px] h-[26px]"} rounded-[4px] shadow-[0_2px_2px_rgba(0,0,0,0.5)] [perspective:100px]`}>
+    <span className={`relative block ${tall ? (narrow ? "w-[22px] h-[34px]" : "w-[26px] h-[34px]") : narrow ? "w-[20px] h-[26px]" : "w-[24px] h-[26px]"} rounded-sm shadow-[0_2px_2px_rgba(0,0,0,0.5)] [perspective:100px]`}>
       <Half value={value} half="top" tall={tall} />
       <Half value={flip ? flip.from : value} half="bottom" tall={tall} />
 
@@ -107,7 +107,7 @@ interface Props {
 // The dark window with the split-flap cards and their unit marks
 function Clock({ groups, units, tall = false, className = "" }: { groups: string[]; units: string[]; tall?: boolean; className?: string }) {
   return (
-    <div className={`${className} flex items-center justify-center gap-[4px] rounded-[6px] bg-[#1c1a1d] p-[4px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.7)]`}>
+    <div className={`${className} flex items-center justify-center gap-[4px] rounded-md bg-[#1c1a1d] p-[4px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.7)]`}>
       {groups.map((group, gi) => (
         <Fragment key={gi}>
           <span className="flex gap-[4px]">
@@ -153,12 +153,12 @@ export default function TimerBoard({ seconds, champion = false, grips = [], bare
 
       {/* Frame */}
       <div
-        className="relative rounded-[10px] p-[4px] shadow-[0_16px_32px_rgba(30,5,37,0.2),0_4px_10px_rgba(30,5,37,0.14),inset_0_1px_0_rgba(255,255,255,0.5),inset_0_-1px_0_rgba(0,0,0,0.25)]"
+        className="relative rounded-lg p-[4px] shadow-[0_16px_32px_rgba(30,5,37,0.2),0_4px_10px_rgba(30,5,37,0.14),inset_0_1px_0_rgba(255,255,255,0.5),inset_0_-1px_0_rgba(0,0,0,0.25)]"
         style={{ background: edition.frame }}
       >
         {/* Face */}
         <div
-          className="relative rounded-[8px] px-[8px] pt-[8px] pb-[8px] shadow-[inset_0_1px_3px_rgba(40,25,10,0.25),inset_0_-1px_0_rgba(255,255,255,0.7)]"
+          className="relative rounded-md px-[8px] pt-[8px] pb-[8px] shadow-[inset_0_1px_3px_rgba(40,25,10,0.25),inset_0_-1px_0_rgba(255,255,255,0.7)]"
           style={{ background: edition.face }}
         >
           {/* Engraved title — a light edge under the letters reads as cut into the face */}

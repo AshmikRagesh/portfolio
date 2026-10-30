@@ -129,7 +129,7 @@ function ExpandIcon() {
 }
 
 const ctaButton =
-  "group flex h-[48px] w-full items-center justify-center gap-[8px] rounded-[10px] bg-white px-[16px] font-brand text-[14px] uppercase tracking-[1px] text-midnight transition-colors duration-200 hover:bg-grape hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
+  "group flex h-[48px] w-full items-center justify-center gap-[8px] rounded-lg bg-white px-[16px] font-brand text-[14px] uppercase tracking-[1px] text-midnight transition-colors duration-200 hover:bg-grape hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
 
 const roundButton =
   "flex size-[48px] shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-200 hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
@@ -465,7 +465,7 @@ export default function ReelPlayer({
           <div className={`reel-stage pointer-events-none absolute inset-0 md:inset-y-[32px] lg:inset-x-[80px] ${many ? "md:inset-x-[80px]" : "md:inset-x-[32px]"}`}>
             <div className="relative flex h-full w-full md:h-auto md:w-auto md:gap-[16px]">
               {/* Panel */}
-              <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-[20px] bg-gradient-to-t from-midnight via-midnight/80 to-transparent p-[16px] pt-[96px] md:pointer-events-auto md:relative md:w-[var(--panel)] md:justify-between md:gap-[32px] md:rounded-[12px] md:border md:border-white/10 md:bg-white/[0.04] md:bg-none md:p-[24px] lg:p-[32px]">
+              <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-[20px] bg-gradient-to-t from-midnight via-midnight/80 to-transparent p-[16px] pt-[96px] md:pointer-events-auto md:relative md:w-[var(--panel)] md:justify-between md:gap-[32px] md:rounded-lg md:border md:border-white/10 md:bg-white/[0.04] md:bg-none md:p-[24px] lg:p-[32px]">
                 <div
                   key={`info-${index}`}
                   className={stepped ? "reel-info" : "reel-modal-ui"}
@@ -495,7 +495,7 @@ export default function ReelPlayer({
               {/* Video */}
               <div
                 ref={boxRef}
-                className="reel-player pointer-events-auto absolute inset-0 origin-top-left overflow-hidden bg-black md:relative md:inset-auto md:aspect-[9/16] md:rounded-[12px]"
+                className="reel-player pointer-events-auto absolute inset-0 origin-top-left overflow-hidden bg-black md:relative md:inset-auto md:aspect-[9/16] md:rounded-lg"
               >
                 {/* The reel leaving, held as its poster while the next one covers it */}
                 {slide && (

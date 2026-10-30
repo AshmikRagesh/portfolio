@@ -35,7 +35,7 @@ function SuggestionRow({
     <button
       type="button"
       onClick={onClick}
-      className="group flex items-center gap-1 w-full text-left px-2 py-2 rounded-[4px] hover:bg-grape-light/50 transition-colors duration-150"
+      className="group flex items-center gap-1 w-full text-left px-2 py-2 rounded-sm hover:bg-grape-light/50 transition-colors duration-150"
     >
       <CornerDownRight
         size={16}
@@ -61,7 +61,7 @@ function ChatInput({
   return (
     /* h-[100px] container: pb-6 (24px) + pt-4 (16px) + input (~52px) = ~92px, close enough */
     <div className="shrink-0 px-4 pt-4 pb-6 bg-surface">
-      <div className="flex items-center gap-3 bg-white border border-line rounded-[2px] px-3 py-[10px] focus-within:border-grape transition-colors duration-150">
+      <div className="flex items-center gap-3 bg-white border border-line rounded-xs px-3 py-[10px] focus-within:border-grape transition-colors duration-150">
         <input
           type="text"
           value={value}
@@ -201,7 +201,7 @@ export default function ChatDrawer() {
                   key={msg.id}
                   className={`flex justify-end px-5 py-2 ${i === 0 ? "pt-8" : ""}`}
                 >
-                  <div className="bg-white border border-line rounded-[2px] px-6 py-4 font-body text-[14px] leading-[20px] text-heading">
+                  <div className="bg-white border border-line rounded-xs px-6 py-4 font-body text-[14px] leading-[20px] text-heading">
                     {msg.content}
                   </div>
                 </div>

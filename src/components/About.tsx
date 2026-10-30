@@ -7,7 +7,7 @@ export default function About() {
       id="about"
       className="bg-background px-[20px] py-[60px] md:px-[60px] lg:px-[120px] lg:pt-[60px] lg:pb-[100px]"
     >
-      <div className="bg-vanilla rounded-[28px] p-8 flex flex-col gap-8 lg:p-14 lg:gap-12">
+      <div className="bg-vanilla rounded-2xl p-8 flex flex-col gap-8 lg:p-14 lg:gap-12">
 
         {/* Label */}
         <p className="font-brand font-medium text-[12px] uppercase tracking-[1.5px] text-muted">
@@ -24,7 +24,7 @@ export default function About() {
         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-[80px]">
 
           {/* Photo */}
-          <div className="relative w-full h-[260px] rounded-[16px] overflow-hidden shrink-0 lg:w-[320px] lg:h-[300px]">
+          <div className="relative w-full h-[260px] rounded-xl overflow-hidden shrink-0 lg:w-[320px] lg:h-[300px]">
             <Image
               src="/images/portrait.png"
               alt="Ashmik Ragesh"

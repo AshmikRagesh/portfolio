@@ -155,7 +155,7 @@ function Section({ id, title, intro, children }: { id: string; title: string; in
 
 function Swatch({ hex, name, code, use, note }: { hex: string; name: string; code?: string; use: string; note?: string }) {
   return (
-    <div className="overflow-hidden rounded-[12px] border border-line-soft">
+    <div className="overflow-hidden rounded-lg border border-line-soft">
       <div className="h-[64px] border-b border-line-soft" style={{ background: hex }} />
       <div className="p-[12px]">
         <p className="font-body font-medium text-[14px] leading-[20px] text-heading">{name}</p>
@@ -270,7 +270,7 @@ export default function PalettePage() {
           <Section id="illustration" title="Illustration" intro="Colours that belong to a drawn object rather than the interface. They are meant to sit outside the palette.">
             <div className="flex flex-col gap-[16px]">
               {ILLUSTRATION.map((set) => (
-                <div key={set.title} className="rounded-[12px] border border-line-soft p-[16px]">
+                <div key={set.title} className="rounded-lg border border-line-soft p-[16px]">
                   <p className="font-body font-medium text-[14px] leading-[20px] text-heading">{set.title}</p>
                   <p className="font-brand text-[12px] leading-[16px] text-muted">{set.where}</p>
                   <div className="mt-[12px] flex flex-wrap gap-[8px]">

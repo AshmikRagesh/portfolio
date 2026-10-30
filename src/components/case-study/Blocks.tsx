@@ -88,7 +88,7 @@ export function Figure({
   const title = name ?? label ?? "Image";
   return (
     <figure className="m-0 min-w-0">
-      <div className="overflow-hidden rounded-[4px] bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]">
+      <div className="overflow-hidden rounded-sm bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]">
         {video || src ? (
           <Media src={src} video={video} poster={poster} label={alt ?? title} narrated={narrated} />
         ) : (
@@ -132,7 +132,7 @@ export function Quotes({ items }: { items: { text: React.ReactNode; attribution:
         return (
           <li key={attribution} className="min-w-0">
             <figure
-              className={`relative m-0 flex h-full flex-col rounded-[4px] border border-line p-[20px] text-heading shadow-[0_4px_18px_rgba(30,5,37,0.10)] [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-4px] hover:!rotate-0 md:p-[24px] motion-reduce:!transform-none motion-reduce:transition-none ${
+              className={`relative m-0 flex h-full flex-col rounded-sm border border-line p-[20px] text-heading shadow-[0_4px_18px_rgba(30,5,37,0.10)] [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-4px] hover:!rotate-0 md:p-[24px] motion-reduce:!transform-none motion-reduce:transition-none ${
                 TILTS[i % TILTS.length]
               }`}
             >
@@ -176,7 +176,7 @@ export function CardGrid({
       {items.map(({ icon, title, description }) => (
         <div
           key={title}
-          className={`flex flex-col ${plain ? "gap-[12px]" : "gap-[16px] rounded-[16px] border border-line-soft bg-white p-[20px]"}`}
+          className={`flex flex-col ${plain ? "gap-[12px]" : "gap-[16px] rounded-xl border border-line-soft bg-white p-[20px]"}`}
         >
           <div className="shrink-0">{icon}</div>
           <div className={`flex flex-col ${plain ? "gap-[8px]" : "gap-[12px]"}`}>
@@ -209,7 +209,7 @@ export function ProblemStatement({
   consequence: string;
 }) {
   return (
-    <div className="-rotate-[0.35deg] rounded-[4px] border border-line p-[20px] shadow-[0_4px_18px_rgba(30,5,37,0.10)] [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] hover:rotate-0 md:p-[32px] motion-reduce:transform-none motion-reduce:transition-none">
+    <div className="-rotate-[0.35deg] rounded-sm border border-line p-[20px] shadow-[0_4px_18px_rgba(30,5,37,0.10)] [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] hover:rotate-0 md:p-[32px] motion-reduce:transform-none motion-reduce:transition-none">
       <div className="mb-[20px] flex items-center justify-between border-b border-line/60 pb-[10px]">
         <h3 className="font-brand text-[16px] font-medium uppercase leading-[20px] tracking-[0px] text-heading">
           The Problem Statement
@@ -218,7 +218,7 @@ export function ProblemStatement({
       </div>
       <p className="font-heading text-[20px] leading-[32px] text-secondary md:text-[24px] md:leading-[38px]">
         {situation}{" "}
-        <mark className="rounded-[2px] bg-grape px-[4px] text-white [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
+        <mark className="rounded-xs bg-grape px-[4px] text-white [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
           {consequence}
         </mark>
       </p>
@@ -275,7 +275,7 @@ export function StatTiles({
       {items.map(({ tag, stat, label, tone = "plain" }) => {
         const look = TILE[tone];
         return (
-          <div key={label} className={`flex flex-col gap-[16px] rounded-[16px] p-[24px] ${look.box}`}>
+          <div key={label} className={`flex flex-col gap-[16px] rounded-xl p-[24px] ${look.box}`}>
             {tag && (
               <div>
                 <Tag tone={look.tag}>{tag}</Tag>
@@ -368,7 +368,7 @@ export function OptionCard({
 }) {
   return (
     <div
-      className={`group relative rounded-[16px] bg-white p-[8px] ${
+      className={`group relative rounded-xl bg-white p-[8px] ${
         shipped ? "border-2 border-primary" : "border border-line-soft"
       }`}
     >
@@ -384,11 +384,11 @@ export function OptionCard({
           )}
           {children}
         </div>
-        <div className="flex overflow-hidden rounded-[10px]">
+        <div className="flex overflow-hidden rounded-lg">
           <ImagePlaceholder
             label={image}
             aspect="aspect-[4/3] md:aspect-auto md:h-full md:min-h-[280px]"
-            radius="rounded-[10px]"
+            radius="rounded-lg"
           />
         </div>
       </div>
@@ -512,7 +512,7 @@ export function Metrics({ items }: { items: { stat: string; label: string }[] })
   return (
     <div className="grid grid-cols-1 gap-[16px] md:grid-cols-3 md:gap-[24px]">
       {items.map(({ stat, label }) => (
-        <div key={stat} className="group/metric flex flex-col gap-[16px] rounded-[16px] bg-success-bg p-[24px]">
+        <div key={stat} className="group/metric flex flex-col gap-[16px] rounded-xl bg-success-bg p-[24px]">
           {/* The arrow rises a touch on hover */}
           <div className="flex justify-end transition-transform duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover/metric:-translate-y-[6px] motion-reduce:transition-none motion-reduce:group-hover/metric:translate-y-0">
             <TrendUpArrow />

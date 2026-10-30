@@ -58,7 +58,7 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
           </header>
 
           {/* The note on its sheet — the paper from the mailer, lying flat */}
-          <div className="mt-12 max-w-[720px] rounded-[8px] bg-[#f7f4ec] px-6 py-10 shadow-[0_1px_0_rgba(30,5,37,0.08),0_16px_40px_rgba(30,5,37,0.10),inset_0_0_0_1px_rgba(120,100,70,0.08)] md:mt-16 md:px-16 md:py-16">
+          <div className="mt-12 max-w-[720px] rounded-md bg-[#f7f4ec] px-6 py-10 shadow-[0_1px_0_rgba(30,5,37,0.08),0_16px_40px_rgba(30,5,37,0.10),inset_0_0_0_1px_rgba(120,100,70,0.08)] md:mt-16 md:px-16 md:py-16">
             <p className="m-0 text-pretty font-body text-[18px] leading-[32px] text-text-base md:text-[20px] md:leading-[34px]">
               {note.excerpt}
             </p>

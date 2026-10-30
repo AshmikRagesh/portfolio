@@ -63,7 +63,7 @@ export default function CheckIn({
         <div className="flex flex-wrap items-center justify-center gap-4">
           <a
             href="#rooms"
-            className="flex h-[44px] items-center gap-2 rounded-[10px] bg-primary px-5 font-brand font-medium text-[14px] uppercase leading-[20px] tracking-[1px] text-white transition-colors hover:bg-grape"
+            className="flex h-[44px] items-center gap-2 rounded-lg bg-primary px-5 font-brand font-medium text-[14px] uppercase leading-[20px] tracking-[1px] text-white transition-colors hover:bg-grape"
           >
             See the rooms <ArrowDown size={16} strokeWidth={1.8} />
           </a>

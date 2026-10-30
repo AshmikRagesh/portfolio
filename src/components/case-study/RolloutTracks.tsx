@@ -116,7 +116,7 @@ export default function RolloutTracks({
   return (
     <div className="font-geist">
       {/* Phones: no hover, so every lane shows its bar and what happened, all at once */}
-      <div className="rounded-[12px] bg-grape-light/30 p-[16px] md:hidden">
+      <div className="rounded-lg bg-grape-light/30 p-[16px] md:hidden">
         <div className="grid pb-[4px]" style={cols}>
           {months.map((m) => (
             <span key={m} className="text-[12px] font-medium uppercase leading-[16px] text-muted">
@@ -183,7 +183,7 @@ export default function RolloutTracks({
           tabIndex={0}
           aria-label="Rollout by month. Hover a bar or a month, click to keep it, or use the left and right arrow keys."
           onKeyDown={onKey}
-          className="rounded-[12px] bg-grape-light/30 p-[24px] pt-[44px] outline-none focus-visible:ring-2 focus-visible:ring-grape"
+          className="rounded-lg bg-grape-light/30 p-[24px] pt-[44px] outline-none focus-visible:ring-2 focus-visible:ring-grape"
         >
           {/* Month axis */}
           <div className={`${lane} mb-[4px]`}>
@@ -226,7 +226,7 @@ export default function RolloutTracks({
                       return (
                         <span
                           key={s.label}
-                          className={`absolute inset-y-0 flex items-center overflow-hidden whitespace-nowrap rounded-[8px] px-[10px] text-[12px] font-medium leading-[16px] transition-[opacity,transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                          className={`absolute inset-y-0 flex items-center overflow-hidden whitespace-nowrap rounded-md px-[10px] text-[12px] font-medium leading-[16px] transition-[opacity,transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                             TONE[s.tone].bar
                           } ${s.open && !now ? "[mask-image:linear-gradient(to_right,black_75%,transparent)]" : ""} ${
                             on ? "opacity-100" : "opacity-30"
@@ -311,12 +311,12 @@ export default function RolloutTracks({
             {cards.map(({ lane: l, on, label, detail, tone, ...s }) => (
               <li
                 key={l}
-                className={`flex flex-col gap-[8px] rounded-[12px] bg-white p-[16px] transition-[opacity,box-shadow] duration-200 motion-reduce:transition-none ${
+                className={`flex flex-col gap-[8px] rounded-lg bg-white p-[16px] transition-[opacity,box-shadow] duration-200 motion-reduce:transition-none ${
                   on ? "opacity-100 shadow-[0_4px_14px_rgba(50,7,62,0.08)] ring-1 ring-grape/30" : "opacity-50 ring-1 ring-line-soft"
                 }`}
               >
                 <span className="flex items-center gap-[8px] text-[12px] font-medium uppercase leading-[16px] text-muted">
-                  <span aria-hidden="true" className={`size-[10px] shrink-0 rounded-[3px] ${TONE[tone].dot}`} />
+                  <span aria-hidden="true" className={`size-[10px] shrink-0 rounded-sm ${TONE[tone].dot}`} />
                   {l}
                 </span>
                 <span className="flex items-baseline justify-between gap-[12px]">

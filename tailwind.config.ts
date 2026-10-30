@@ -47,11 +47,7 @@ const config: Config = {
         string,
         [string, { lineHeight: string; letterSpacing?: string }]
       >,
-      borderRadius: {
-        sm: tokens.borderRadius.sm,
-        md: tokens.borderRadius.md,
-        lg: tokens.borderRadius.lg,
-      },
+      borderRadius: { ...tokens.borderRadius },
     },
   },
   plugins: [],

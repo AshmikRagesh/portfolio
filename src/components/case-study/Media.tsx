@@ -124,7 +124,7 @@ function Speed({ rate, onPick }: { rate: number; onPick: (r: number) => void }) 
           role="menu"
           aria-label="Playback speed"
           onKeyDown={onMenuKey}
-          className="cs-pop absolute bottom-[44px] right-0 z-10 w-[148px] origin-bottom-right rounded-[12px] bg-[#1e0525]/90 p-[6px] font-geist shadow-[0_12px_32px_rgba(0,0,0,0.32)] ring-1 ring-white/10 backdrop-blur-md"
+          className="cs-pop absolute bottom-[44px] right-0 z-10 w-[148px] origin-bottom-right rounded-lg bg-[#1e0525]/90 p-[6px] font-geist shadow-[0_12px_32px_rgba(0,0,0,0.32)] ring-1 ring-white/10 backdrop-blur-md"
         >
           <p className="px-[10px] pb-[4px] pt-[6px] text-[12px] font-medium text-white/50">Speed</p>
           {[...SPEEDS].reverse().map((s) => (
@@ -137,7 +137,7 @@ function Speed({ rate, onPick }: { rate: number; onPick: (r: number) => void }) 
                 onPick(s);
                 setOpen(false);
               }}
-              className="flex h-[36px] w-full items-center justify-between rounded-[8px] px-[10px] text-left text-[14px] tabular-nums text-white/90 outline-none hover:bg-white/10 focus-visible:bg-white/15"
+              className="flex h-[36px] w-full items-center justify-between rounded-md px-[10px] text-left text-[14px] tabular-nums text-white/90 outline-none hover:bg-white/10 focus-visible:bg-white/15"
             >
               {speedName(s)}
               {s === rate && <CheckIcon />}
@@ -462,7 +462,7 @@ function Expanded({
         <CloseIcon />
       </button>
       <div
-        className="cs-pop overflow-hidden rounded-[12px] shadow-[0_32px_80px_rgba(0,0,0,0.5)] ring-1 ring-white/10"
+        className="cs-pop overflow-hidden rounded-lg shadow-[0_32px_80px_rgba(0,0,0,0.5)] ring-1 ring-white/10"
         style={{ aspectRatio: ratio, width: `min(100%, 1440px, calc((100dvh - 160px) * ${ratio}))` }}
       >
         {children}

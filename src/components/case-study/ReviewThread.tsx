@@ -185,8 +185,8 @@ export default function ReviewThread({
         </span>
         <p className={`m-0 text-[14px] leading-[20px] ${GH.muted}`}>
           <span className={`font-medium ${GH.text}`}>Designer</span> {merged ? "merged 1 commit into" : "wants to merge 1 commit into"}{" "}
-          <code className="whitespace-nowrap rounded-[6px] bg-[#ddf4ff] px-[6px] py-[2px] font-mono text-[12px] text-[#0969da]">main</code> from{" "}
-          <code className="whitespace-nowrap rounded-[6px] bg-[#ddf4ff] px-[6px] py-[2px] font-mono text-[12px] text-[#0969da]">{branch}</code>
+          <code className="whitespace-nowrap rounded-md bg-[#ddf4ff] px-[6px] py-[2px] font-mono text-[12px] text-[#0969da]">main</code> from{" "}
+          <code className="whitespace-nowrap rounded-md bg-[#ddf4ff] px-[6px] py-[2px] font-mono text-[12px] text-[#0969da]">{branch}</code>
         </p>
       </div>
 
@@ -251,7 +251,7 @@ export default function ReviewThread({
               <div className="relative flex items-start gap-[16px]">
                 <Avatar who={item.who} size={32} />
                 <div
-                  className="relative min-w-0 flex-1 rounded-[8px] border border-[#d0d7de] bg-white shadow-[0_1px_2px_rgba(31,35,40,0.06)]"
+                  className="relative min-w-0 flex-1 rounded-md border border-[#d0d7de] bg-white shadow-[0_1px_2px_rgba(31,35,40,0.06)]"
                 >
                   {/* The caret pointing at the avatar: a border-coloured triangle under a header-coloured one */}
                   <span
@@ -263,7 +263,7 @@ export default function ReviewThread({
                     className={`absolute left-[-6px] top-[10px] h-0 w-0 border-y-[6px] border-r-[6px] border-y-transparent border-r-[#f6f8fa]`}
                   />
                   <div
-                    className={`flex items-center justify-between gap-[12px] rounded-t-[8px] border-b px-[16px] py-[8px] md:px-[20px] text-[14px] leading-[24px] ${GH.border} ${GH.header} ${GH.muted}`}
+                    className={`flex items-center justify-between gap-[12px] rounded-t-md border-b px-[16px] py-[8px] md:px-[20px] text-[14px] leading-[24px] ${GH.border} ${GH.header} ${GH.muted}`}
                   >
                     <p className="m-0 min-w-0">
                     <span className={`font-semibold ${GH.text}`}>{item.name}</span>{" "}

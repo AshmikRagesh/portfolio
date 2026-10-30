@@ -5,12 +5,12 @@
  * Props:
  *   label  — short descriptor shown inside the box (e.g. "v0 prototype")
  *   aspect — Tailwind aspect-ratio class  (default: "aspect-[16/9]")
- *   radius — Tailwind border-radius class (default: "rounded-[4px]")
+ *   radius — Tailwind border-radius class (default: "rounded-sm")
  */
 export default function ImagePlaceholder({
   label,
   aspect = "aspect-[16/9]",
-  radius = "rounded-[4px]",
+  radius = "rounded-sm",
 }: {
   label: string;
   aspect?: string;

@@ -15,7 +15,7 @@ export default function CheckOut({ roomsStayed, totalRooms }: { roomsStayed: num
 
   return (
     <footer id="check-out" className="page-container scroll-mt-24 pb-4 pt-[72px] md:pb-6 md:pt-[96px] lg:pb-[40px] lg:pt-[128px]">
-      <div className="demo-lamp flex flex-col items-center gap-10 rounded-[24px] bg-midnight px-6 py-16 text-center text-white md:px-16 md:py-20 lg:rounded-[40px] lg:px-[180px] lg:py-[96px]">
+      <div className="demo-lamp flex flex-col items-center gap-10 rounded-2xl bg-midnight px-6 py-16 text-center text-white md:px-16 md:py-20 lg:rounded-3xl lg:px-[180px] lg:py-[96px]">
         <span className="font-brand text-[12px] uppercase leading-[16px] tracking-[2px] text-pink">Check-out</span>
         <h2 className="m-0 max-w-[16ch] text-balance font-heading text-[34px] font-normal leading-[38px] tracking-[-1px] md:text-[44px] md:leading-[48px] lg:text-[52px] lg:leading-[56px] lg:tracking-[-2px]">
           Thanks for staying.

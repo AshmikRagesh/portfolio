@@ -133,12 +133,12 @@ export default function Mailer({
       {/* Sheets inside — slide further out on hover */}
       <div
         aria-hidden="true"
-        className="absolute left-[9%] top-[58%] h-[35%] w-[81%] rotate-[1.4deg] rounded-[2px] border border-[rgba(82,69,85,0.1)] bg-[linear-gradient(170deg,#ffffff,#fcfcfb)] shadow-[0_1px_2px_rgba(0,0,0,0.18)] transition-transform duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-[26%] group-hover:rotate-[3deg] group-focus-visible:translate-y-[26%] motion-reduce:transition-none"
+        className="absolute left-[9%] top-[58%] h-[35%] w-[81%] rotate-[1.4deg] rounded-xs border border-[rgba(82,69,85,0.1)] bg-[linear-gradient(170deg,#ffffff,#fcfcfb)] shadow-[0_1px_2px_rgba(0,0,0,0.18)] transition-transform duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-[26%] group-hover:rotate-[3deg] group-focus-visible:translate-y-[26%] motion-reduce:transition-none"
       />
       <div
         ref={sheetRef}
         aria-hidden="true"
-        className="absolute left-[11%] top-[56%] h-[34%] w-[77%] -rotate-[0.6deg] rounded-[3px] border border-[rgba(82,69,85,0.1)] bg-[linear-gradient(175deg,#ffffff,#fdfdfc)] shadow-[0_1px_2px_rgba(0,0,0,0.16)] transition-transform delay-[40ms] duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-rotate-[2deg] group-hover:translate-y-[38%] group-focus-visible:translate-y-[38%] motion-reduce:transition-none"
+        className="absolute left-[11%] top-[56%] h-[34%] w-[77%] -rotate-[0.6deg] rounded-sm border border-[rgba(82,69,85,0.1)] bg-[linear-gradient(175deg,#ffffff,#fdfdfc)] shadow-[0_1px_2px_rgba(0,0,0,0.16)] transition-transform delay-[40ms] duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-rotate-[2deg] group-hover:translate-y-[38%] group-focus-visible:translate-y-[38%] motion-reduce:transition-none"
       />
 
       {/* The opening — the front panel's lip shades whatever is just inside it, so the

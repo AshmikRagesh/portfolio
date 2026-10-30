@@ -96,7 +96,7 @@ export default function Testimonials() {
               {testimonials.map((t, i) => (
                 <li key={i} className="min-w-0 md:last:odd:col-span-2 md:last:odd:mx-auto md:last:odd:w-[calc(50%_-_12px)] min-[960px]:last:odd:col-span-1 min-[960px]:last:odd:w-auto">
                   <figure
-                    className={`relative m-0 flex h-full flex-col rounded-[4px] border border-white/25 [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] p-5 text-heading shadow-[0_4px_18px_rgba(30,5,37,0.16)] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-4px] hover:!rotate-0 md:p-6 motion-reduce:!transform-none motion-reduce:transition-none ${
+                    className={`relative m-0 flex h-full flex-col rounded-sm border border-white/25 [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] p-5 text-heading shadow-[0_4px_18px_rgba(30,5,37,0.16)] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-4px] hover:!rotate-0 md:p-6 motion-reduce:!transform-none motion-reduce:transition-none ${
                       TILTS[i % TILTS.length]
                     }`}
                   >

@@ -43,10 +43,22 @@ export const tokens = {
     // Nanum Pen Script — handwritten decorative tags (loaded via next/font/google in layout.tsx)
     // Exposed under tailwind.config.ts as `font-handwriting`.
   },
+  // Corner radius — one scale for the whole site, every step even:
+  //   xs  2px  tiny marks (swatches, tooltip tips)
+  //   sm  4px  work cards, tags, small media
+  //   md  8px  chips, bars, inline code, small images
+  //   lg  12px buttons, inputs, image figures
+  //   xl  16px panels and large cards
+  //   2xl 24px feature cards
+  //   3xl 32px full-bleed bands
   borderRadius: {
+    xs: "2px",
     sm: "4px",
-    md: "7px",
+    md: "8px",
     lg: "12px",
+    xl: "16px",
+    "2xl": "24px",
+    "3xl": "32px",
   },
   // Typography scale — Scale B (Expressive, modular ratio ~1.333)
   // Each role has mobile / -md (≥768px) / -lg (≥1024px) variants.

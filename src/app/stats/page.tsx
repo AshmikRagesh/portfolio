@@ -22,7 +22,7 @@ function shortDate(iso: string) {
 
 function Section({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
   return (
-    <section className="flex flex-col gap-4 rounded-[12px] border border-line-soft p-4 md:p-6">
+    <section className="flex flex-col gap-4 rounded-lg border border-line-soft p-4 md:p-6">
       <div className="flex flex-col gap-1">
         <h2 className="font-heading font-medium text-h4 text-heading md:text-h4-md">{title}</h2>
         {note && <p className="text-caption text-muted">{note}</p>}
@@ -46,7 +46,7 @@ function BarList({ rows, limit = 8 }: { rows: Tally[]; limit?: number }) {
       {shown.map((r) => (
         <li key={r.label} className="grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)_40px] items-center gap-3" title={`${r.label}: ${r.count}`}>
           <span className="truncate text-body text-secondary">{r.label}</span>
-          <span className="h-2 rounded-r-[4px] bg-grape" style={{ width: `${(r.count / max) * 100}%`, minWidth: r.count ? 2 : 0 }} />
+          <span className="h-2 rounded-r-sm bg-grape" style={{ width: `${(r.count / max) * 100}%`, minWidth: r.count ? 2 : 0 }} />
           <span className="text-right font-brand text-caption text-text-base">{r.count}</span>
         </li>
       ))}
@@ -64,9 +64,9 @@ function DayColumns({ days }: { days: Tally[] }) {
         {days.map((d) => (
           <div key={d.label} className="group relative flex h-full flex-1 items-end" title={`${shortDate(d.label)}: ${d.count}`}>
             {d.count > 0 && (
-              <div className="w-full rounded-t-[4px] bg-grape group-hover:bg-primary" style={{ height: `${(d.count / max) * 100}%` }} />
+              <div className="w-full rounded-t-sm bg-grape group-hover:bg-primary" style={{ height: `${(d.count / max) * 100}%` }} />
             )}
-            <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-[4px] bg-midnight px-2 py-1 font-brand text-caption text-white group-hover:block">
+            <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-sm bg-midnight px-2 py-1 font-brand text-caption text-white group-hover:block">
               {shortDate(d.label)}: {d.count}
             </span>
           </div>
@@ -82,7 +82,7 @@ function DayColumns({ days }: { days: Tally[] }) {
 
 function Tile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-2 rounded-[12px] bg-surface p-4">
+    <div className="flex flex-col gap-2 rounded-lg bg-surface p-4">
       <span className="text-caption text-muted">{label}</span>
       <span className="font-heading text-h3 text-heading md:text-h3-md">{value}</span>
     </div>
@@ -101,11 +101,11 @@ function KeyForm({ wrong }: { wrong: boolean }) {
             type="password"
             autoComplete="current-password"
             required
-            className="h-[44px] rounded-[8px] border border-line px-3 font-brand text-body text-text-base outline-none focus:border-grape"
+            className="h-[44px] rounded-md border border-line px-3 font-brand text-body text-text-base outline-none focus:border-grape"
           />
         </label>
         {wrong && <p className="text-caption text-warning">That key didn&apos;t match.</p>}
-        <button type="submit" className="h-[44px] rounded-[8px] bg-primary font-brand text-body text-white hover:bg-grape">
+        <button type="submit" className="h-[44px] rounded-md bg-primary font-brand text-body text-white hover:bg-grape">
           Open stats
         </button>
       </form>

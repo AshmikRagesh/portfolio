@@ -29,7 +29,7 @@ export default function MoreDetail({
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((o) => !o)}
-        className={`group/more flex items-center gap-[8px] whitespace-nowrap rounded-[2px] py-[8px] font-brand text-[14px] font-normal uppercase tracking-[1px] transition-colors duration-200 hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${
+        className={`group/more flex items-center gap-[8px] whitespace-nowrap rounded-xs py-[8px] font-brand text-[14px] font-normal uppercase tracking-[1px] transition-colors duration-200 hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${
           open ? "text-grape" : "text-heading"
         }`}
       >
@@ -64,7 +64,7 @@ export default function MoreDetail({
       >
         <div className="min-h-0 overflow-hidden">
           <div
-            className={`mt-[24px] rounded-[16px] border border-line-soft bg-white p-[20px] transition-transform duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:p-[32px] motion-reduce:transition-none ${
+            className={`mt-[24px] rounded-xl border border-line-soft bg-white p-[20px] transition-transform duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:p-[32px] motion-reduce:transition-none ${
               open ? "translate-y-0" : "-translate-y-[12px]"
             }`}
           >

@@ -26,7 +26,7 @@ export default function BeforeAfter({ rows }: { rows: Row[] }) {
           <dd className="m-0 flex items-center gap-[16px]">
             <span
               aria-hidden="true"
-              className={`h-[40px] shrink-0 origin-left rounded-[8px] transition-transform duration-[900ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${TONE[row.tone]}`}
+              className={`h-[40px] shrink-0 origin-left rounded-md transition-transform duration-[900ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${TONE[row.tone]}`}
               style={{
                 width: `calc(${row.share} * (100% - 136px))`,
                 transform: `scaleX(${shown ? 1 : 0})`,

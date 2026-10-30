@@ -320,7 +320,7 @@ function FooterBell() {
               onClick={ring}
               onFocus={() => !touch && setHovered(true)}
               onBlur={() => setHovered(false)}
-              className="relative z-10 block cursor-pointer select-none rounded-[12px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
+              className="relative z-10 block cursor-pointer select-none rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
             >
               <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} className="block" style={{ width: layout.width, height }} />
             </button>

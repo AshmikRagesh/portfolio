@@ -251,10 +251,10 @@ export default function CuriosityBubble({
       {/* Pointer, up to the bell */}
       <span
         aria-hidden="true"
-        className={`${pointerFromMd ? "hidden md:block" : "block"} absolute -top-[4px] ${align === "center" ? "left-1/2 -ml-[4px]" : "left-[26px]"} w-[8px] h-[8px] rotate-45 rounded-[1px] bg-midnight`}
+        className={`${pointerFromMd ? "hidden md:block" : "block"} absolute -top-[4px] ${align === "center" ? "left-1/2 -ml-[4px]" : "left-[26px]"} w-[8px] h-[8px] rotate-45 rounded-xs bg-midnight`}
       />
       {/* The full line sizes the box (invisibly) so it doesn't grow as it types */}
-      <p className="relative grid rounded-[8px] bg-midnight px-[12px] py-[8px] font-geist font-normal text-[14px] leading-[20px] text-white shadow-[0_8px_20px_rgba(30,5,37,0.22)]">
+      <p className="relative grid rounded-md bg-midnight px-[12px] py-[8px] font-geist font-normal text-[14px] leading-[20px] text-white shadow-[0_8px_20px_rgba(30,5,37,0.22)]">
         <span aria-hidden="true" className="invisible [grid-area:1/1]">{bubble.message}</span>
         <span aria-hidden="true" className="[grid-area:1/1]">{bubble.typed}</span>
         <span role="status" aria-live="polite" className="sr-only">{bubble.message}</span>
