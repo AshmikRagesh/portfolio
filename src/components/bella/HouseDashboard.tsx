@@ -20,7 +20,7 @@ import { formatStay } from "@/lib/bella/passArt";
 import type { HouseStats } from "@/lib/curiosity/store";
 
 const BELL = "M48 214 Q48 140 100 140 Q152 140 152 214 Z M94 126 h12 v14 h-12 Z M38 212 h124 v14 h-124 Z";
-const MAX_BELLS = 14;
+const MAX_OTHERS = 6; // other guests' bells shown before the rest become "+N"
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const fmtDay = (iso: string, weekday = false) => {
@@ -288,9 +288,11 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
 }
 
 // Guests on the site right now, as bells on a front desk: the visitor's own bell in grape
-// with Bella's eyes and a "You" under it, everyone else's in soft lilac. They sway a little.
+// with Bella's eyes and a "You" under it, everyone else's in soft lilac, standing a little
+// in front of each other like a queue. Past MAX_OTHERS the rest are a "+N".
 function HereNow({ count }: { count: number }) {
-  const bells = Math.max(1, Math.min(count, MAX_BELLS));
+  const others = Math.max(0, count - 1);
+  const shown = Math.min(others, MAX_OTHERS);
   return (
     <div className={`flex flex-col gap-[12px] bg-grape-light/50 p-[24px] md:p-[32px] ${CARD}`}>
       <div className="flex items-baseline justify-between gap-[12px]">
@@ -306,30 +308,34 @@ function HereNow({ count }: { count: number }) {
 
       {/* The desk */}
       <div className="mt-auto flex flex-col pt-[8px]" aria-hidden="true">
-        <div className="flex items-end gap-[8px] px-[8px]">
-          {Array.from({ length: bells }, (_, i) => (
-            <span key={i} className="desk-bell flex flex-col items-center" style={{ animationDelay: `${i * 0.35}s` }}>
-              <svg viewBox="36 120 128 108" className={`w-auto ${i === 0 ? "h-[40px]" : "h-[28px]"}`}>
-                <path d={BELL} fill={i === 0 ? "#9D136A" : "rgba(157,19,106,0.28)"} />
-                {i === 0 && (
-                  <g>
-                    <ellipse cx="86" cy="184" rx="9" ry="11" fill="#fff" />
-                    <ellipse cx="114" cy="184" rx="9" ry="11" fill="#fff" />
-                    <circle cx="88" cy="186" r="5" fill="#32073e" />
-                    <circle cx="116" cy="186" r="5" fill="#32073e" />
-                  </g>
-                )}
-              </svg>
-            </span>
+        <div className="flex items-end px-[8px]">
+          <svg viewBox="36 120 128 108" className="h-[40px] w-auto shrink-0">
+            <path d={BELL} fill="#9D136A" />
+            <ellipse cx="86" cy="184" rx="9" ry="11" fill="#fff" />
+            <ellipse cx="114" cy="184" rx="9" ry="11" fill="#fff" />
+            <circle cx="88" cy="186" r="5" fill="#32073e" />
+            <circle cx="116" cy="186" r="5" fill="#32073e" />
+          </svg>
+          {Array.from({ length: shown }, (_, i) => (
+            <svg
+              key={i}
+              viewBox="30 114 140 118"
+              className={`relative h-[30px] w-auto shrink-0 ${i ? "-ml-[8px]" : "ml-[6px]"}`}
+              style={{ zIndex: MAX_OTHERS - i }}
+            >
+              <path d={BELL} fill="#E7C6DC" stroke="#FCF2FF" strokeWidth="10" strokeLinejoin="round" paintOrder="stroke" />
+            </svg>
           ))}
-          {count > MAX_BELLS && <span className="pb-[2px] font-body text-[12px] leading-[16px] text-muted">+{count - MAX_BELLS}</span>}
+          {others > MAX_OTHERS && (
+            <span className="ml-[8px] pb-[2px] font-body text-[14px] leading-[20px] text-secondary tabular-nums">+{others - MAX_OTHERS}</span>
+          )}
         </div>
         <span className="h-[6px] rounded-full bg-heading/15" />
         <span className="mt-[6px] w-[64px] text-center font-brand text-[10px] uppercase leading-[12px] tracking-[1px] text-grape">You</span>
       </div>
 
       <p className="font-body text-[14px] leading-[20px] text-muted">
-        {count <= 1 ? "Just you at the desk" : `You and ${count - 1} ${count === 2 ? "other" : "others"}`}
+        {count <= 1 ? "Just you at the desk" : `You and ${others} ${others === 1 ? "other" : "others"}`}
       </p>
     </div>
   );

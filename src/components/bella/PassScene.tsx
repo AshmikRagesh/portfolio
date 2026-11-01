@@ -12,7 +12,8 @@
 //   72%+     the visitor's numbers on the pass fade in; once settled the pass leans to
 //            the pointer
 // Every time the page loads it starts at the top with the envelope sealed. Once opened it
-// stays open while they're on the page, and the section shrinks to one screen, so
+// stays open while they're on the page, and the section shrinks to one screen (on a phone,
+// just the pass), so
 // scrolling back up doesn't close it or take long. `onOpen` fires
 // once the pass is out, so the page can hold the rest back until then.
 //
@@ -24,6 +25,7 @@ import { useEffect, useRef, useState, type ReactElement } from "react";
 import { ringBell } from "@/components/host/bellSound";
 
 const OLD_KEY = "ash.bella.passOpened"; // once kept the pass open for good; cleared on load
+const NAV = 88; // the navbar's height on a phone
 
 
 const BELL_PATH =
@@ -147,29 +149,49 @@ export default function PassScene({
       // Opened once, it stays open, and the long scroll it took folds away: the section
       // drops to one screen and the page shifts up by the same amount, so the view doesn't
       // jump and scrolling back up reaches the top straight away
-      if (p >= 0.92 && !locked) {
-        locked = true;
-        const fold = el.offsetHeight - vh;
-        el.classList.add("is-open");
-        window.scrollTo(0, Math.max(0, window.scrollY - fold));
-        onOpenRef.current?.();
-      }
-      if (locked) p = 1;
-
+      const narrow = vw < 640;
       const W = Math.min(620, vw * 0.86, vh * 0.9);
       const H = (W * 5) / 7;
-      // Where the envelope sits at first: under the title, running off the bottom. On a
-      // short screen it shrinks so the seal and Scroll to open still fit.
-      const base = Math.max(320, vh * 0.4);
-      const envW = Math.max(W * 1.08, Math.min(W * 1.3, (vh - base - 64) / 0.521)), envH = (envW * 5) / 7;
+      const finalScale = 1.06;
+      // Settled: in the middle of the screen, or on a phone just under the navbar so the
+      // house follows close behind
+      const settledTop = narrow ? 120 : (vh - H * finalScale) / 2 + 32;
+      const openH = narrow ? settledTop + H * finalScale + 40 : vh;
+
+      if (p >= 0.92 && !locked) {
+        locked = true;
+        const pageTop = window.scrollY + el.getBoundingClientRect().top;
+        el.classList.add("is-open");
+        el.style.height = `${openH}px`;
+        window.scrollTo(0, pageTop);
+        onOpenRef.current?.();
+      }
+      if (locked) {
+        p = 1;
+        el.style.height = `${openH}px`;
+      }
+
+      // Where the envelope sits at first: under the title, running off the bottom, with
+      // the seal and Scroll to open (0.521 of its width down) just above the fold. On a
+      // phone it's wider than the screen and sits as low as that allows.
+      let base: number, envW: number;
+      if (narrow) {
+        // The title sits in the middle of the space left above the envelope
+        const headH = headRef.current?.offsetHeight ?? 200;
+        envW = Math.max(W * 1.08, Math.min(vw * 1.4, (vh - 64 - (NAV + headH + 64)) / 0.521));
+        base = vh - 64 - envW * 0.521;
+        if (headRef.current) headRef.current.style.top = `${Math.max(NAV + 24, NAV + (base - NAV - headH) / 2)}px`;
+      } else {
+        base = Math.max(320, vh * 0.4);
+        envW = Math.max(W * 1.08, Math.min(W * 1.3, (vh - base - 64) / 0.521));
+      }
+      const envH = (envW * 5) / 7;
       const envTop = base + vh * 0.85 * inn(seg(p, 0.48, 0.72));
       const envFade = 1 - seg(p, 0.6, 0.72);
 
       // The pass: inside, risen out, then settled in the middle
       const inside = base + envH - H - 16; // tucked fully inside the pocket
       const risen = base - H * 0.45;
-      const finalScale = 1.06;
-      const settledTop = (vh - H * finalScale) / 2 + 32;
       const rise = out(seg(p, 0.22, 0.52));
       const settle = inOut(seg(p, 0.5, 0.8));
       const top = lerp(lerp(inside, risen, rise), settledTop, settle);
