@@ -291,7 +291,8 @@ export default function PassScene({
               <path d="M700 0 L328 268 Q322 273 328 278 L700 500 Z" fill="url(#pss1)" />
               <path d="M0 500 L330 226 Q350 212 370 226 L700 500 Z" fill="url(#pss2)" />
               <path d="M0 0 L372 268 M700 0 L328 268 M0 500 L330 226 Q350 212 370 226 L700 500" fill="none" stroke="#fff" strokeOpacity="0.08" strokeWidth="2" />
-              <rect x="1" y="1" width="698" height="498" rx="4" fill="none" stroke="#fff" strokeOpacity="0.06" strokeWidth="2" />
+              {/* Sides and bottom only: a top edge here would cross the pass as it comes out */}
+              <path d="M1 1 V499 H699 V1" fill="none" stroke="#fff" strokeOpacity="0.06" strokeWidth="2" />
             </svg>
           </div>
         </div>

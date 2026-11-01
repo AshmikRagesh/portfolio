@@ -149,31 +149,38 @@ function StampsFound({ stamps }: { stamps: HouseStats["stamps"] }) {
         <p className="font-geist text-[14px] leading-[20px] text-secondary">Stamps found by guests</p>
         <p className="font-geist text-[12px] leading-[16px] text-muted">% of visits</p>
       </div>
-      <ul ref={ref} className="flex flex-col gap-[4px]">
+      <ul ref={ref} className="-mx-[8px] flex flex-col gap-[4px]">
         {STAMPS.map((s, i) => {
           const pct = stamps[s.key] ?? 0;
           return (
+            // Hover or focus swaps the bar for how the stamp is found; the row keeps its height
             <li
               key={s.key}
-              title={s.earned}
-              className="group grid grid-cols-[36px_minmax(0,1fr)_40px] items-center gap-[12px] rounded-[12px] px-[8px] py-[6px] transition-colors hover:bg-grape-light/60"
+              tabIndex={0}
+              aria-label={`${s.name}: ${pct}% of visits. ${s.earned}`}
+              className="group grid grid-cols-[36px_minmax(0,1fr)_40px] items-center gap-[12px] rounded-[12px] px-[8px] py-[8px] outline-none transition-colors hover:bg-grape-light/60 focus-visible:bg-grape-light/60 focus-visible:ring-2 focus-visible:ring-grape/40"
             >
-              <Stamp stamp={s.key} className="h-[36px] w-[36px] transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110" />
-              <div className="flex flex-col gap-[6px]">
+              <Stamp stamp={s.key} className="h-[36px] w-[36px] transition-transform duration-300 group-hover:-rotate-6 group-focus-visible:-rotate-6" />
+              <div className="flex min-w-0 flex-col gap-[4px] group-hover:col-span-2 group-focus-visible:col-span-2">
                 <span className="font-geist text-[14px] leading-[20px] text-heading">{s.name}</span>
-                <span className="relative block h-[6px] overflow-hidden rounded-full bg-line-soft" aria-hidden="true">
-                  <span
-                    className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                    style={{ width: seen ? `${Math.max(pct ? 2 : 0, pct)}%` : "0%", background: STAMP_INK[s.key], transitionDelay: `${i * 60}ms` }}
-                  />
+                <span className="grid h-[16px] items-center" aria-hidden="true">
+                  <span className="relative col-start-1 row-start-1 block h-[6px] overflow-hidden rounded-full bg-line-soft transition-opacity duration-200 group-hover:opacity-0 group-focus-visible:opacity-0">
+                    <span
+                      className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                      style={{ width: seen ? `${Math.max(pct ? 2 : 0, pct)}%` : "0%", background: STAMP_INK[s.key], transitionDelay: `${i * 60}ms` }}
+                    />
+                  </span>
+                  <span className="col-start-1 row-start-1 translate-y-[2px] truncate whitespace-nowrap font-geist text-[12px] leading-[16px] text-secondary opacity-0 transition-[opacity,transform] duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+                    {s.earned}
+                  </span>
                 </span>
               </div>
-              <span className="text-right font-geist text-[14px] leading-[20px] text-secondary tabular-nums group-hover:text-heading">{pct}%</span>
+              <span className="text-right font-geist text-[14px] leading-[20px] text-secondary tabular-nums group-hover:hidden group-focus-visible:hidden">{pct}%</span>
             </li>
           );
         })}
       </ul>
-      <p className="font-geist text-[12px] leading-[16px] text-muted">Hover a stamp to see how it’s found.</p>
+      <p className="font-geist text-[12px] leading-[16px] text-muted">Hover or tab to a stamp to see how it’s found.</p>
     </div>
   );
 }
