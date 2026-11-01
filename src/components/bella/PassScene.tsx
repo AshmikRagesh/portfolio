@@ -158,9 +158,10 @@ export default function PassScene({
 
       const W = Math.min(620, vw * 0.86, vh * 0.9);
       const H = (W * 5) / 7;
-      const envW = W * 1.3, envH = (envW * 5) / 7;
-      // Where the envelope sits at first: under the title, running off the bottom
-      const base = Math.max(vh * 0.13 + 160, vh * 0.4);
+      // Where the envelope sits at first: under the title, running off the bottom. On a
+      // short screen it shrinks so the seal and Scroll to open still fit.
+      const base = Math.max(320, vh * 0.4);
+      const envW = Math.max(W * 1.08, Math.min(W * 1.3, (vh - base - 64) / 0.521)), envH = (envW * 5) / 7;
       const envTop = base + vh * 0.85 * inn(seg(p, 0.48, 0.72));
       const envFade = 1 - seg(p, 0.6, 0.72);
 

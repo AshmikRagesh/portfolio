@@ -294,7 +294,7 @@
 @media (prefers-reduced-motion: reduce) { .pass-after { animation: none; } }
 
 .ps-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
-.ps-head { position: absolute; left: 0; right: 0; top: 13vh; text-align: center; display: grid; gap: 12px; justify-items: center; will-change: transform, opacity; }
+.ps-head { position: absolute; left: 0; right: 0; top: 132px; padding: 0 16px; text-align: center; display: grid; gap: 12px; justify-items: center; will-change: transform, opacity; }
 .ps-env, .ps-card { position: absolute; left: 50%; top: 0; will-change: transform; }
 .ps-env-part { position: absolute; inset: 0; }
 .ps-env-part svg { display: block; width: 100%; height: 100%; overflow: visible; }

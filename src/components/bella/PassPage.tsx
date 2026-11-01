@@ -93,7 +93,7 @@ export default function PassPage() {
       <h1 className="font-heading text-[40px] font-medium leading-[44px] text-heading md:text-[52px] md:leading-[56px]">
         Your Curiosity Pass
       </h1>
-      <p className="max-w-[440px] font-geist text-[16px] leading-[24px] text-secondary">
+      <p className="max-w-[560px] font-geist text-[20px] leading-[28px] text-secondary">
         Your guest number, the day you arrived and how long you’ve stayed, sealed inside.
       </p>
     </>
