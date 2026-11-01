@@ -32,3 +32,4 @@ export {
   ImpactList,
   Footnote,
 } from "./Blocks";
+export { default as BellaMoods } from "./BellaMoods";
