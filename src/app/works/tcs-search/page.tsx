@@ -87,20 +87,19 @@ function Overview() {
 // ─────────────────────────────────────────────────────────────────────────────
 function TheProblem() {
   return (
-    <Chapter id="the-problem" num={1} title="Every search showed almost every trip">
+    <Chapter id="the-problem" num={1} title="Travellers knew what they wanted. Search couldn't show it to them.">
       <Copy>
         <p>
-          TCS has about 46 trips on sale. On the old search page, typing
-          &ldquo;Summer in Japan&rdquo; showed about 48 trip cards, Exploring
-          Africa among the first six. There were no filters, no result count
-          and no sort, and the cards didn&apos;t say where a trip went. The only
-          way to find the Japan trips was to scroll through all of them.
+          People search with a clear idea, like a place, a month or a kind of
+          trip. The old page answered every search with almost all of
+          TCS&apos;s 46 trips: no filters, no count, no sort, and no route on
+          the cards. TCS had no search data to show what this cost them.
         </p>
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Search returned close to the whole catalogue, with no way to narrow it by place, date or type of trip."
-          consequence="Travellers with a clear idea of what they wanted had to dig for it, at the moment they were most ready to enquire."
+          situation="Every search returned close to the whole catalogue, with no way to narrow it by place, date or type of trip."
+          consequence="We believed travellers who were ready to enquire gave up first, and TCS lost those leads."
         />
       </Visual>
     </Chapter>
