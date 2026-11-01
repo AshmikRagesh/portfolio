@@ -48,6 +48,17 @@ export const featuredWorks: FeaturedWork[] = [
   {
     type: "Case study",
     discipline: "Product design",
+    title: "From every trip at once to the few that fit: filters for TCS search",
+    description:
+      "Redesigned the TCS World Travel search page with filters, a result count and a no-results page that always leads somewhere. Live since July 2026.",
+    image: "/images/works-cover.png",
+    imageAlt: "TCS World Travel search preview",
+    href: "/works/tcs-search",
+    layout: "flagship",
+  },
+  {
+    type: "Case study",
+    discipline: "Product design",
     title: "Streamlining the reservations module in Artemis 3.0",
     description:
       "Introducing auto‑save, in‑app notifications, and categorised flights—reducing booking errors and cutting task completion time by 35%.",
