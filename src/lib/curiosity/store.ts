@@ -22,11 +22,12 @@
 //   curiosity:days                   hash, YYYY-MM-DD (UTC) → visits started that day
 //   curiosity:referrers              hash, referrer host or "direct" → visits
 //   curiosity:devices                hash, mobile | tablet | desktop → visits
+//   curiosity:events                 hash, Bella event → visits that did it (once per visit)
 //
 // The sorted sets are what Phase 2 reads: rank and count on them give "you've
 // stayed longer than N% of visitors" in a single round trip.
 
-import { MIN_RANK_SAMPLE, type CuriosityPayload, type RankResult } from "./config";
+import { MIN_RANK_SAMPLE, type BellaEvent, type CuriosityPayload, type RankResult } from "./config";
 
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -99,6 +100,16 @@ export async function recordVisit(p: CuriosityPayload) {
       ["HINCRBY", "curiosity:devices", p.viewport, 1],
     ]);
   }
+}
+
+/** Count a Bella event once per visit — SET NX on a per-visit marker, like visits. */
+export async function recordEvent(visitId: string, event: BellaEvent) {
+  if (!storeConfigured) {
+    if (process.env.NODE_ENV !== "production") console.log(`[curiosity] event ${event} visit=${visitId.slice(0, 8)}`);
+    return;
+  }
+  const [{ result }] = await pipeline([["SET", `curiosity:visit:${visitId}:event:${event}`, 1, "NX", "EX", VISIT_TTL_SECONDS]]);
+  if (result === "OK") await pipeline([["HINCRBY", "curiosity:events", event, 1]]);
 }
 
 /**

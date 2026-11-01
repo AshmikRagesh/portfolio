@@ -9,6 +9,7 @@
 // so it says nothing about attention.
 
 import { useEffect, useId, useSyncExternalStore } from "react";
+import { track } from "./report";
 
 const sources = new Set<string>();
 const listeners = new Set<() => void>();
@@ -18,6 +19,7 @@ function set(id: string, on: boolean) {
   if (on) sources.add(id);
   else sources.delete(id);
   if (before !== sources.size > 0) listeners.forEach((l) => l());
+  if (!before && on) track("video_watch");
 }
 
 export const isWatching = () => sources.size > 0;

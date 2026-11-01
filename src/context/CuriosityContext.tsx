@@ -25,7 +25,7 @@ import {
   TICK_MS,
 } from "@/lib/curiosity/config";
 import { loadSession, saveSession, type VisitorRecord, type VisitRecord } from "@/lib/curiosity/visitor";
-import { referrerHost, report, viewportBucket } from "@/lib/curiosity/report";
+import { referrerHost, report, setReportIds, viewportBucket } from "@/lib/curiosity/report";
 import { isWatching, onWatchingChange } from "@/lib/curiosity/watching";
 
 interface CuriosityValue {
@@ -90,6 +90,7 @@ export function CuriosityProvider({ children }: { children: ReactNode }) {
       lastReported: 0, // nothing worth sending until there's at least a second
     };
     clock.current = s;
+    setReportIds(visitor.id, visit.id);
 
     const sync = (paused: boolean) => {
       s.visitor.lifetimeMs = s.priorLifetimeMs + s.visit.activeMs;

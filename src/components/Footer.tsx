@@ -7,6 +7,7 @@ import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { ringBell } from "@/components/host/bellSound";
 import { useWatching } from "@/lib/curiosity/watching";
 import { COPY_EMAIL_EVENT, EMAIL } from "@/lib/contact";
+import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
 import PaperTooth from "@/components/PaperTooth";
 
@@ -292,8 +293,9 @@ function FooterBell() {
 
   // Copy the email and hold the card up for a few seconds
   const cardTimer = useRef(0);
-  const copyEmail = useRef(() => {});
-  copyEmail.current = () => {
+  const copyEmail = useRef((from: "bella" | "button") => void from);
+  copyEmail.current = (from) => {
+    track(from === "button" ? "email_copy_button" : "email_copy_bella");
     ringBell();
     setDing((d) => d + 1);
     // Keep the card on screen when the bell is near either end of the counter
@@ -312,7 +314,7 @@ function FooterBell() {
     }
   };
   useEffect(() => {
-    const onCopy = () => copyEmail.current();
+    const onCopy = () => copyEmail.current("button");
     window.addEventListener(COPY_EMAIL_EVENT, onCopy);
     return () => {
       window.removeEventListener(COPY_EMAIL_EVENT, onCopy);
@@ -347,7 +349,7 @@ function FooterBell() {
             <button
               type="button"
               aria-label="Copy Ashmik's email address"
-              onClick={() => copyEmail.current()}
+              onClick={() => copyEmail.current("bella")}
               onFocus={() => !touch && setHovered(true)}
               onBlur={() => setHovered(false)}
               className="relative z-10 block cursor-pointer select-none rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"

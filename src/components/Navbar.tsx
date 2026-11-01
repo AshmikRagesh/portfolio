@@ -9,6 +9,7 @@ import { useCuriosity } from "@/context/CuriosityContext";
 import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/CuriosityBubble";
 import HostCharacter, { hostLayout, type HostGlasses, type HostMood } from "@/components/host/HostCharacter";
 import { useWatching } from "@/lib/curiosity/watching";
+import { track } from "@/lib/curiosity/report";
 import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useBellStage } from "@/components/host/BellStage";
@@ -125,6 +126,11 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   }, [ducked]);
   const champion = record || preview === "champion";
   const mood: HostMood = preview === "dozing" || (paused && !holding) ? "dozing" : champion ? "champion" : "idle";
+
+  // Count the sign being opened, once per visit, for the stats page
+  useEffect(() => {
+    if (holding && !preview) track("sign_open");
+  }, [holding, preview]);
 
   // It rings like a desk bell: when the board comes down, and before it says anything
   useEffect(() => {

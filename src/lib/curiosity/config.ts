@@ -51,6 +51,16 @@ export interface CuriosityPayload {
 export const MIN_RANK_SAMPLE = 10;
 
 export const RANK_PATH = "/api/curiosity/rank";
+export const EVENT_PATH = "/api/curiosity/event";
+
+/** What visitors do with Bella, counted once per visit for the stats page. */
+export const BELLA_EVENTS = {
+  sign_open: "Opened Bella's sign",
+  email_copy_bella: "Copied the email from Bella",
+  email_copy_button: "Copied the email from the button",
+  video_watch: "Watched a video",
+} as const;
+export type BellaEvent = keyof typeof BELLA_EVENTS;
 
 /** The record only counts once at least this many other visitors have had a go at it. */
 export const MIN_RECORD_FIELD = 3;

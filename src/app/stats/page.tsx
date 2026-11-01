@@ -162,6 +162,9 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           <Section title="Exit pages" note={`Last page seen, across the ${s.exitSample} newest visits`}>
             <BarList rows={s.exits} />
           </Section>
+          <Section title="Bella" note="Visits that did each, counted once per visit">
+            <BarList rows={s.events} limit={s.events.length} />
+          </Section>
         </div>
       </div>
     </main>

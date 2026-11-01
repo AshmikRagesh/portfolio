@@ -2,6 +2,7 @@
 // Reads everything the private /stats page shows in two round trips. Server only:
 // it talks to Upstash with the token, which must never reach the browser.
 
+import { BELLA_EVENTS } from "./config";
 import { pipeline, storeConfigured } from "./store";
 
 /** Visit length buckets for the distribution, as [label, upper bound in seconds). */
@@ -39,6 +40,8 @@ export interface Stats {
   exits: Tally[];
   exitSample: number;
   recordSeconds: number | null;
+  /** Visits that did each thing with Bella, in BELLA_EVENTS order. */
+  events: Tally[];
 }
 
 function hashToTallies(flat: string[] | null): Tally[] {
@@ -67,10 +70,11 @@ export async function readStats(): Promise<Stats> {
     exits: [],
     exitSample: 0,
     recordSeconds: null,
+    events: Object.values(BELLA_EVENTS).map((label) => ({ label, count: 0 })),
   };
   if (!storeConfigured) return empty;
 
-  const [visits, visitors, durations, days, referrers, devices, top, recent] = await pipeline([
+  const [visits, visitors, durations, days, referrers, devices, top, recent, events] = await pipeline([
     ["GET", "curiosity:visits"],
     ["ZCARD", "curiosity:board:alltime"],
     // ZRANGE comes back ascending by score, so the scores are already sorted for the median
@@ -80,6 +84,7 @@ export async function readStats(): Promise<Stats> {
     ["HGETALL", "curiosity:devices"],
     ["ZREVRANGE", "curiosity:board:alltime", 0, 0, "WITHSCORES"],
     ["ZREVRANGE", "curiosity:recent", 0, EXIT_SAMPLE - 1],
+    ["HGETALL", "curiosity:events"],
   ]).then((rows: { result: unknown }[]) => rows.map((r) => r.result));
 
   const flat = (durations as string[]) ?? [];
@@ -123,5 +128,9 @@ export async function readStats(): Promise<Stats> {
     exits,
     exitSample: paths.filter(Boolean).length,
     recordSeconds: topFlat.length ? Number(topFlat[1]) : null,
+    events: (() => {
+      const counts = new Map(hashToTallies(events as string[]).map((t) => [t.label, t.count]));
+      return (Object.keys(BELLA_EVENTS) as (keyof typeof BELLA_EVENTS)[]).map((k) => ({ label: BELLA_EVENTS[k], count: counts.get(k) ?? 0 }));
+    })(),
   };
 }
