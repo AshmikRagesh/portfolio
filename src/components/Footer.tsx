@@ -9,10 +9,9 @@ import { awardStamp, celebrate, useMoment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
 import { useWatching } from "@/lib/curiosity/watching";
 import { COPY_EMAIL_EVENT, EMAIL } from "@/lib/contact";
-import { MessageBoard } from "@/components/host/TimerBoard";
 import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
-import Link from "next/link";
+import { Mail } from "lucide-react";
 import PaperTooth from "@/components/PaperTooth";
 
 const socialLinks = [
@@ -89,9 +88,10 @@ function useBellHeight() {
 //             can be clicked; a click rings it and makes it hop.
 //   touch     a tap rings it and makes it hop.
 // It's also the front desk: a click (or the Copy email button beside the social icons)
-// copies Ashmik's email, and the bell rings and holds a card with the address over its
-// head, like a driver holding a name card at arrivals. If the clipboard is blocked the
-// card says so and the address on it can be selected by hand.
+// copies Ashmik's email: the bell rings and says so in a line underneath, the same way
+// the navbar bell talks. If the clipboard is blocked the line holds the address so it can
+// be selected by hand. Lines and the hover hint hang below the bell, over the band, so
+// the counter's clip is lifted while one is showing.
 // The timer board lives with the bell in the navbar only.
 // It never dozes, and turns gold for the longest visit this month. With reduced motion it stays
 // where it landed and keeps still.
@@ -388,8 +388,10 @@ function FooterBell() {
     };
   }, []);
 
-  // Hands reach up to the card's bottom edge: above the drawing's top by this much
-  const reach = Math.round(((118 - 106) * height) / 130);
+  // Where the line's pointer sits: under the bell, whichever way the line is aligned
+  const pointerAt = (align: "left" | "center" | "right") =>
+    align === "left" ? `${layout.width / 2 - 4}px` : align === "right" ? `calc(100% - ${layout.width / 2 + 4}px)` : "calc(50% - 4px)";
+  const talking = card !== null || momentHere !== null || (hovered && !touch);
 
   return (
     // The counter: a rail along the footer's top edge that the bell moves along
@@ -397,7 +399,7 @@ function FooterBell() {
     <div
       ref={railRef}
       className="pointer-events-none absolute inset-x-0 z-20"
-      style={{ top: -layout.base, height, clipPath: `inset(-200px -200px ${height - layout.base}px -200px)` }}
+      style={{ top: -layout.base, height, clipPath: talking ? "none" : `inset(-200px -200px ${height - layout.base}px -200px)` }}
     >
       <div
         ref={moverRef}
@@ -424,27 +426,29 @@ function FooterBell() {
               onBlur={() => setHovered(false)}
               className="relative z-10 block cursor-pointer select-none rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
             >
-              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} raised={card !== null} expression={momentHere?.kind === "stamp" ? "surprised" : null} celebrate={celebrateCount} className="block" style={{ width: layout.width, height }} />
+              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} expression={momentHere?.kind === "stamp" ? "surprised" : null} celebrate={celebrateCount} className="block" style={{ width: layout.width, height }} />
             </button>
-            {/* Hover: what a click does. Clicked: the card with the address, held overhead */}
+            {/* Below the bell, like the navbar's lines: the copied email, a moment, or the hover hint */}
             {card ? (
-              <div
-                className={`absolute ${edge(card.align)}`}
-                style={{ bottom: `calc(100% + ${reach}px)` }}
-              >
-                <div className="bella-card-in">
-                  <MessageBoard title={card.copied ? "Email copied" : "Copy it from here"} text={EMAIL} />
+              <div className={`absolute top-full z-10 mt-[12px] ${edge(card.align)}`}>
+                <div className="host-tip relative w-max max-w-[min(320px,calc(100vw-40px))]">
+                  <span aria-hidden="true" className="absolute -top-[4px] h-[8px] w-[8px] rotate-45 rounded-xs bg-midnight" style={{ left: pointerAt(card.align) }} />
+                  <p className="relative rounded-md bg-midnight px-[12px] py-[8px] font-geist font-normal text-[14px] leading-[20px] text-white shadow-[0_8px_20px_rgba(30,5,37,0.22)]">
+                    {card.copied ? "Email copied: " : "Copy it from here: "}
+                    <span className="select-all text-[#f7b3d8]">{EMAIL}</span>
+                  </p>
                 </div>
               </div>
             ) : momentHere ? (
-              <div className={`absolute bottom-full z-10 mb-[8px] ${edge(alignOnCounter())}`}>
-                <BellaLine key={momentHere.id} moment={momentHere} pointer="bottom" />
+              <div className={`absolute top-full z-10 mt-[12px] ${edge(alignOnCounter())}`}>
+                <BellaLine key={momentHere.id} moment={momentHere} pointerLeft={pointerAt(alignOnCounter())} />
               </div>
             ) : (
               hovered &&
               !touch && (
-                <div className="pointer-events-none absolute bottom-full left-1/2 mb-[8px] -translate-x-1/2">
-                  <p className="host-tip whitespace-nowrap rounded-md bg-midnight px-[12px] py-[8px] font-geist font-normal text-[14px] leading-[20px] text-white shadow-[0_8px_20px_rgba(30,5,37,0.22)]">
+                <div className="pointer-events-none absolute left-1/2 top-full mt-[12px] -translate-x-1/2">
+                  <p className="host-tip relative whitespace-nowrap rounded-md bg-midnight px-[12px] py-[8px] font-geist font-normal text-[14px] leading-[20px] text-white shadow-[0_8px_20px_rgba(30,5,37,0.22)]">
+                    <span aria-hidden="true" className="absolute -top-[4px] left-1/2 -ml-[4px] h-[8px] w-[8px] rotate-45 rounded-xs bg-midnight" />
                     Click to copy my email
                   </p>
                 </div>
@@ -530,7 +534,7 @@ export default function Footer() {
                 className={`size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] ${tiltClass}`}
                 style={{
                   background: bg,
-                  marginRight: i < socialLinks.length - 1 ? "-4px" : 0,
+                  marginRight: "-4px",
                   zIndex: i + 1,
                   position: "relative",
                 }}
@@ -538,23 +542,18 @@ export default function Footer() {
                 {icon}
               </a>
             ))}
-            {/* Copy email: the same as clicking the footer's Bella, which rings and holds up the address */}
+            {/* Email: a mail icon in the same row, which copies the address and has the bell say so */}
             <button
               type="button"
+              aria-label="Copy Ashmik's email address"
               onClick={() => window.dispatchEvent(new Event(COPY_EMAIL_EVENT))}
-              className="ml-[16px] h-[44px] rounded-full bg-[#f8f1e3] px-[16px] font-brand text-[12px] font-medium uppercase leading-[16px] tracking-[1px] text-primary transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:h-[56px] md:px-[20px] md:text-[14px]"
+              className="relative size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 bg-[#f8f1e3] text-primary transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] hover:rotate-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              style={{ zIndex: socialLinks.length + 1 }}
             >
-              Copy email
+              <Mail className="h-[18px] w-[18px] md:h-[24px] md:w-[24px]" strokeWidth={2} aria-hidden="true" />
             </button>
           </div>
 
-          {/* The guest card lives on its own page, never in the footer */}
-          <Link
-            href="/front-desk"
-            className="relative z-10 -mt-[40px] font-geist text-[14px] leading-[20px] text-white/70 underline underline-offset-4 hover:text-white md:-mt-[48px]"
-          >
-            Your guest card
-          </Link>
 
         </div>
       </div>

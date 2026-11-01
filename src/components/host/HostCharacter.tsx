@@ -31,7 +31,6 @@
 //              "video": 3D glasses, one grape lens and one gold, while a video the
 //              visitor started plays; the video's light flickers on the lenses.
 //              They slide down onto the face, and slip when Bella dozes.
-//   raised     both arms up from behind the dome, holding a card overhead.
 //   expression "surprised": taller eyes, small pupils (a stamp found).
 //   celebrate  a counter; each bump plays the ~3.4s celebration for a goal: a squash,
 //              a jump that swings like a rung bell, the dome lighting up grape with a
@@ -101,8 +100,6 @@ interface Props {
   /** Where to look (-1…1 on each axis), overriding the cursor while set. */
   gaze?: { x: number; y: number } | null;
   glasses?: HostGlasses | null;
-  /** Both arms up over the dome, holding something above Bella's head (the footer's email card). */
-  raised?: boolean;
   expression?: "surprised" | null;
   /** Bump to play the goal celebration. */
   celebrate?: number;
@@ -113,7 +110,7 @@ interface Props {
 // easeOutBack — a small overshoot, so the hands land with a little weight
 const settle = (t: number) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
 
-export default function HostCharacter({ mood = "idle", holding = false, ding = 0, gaze = null, glasses = null, raised = false, expression = null, celebrate = 0, className = "", style }: Props) {
+export default function HostCharacter({ mood = "idle", holding = false, ding = 0, gaze = null, glasses = null, expression = null, celebrate = 0, className = "", style }: Props) {
   const uid = useId().replace(/:/g, "");
   const clipId = `${uid}-dome`;
 
@@ -362,23 +359,6 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
       <g className="host-tilt">
         {!armsInFront && armLayer}
 
-        {/* Arms up from behind the dome, hands at the bottom corners of a card held overhead */}
-        {raised && (
-          <g className="host-raise">
-            {[
-              [62, 178, 74, 106],
-              [138, 178, 126, 106],
-            ].map(([x1, y1, x2, y2]) => (
-              <g key={x1}>
-                <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={MIDNIGHT} strokeWidth="8" strokeLinecap="round" />
-                <g transform={`translate(${x2} ${y2})`}>
-                  <circle r="6.5" fill={GRAPE.mid} />
-                  <circle cx="-2" cy="-2.4" r="2" fill="#fff" opacity="0.3" />
-                </g>
-              </g>
-            ))}
-          </g>
-        )}
 
         <g className="host-breathe">
           {/* Plunger — pressed down on each ding */}

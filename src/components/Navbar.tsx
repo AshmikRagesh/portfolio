@@ -3,7 +3,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutGrid, CircleUser } from "lucide-react";
+import { Menu, X, LayoutGrid, CircleUser, Ticket } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import { useCuriosity } from "@/context/CuriosityContext";
 import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/CuriosityBubble";
@@ -24,6 +24,7 @@ import { chimeBell, primeBell, ringBell } from "@/components/host/bellSound";
 const navLinks = [
   { label: "Works", href: "#works", Icon: LayoutGrid },
   { label: "About", href: "#about", Icon: CircleUser },
+  { label: "Your pass", href: "/pass", Icon: Ticket },
 ];
 
 // Host size in the navbar — the 68px row leaves a little air above and below
@@ -263,7 +264,6 @@ export default function Navbar() {
   const [isNavVisible, setIsNavVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  const isCaseStudy = pathname.startsWith("/works/");
   // A milestone line brings the navbar back into view for as long as it's up
   const record = useRecordHolder();
   // Lines wait while the bell has ducked out for the footer's bell
@@ -348,7 +348,7 @@ export default function Navbar() {
             {navLinks.map(({ label, href, Icon }) => (
               <li key={label}>
                 <a
-                  href={isCaseStudy ? `/${href}` : href}
+                  href={href.startsWith("/") || pathname === "/" ? href : `/${href}`}
                   className="group/tab flex items-center gap-2 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] transition-colors duration-200 hover:text-grape hover:underline hover:decoration-wavy"
                 >
                   <Icon
@@ -391,7 +391,7 @@ export default function Navbar() {
             {navLinks.map(({ label, href, Icon }) => (
               <li key={label} className="border-b border-line-soft">
                 <a
-                  href={isCaseStudy ? `/${href}` : href}
+                  href={href.startsWith("/") || pathname === "/" ? href : `/${href}`}
                   className="flex items-center gap-3 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] px-[20px] py-5 transition-colors duration-200 hover:text-black"
                   onClick={() => setMenuOpen(false)}
                 >

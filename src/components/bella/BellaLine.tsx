@@ -10,19 +10,20 @@ import Link from "next/link";
 import Stamp from "@/components/bella/Stamp";
 import { skipMoment, type Moment } from "@/lib/bella/progress";
 
-export default function BellaLine({ moment, pointer = "top" }: { moment: Moment; pointer?: "top" | "bottom" }) {
+export default function BellaLine({ moment, pointer = "top", pointerLeft }: { moment: Moment; pointer?: "top" | "bottom"; pointerLeft?: string }) {
   const stamp = moment.kind === "stamp" ? moment.stamp : moment.kind === "celebrate" ? moment.stamp : undefined;
   const link =
     moment.kind === "welcome"
       ? { href: moment.href, text: moment.link }
       : moment.kind === "stamp" || moment.kind === "celebrate"
-        ? { href: "/front-desk", text: "See your card" }
+        ? { href: "/pass", text: "See your pass" }
         : null;
   return (
     <div className="host-tip relative w-max max-w-[min(320px,calc(100vw-40px))]">
       <span
         aria-hidden="true"
         className={`absolute ${pointer === "top" ? "-top-[4px] left-[26px]" : "-bottom-[4px] left-1/2 -ml-[4px]"} h-[8px] w-[8px] rotate-45 rounded-xs bg-midnight`}
+        style={pointerLeft ? { left: pointerLeft, marginLeft: 0 } : undefined}
       />
       <div
         role="status"
