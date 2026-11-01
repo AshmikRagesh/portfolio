@@ -2,14 +2,15 @@
 
 // ── The house: a dashboard under the pass ─────────────────────────────────────
 // What's happening at the front desk, live and this month (store houseStats):
-//   here right now    one small bell per guest, the visitor's own in gold
-//   guests so far     everyone who's been, and how many visits that made
-//   this month        guests, average stay, longest stay
-//   your stay         where this visit sits among this month's guests
+//   your stay         featured: this visit on a line from 0 to this month's longest,
+//                     with the average marked
+//   here right now    one small bell per guest, the visitor's own in grape
+//   guests            so far, this month, and the busiest day of the last two weeks
 //   last two weeks    visits per day, with the daily average; hover or arrow keys
 //                     pick a day
 //   stamps            the share of visits that found each one, in each stamp's ink
-// Numbers in GT Alpina, labels in Geist, grape for the visitor's own. Refreshes every
+// Numbers in GT Alpina and count up when first seen, labels in Geist, grape for the
+// visitor's own. Refreshes every
 // 30 seconds so "here right now" stays live.
 
 import { useEffect, useRef, useState } from "react";
@@ -177,12 +178,113 @@ function StampsFound({ stamps }: { stamps: HouseStats["stamps"] }) {
   );
 }
 
-function Tile({ label, children, note, className = "" }: { label: string; children: React.ReactNode; note?: React.ReactNode; className?: string }) {
+const CARD = "rounded-[20px] border border-line-soft shadow-[0_1px_2px_rgba(30,5,37,0.04)]";
+
+// A number that counts up from zero the first time it comes into view
+function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value: number; format?: (n: number) => string }) {
+  const [ref, seen] = useSeen<HTMLSpanElement>();
+  const [shown, setShown] = useState(0);
+  const done = useRef(false);
+  useEffect(() => {
+    if (!seen) return;
+    if (done.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setShown(value);
+      return;
+    }
+    done.current = true;
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = (t: number) => {
+      const k = Math.min(1, (t - t0) / 900);
+      setShown(Math.round(value * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [seen, value]);
+  return <span ref={ref}>{format(shown)}</span>;
+}
+
+function Tile({ label, children, note }: { label: string; children: React.ReactNode; note?: React.ReactNode }) {
   return (
-    <div className={`flex flex-col gap-[12px] rounded-[20px] border border-line-soft bg-white shadow-[0_1px_2px_rgba(30,5,37,0.04)] p-[24px] ${className}`}>
+    <div className={`flex flex-col gap-[12px] bg-white p-[24px] ${CARD}`}>
       <p className="font-geist text-[14px] leading-[20px] text-secondary">{label}</p>
       <div className="font-heading text-[48px] leading-[52px] text-heading tabular-nums">{children}</div>
-      {note && <p className="font-geist text-[14px] leading-[20px] text-muted">{note}</p>}
+      {note && <p className="mt-auto font-geist text-[14px] leading-[20px] text-muted">{note}</p>}
+    </div>
+  );
+}
+
+// The visitor's stay on a line from no time to this month's longest, with the average
+// marked, so "longer than X%" has something to stand on
+function StayCard({ seconds, month }: { seconds: number; month: HouseStats["month"] }) {
+  const [ref, seen] = useSeen<HTMLDivElement>();
+  const longest = Math.max(month.longestSeconds ?? 0, seconds, 1);
+  const at = (n: number) => `${Math.min(100, (n / longest) * 100)}%`;
+  const yours = seconds >= longest && month.longestSeconds !== null && seconds >= month.longestSeconds;
+  return (
+    <div className={`flex flex-col gap-[24px] bg-white p-[24px] md:col-span-2 md:p-[32px] ${CARD}`}>
+      <div className="flex flex-wrap items-end justify-between gap-x-[24px] gap-y-[8px]">
+        <div className="flex flex-col gap-[8px]">
+          <p className="font-geist text-[14px] leading-[20px] text-secondary">Your stay</p>
+          <p className="font-heading text-[64px] leading-[64px] text-grape tabular-nums">
+            <CountUp value={seconds} format={formatStay} />
+          </p>
+        </div>
+        <p className="max-w-[340px] text-balance pb-[6px] font-geist text-[16px] leading-[24px] text-secondary">
+          {month.beaten === null
+            ? "You’re the first guest this month."
+            : yours
+              ? "The longest stay this month so far."
+              : `Longer than ${month.beaten}% of this month’s guests.`}
+        </p>
+      </div>
+
+      {/* The line: 0 to the longest, average and yours marked */}
+      <div ref={ref} className="flex flex-col gap-[10px]" role="img" aria-label={`Your stay ${formatStay(seconds)}, this month's average ${month.averageSeconds === null ? "not known" : formatStay(month.averageSeconds)}, longest ${formatStay(longest)}`}>
+        <div className="relative h-[10px] rounded-full bg-line-soft">
+          <span className="absolute inset-y-0 left-0 rounded-full bg-grape transition-[width] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ width: seen ? at(seconds) : "0%" }} />
+          {month.averageSeconds !== null && (
+            <span className="absolute -top-[6px] h-[22px] w-[2px] -translate-x-1/2 rounded-full bg-heading" style={{ left: at(month.averageSeconds) }} />
+          )}
+        </div>
+        <div className="relative h-[20px] font-geist text-[12px] leading-[20px] text-muted">
+          {(month.averageSeconds === null || month.averageSeconds / longest > 0.14) && <span className="absolute left-0">0m</span>}
+          {month.averageSeconds !== null && (
+            <span
+              className={`absolute whitespace-nowrap text-heading ${month.averageSeconds / longest < 0.14 ? "" : "-translate-x-1/2"}`}
+              style={{ left: month.averageSeconds / longest < 0.14 ? 0 : at(month.averageSeconds) }}
+            >
+              Average {formatStay(month.averageSeconds)}
+            </span>
+          )}
+          <span className="absolute right-0 whitespace-nowrap">Longest {formatStay(longest)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Guests on the site right now: one bell each, the visitor's own in grape
+function HereNow({ count }: { count: number }) {
+  const bells = Math.min(count, MAX_BELLS);
+  return (
+    <div className={`flex flex-col gap-[12px] bg-grape-light/50 p-[24px] md:p-[32px] ${CARD}`}>
+      <p className="font-geist text-[14px] leading-[20px] text-secondary">Here right now</p>
+      <p className="font-heading text-[64px] leading-[64px] text-grape tabular-nums">
+        <CountUp value={count} />
+      </p>
+      <div className="flex flex-wrap items-end gap-[6px]" aria-hidden="true">
+        {Array.from({ length: bells }, (_, i) => (
+          <svg key={i} viewBox="36 120 128 108" className={`w-auto ${i === 0 ? "h-[24px]" : "h-[18px]"}`}>
+            <path d={BELL} fill={i === 0 ? "#9D136A" : "rgba(50,7,62,0.22)"} />
+          </svg>
+        ))}
+        {count > MAX_BELLS && <span className="font-geist text-[12px] leading-[16px] text-muted">+{count - MAX_BELLS}</span>}
+      </div>
+      <p className="mt-auto font-geist text-[14px] leading-[20px] text-muted">
+        {count <= 1 ? "Just you at the desk" : `You and ${count - 1} more, live`}
+      </p>
     </div>
   );
 }
@@ -213,7 +315,7 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
   if (stats === null)
     return <p className="font-geist text-[16px] leading-[24px] text-muted">The house’s numbers aren’t available right now.</p>;
 
-  const bells = Math.min(stats.hereNow, MAX_BELLS);
+  const busiest = stats.lastDays.reduce((m, d) => (d.visits > m.visits ? d : m), stats.lastDays[0]);
 
   return (
     <section className="flex w-full max-w-[1040px] flex-col gap-[32px]" aria-labelledby="house-title">
@@ -225,39 +327,17 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
       </div>
 
       <div className="grid gap-[16px] md:grid-cols-3">
-        <Tile label="Here right now" note={stats.hereNow === 1 ? "Just you at the desk" : `You and ${stats.hereNow - 1} more`}>
-          <div className="flex items-end gap-[16px]">
-            <span className="text-grape">{stats.hereNow}</span>
-            <span className="mb-[10px] flex items-end gap-[5px]" aria-hidden="true">
-              {Array.from({ length: bells }, (_, i) => (
-                <svg key={i} viewBox="36 120 128 108" className={i === 0 ? "h-[20px] w-auto" : "h-[14px] w-auto"}>
-                  <path d={BELL} fill={i === 0 ? "#9D136A" : "rgba(50,7,62,0.2)"} />
-                </svg>
-              ))}
-            </span>
-          </div>
-        </Tile>
-        <Tile label="Guests so far" note={`${stats.visits.toLocaleString()} visits in all`}>
-          {stats.guests.toLocaleString()}
-        </Tile>
-        <Tile label="Guests this month">{stats.month.guests.toLocaleString()}</Tile>
+        <StayCard seconds={seconds} month={stats.month} />
+        <HereNow count={stats.hereNow} />
 
-        <Tile label="Average stay this month">{stats.month.averageSeconds === null ? "–" : formatStay(stats.month.averageSeconds)}</Tile>
-        <Tile label="Longest stay this month">{stats.month.longestSeconds === null ? "–" : formatStay(stats.month.longestSeconds)}</Tile>
-        <Tile
-          label="Your stay"
-          note={stats.month.beaten === null ? "You’re the first guest this month" : `Longer than ${stats.month.beaten}% of this month’s guests`}
-        >
-          {stats.month.beaten === null ? (
-            <span className="text-grape">{formatStay(seconds)}</span>
-          ) : (
-            <div className="flex flex-col gap-[12px]">
-              <span className="text-grape">{formatStay(seconds)}</span>
-              <span className="relative block h-[6px] rounded-full bg-line-soft" aria-hidden="true">
-                <span className="absolute inset-y-0 left-0 rounded-full bg-grape" style={{ width: `${stats.month.beaten}%` }} />
-              </span>
-            </div>
-          )}
+        <Tile label="Guests so far" note={`${stats.visits.toLocaleString()} visits in all`}>
+          <CountUp value={stats.guests} />
+        </Tile>
+        <Tile label="Guests this month" note={`${Math.round((stats.month.guests / Math.max(1, stats.guests)) * 100)}% of everyone so far`}>
+          <CountUp value={stats.month.guests} />
+        </Tile>
+        <Tile label="Busiest day, last two weeks" note={`${busiest.visits} ${busiest.visits === 1 ? "visit" : "visits"}`}>
+          {!busiest.visits ? "–" : busiest === stats.lastDays[stats.lastDays.length - 1] ? "Today" : fmtDay(busiest.day, true)}
         </Tile>
       </div>
 
