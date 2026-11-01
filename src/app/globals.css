@@ -259,8 +259,13 @@
   position: relative; aspect-ratio: 7 / 5; border-radius: 4px; overflow: hidden;
   font-family: var(--font-geist), system-ui, sans-serif; color: #2a1030;
   background-color: #f6efe2;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .36  0 0 0 0 .26  0 0 0 0 .2  0 0 0 .1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  box-shadow: 0 1px 0 #e4d8c4, 0 2px 0 #dacdb7, 0 3px 0 #cdbea6, 0 14px 24px -6px rgba(50, 7, 62, 0.22), 0 36px 48px -18px rgba(50, 7, 62, 0.2);
+  /* Cotton stock: fine grain, a few longer fibres, and edges a touch warmer than the middle */
+  background-image:
+    radial-gradient(ellipse at 50% 45%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 55%, rgba(140, 100, 50, 0.08) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.02 .4' numOctaves='2' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .38  0 0 0 0 .26  0 0 0 .07 0'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .36  0 0 0 0 .26  0 0 0 0 .2  0 0 0 .1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  /* Gilt edges: the card's thickness shows gold along the bottom */
+  box-shadow: inset 0 0 0 1px rgba(200, 149, 46, 0.35), 0 1px 0 #e2c27a, 0 2px 0 #cfa95a, 0 3px 0 #b48c3e, 0 14px 24px -6px rgba(50, 7, 62, 0.22), 0 36px 48px -18px rgba(50, 7, 62, 0.2);
   transform-style: preserve-3d; will-change: transform;
 }
 .guest-card-face { position: relative; height: 100%; padding: 32px 32px 24px; display: grid; grid-template-rows: auto auto auto 1fr; gap: 16px; }
@@ -271,21 +276,24 @@
 .gc-corner.bl { bottom: 6px; left: 6px; border-bottom-width: 2px; border-left-width: 2px; }
 .gc-corner.br { bottom: 6px; right: 6px; border-bottom-width: 2px; border-right-width: 2px; }
 .gc-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
-.gc-label, .gc-fields dt { font-weight: 500; font-size: 10px; line-height: 16px; letter-spacing: 1px; text-transform: uppercase; color: #8a6a7c; }
+/* Letterpress: ink pressed into the stock catches a line of light along its lower edge */
+.gc-label, .gc-fields dt { font-weight: 500; font-size: 10px; line-height: 16px; letter-spacing: 1px; text-transform: uppercase; color: #8a6a7c; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8); }
 .gc-title { font-weight: 600; font-size: 28px; line-height: 32px; color: #3e0d4b; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7); }
 .gc-number {
   font-weight: 300; font-size: 48px; line-height: 48px; font-variant-numeric: tabular-nums; letter-spacing: -1px;
   background: linear-gradient(110deg, #9a6a16 0%, #c8952e 30%, #f6dc8c var(--lx, 50%), #c8952e calc(var(--lx, 50%) + 20%), #8a5c12 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.6));
+  /* Raised foil: light along the bottom, a little shadow along the top */
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.75)) drop-shadow(0 -1px 0 rgba(110, 70, 10, 0.22));
 }
-.gc-fields { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 24px; padding: 16px 0; border-top: 1px solid rgba(110, 14, 75, 0.18); border-bottom: 1px solid rgba(110, 14, 75, 0.18); }
+/* Double rules in gold above and below the details */
+.gc-fields { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 24px; padding: 16px 0; border-top: 3px double rgba(200, 149, 46, 0.55); border-bottom: 3px double rgba(200, 149, 46, 0.55); }
 .gc-fields dd { margin: 0; font-size: 16px; line-height: 24px; color: #2a1030; font-variant-numeric: tabular-nums; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6); }
 .gc-stamps { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .gc-of { font-size: 12px; line-height: 16px; color: #8a6a7c; }
 .gc-foot { display: flex; justify-content: space-between; align-items: end; gap: 16px; }
 .gc-thanks { font-size: 16px; line-height: 24px; font-weight: 500; color: #3e0d4b; }
-.gc-emboss { width: 64px; height: auto; flex: none; filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.9)) drop-shadow(0 -1px 0 rgba(110, 80, 50, 0.28)); }
+.gc-emboss { width: 72px; height: auto; flex: none; filter: drop-shadow(0 1.5px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 -1.5px 0 rgba(110, 80, 50, 0.32)) drop-shadow(0 4px 4px rgba(110, 80, 50, 0.08)); }
 .gc-sheen { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at var(--lx, 50%) var(--ly, 30%), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 52%); mix-blend-mode: soft-light; opacity: var(--lit, 0); }
 @media (max-width: 520px) {
   .guest-card { aspect-ratio: auto; }
@@ -294,46 +302,42 @@
   .gc-title { font-size: 22px; line-height: 28px; }
 }
 
-/* ── The envelope the card arrives in (components/bella/FrontDesk.tsx) ───────────
-   The card waits inside; a click on the wax seal lifts the flap, slides the card up and
-   out, and drops the envelope away. */
-.desk-envelope { position: relative; width: 100%; max-width: 520px; aspect-ratio: 7 / 4.6; margin-top: 96px; }
-.desk-envelope-back, .desk-envelope-front { position: absolute; inset: 0; border-radius: 4px; }
-.desk-envelope-back { background: #e3d3b8; box-shadow: 0 20px 40px -12px rgba(50, 7, 62, 0.25); }
-.desk-envelope-card { position: absolute; left: 4%; right: 4%; top: 2%; z-index: 1; transform: scale(0.92); transform-origin: 50% 0; transition: transform 900ms cubic-bezier(0.3, 0.7, 0.3, 1) 380ms; }
-.desk-envelope-back, .desk-envelope-front, .desk-envelope-flap { transition-property: transform, opacity, z-index; }
-.desk-envelope-front {
-  z-index: 2; background: #efe3cc; clip-path: polygon(0 0, 50% 62%, 100% 0, 100% 100%, 0 100%);
-  display: flex; flex-direction: column; justify-content: flex-end; padding: 0 32px 28px;
-  border-bottom: 1px solid #d3c2a4;
-}
-.desk-envelope-flap {
-  position: absolute; left: 0; right: 0; top: 0; height: 62%; z-index: 3; background: #e8d9bf;
-  clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: 50% 0;
-  transition: transform 520ms cubic-bezier(0.4, 0, 0.2, 1), z-index 0s 260ms;
-  filter: drop-shadow(0 2px 2px rgba(50, 7, 62, 0.12));
-}
-.desk-envelope-seal {
-  position: absolute; left: 50%; top: 62%; z-index: 4; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%;
-  display: grid; place-items: center; cursor: pointer; color: rgba(255, 255, 255, 0.28);
-  background: radial-gradient(circle at 36% 32%, #c22a88, #9d136a 55%, #6e0e4b);
-  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.3), inset 0 2px 2px rgba(255, 255, 255, 0.25), 0 4px 8px rgba(50, 7, 62, 0.3);
-  transition: transform 200ms ease, opacity 300ms ease;
-}
-.desk-envelope-seal:hover { transform: scale(1.06); }
-.desk-envelope-seal:focus-visible { outline: 2px solid #9d136a; outline-offset: 4px; }
-.desk-envelope-seal svg { width: 36px; height: auto; }
-.desk-envelope-hint { position: absolute; left: 0; right: 0; top: calc(100% + 16px); text-align: center; }
-.desk-envelope.is-opening .desk-envelope-seal { opacity: 0; transform: scale(0.6); }
-.desk-envelope.is-opening .desk-envelope-flap { transform: rotateX(180deg); z-index: 0; }
-.desk-envelope.is-opening .desk-envelope-card { transform: translateY(-36%) scale(1); z-index: 1; }
-.desk-envelope.is-opening .desk-envelope-back, .desk-envelope.is-opening .desk-envelope-front { opacity: 0; transform: translateY(40px); transition: opacity 400ms ease 1000ms, transform 400ms ease 1000ms; }
-.desk-arrive { animation: desk-arrive 360ms ease-out both; }
-@keyframes desk-arrive { from { opacity: 0.6; transform: translateY(-16px); } to { opacity: 1; transform: none; } }
-.desk-envelope.is-opening .desk-envelope-hint { opacity: 0; }
+/* ── The envelope the card arrives in (components/bella/Envelope.tsx) ───────────
+   Every part of the envelope shares one frame (env-part): 108% of the card's width, 7:5,
+   dropped 30% of its height below the card's top. The card sits between the back and
+   the pocket; the flap and the seal sit on top. */
+.env-stage { position: relative; width: 100%; max-width: 520px; margin-inline: auto; }
+/* Room under the card for the envelope (as a share of the card's width), closing once
+   the envelope has dropped away */
+.env-spacer { padding-bottom: calc(29% + 48px); transition: padding-bottom 600ms cubic-bezier(0.3, 0.7, 0.3, 1) 1500ms; }
+.env-inner { position: relative; }
+/* Enough room that the open flap clears the heading above (which already sits 64px up) */
+.env-topspacer { padding-top: max(0px, calc(23% - 56px)); transition: padding-top 600ms cubic-bezier(0.3, 0.7, 0.3, 1) 1500ms; }
+.env-stage.is-opening .env-spacer { padding-bottom: 0; }
+.env-stage.is-opening .env-topspacer { padding-top: 0; }
+.env-stage.is-sealed { animation: env-arrive 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes env-arrive { from { transform: translateY(48px) rotate(-3deg); opacity: 0; } 60% { opacity: 1; } to { transform: none; opacity: 1; } }
+.env-part { position: absolute; left: 50%; top: 0; width: 108%; aspect-ratio: 7 / 5; transform: translate(-50%, 30%); pointer-events: none; }
+.env-part svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.env-back { z-index: 0; filter: drop-shadow(0 24px 32px rgba(50, 7, 62, 0.22)) drop-shadow(0 2px 4px rgba(50, 7, 62, 0.12)); }
+.env-card { position: relative; z-index: 1; transform: translateY(40%) scale(0.9); transform-origin: 50% 0; }
+.env-front { z-index: 2; }
+.env-flap { z-index: 3; transform: perspective(1400px) translate(-50%, 30%) rotateX(0deg); transform-origin: 50% 0; transform-style: preserve-3d; }
+.env-flap-face { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.env-flap-face.is-inside { transform: rotateY(180deg); }
+.env-sealbox { z-index: 4; }
+.env-seal, .env-halves { position: absolute; left: 50%; top: 60.8%; width: 19%; aspect-ratio: 1; transform: translate(-50%, -50%); }
+.env-seal { pointer-events: auto; cursor: pointer; border-radius: 50%; filter: drop-shadow(0 6px 6px rgba(50, 7, 62, 0.35)) drop-shadow(0 1px 1px rgba(50, 7, 62, 0.4)); animation: env-seal-breathe 2.8s ease-in-out infinite; }
+.env-seal svg, .env-halves svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.env-seal:hover { animation-play-state: paused; }
+.env-seal:focus-visible { outline: 2px solid #9d136a; outline-offset: 6px; }
+@keyframes env-seal-breathe { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.04); } }
+.env-halves { pointer-events: none; }
+.env-halves span { position: absolute; inset: 0; opacity: 0; filter: drop-shadow(0 4px 4px rgba(50, 7, 62, 0.3)); }
+.env-hint { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-family: var(--font-geist), sans-serif; font-size: 14px; line-height: 20px; color: #8a7a8e; transition: opacity 300ms ease; }
+.env-stage.is-opening .env-hint { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
-  .desk-envelope-card, .desk-envelope-flap, .desk-envelope-seal, .desk-envelope-back, .desk-envelope-front { transition: none !important; }
-  .desk-arrive { animation: none; }
+  .env-stage, .env-seal { animation: none !important; transition: none !important; }
 }
 
 /* A stamp lands in Bella's line with a thud */

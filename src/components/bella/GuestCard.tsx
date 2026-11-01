@@ -30,15 +30,17 @@ export interface GuestCardProps {
   stay: string;
   progress: Progress;
   returning: boolean;
+  /** Tilt toward the pointer. Off while the card is still in its envelope. */
+  tilt?: boolean;
 }
 
-export default function GuestCard({ guestNo, from, arrived, stay, progress, returning }: GuestCardProps) {
+export default function GuestCard({ guestNo, from, arrived, stay, progress, returning, tilt = true }: GuestCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const found = STAMPS.filter((s) => progress.stamps[s.key]).length;
 
   useEffect(() => {
     const card = ref.current;
-    if (!card || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!card || !tilt || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const ax = { p: 0, v: 0, t: 0 };
     const ay = { p: 0, v: 0, t: 0 };
     let lit = 0, litT = 0, lx = 50, ly = 30, lxT = 50, lyT = 30, raf = 0, last = 0;
@@ -90,8 +92,9 @@ export default function GuestCard({ guestNo, from, arrived, stay, progress, retu
     return () => {
       window.removeEventListener("pointermove", onMove);
       cancelAnimationFrame(raf);
+      card.style.transform = "";
     };
-  }, []);
+  }, [tilt]);
 
   return (
     <div className="guest-card-scene">
@@ -135,13 +138,14 @@ export default function GuestCard({ guestNo, from, arrived, stay, progress, retu
           </dl>
           <div className="gc-stamps">
             <span className="gc-label">Stamps</span>
-            <span className="flex gap-[4px]">
-              {STAMPS.map((s) => {
+            {/* Inked where found, a little crooked and overlapping like real impressions */}
+            <span className="flex items-center">
+              {STAMPS.map((s, i) => {
                 const at = progress.stamps[s.key];
                 return at ? (
-                  <Stamp key={s.key} stamp={s.key} date={stampDate(new Date(at))} className="h-[28px] w-[28px]" />
+                  <Stamp key={s.key} stamp={s.key} date={stampDate(new Date(at))} rotate={[-8, 6, -4, 9, -6][i]} className="-mr-[4px] h-[36px] w-[36px]" />
                 ) : (
-                  <span key={s.key} title="Not found yet" className="h-[24px] w-[24px] rounded-full border-[1.5px] border-dashed border-[#c9b6a0]" />
+                  <span key={s.key} title="Not found yet" className="mx-[4px] h-[24px] w-[24px] rounded-full border-[1.5px] border-dashed border-[#c9b6a0]" />
                 );
               })}
             </span>
