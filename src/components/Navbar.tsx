@@ -7,7 +7,8 @@ import { Menu, X, LayoutGrid, CircleUser } from "lucide-react";
 import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import { useCuriosity } from "@/context/CuriosityContext";
 import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/CuriosityBubble";
-import HostCharacter, { hostLayout, type HostMood } from "@/components/host/HostCharacter";
+import HostCharacter, { hostLayout, type HostGlasses, type HostMood } from "@/components/host/HostCharacter";
+import { useWatching } from "@/lib/curiosity/watching";
 import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useBellStage } from "@/components/host/BellStage";
@@ -25,13 +26,35 @@ const HOST = hostLayout(HOST_HEIGHT);
 // The board never comes closer than this to the edge of the screen
 const BOARD_EDGE = 12;
 
-// In development, `?mood=dozing|champion|holding` pins the host in that state for review
+// In development, `?mood=dozing|champion|holding|reading|video` pins the host in that state for review
 function usePreviewMood() {
   const [preview, setPreview] = useState<string | null>(null);
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") setPreview(new URLSearchParams(window.location.search).get("mood"));
   }, []);
   return preview;
+}
+
+// Reading glasses go on once the reader has scrolled into a case study, and come off
+// when they leave it
+const READING_AFTER_PX = 120;
+function useReading() {
+  const pathname = usePathname();
+  const [reading, setReading] = useState(false);
+  useEffect(() => {
+    setReading(false);
+    if (!pathname.startsWith("/works/")) return;
+    const check = () => {
+      if (window.scrollY > READING_AFTER_PX) {
+        setReading(true);
+        window.removeEventListener("scroll", check);
+      }
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    return () => window.removeEventListener("scroll", check);
+  }, [pathname]);
+  return reading;
 }
 
 // Shown once per visit on touch screens, right after the bell's first line, so people
@@ -59,6 +82,10 @@ const BOARD_SHOWN_KEY = "ash.curiosity.boardShown"; // sessionStorage
 function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   const { activeSeconds, paused } = useCuriosity();
   const preview = usePreviewMood();
+  const watching = useWatching();
+  const reading = useReading();
+  const glasses: HostGlasses | null =
+    preview === "video" || watching ? "video" : preview === "reading" || reading ? "reading" : null;
   const touch = useTouchScreen();
   const [hovered, setHovered] = useState(false);
   const [open, setOpen] = useState(false); // touch: board pinned down by a tap
@@ -168,6 +195,7 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
           mood={mood}
           holding={holding}
           ding={ding}
+          glasses={glasses}
           className={`block ${entrance === "up" ? "" : `bell-${entrance}`}`}
           style={{ width: HOST.width, height: HOST_HEIGHT, animationDelay: entrance === "pop" ? "160ms" : undefined }}
         />

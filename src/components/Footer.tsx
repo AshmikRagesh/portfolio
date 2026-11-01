@@ -5,6 +5,7 @@ import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useBellStage } from "@/components/host/BellStage";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { ringBell } from "@/components/host/bellSound";
+import { useWatching } from "@/lib/curiosity/watching";
 import Image from "next/image";
 import PaperTooth from "@/components/PaperTooth";
 
@@ -83,6 +84,7 @@ function useBellHeight() {
 function FooterBell() {
   const record = useRecordHolder();
   const touch = useTouchScreen();
+  const watching = useWatching();
   const height = useBellHeight();
   const layout = hostLayout(height);
   const [hovered, setHovered] = useState(false);
@@ -322,7 +324,7 @@ function FooterBell() {
               onBlur={() => setHovered(false)}
               className="relative z-10 block cursor-pointer select-none rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
             >
-              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} className="block" style={{ width: layout.width, height }} />
+              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} className="block" style={{ width: layout.width, height }} />
             </button>
           </div>
         </div>

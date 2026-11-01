@@ -242,6 +242,12 @@
 
 /* Dozing — slumps sideways, breathes slowly, Z's drift up one after another */
 .host-tilt { transition: transform 500ms ease; transform-origin: 100px 226px; }
+/* Glasses slide down onto the face, and slip when Bella dozes off */
+.host-glasses { transform-origin: 100px 178px; transition: transform 500ms ease; animation: host-glasses-on 560ms cubic-bezier(0.3, 0.7, 0.4, 1) both; }
+.host.is-dozing .host-glasses { transform: translate(0px, 8px) rotate(-8deg); }
+@keyframes host-glasses-on { 0% { transform: translate(0px, -48px); opacity: 0; } 70% { transform: translate(0px, 4px); opacity: 1; } 100% { transform: translate(0px, 0px); opacity: 1; } }
+.host-flick { opacity: 0.08; animation: host-flick 1.6s steps(1) infinite; }
+@keyframes host-flick { 0% { opacity: 0.06; } 14% { opacity: 0.26; } 28% { opacity: 0.1; } 42% { opacity: 0.2; } 58% { opacity: 0.04; } 72% { opacity: 0.3; } 86% { opacity: 0.12; } }
 .host.is-dozing .host-tilt { transform: rotate(-5deg); }
 .host.is-dozing .host-breathe { animation-duration: 5.2s; }
 .host-zz text { animation: host-zz 2.4s ease-in-out infinite; opacity: 0; }
@@ -301,7 +307,7 @@
   .group[data-stamped="true"] .shipped-stamp { animation: none; opacity: 1; transform: rotate(-12deg); }
   .group[data-stamped="true"] .stamp-thud { animation: none; }
   .signature path { transition: none; stroke-dashoffset: 0; }
-  .host-breathe, .host-blink, .host-zz text, .host-sparkles path, .host-plunger, .host-dome, .host-rings path, .host-sweep { animation: none !important; }
+  .host-breathe, .host-blink, .host-zz text, .host-sparkles path, .host-plunger, .host-dome, .host-rings path, .host-sweep, .host-glasses, .host-flick { animation: none !important; }
   .host-zz text { opacity: 1; }
   .host-tilt { transition: none; }
   .host-board, .host-tip, .host-tip.is-leaving { animation: none; }

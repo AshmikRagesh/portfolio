@@ -27,6 +27,10 @@
 // On top of any mood:
 //   holding    both hands come down in front of the base to hold the timer board;
 //              eyes glance down at it. hostLayout() says where the hands end up.
+//   glasses    "reading": round gold rims while a case study is read.
+//              "video": 3D glasses, one grape lens and one gold, while a video the
+//              visitor started plays; the video's light flickers on the lenses.
+//              They slide down onto the face, and slip when Bella dozes.
 //
 // There's no mouth — the face is just the eyes.
 //
@@ -36,6 +40,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 
 export type HostMood = "idle" | "dozing" | "champion";
+export type HostGlasses = "reading" | "video";
 
 // The drawing lives in a 200-wide space; this crop frames the bell
 const VIEWBOX = { x: 30, y: 118, w: 140, h: 130 };
@@ -59,6 +64,8 @@ const FINISH = {
   gold: { lit: "#f2c75c", shade: "#c8952e", ink: "#3a2406" },
 };
 const GRAPE = { lit: "#c22a88", mid: "#9D136A", shade: "#6e0e4b" };
+const RIM = "#f2c75c"; // gold rims
+const IVORY = "#f8f1e3"; // the 3D glasses' frame
 
 // Bottom edge of the base — where the bell rests on a surface
 const BASE_Y = 226;
@@ -85,6 +92,7 @@ interface Props {
   ding?: number;
   /** Where to look (-1…1 on each axis), overriding the cursor while set. */
   gaze?: { x: number; y: number } | null;
+  glasses?: HostGlasses | null;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -92,7 +100,7 @@ interface Props {
 // easeOutBack — a small overshoot, so the hands land with a little weight
 const settle = (t: number) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
 
-export default function HostCharacter({ mood = "idle", holding = false, ding = 0, gaze = null, className = "", style }: Props) {
+export default function HostCharacter({ mood = "idle", holding = false, ding = 0, gaze = null, glasses = null, className = "", style }: Props) {
   const uid = useId().replace(/:/g, "");
   const clipId = `${uid}-dome`;
 
@@ -294,6 +302,32 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
                 </g>
               )}
 
+              {glasses === "reading" && (
+                <g key="reading" className="host-glasses">
+                  <path d="M71.5 175 L55 170 M128.5 175 L145 170" stroke={RIM} strokeWidth="2.2" strokeLinecap="round" />
+                  <circle cx="85" cy="177" r="13.5" fill="#fff" fillOpacity="0.1" stroke={RIM} strokeWidth="2.6" />
+                  <circle cx="115" cy="177" r="13.5" fill="#fff" fillOpacity="0.1" stroke={RIM} strokeWidth="2.6" />
+                  <path d="M98.5 175.5 Q100 172 101.5 175.5" stroke={RIM} strokeWidth="2.4" fill="none" strokeLinecap="round" />
+                  <path d="M77 171 l4 -4 M107 171 l4 -4" stroke="#fff" strokeOpacity="0.6" strokeWidth="2" strokeLinecap="round" />
+                </g>
+              )}
+              {glasses === "video" && (
+                <g key="video" className="host-glasses">
+                  <path d="M64 171 L55 168 M136 171 L145 168" stroke={IVORY} strokeWidth="3" strokeLinecap="round" />
+                  <rect x="63" y="162" width="74" height="30" rx="9" fill={IVORY} />
+                  <rect x="67" y="166" width="29" height="21" rx="6" fill={GRAPE.lit} />
+                  <rect x="104" y="166" width="29" height="21" rx="6" fill={RIM} />
+                  <circle cx="82" cy="177" r="4.6" fill={MIDNIGHT} opacity="0.55" />
+                  <circle cx="118" cy="177" r="4.6" fill={MIDNIGHT} opacity="0.55" />
+                  {/* The video's light on the lenses */}
+                  <g className="host-flick" fill="#fff">
+                    <rect x="67" y="166" width="29" height="21" rx="6" />
+                    <rect x="104" y="166" width="29" height="21" rx="6" />
+                  </g>
+                  <path d="M93 192.5 Q100 183 107 192.5 Z" fill={finish.lit} />
+                  <path d="M72 172 l4 -4 M109 172 l4 -4" stroke="#fff" strokeOpacity="0.6" strokeWidth="2" strokeLinecap="round" />
+                </g>
+              )}
             </g>
           </g>
         </g>
