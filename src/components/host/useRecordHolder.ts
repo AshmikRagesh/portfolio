@@ -1,12 +1,13 @@
 "use client";
 
 // ── useRecordHolder ───────────────────────────────────────────────────────────
-// True once this visit has run longer than anyone else's longest visit, ever —
-// the moment the host puts its crown on.
+// True once this visit has run longer than anyone else's longest visit this month —
+// the moment the host puts its crown on. Monthly, so a new visitor can still win it
+// after someone has set a very long record.
 //
 // The record to beat is fetched when the clock loads and refreshed every couple of
 // minutes (someone else might be setting it right now). It only counts once at
-// least MIN_RECORD_FIELD other visitors are on the board, so the second person to
+// least MIN_RECORD_FIELD other visitors are on this month's board, so the second person to
 // ever visit isn't crowned for beating one other visit. Once earned it sticks for
 // the rest of the visit, even across reloads.
 

@@ -62,7 +62,7 @@ function useReading() {
 const BOARD_SHOWN_KEY = "ash.curiosity.boardShown"; // sessionStorage
 
 // The logo: the front-desk bell. It dozes while the clock is paused, turns gold once
-// this is the longest visit ever, and rings before it says anything.
+// this is the longest visit this month, and rings before it says anything.
 //
 // The board, two ways:
 //   pointer   hover (or keyboard focus) rings it — ding ding, out loud once the page

@@ -84,7 +84,7 @@ function useBellHeight() {
 // head, like a driver holding a name card at arrivals. If the clipboard is blocked the
 // card says so and the address on it can be selected by hand.
 // The timer board lives with the bell in the navbar only.
-// It never dozes, and turns gold for the longest visit ever. With reduced motion it stays
+// It never dozes, and turns gold for the longest visit this month. With reduced motion it stays
 // where it landed and keeps still.
 function FooterBell() {
   const record = useRecordHolder();

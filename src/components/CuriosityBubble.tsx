@@ -2,7 +2,7 @@
 
 // ── Curiosity bubble ──────────────────────────────────────────────────────────
 // The host speaking up. When active time crosses a milestone (see milestones.ts),
-// or the visit becomes the longest ever, a tooltip rises in under the host, holds
+// or the visit becomes the longest this month, a tooltip rises in under the host, holds
 // while it's read, then tucks itself away.
 //
 // A tooltip, not a toast: a compact dark box anchored to the bell by a small pointer,
@@ -112,7 +112,7 @@ export interface Bubble {
 
 /**
  * Watches the clock and hands back whatever the host should be saying right now.
- * `record` is true once this visit is the longest ever — that line jumps the queue.
+ * `record` is true once this visit is the longest this month — that line jumps the queue.
  * `hold` keeps the next line back while the navbar bell has ducked out of sight.
  */
 export function useMilestoneBubble(record = false, hold = false): Bubble {

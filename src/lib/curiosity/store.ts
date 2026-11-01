@@ -102,25 +102,31 @@ export async function recordVisit(p: CuriosityPayload) {
 }
 
 /**
- * Where `seconds` would sit on the all-time board, measured against everyone else.
- * The visitor's own stored score is left out — it lags behind their live clock and
- * would otherwise count as someone they've "beaten".
+ * Where `seconds` would sit, measured against everyone else. The percentage comes from
+ * the all-time board, which has the most visits behind it. The record to beat comes
+ * from this month's board, so the gold stays winnable for new visitors even after a
+ * very long visit is on record. The visitor's own stored score is left out of both —
+ * it lags behind their live clock and would otherwise count as someone they've "beaten".
  */
 export async function rankFor(visitorId: string, seconds: number): Promise<RankResult> {
   if (!storeConfigured) return { percentile: null, others: 0, leader: null };
 
   const board = "curiosity:board:alltime";
-  const [{ result: total }, { result: below }, { result: own }, { result: top }] = await pipeline([
+  const month = `curiosity:board:${new Date().toISOString().slice(0, 7)}`;
+  const [{ result: total }, { result: below }, { result: own }, { result: monthTotal }, { result: monthOwn }, { result: top }] = await pipeline([
     ["ZCARD", board],
     ["ZCOUNT", board, "-inf", `(${seconds}`],
     ["ZSCORE", board, visitorId],
-    // Top two, so the leader is still found when this visitor is the one on top
-    ["ZREVRANGE", board, 0, 1, "WITHSCORES"],
+    ["ZCARD", month],
+    ["ZSCORE", month, visitorId],
+    // Top two this month, so the leader is still found when this visitor is the one on top
+    ["ZREVRANGE", month, 0, 1, "WITHSCORES"],
   ]);
 
   const ownScore = own === null ? null : Number(own);
-  const others = Number(total) - (ownScore === null ? 0 : 1);
+  const everyone = Number(total) - (ownScore === null ? 0 : 1);
   const beaten = Number(below) - (ownScore !== null && ownScore < seconds ? 1 : 0);
+  const others = Number(monthTotal) - (monthOwn === null ? 0 : 1);
 
   // ZREVRANGE WITHSCORES comes back flat: [member, score, member, score]
   const flat = top as string[];
@@ -132,6 +138,6 @@ export async function rankFor(visitorId: string, seconds: number): Promise<RankR
     }
   }
 
-  const percentile = others < MIN_RANK_SAMPLE ? null : Math.floor((beaten / others) * 100);
+  const percentile = everyone < MIN_RANK_SAMPLE ? null : Math.floor((beaten / everyone) * 100);
   return { percentile, others, leader };
 }

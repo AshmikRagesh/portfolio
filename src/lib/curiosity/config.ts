@@ -58,8 +58,8 @@ export const MIN_RECORD_FIELD = 3;
 export interface RankResult {
   /** Share of other visitors this one has out-stayed, 0–100. Null when there's too little data. */
   percentile: number | null;
-  /** How many other visitors are on the board. */
+  /** How many other visitors are on this month's board. */
   others: number;
-  /** The longest single visit by anyone else, in seconds — the record to beat. */
+  /** The longest single visit by anyone else this month, in seconds — the record to beat. */
   leader: number | null;
 }

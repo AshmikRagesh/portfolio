@@ -41,7 +41,7 @@ const LINES = {
 };
 
 /** Said once, the moment this visit becomes the longest anyone has ever stayed. */
-export const RECORD_LINES = ["No one has stayed here longer than you. You're number one."];
+export const RECORD_LINES = ["No one has stayed longer than you this month. You're number one."];
 export const sayRecord = () => pick(RECORD_LINES);
 
 export const MILESTONES: Milestone[] = [
