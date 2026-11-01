@@ -11,8 +11,9 @@
 //   50–80%   the pass straightens and settles in the middle, a touch bigger
 //   72%+     the visitor's numbers on the pass fade in; once settled the pass leans to
 //            the pointer
-// Once opened it stays open: scrolling back up doesn't close it, and on later visits the
-// pass is already out (localStorage), with no scrolling needed. `onOpen` fires once the
+// Once opened it stays open for the rest of the visit: scrolling back up doesn't close it,
+// and coming back to the page shows the pass already out (sessionStorage). A new visit
+// gets the envelope again. `onOpen` fires once the
 // pass is out (or already was), so the page can hold the rest back until then.
 //
 // A flat blackcurrant envelope on the dark grid, thin fold lines, a liner of small gold
@@ -22,7 +23,7 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { ringBell } from "@/components/host/bellSound";
 
-const OPENED_KEY = "ash.bella.passOpened"; // localStorage
+const OPENED_KEY = "ash.bella.passOpened"; // sessionStorage: each new visit opens it again
 
 
 const BELL_PATH =
@@ -133,7 +134,8 @@ export default function PassScene({
     let cracked = false;
     let locked = false;
     try {
-      locked = localStorage.getItem(OPENED_KEY) === "1";
+      localStorage.removeItem(OPENED_KEY); // it used to be kept for good
+      locked = sessionStorage.getItem(OPENED_KEY) === "1";
     } catch {}
     if (locked) {
       setOpen(true);
@@ -149,7 +151,7 @@ export default function PassScene({
       if (p >= 0.92 && !locked) {
         locked = true;
         try {
-          localStorage.setItem(OPENED_KEY, "1");
+          sessionStorage.setItem(OPENED_KEY, "1");
         } catch {}
         onOpenRef.current?.();
       }
@@ -158,12 +160,14 @@ export default function PassScene({
       const W = Math.min(620, vw * 0.86, vh * 0.9);
       const H = (W * 5) / 7;
       const envW = W * 1.14, envH = (envW * 5) / 7;
-      const envTop = vh * 0.5 + vh * 0.85 * inn(seg(p, 0.48, 0.72));
+      // Where the envelope sits at first: the whole of it in view, under the title
+      const base = Math.max(vh * 0.13 + 96, vh * 0.5 - envH * 0.3);
+      const envTop = base + vh * 0.85 * inn(seg(p, 0.48, 0.72));
       const envFade = 1 - seg(p, 0.6, 0.72);
 
       // The pass: inside, risen out, then settled in the middle
-      const inside = vh * 0.5 + envH * 0.14;
-      const risen = vh * 0.5 - H * 0.6;
+      const inside = base + envH - H - 16; // tucked fully inside the pocket
+      const risen = base - H * 0.45;
       const finalScale = 1.06;
       const settledTop = (vh - H * finalScale) / 2 + 32;
       const rise = out(seg(p, 0.22, 0.52));

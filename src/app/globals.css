@@ -280,8 +280,8 @@
 .pass.is-revealed .pass-details, .pass.is-revealed .pass-from { opacity: 1; transform: none; }
 
 /* ── The pass page (components/bella/PassPage.tsx) ─────────────────────────────
-   A dark canvas with a faint grid, like a drafting table at night. */
-.pass-page { background-color: #140317; background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px); background-size: 48px 48px; color: #f8f1e3; }
+   The site's white page with a faint grape grid, like a drafting table. */
+.pass-page { background-color: #fff; background-image: linear-gradient(rgba(50, 7, 62, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(50, 7, 62, 0.04) 1px, transparent 1px); background-size: 48px 48px; color: #32073e; }
 
 /* ── The envelope scene (components/bella/PassScene.tsx) ───────────────────────
    Pinned while the visitor scrolls: the seal cracks, the flap opens, the pass rises out
@@ -304,7 +304,7 @@
 .ps-seal, .ps-half { position: absolute; left: 50%; top: 61%; width: 17%; aspect-ratio: 1; margin: -8.5% 0 0 -8.5%; }
 .ps-seal svg, .ps-half svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.4)); }
 .ps-half { opacity: 0; }
-.ps-hint { position: absolute; left: 0; right: 0; bottom: 28px; text-align: center; font-family: var(--font-brand), monospace; font-size: 12px; line-height: 16px; letter-spacing: 2px; text-transform: uppercase; color: rgba(248, 241, 227, 0.6); }
+.ps-hint { position: absolute; left: 0; right: 0; bottom: 28px; text-align: center; font-family: var(--font-brand), monospace; font-size: 12px; line-height: 16px; letter-spacing: 2px; text-transform: uppercase; color: #8e8292; }
 .ps-hint span { display: inline-block; animation: ps-nudge 1.8s ease-in-out infinite; }
 @keyframes ps-nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
 @media (prefers-reduced-motion: reduce) { .ps-hint span { animation: none; } }

@@ -1,7 +1,7 @@
 "use client";
 
 // ── The pass page ─────────────────────────────────────────────────────────────
-// Where a visitor finds their Curiosity Pass (navbar: "Your pass"). On a dark grid:
+// Where a visitor finds their Curiosity Pass (navbar: "Your pass"). On a light grid, like the rest of the site:
 //   the envelope scene   scroll to open it and bring the pass out (PassScene). Opened
 //                        once, it stays open. Nothing below shows until it has been.
 //   the house            a dashboard under it: who's here now, guests so far, this
@@ -44,7 +44,7 @@ interface Desk {
 }
 
 const LINE_BTN =
-  "inline-flex items-center gap-[8px] rounded-full border border-white/20 px-[20px] py-[12px] font-geist text-[15px] leading-[20px] text-[#f8f1e3] transition-colors hover:border-[#e3bd62] hover:text-[#e3bd62] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e3bd62]";
+  "inline-flex items-center gap-[8px] rounded-full border border-line px-[20px] py-[12px] font-geist text-[15px] leading-[20px] text-heading transition-colors hover:border-grape hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape";
 
 export default function PassPage() {
   const { visitorId, activeSeconds } = useCuriosity();
@@ -90,7 +90,7 @@ export default function PassPage() {
   const reading = progress.reading && caseStudy(progress.reading.slug);
   const head = (
     <>
-      <h1 className="font-heading text-[44px] font-medium leading-[48px] text-[#f8f1e3] md:text-[64px] md:leading-[68px]">
+      <h1 className="font-heading text-[44px] font-medium leading-[48px] text-heading md:text-[64px] md:leading-[68px]">
         Your Curiosity Pass
       </h1>
     </>

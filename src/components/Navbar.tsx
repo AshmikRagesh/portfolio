@@ -274,8 +274,6 @@ export default function Navbar() {
   const bubble = useMilestoneBubble(record, footerOnStage || momentHere !== null);
   const speaking = bubble.message !== null;
   const showNav = isNavVisible || speaking || momentHere !== null;
-  // The pass page is dark: the bar goes dark with it, links in ivory, gold for the CTA
-  const night = pathname.startsWith("/pass");
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -330,8 +328,8 @@ export default function Navbar() {
   return (
     <header
       onFocusCapture={() => setIsNavVisible(true)}
-      className={`fixed top-[20px] right-0 left-0 h-[68px] z-50 border-b transition-[transform,box-shadow] ${night ? "bg-[#140317]/90 border-white/10 backdrop-blur-md" : "bg-background border-line"} duration-300 ease-in-out ${
-        scrolled && !night ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
+      className={`fixed top-[20px] right-0 left-0 h-[68px] z-50 bg-background border-b border-line transition-[transform,box-shadow] duration-300 ease-in-out ${
+        scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
       } ${showNav ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >
       {/* Main nav row */}
@@ -351,7 +349,7 @@ export default function Navbar() {
               <li key={label}>
                 <a
                   href={href.startsWith("/") || pathname === "/" ? href : `/${href}`}
-                  className={`group/tab flex items-center gap-2 font-brand text-[14px] font-normal uppercase tracking-[1px] transition-colors duration-200 hover:underline hover:decoration-wavy ${night ? "text-[#f8f1e3]/70 hover:text-[#e3bd62]" : "text-secondary hover:text-grape"}`}
+                  className="group/tab flex items-center gap-2 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] transition-colors duration-200 hover:text-grape hover:underline hover:decoration-wavy"
                 >
                   <Icon
                     size={18}
@@ -366,7 +364,7 @@ export default function Navbar() {
           <Link
             href="/resume"
             onClick={() => celebrate("resume", "Resume downloaded.")}
-            className={`flex items-center gap-2 font-brand font-medium text-[14px] uppercase tracking-[1px] px-[16px] h-[42px] rounded-lg transition-colors duration-200 whitespace-nowrap ${night ? "bg-[#e3bd62] text-[#1e0525] hover:bg-[#f2cf7a]" : "bg-primary text-white hover:bg-grape"}`}
+            className="flex items-center gap-2 text-white font-brand font-medium text-[14px] uppercase tracking-[1px] px-[16px] h-[42px] rounded-lg transition-colors duration-200 whitespace-nowrap bg-primary hover:bg-grape"
           >
             <SparkleAiIcon size={16} />
             Fancy Paper
@@ -376,7 +374,7 @@ export default function Navbar() {
         {/* Mobile: just the menu — the CTA is desktop and tablet only */}
         <div className="md:hidden flex items-center">
           <button
-            className={`flex items-center justify-center size-[38px] rounded-full border-[0.5px] p-[4px] ${night ? "border-white/20 bg-white/5 text-[#f8f1e3]" : "border-line bg-[rgba(30,5,37,0.08)] text-heading"}`}
+            className="flex items-center justify-center size-[38px] rounded-full border-[0.5px] border-line bg-[rgba(30,5,37,0.08)] p-[4px] text-heading"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
           >
@@ -387,14 +385,14 @@ export default function Navbar() {
 
       {/* Mobile drawer */}
       {menuOpen && (
-        <div className={`md:hidden border-b ${night ? "bg-[#140317] border-white/10" : "bg-background border-line"}`}>
+        <div className="md:hidden bg-background border-b border-line">
           {/* Nav items — each with a bottom divider */}
           <ul>
             {navLinks.map(({ label, href, Icon }) => (
-              <li key={label} className={`border-b ${night ? "border-white/10" : "border-line-soft"}`}>
+              <li key={label} className="border-b border-line-soft">
                 <a
                   href={href.startsWith("/") || pathname === "/" ? href : `/${href}`}
-                  className={`flex items-center gap-3 font-brand text-[14px] font-normal uppercase tracking-[1px] px-[20px] py-5 transition-colors duration-200 ${night ? "text-[#f8f1e3]/70 hover:text-[#e3bd62]" : "text-secondary hover:text-black"}`}
+                  className="flex items-center gap-3 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] px-[20px] py-5 transition-colors duration-200 hover:text-black"
                   onClick={() => setMenuOpen(false)}
                 >
                   <Icon size={18} strokeWidth={1.5} />
