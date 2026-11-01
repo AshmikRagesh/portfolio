@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Database, DeviceMobile, Funnel, MagnifyingGlass, PaintBrush } from "@phosphor-icons/react/dist/ssr";
+import { DeviceMobile, Funnel, MagnifyingGlass, PaintBrush } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import {
   Hero,
@@ -64,9 +64,8 @@ function Overview() {
         <Meta
           role={
             <>
-              {/* TODO: confirm scope, and whether any of it was built with Helix */}
-              Product Designer. Designed the results page, the filters and the
-              no-results page, on desktop and phone.
+              Product Designer. Designed the whole flow and every screen, on
+              desktop and phone. Developers built it.
             </>
           }
           // TODO: confirm Travis's role and anyone missing
@@ -155,12 +154,6 @@ const CONTEXT_CARDS = [
       "It asked for filters on trip details and availability, but the list itself was empty. Choosing which filters, and how many, was part of the job.",
   },
   {
-    icon: <Database size={28} weight="fill" className="text-grape" />,
-    title: "Every filter needs data behind it",
-    description:
-      "Search runs on Algolia. A filter only works if every trip carries that field in the search index, so each one had to exist in the data first.",
-  },
-  {
     icon: <PaintBrush size={28} weight="fill" className="text-grape" />,
     title: "New branding, familiar patterns",
     description:
@@ -212,9 +205,8 @@ function Context() {
         <Copy>
           <h3>What shaped the design</h3>
           <p>
-            Five things set the rules before I drew anything: two about the
-            brief, two about the platform, and one about what we didn&apos;t
-            know.
+            Four things set the rules before I drew anything: two from the
+            brief, one about phones, and one about what we didn&apos;t know.
           </p>
         </Copy>
         <Visual>
@@ -316,7 +308,7 @@ const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "Five filters, picked from how people choose a trip",
-    body: "Destination, trip type, departure month, length and availability. These are the questions a traveller answers before they enquire, and each one is a field every trip already has.",
+    body: "Destination, trip type, departure month, length and availability. These are the questions a traveller answers before they enquire.",
   },
   {
     num: 2,
@@ -397,21 +389,6 @@ function Solution() {
           </Visual>
         </div>
       ))}
-      <div className="cs-sub">
-        <Copy>
-          <h3>Designed with the data underneath</h3>
-          <p>
-            The brief never mentioned Algolia, the service the search runs on.
-            But a filter is only as good as the data behind it, so each one maps
-            to a field in the search index. Filters are also saved in the page
-            address, which means a link can open search with a filter already
-            on, and people can share what they found.
-          </p>
-          <MoreDetail label="Each filter and its field" className="mt-[20px]">
-            <FilterFields />
-          </MoreDetail>
-        </Copy>
-      </div>
     </Chapter>
   );
 }
@@ -467,6 +444,21 @@ function Output() {
       <Visual>
         <Figure label="The live search page, October 2026" />
       </Visual>
+      <div className="cs-sub">
+        <Copy>
+          <h3>How the developers built it</h3>
+          <p>
+            The developers built the new search on Algolia, a hosted search
+            service. Each filter in the design became a field in its search
+            index, and the filters are saved in the page address, so a link can
+            open search with a filter already on and people can share what they
+            found.
+          </p>
+          <MoreDetail label="Each filter and its field" className="mt-[20px]">
+            <FilterFields />
+          </MoreDetail>
+        </Copy>
+      </div>
       <div className="cs-sub">
         <Copy>
           <h3>The menu now lands on a filtered page</h3>
@@ -546,8 +538,8 @@ const LESSONS = [
     description: "Tabs sorted the results but didn't help anyone narrow them. Filters did.",
   },
   {
-    title: "Design the data, not just the screen",
-    description: "Every filter depended on a field in the search index, even though the brief never said so.",
+    title: "Search has to understand how people talk",
+    description: "Names and typos worked; sentences didn't. A traveller's own words are the next thing to design for.",
   },
 ];
 
