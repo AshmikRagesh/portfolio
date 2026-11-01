@@ -55,7 +55,7 @@ function VisitsChart({ days }: { days: HouseStats["lastDays"] }) {
   const shown = days[pick ?? last];
 
   return (
-    <div className="flex flex-col gap-[20px] rounded-[20px] border border-line-soft bg-white shadow-[0_1px_2px_rgba(30,5,37,0.04)] p-[24px]">
+    <div className={`flex flex-col gap-[20px] bg-white p-[24px] ${CARD}`}>
       <div className="flex items-start justify-between gap-[16px]">
         <div className="flex flex-col gap-[4px]">
           <p className="font-geist text-[14px] leading-[20px] text-secondary">Visits, last two weeks</p>
@@ -144,7 +144,7 @@ function VisitsChart({ days }: { days: HouseStats["lastDays"] }) {
 function StampsFound({ stamps }: { stamps: HouseStats["stamps"] }) {
   const [ref, seen] = useSeen<HTMLUListElement>();
   return (
-    <div className="flex flex-col gap-[16px] rounded-[20px] border border-line-soft bg-white shadow-[0_1px_2px_rgba(30,5,37,0.04)] p-[24px]">
+    <div className={`flex flex-col gap-[16px] bg-white p-[24px] ${CARD}`}>
       <div className="flex items-baseline justify-between gap-[16px]">
         <p className="font-geist text-[14px] leading-[20px] text-secondary">Stamps found by guests</p>
         <p className="font-geist text-[12px] leading-[16px] text-muted">% of visits</p>
@@ -185,7 +185,8 @@ function StampsFound({ stamps }: { stamps: HouseStats["stamps"] }) {
   );
 }
 
-const CARD = "rounded-[20px] border border-line-soft shadow-[0_1px_2px_rgba(30,5,37,0.04)]";
+const CARD =
+  "rounded-[20px] border border-line-soft shadow-[0_1px_2px_rgba(30,5,37,0.04)] transition-shadow duration-300 hover:shadow-[0_12px_32px_rgba(30,5,37,0.08)]";
 
 // A number that counts up from zero the first time it comes into view
 function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value: number; format?: (n: number) => string }) {
@@ -212,12 +213,82 @@ function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value:
   return <span ref={ref}>{format(shown)}</span>;
 }
 
-function Tile({ label, children, note }: { label: string; children: React.ReactNode; note?: React.ReactNode }) {
+function Tile({ label, children, note, visual }: { label: string; children: React.ReactNode; note?: React.ReactNode; visual?: React.ReactNode }) {
   return (
     <div className={`flex flex-col gap-[12px] bg-white p-[24px] ${CARD}`}>
       <p className="font-geist text-[14px] leading-[20px] text-secondary">{label}</p>
-      <div className="font-heading text-[48px] leading-[52px] text-heading tabular-nums">{children}</div>
+      <div className="flex items-end justify-between gap-[16px]">
+        <div className="font-heading text-[48px] leading-[52px] text-heading tabular-nums">{children}</div>
+        {visual}
+      </div>
       {note && <p className="mt-auto font-geist text-[14px] leading-[20px] text-muted">{note}</p>}
+    </div>
+  );
+}
+
+// Visits a day for the last two weeks as a small line, drawn in when first seen
+function Spark({ days }: { days: HouseStats["lastDays"] }) {
+  const [ref, seen] = useSeen<SVGSVGElement>();
+  const peak = Math.max(1, ...days.map((d) => d.visits));
+  const pts = days.map((d, i) => [(i / (days.length - 1)) * 96 + 2, 38 - (d.visits / peak) * 32] as const);
+  const line = pts.map(([x, y], i) => `${i ? "L" : "M"}${x} ${y}`).join(" ");
+  const [lx, ly] = pts[pts.length - 1];
+  return (
+    <svg ref={ref} viewBox="0 0 100 40" className="h-[40px] w-[100px] shrink-0 overflow-visible" aria-hidden="true">
+      <path d={`${line} L98 40 L2 40 Z`} fill="rgba(157,19,106,0.08)" className={`transition-opacity duration-700 ${seen ? "opacity-100" : "opacity-0"}`} />
+      <path
+        d={line}
+        fill="none"
+        stroke="#9D136A"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        pathLength={1}
+        strokeDasharray="1"
+        strokeDashoffset={seen ? 0 : 1}
+        className="transition-[stroke-dashoffset] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
+      />
+      <circle cx={lx} cy={ly} r="3.5" fill="#9D136A" stroke="#fff" strokeWidth="2" className={`transition-opacity delay-700 duration-300 ${seen ? "opacity-100" : "opacity-0"}`} />
+    </svg>
+  );
+}
+
+// A ring for this month's share of everyone so far
+function ShareRing({ pct }: { pct: number }) {
+  const [ref, seen] = useSeen<SVGSVGElement>();
+  return (
+    <svg ref={ref} viewBox="0 0 44 44" className="h-[44px] w-[44px] shrink-0 -rotate-90" aria-hidden="true">
+      <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(157,19,106,0.12)" strokeWidth="6" />
+      <circle
+        cx="22"
+        cy="22"
+        r="18"
+        fill="none"
+        stroke="#9D136A"
+        strokeWidth="6"
+        strokeLinecap="round"
+        pathLength={100}
+        strokeDasharray="100"
+        strokeDashoffset={seen ? 100 - Math.min(100, Math.max(pct ? 2 : 0, pct)) : 100}
+        className="transition-[stroke-dashoffset] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
+      />
+    </svg>
+  );
+}
+
+// The last two weeks as small bars, the busiest one in grape
+function MiniDays({ days, busiest }: { days: HouseStats["lastDays"]; busiest: string }) {
+  const [ref, seen] = useSeen<HTMLDivElement>();
+  const peak = Math.max(1, ...days.map((d) => d.visits));
+  return (
+    <div ref={ref} className="flex h-[40px] w-[100px] shrink-0 items-end gap-[2px]" aria-hidden="true">
+      {days.map((d, i) => (
+        <span
+          key={d.day}
+          className={`flex-1 rounded-t-[2px] transition-[height] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${d.day === busiest ? "bg-grape" : "bg-grape/20"}`}
+          style={{ height: seen ? `${Math.max(6, (d.visits / peak) * 100)}%` : "0%", transitionDelay: `${i * 30}ms` }}
+        />
+      ))}
     </div>
   );
 }
@@ -249,11 +320,25 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
 
       {/* The line: 0 to the longest, average and yours marked */}
       <div ref={ref} className="flex flex-col gap-[10px]" role="img" aria-label={`Your stay ${formatStay(seconds)}, this month's average ${month.averageSeconds === null ? "not known" : formatStay(month.averageSeconds)}, longest ${formatStay(longest)}`}>
-        <div className="relative h-[10px] rounded-full bg-line-soft">
-          <span className="absolute inset-y-0 left-0 rounded-full bg-grape transition-[width] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ width: seen ? at(seconds) : "0%" }} />
+        <div className="relative mt-[32px] h-[12px] rounded-full bg-line-soft">
+          <span className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-grape/40 to-grape transition-[width] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ width: seen ? at(seconds) : "0%" }} />
           {month.averageSeconds !== null && (
-            <span className="absolute -top-[6px] h-[22px] w-[2px] -translate-x-1/2 rounded-full bg-heading" style={{ left: at(month.averageSeconds) }} />
+            <span className="absolute -top-[6px] h-[24px] w-[2px] -translate-x-1/2 rounded-full bg-heading" style={{ left: at(month.averageSeconds) }} />
           )}
+          {/* You: a dot on the end of the fill, with a tag above it */}
+          <span
+            className="absolute top-1/2 transition-[left] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{ left: seen ? at(seconds) : "0%" }}
+          >
+            <span className="absolute left-0 top-0 h-[20px] w-[20px] -translate-x-1/2 -translate-y-1/2 rounded-full border-[4px] border-white bg-grape shadow-[0_2px_6px_rgba(30,5,37,0.24)]" />
+            <span
+              className={`absolute bottom-[16px] whitespace-nowrap rounded-full bg-grape px-[8px] font-brand text-[10px] uppercase leading-[20px] tracking-[1px] text-white ${
+                seconds / longest < 0.06 ? "-left-[10px]" : seconds / longest > 0.94 ? "-right-[10px]" : "-translate-x-1/2"
+              }`}
+            >
+              You
+            </span>
+          </span>
         </div>
         <div className="relative h-[20px] font-geist text-[12px] leading-[20px] text-muted">
           {(month.averageSeconds === null || month.averageSeconds / longest > 0.14) && <span className="absolute left-0">0m</span>}
@@ -347,6 +432,7 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
     return <p className="font-geist text-[16px] leading-[24px] text-muted">The house’s numbers aren’t available right now.</p>;
 
   const busiest = stats.lastDays.reduce((m, d) => (d.visits > m.visits ? d : m), stats.lastDays[0]);
+  const share = Math.round((stats.month.guests / Math.max(1, stats.guests)) * 100);
 
   return (
     <section className="flex w-full max-w-[1040px] flex-col gap-[32px]" aria-labelledby="house-title">
@@ -361,13 +447,17 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
         <StayCard seconds={seconds} month={stats.month} />
         <HereNow count={stats.hereNow} />
 
-        <Tile label="Guests so far" note={`${stats.visits.toLocaleString()} visits in all`}>
+        <Tile label="Guests so far" note={`${stats.visits.toLocaleString()} visits in all`} visual={<Spark days={stats.lastDays} />}>
           <CountUp value={stats.guests} />
         </Tile>
-        <Tile label="Guests this month" note={`${Math.round((stats.month.guests / Math.max(1, stats.guests)) * 100)}% of everyone so far`}>
+        <Tile label="Guests this month" note={`${share}% of everyone so far`} visual={<ShareRing pct={share} />}>
           <CountUp value={stats.month.guests} />
         </Tile>
-        <Tile label="Busiest day, last two weeks" note={`${busiest.visits} ${busiest.visits === 1 ? "visit" : "visits"}`}>
+        <Tile
+          label="Busiest day, last two weeks"
+          note={`${busiest.visits} ${busiest.visits === 1 ? "visit" : "visits"}`}
+          visual={busiest.visits ? <MiniDays days={stats.lastDays} busiest={busiest.day} /> : undefined}
+        >
           {!busiest.visits ? "–" : busiest === stats.lastDays[stats.lastDays.length - 1] ? "Today" : fmtDay(busiest.day, true)}
         </Tile>
       </div>
