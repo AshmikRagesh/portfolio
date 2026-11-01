@@ -12,6 +12,7 @@
 //              name, how many guests are in the house now, and the email to copy.
 //
 // Missing stamps are empty circles with no hints. Nothing here pops up or redirects.
+// In development, `?stamps=all` shows every stamp as found (nothing is saved) for review.
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -37,7 +38,12 @@ interface Desk {
 
 export default function FrontDesk() {
   const { visitorId, activeSeconds, visits } = useCuriosity();
-  const progress = useProgress();
+  const stored = useProgress();
+  const [showAll, setShowAll] = useState(false);
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production") setShowAll(new URLSearchParams(window.location.search).get("stamps") === "all");
+  }, []);
+  const progress = showAll ? { ...stored, stamps: Object.fromEntries(STAMPS.map((s) => [s.key, Date.now()])) } : stored;
   const [desk, setDesk] = useState<Desk | null>(null);
   const [envelope, setEnvelope] = useState<"sealed" | "opening" | "open" | null>(null);
   const [copied, setCopied] = useState<"yes" | "blocked" | null>(null);
