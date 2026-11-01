@@ -7,6 +7,7 @@ import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { ringBell } from "@/components/host/bellSound";
 import { useWatching } from "@/lib/curiosity/watching";
 import { COPY_EMAIL_EVENT, EMAIL } from "@/lib/contact";
+import { MessageBoard } from "@/components/host/TimerBoard";
 import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
 import PaperTooth from "@/components/PaperTooth";
@@ -42,6 +43,10 @@ const HOP_MS = 300;
 const HOP_REACH = 0.7;
 // Squash lasts this long either side of each touch-down
 const CONTACT_MS = 60;
+// Hovered mid-hop, it comes straight down where it is over this long
+const LAND_MS = 180;
+// The pointer can slip off this long before the bell counts it as gone
+const HOVER_GRACE_MS = 240;
 // The bell is up while the band's top edge is above ON_LINE of the screen, and ducks
 // once it falls below OFF_LINE — a gap, so scrolling around one spot can't flicker it
 const ON_LINE = 0.85;
@@ -77,7 +82,7 @@ function useBellHeight() {
 // of small hops — sometimes half-way across and back, sometimes all the way — with a
 // pause, a hop on the spot or a look around in between. Its eyes face the way it's going,
 // and it stretches on the way up and squashes on each landing.
-//   pointer   hover (or keyboard focus) rings it and stops it at its next landing, so it
+//   pointer   hover (or keyboard focus) rings it and brings it straight down where it is, so it
 //             can be clicked; a click rings it and makes it hop.
 //   touch     a tap rings it and makes it hop.
 // It's also the front desk: a click (or the Copy email button beside the social icons)
@@ -94,6 +99,7 @@ function FooterBell() {
   const height = useBellHeight();
   const layout = hostLayout(height);
   const [hovered, setHovered] = useState(false);
+  const leaveTimer = useRef(0);
   const [card, setCard] = useState<{ copied: boolean; align: "left" | "center" | "right" } | null>(null);
   const [ding, setDing] = useState(0);
   const [gaze, setGaze] = useState<Gaze>(null);
@@ -191,6 +197,7 @@ function FooterBell() {
     let looks: number[] = [];
     let visible = true;
     let trip: Trip | null = null;
+    let lifted = 0;
 
     const span = () => Math.max(0, rail.clientWidth - s.width);
     const setX = (x: number) => {
@@ -198,6 +205,7 @@ function FooterBell() {
       mover.style.transform = `translate3d(${x}px, 0, 0)`;
     };
     const setLift = (up: number, sx = 1, sy = 1) => {
+      lifted = up;
       lift.style.transform = `translate3d(0, ${-up}px, 0) scale(${sx}, ${sy})`;
     };
 
@@ -220,8 +228,10 @@ function FooterBell() {
       let i = 0;
       while (i < trip.hops.length && t > trip.hops[i].ms) t -= trip.hops[i++].ms;
       const at = (k: number) => lerp(trip!.from, trip!.to, Math.min(1, k / trip!.travelling));
-      // Done, or hovered/tapped: stop at the landing it has just made
-      if (i >= trip.hops.length || (s.still && i > 0 && i <= trip.travelling)) return finish(at(i));
+      if (i >= trip.hops.length) return finish(at(i));
+      // Hovered or tapped mid-trip: come down where it is, so it never hops out from
+      // under the pointer
+      if (s.still && i < trip.travelling) return land(at(i + t / trip.hops[i].ms));
       const hop = trip.hops[i];
       const p = t / hop.ms;
       setX(at(i + p));
@@ -234,6 +244,27 @@ function FooterBell() {
         setLift(hop.h * 4 * p * (1 - p), 1 - k * 0.6, 1 + k);
       }
       frame = requestAnimationFrame(tick);
+    };
+
+    // Ease down from wherever it is in the air, with a small squash on touch-down
+    const land = (x: number) => {
+      trip = null;
+      setX(x);
+      setGaze(null);
+      const from = lifted;
+      const start = performance.now();
+      const step = (now: number) => {
+        const p = Math.min(1, (now - start) / LAND_MS);
+        const k = Math.sin(p * Math.PI) * 0.08;
+        setLift(from * Math.pow(1 - p, 3), 1 + k * 0.7, 1 - k);
+        if (p < 1) frame = requestAnimationFrame(step);
+        else {
+          setLift(0);
+          schedule();
+        }
+      };
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(step);
     };
 
     const go = (to: number, hops: { h: number; ms: number }[]) => {
@@ -339,10 +370,14 @@ function FooterBell() {
         style={{ width: layout.width, height }}
         onMouseEnter={() => {
           if (touch) return; // phones fire mouseenter on tap — the tap handles it
+          window.clearTimeout(leaveTimer.current);
+          if (!hovered) ringBell();
           setHovered(true);
-          ringBell();
         }}
-        onMouseLeave={() => setHovered(false)}
+        onMouseLeave={() => {
+          window.clearTimeout(leaveTimer.current);
+          leaveTimer.current = window.setTimeout(() => setHovered(false), HOVER_GRACE_MS);
+        }}
       >
         <div className={`bell-${entrance}`} style={entrance === "pop" ? { animationDelay: "160ms" } : undefined}>
           <div ref={liftRef} style={{ transformOrigin: `50% ${layout.base}px` }}>
@@ -362,20 +397,15 @@ function FooterBell() {
                 className={`absolute ${card.align === "left" ? "left-0" : card.align === "right" ? "right-0" : "left-1/2 -translate-x-1/2"}`}
                 style={{ bottom: `calc(100% + ${reach}px)` }}
               >
-                <div className="bella-card-in rounded-[8px] border-2 border-grape bg-[#f8f1e3] px-[10px] pb-[8px] pt-[6px] text-center shadow-[0_8px_16px_rgba(50,7,62,0.18)]">
-                  <p className="font-brand text-[10px] uppercase leading-[16px] tracking-[1px] text-[#6e0e4b]">
-                    {card.copied ? "Email copied" : "Copy it from here"}
-                  </p>
-                  <p className="mt-[2px] select-all whitespace-nowrap rounded-[4px] bg-[#1c1a1d] px-[10px] py-[4px] font-brand text-[14px] leading-[20px] text-white">
-                    {EMAIL}
-                  </p>
+                <div className="bella-card-in">
+                  <MessageBoard title={card.copied ? "Email copied" : "Copy it from here"} text={EMAIL} />
                 </div>
               </div>
             ) : (
               hovered &&
               !touch && (
                 <div className="pointer-events-none absolute bottom-full left-1/2 mb-[8px] -translate-x-1/2">
-                  <p className="host-tip whitespace-nowrap rounded-[8px] bg-[#1e0525] px-[12px] py-[6px] text-[12px] leading-[18px] text-white">
+                  <p className="host-tip whitespace-nowrap rounded-md bg-midnight px-[12px] py-[8px] font-geist font-normal text-[14px] leading-[20px] text-white shadow-[0_8px_20px_rgba(30,5,37,0.22)]">
                     Click to copy my email
                   </p>
                 </div>

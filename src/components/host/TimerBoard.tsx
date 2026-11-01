@@ -173,3 +173,32 @@ export default function TimerBoard({ seconds, champion = false, grips = [], bare
     </div>
   );
 }
+
+/**
+ * The same plaque, carrying a line of text instead of the clock: the footer's Bella holds
+ * it up with Ashmik's email on it. Same frame, face and engraved title; the dark window
+ * holds the text in white.
+ */
+export function MessageBoard({ title, text }: { title: string; text: string }) {
+  const edition = EDITIONS.standard;
+  return (
+    <div className="relative w-max">
+      <div
+        className="relative rounded-lg p-[4px] shadow-[0_16px_32px_rgba(30,5,37,0.2),0_4px_10px_rgba(30,5,37,0.14),inset_0_1px_0_rgba(255,255,255,0.5),inset_0_-1px_0_rgba(0,0,0,0.25)]"
+        style={{ background: edition.frame }}
+      >
+        <div
+          className="relative rounded-md px-[8px] pt-[8px] pb-[8px] shadow-[inset_0_1px_3px_rgba(40,25,10,0.25),inset_0_-1px_0_rgba(255,255,255,0.7)]"
+          style={{ background: edition.face }}
+        >
+          <p className="text-center whitespace-nowrap font-brand font-medium text-[10px] leading-[12px] uppercase tracking-[0px] text-primary/60 [text-shadow:0_1px_0_rgba(255,255,255,0.6)]">
+            {title}
+          </p>
+          <p className="mt-[6px] select-all whitespace-nowrap rounded-md bg-[#1c1a1d] px-[12px] py-[8px] text-center font-brand font-medium text-[14px] leading-[20px] text-white shadow-[inset_0_2px_4px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.7)]">
+            {text}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
