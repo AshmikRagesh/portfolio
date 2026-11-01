@@ -16,7 +16,7 @@
 // once the pass is out, so the page can hold the rest back until then.
 //
 // A flat blackcurrant envelope on the dark grid, thin fold lines, a liner of small gold
-// bells, the guest number handwritten in gold. With reduced motion there's no pinning:
+// bells. With reduced motion there's no pinning:
 // the pass is simply shown.
 
 import { useEffect, useRef, useState, type ReactElement } from "react";
@@ -93,12 +93,10 @@ const inn = (t: number) => t * t * t;
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 export default function PassScene({
-  guestNo,
   head,
   pass,
   onOpen,
 }: {
-  guestNo: string;
   head: ReactElement;
   pass: (state: { revealed: boolean; tilt: boolean }) => ReactElement;
   onOpen?: () => void;
@@ -119,7 +117,6 @@ export default function PassScene({
   const [revealed, setRevealed] = useState(false);
   const [settled, setSettled] = useState(false);
   const [still, setStill] = useState(false);
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -241,7 +238,7 @@ export default function PassScene({
   }
 
   return (
-    <div ref={section} className={`ps-section ${open ? "is-open" : ""}`}>
+    <div ref={section} className="ps-section">
       <div className="ps-sticky">
         <div ref={headRef} className="ps-head">
           {head}
@@ -283,9 +280,6 @@ export default function PassScene({
               <path d="M0 500 L330 226 Q350 212 370 226 L700 500 Z" fill="url(#pss2)" />
               <path d="M0 0 L372 268 M700 0 L328 268 M0 500 L330 226 Q350 212 370 226 L700 500" fill="none" stroke="#fff" strokeOpacity="0.08" strokeWidth="2" />
               <rect x="1" y="1" width="698" height="498" rx="4" fill="none" stroke="#fff" strokeOpacity="0.06" strokeWidth="2" />
-              <text x="350" y="446" textAnchor="middle" fontSize="46" fill="#e3bd62" transform="rotate(-2 350 446)" style={{ fontFamily: "var(--font-handwriting), cursive" }}>
-                for guest no. {guestNo}
-              </text>
             </svg>
           </div>
         </div>
@@ -325,11 +319,9 @@ export default function PassScene({
           ))}
         </div>
 
-        {!open && (
-          <p ref={hint} className="ps-hint">
-            <span>Scroll to open</span>
-          </p>
-        )}
+        <p ref={hint} className="ps-hint">
+          <span>Scroll to open</span>
+        </p>
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ import CuriosityPass from "@/components/bella/CuriosityPass";
 import PassScene from "@/components/bella/PassScene";
 import { STAMPS } from "@/lib/bella/stampArt";
 import { caseStudy, useProgress } from "@/lib/bella/progress";
-import { guestNumber, type PassData } from "@/lib/bella/passArt";
+import type { PassData } from "@/lib/bella/passArt";
 import HouseDashboard from "@/components/bella/HouseDashboard";
 import { track } from "@/lib/curiosity/report";
 
@@ -99,7 +99,6 @@ export default function PassPage() {
   return (
     <div className="pass-page">
       <PassScene
-        guestNo={guestNumber(data.n)}
         head={head}
         pass={({ revealed, tilt }) => (
           <CuriosityPass data={data} revealed={revealed} tilt={tilt} />

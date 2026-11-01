@@ -271,10 +271,10 @@
 }
 /* The visitor's own numbers, big */
 .pass-details { margin: 0; display: grid; grid-template-columns: repeat(3, auto); align-items: end; }
-.pass-details > div { padding: 0 3cqw; display: grid; gap: 0.6cqw; }
+.pass-details > div { padding: 0 3.6cqw; display: grid; gap: 0.6cqw; }
 .pass-details > div + div { border-left: 1px solid rgba(227, 189, 98, 0.35); }
-.pass-details dt { font-size: 2.4cqw; line-height: 1.3; color: #e3bd62; }
-.pass-details dd { margin: 0; font-family: "GT Alpina Trial", Georgia, serif; font-size: 5.8cqw; line-height: 1; color: #f8f1e3; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pass-details dt { font-size: 2cqw; line-height: 1.3; color: #e3bd62; }
+.pass-details dd { margin: 0; font-family: "GT Alpina Trial", Georgia, serif; font-size: 4.6cqw; line-height: 1; color: #f8f1e3; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pass-from { margin-top: 2.4cqw; font-size: 2cqw; color: rgba(248, 241, 227, 0.6); }
 .pass-details, .pass-from { opacity: 0; transform: translateY(1cqw); transition: opacity 600ms ease 150ms, transform 600ms ease 150ms; }
 .pass.is-revealed .pass-details, .pass.is-revealed .pass-from { opacity: 1; transform: none; }
@@ -291,7 +291,6 @@
 .pass-after { animation: pass-after-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 @keyframes pass-after-in { from { opacity: 0; transform: translateY(24px); } }
 @media (prefers-reduced-motion: reduce) { .pass-after { animation: none; } }
-.ps-section.is-open { height: 100vh; }
 
 .ps-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
 .ps-head { position: absolute; left: 0; right: 0; top: 13vh; text-align: center; display: grid; gap: 12px; justify-items: center; will-change: transform, opacity; }
@@ -305,7 +304,9 @@
 .ps-seal svg, .ps-half svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.4)); }
 .ps-half { opacity: 0; }
 .ps-hint { position: absolute; left: 0; right: 0; bottom: 28px; text-align: center; font-family: var(--font-brand), monospace; font-size: 12px; line-height: 16px; letter-spacing: 2px; text-transform: uppercase; color: #8e8292; }
-.ps-hint span { display: inline-block; animation: ps-nudge 1.8s ease-in-out infinite; }
+.ps-hint span { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; animation: ps-nudge 1.8s ease-in-out infinite; }
+/* A small pill under the words, like a scroll wheel */
+.ps-hint span::after { content: ""; width: 28px; height: 8px; border-radius: 999px; border: 1.5px solid #8e8292; }
 @keyframes ps-nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
 @media (prefers-reduced-motion: reduce) { .ps-hint span { animation: none; } }
 
