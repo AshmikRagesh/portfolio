@@ -6,6 +6,7 @@ import { useBellStage } from "@/components/host/BellStage";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { ringBell } from "@/components/host/bellSound";
 import { useWatching } from "@/lib/curiosity/watching";
+import { COPY_EMAIL_EVENT, EMAIL } from "@/lib/contact";
 import Image from "next/image";
 import PaperTooth from "@/components/PaperTooth";
 
@@ -78,6 +79,10 @@ function useBellHeight() {
 //   pointer   hover (or keyboard focus) rings it and stops it at its next landing, so it
 //             can be clicked; a click rings it and makes it hop.
 //   touch     a tap rings it and makes it hop.
+// It's also the front desk: a click (or the Copy email button beside the social icons)
+// copies Ashmik's email, and the bell rings and holds a card with the address over its
+// head, like a driver holding a name card at arrivals. If the clipboard is blocked the
+// card says so and the address on it can be selected by hand.
 // The timer board lives with the bell in the navbar only.
 // It never dozes, and turns gold for the longest visit ever. With reduced motion it stays
 // where it landed and keeps still.
@@ -88,6 +93,7 @@ function FooterBell() {
   const height = useBellHeight();
   const layout = hostLayout(height);
   const [hovered, setHovered] = useState(false);
+  const [card, setCard] = useState<{ copied: boolean; align: "left" | "center" | "right" } | null>(null);
   const [ding, setDing] = useState(0);
   const [gaze, setGaze] = useState<Gaze>(null);
   const [onStage, setOnStage] = useState(false);
@@ -96,9 +102,9 @@ function FooterBell() {
   const railRef = useRef<HTMLDivElement>(null);
   const moverRef = useRef<HTMLDivElement>(null);
   const liftRef = useRef<HTMLDivElement>(null);
-  const pokeRef = useRef(() => {});
 
-  const still = hovered && !touch; // under the pointer: stays put so it can be rung
+  // Under the pointer, or holding up the email card: stays put
+  const still = (hovered && !touch) || card !== null;
   const live = useRef({ x: null as number | null, still, width: layout.width });
   live.current.still = still;
   live.current.width = layout.width;
@@ -271,10 +277,6 @@ function FooterBell() {
       go(to, Array.from({ length: count }, () => ({ h: Math.round(random(10, 16)), ms: HOP_MS })));
     }
 
-    pokeRef.current = () => {
-      if (!trip) hopOnTheSpot(20);
-    };
-
     const io = new IntersectionObserver(([entry]) => (visible = entry.isIntersecting));
     io.observe(rail);
     schedule(800, 1600);
@@ -284,16 +286,42 @@ function FooterBell() {
       window.clearTimeout(timer);
       looks.forEach(window.clearTimeout);
       io.disconnect();
-      pokeRef.current = () => {};
       setLift(0);
     };
   }, [onStage]);
 
-  const ring = () => {
+  // Copy the email and hold the card up for a few seconds
+  const cardTimer = useRef(0);
+  const copyEmail = useRef(() => {});
+  copyEmail.current = () => {
     ringBell();
     setDing((d) => d + 1);
-    pokeRef.current();
+    // Keep the card on screen when the bell is near either end of the counter
+    const span = Math.max(1, (railRef.current?.clientWidth ?? 0) - layout.width);
+    const at = (live.current.x ?? 0) / span;
+    const align = at > 0.66 ? "right" : at < 0.34 ? "left" : "center";
+    const show = (copied: boolean) => {
+      setCard({ copied, align });
+      window.clearTimeout(cardTimer.current);
+      cardTimer.current = window.setTimeout(() => setCard(null), copied ? 4000 : 8000);
+    };
+    try {
+      navigator.clipboard.writeText(EMAIL).then(() => show(true), () => show(false));
+    } catch {
+      show(false);
+    }
   };
+  useEffect(() => {
+    const onCopy = () => copyEmail.current();
+    window.addEventListener(COPY_EMAIL_EVENT, onCopy);
+    return () => {
+      window.removeEventListener(COPY_EMAIL_EVENT, onCopy);
+      window.clearTimeout(cardTimer.current);
+    };
+  }, []);
+
+  // Hands reach up to the card's bottom edge: above the drawing's top by this much
+  const reach = Math.round(((118 - 106) * height) / 130);
 
   return (
     // The counter: a rail along the footer's top edge that the bell moves along
@@ -318,14 +346,42 @@ function FooterBell() {
           <div ref={liftRef} style={{ transformOrigin: `50% ${layout.base}px` }}>
             <button
               type="button"
-              aria-label="Ring the bell"
-              onClick={ring}
+              aria-label="Copy Ashmik's email address"
+              onClick={() => copyEmail.current()}
               onFocus={() => !touch && setHovered(true)}
               onBlur={() => setHovered(false)}
               className="relative z-10 block cursor-pointer select-none rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
             >
-              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} className="block" style={{ width: layout.width, height }} />
+              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} raised={card !== null} className="block" style={{ width: layout.width, height }} />
             </button>
+            {/* Hover: what a click does. Clicked: the card with the address, held overhead */}
+            {card ? (
+              <div
+                className={`absolute ${card.align === "left" ? "left-0" : card.align === "right" ? "right-0" : "left-1/2 -translate-x-1/2"}`}
+                style={{ bottom: `calc(100% + ${reach}px)` }}
+              >
+                <div className="bella-card-in rounded-[8px] border-2 border-grape bg-[#f8f1e3] px-[10px] pb-[8px] pt-[6px] text-center shadow-[0_8px_16px_rgba(50,7,62,0.18)]">
+                  <p className="font-brand text-[10px] uppercase leading-[16px] tracking-[1px] text-[#6e0e4b]">
+                    {card.copied ? "Email copied" : "Copy it from here"}
+                  </p>
+                  <p className="mt-[2px] select-all whitespace-nowrap rounded-[4px] bg-[#1c1a1d] px-[10px] py-[4px] font-brand text-[14px] leading-[20px] text-white">
+                    {EMAIL}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              hovered &&
+              !touch && (
+                <div className="pointer-events-none absolute bottom-full left-1/2 mb-[8px] -translate-x-1/2">
+                  <p className="host-tip whitespace-nowrap rounded-[8px] bg-[#1e0525] px-[12px] py-[6px] text-[12px] leading-[18px] text-white">
+                    Click to copy my email
+                  </p>
+                </div>
+              )
+            )}
+            <p className="sr-only" aria-live="polite">
+              {card ? (card.copied ? `Email copied: ${EMAIL}` : `Copying is blocked. The address is ${EMAIL}`) : ""}
+            </p>
           </div>
         </div>
       </div>
@@ -411,6 +467,14 @@ export default function Footer() {
                 {icon}
               </a>
             ))}
+            {/* Copy email: the same as clicking the footer's Bella, which rings and holds up the address */}
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event(COPY_EMAIL_EVENT))}
+              className="ml-[16px] h-[44px] rounded-full bg-[#f8f1e3] px-[16px] font-brand text-[12px] font-medium uppercase leading-[16px] tracking-[1px] text-primary transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:h-[56px] md:px-[20px] md:text-[14px]"
+            >
+              Copy email
+            </button>
           </div>
 
         </div>
