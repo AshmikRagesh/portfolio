@@ -55,22 +55,24 @@ function Overview() {
     <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
-          TCS World Travel runs luxury trips by private jet and small group.
-          Its website search showed almost every trip for almost any search. I
-          redesigned the search page so travellers can narrow the results by
-          destination, trip type, departure date and length, and so a search
-          that finds nothing still leads somewhere.
+          Searching &ldquo;Summer in Japan&rdquo; on the TCS website showed
+          about 48 trips, close to the whole catalogue. I redesigned the search
+          page so travellers can narrow results by destination, trip type, date
+          and length, and so a search that finds nothing still leads to a
+          person or a trip. Developers built it, and it has been live since
+          July 2026.
         </p>
         <Meta
           role={
             <>
-              Product Designer. Designed the whole flow and every screen, on
-              desktop and phone. Developers built it.
+              Product Designer. Owned the design end to end: the flow, the
+              filters, and the results and no-results pages, on desktop and
+              phone, through to developer handoff.
             </>
           }
-          // TODO: confirm Travis's role and anyone missing
-          team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content)"
-          timeline={<>Brief in Feb 2026, designs done May 2026<br />Live from July 2026</>}
+          // TODO: add Travis's role once known
+          team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content), TCS developers (Engineering)"
+          timeline={<>Brief in Feb 2026, designs done May 2026<br />Live since July 2026</>}
         />
       </Copy>
       <Visual>
