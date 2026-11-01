@@ -9,9 +9,9 @@ import { awardStamp, celebrate, useMoment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
 import { useWatching } from "@/lib/curiosity/watching";
 import { COPY_EMAIL_EVENT, EMAIL } from "@/lib/contact";
+import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
-import { Mail } from "lucide-react";
 import PaperTooth from "@/components/PaperTooth";
 
 const socialLinks = [
@@ -391,6 +391,11 @@ function FooterBell() {
   // Where the line's pointer sits: under the bell, whichever way the line is aligned
   const pointerAt = (align: "left" | "center" | "right") =>
     align === "left" ? `${layout.width / 2 - 4}px` : align === "right" ? `calc(100% - ${layout.width / 2 + 4}px)` : "calc(50% - 4px)";
+  // The board hangs centred under the hands, nudged in from the ends of the counter
+  const gripMid = (layout.hands[0].x + layout.hands[1].x) / 2;
+  const boardLeft = card
+    ? Math.round(gripMid - BOARD_WIDTH / 2 + (card.align === "left" ? BOARD_WIDTH / 2 - gripMid : card.align === "right" ? -(BOARD_WIDTH / 2 - (layout.width - gripMid)) : 0))
+    : 0;
   const talking = card !== null || momentHere !== null || (hovered && !touch);
 
   return (
@@ -426,17 +431,18 @@ function FooterBell() {
               onBlur={() => setHovered(false)}
               className="relative z-10 block cursor-pointer select-none rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
             >
-              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} expression={momentHere?.kind === "stamp" ? "surprised" : null} celebrate={celebrateCount} className="block" style={{ width: layout.width, height }} />
+              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} holding={card !== null} expression={momentHere?.kind === "stamp" ? "surprised" : null} celebrate={celebrateCount} className="block" style={{ width: layout.width, height }} />
             </button>
             {/* Below the bell, like the navbar's lines: the copied email, a moment, or the hover hint */}
             {card ? (
-              <div className={`absolute top-full z-10 mt-[12px] ${edge(card.align)}`}>
-                <div className="host-tip relative w-max max-w-[min(320px,calc(100vw-40px))]">
-                  <span aria-hidden="true" className="absolute -top-[4px] h-[8px] w-[8px] rotate-45 rounded-xs bg-midnight" style={{ left: pointerAt(card.align) }} />
-                  <p className="relative rounded-md bg-midnight px-[12px] py-[8px] font-geist font-normal text-[14px] leading-[20px] text-white shadow-[0_8px_20px_rgba(30,5,37,0.22)]">
-                    {card.copied ? "Email copied: " : "Copy it from here: "}
-                    <span className="select-all text-[#f7b3d8]">{EMAIL}</span>
-                  </p>
+              // The navbar's board, hung from both hands below the bell, with the email in its window
+              <div className="absolute z-10" style={{ left: boardLeft, top: layout.hands[0].y + 6 }}>
+                <div className="host-board" style={{ "--grip-x": `${gripMid - boardLeft}px` } as React.CSSProperties}>
+                  <TimerBoard
+                    seconds={0}
+                    message={{ title: card.copied ? "Email copied" : "Copy it from here", text: EMAIL }}
+                    grips={[layout.hands[0].x - boardLeft, layout.hands[1].x - boardLeft]}
+                  />
                 </div>
               </div>
             ) : momentHere ? (
@@ -547,10 +553,14 @@ export default function Footer() {
               type="button"
               aria-label="Copy Ashmik's email address"
               onClick={() => window.dispatchEvent(new Event(COPY_EMAIL_EVENT))}
-              className="relative size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 bg-[#f8f1e3] text-primary transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] hover:rotate-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="relative size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 bg-[#ea4335] text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] hover:rotate-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               style={{ zIndex: socialLinks.length + 1 }}
             >
-              <Mail className="h-[18px] w-[18px] md:h-[24px] md:w-[24px]" strokeWidth={2} aria-hidden="true" />
+              {/* A filled envelope */}
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] md:h-[24px] md:w-[24px]">
+                <path fill="currentColor" d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v.3l-9 5.6-9-5.6v-.3Z" />
+                <path fill="currentColor" d="M3 9.1V17.5A2.5 2.5 0 0 0 5.5 20h13a2.5 2.5 0 0 0 2.5-2.5V9.1l-8.47 5.27a1 1 0 0 1-1.06 0L3 9.1Z" />
+              </svg>
             </button>
           </div>
 

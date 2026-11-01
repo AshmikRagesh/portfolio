@@ -102,6 +102,8 @@ interface Props {
   grips?: readonly number[];
   /** Just the clock — the dark window and its cards, with no plaque around it, at 42px tall. */
   bare?: boolean;
+  /** The same plaque carrying a line of text instead of the clock (the footer bell's email). */
+  message?: { title: string; text: string };
 }
 
 // The dark window with the split-flap cards and their unit marks
@@ -125,8 +127,9 @@ function Clock({ groups, units, tall = false, className = "" }: { groups: string
   );
 }
 
-export default function TimerBoard({ seconds, champion = false, grips = [], bare = false }: Props) {
+export default function TimerBoard({ seconds, champion = false, grips = [], bare = false, message }: Props) {
   const edition = champion ? EDITIONS.champion : EDITIONS.standard;
+  const title = message?.title ?? edition.title;
   const groups = formatClock(seconds).split(":");
   const units = groups.length > 2 ? ["h", "m", "s"] : ["m", "s"];
   const label = `${edition.title}: ${groups.map((g, i) => `${Number(g)}${units[i]}`).join(" ")}`;
@@ -140,7 +143,7 @@ export default function TimerBoard({ seconds, champion = false, grips = [], bare
   }
 
   return (
-    <div role="timer" aria-label={label} className="relative" style={{ width: BOARD_WIDTH }}>
+    <div role={message ? "status" : "timer"} aria-label={message ? `${message.title}: ${message.text}` : label} className="relative" style={{ width: BOARD_WIDTH }}>
       {/* Rings the hands hold */}
       {grips.map((x, i) => (
         <span
@@ -163,11 +166,17 @@ export default function TimerBoard({ seconds, champion = false, grips = [], bare
         >
           {/* Engraved title — a light edge under the letters reads as cut into the face */}
           <p className="text-center whitespace-nowrap font-brand font-medium text-[10px] leading-[12px] uppercase tracking-[0px] text-primary/60 [text-shadow:0_1px_0_rgba(255,255,255,0.6)]">
-            {edition.title}
+            {title}
           </p>
 
-          {/* The clock — a dark window the full width of the face, cards centred */}
-          <Clock groups={groups} units={units} className="mt-[6px]" />
+          {/* The clock — a dark window the full width of the face, cards centred. Or the message, in the same window */}
+          {message ? (
+            <p className="mt-[6px] select-all whitespace-nowrap rounded-md bg-[#1c1a1d] px-[8px] py-[10px] text-center font-brand font-medium text-[12px] leading-[16px] text-white shadow-[inset_0_2px_4px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.7)]">
+              {message.text}
+            </p>
+          ) : (
+            <Clock groups={groups} units={units} className="mt-[6px]" />
+          )}
         </div>
       </div>
     </div>
