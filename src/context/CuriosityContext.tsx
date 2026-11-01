@@ -4,7 +4,8 @@
 // Measures how long someone is actually here — not how long the tab is open.
 //
 // The clock only moves while the visitor is present: the tab is visible AND they've
-// scrolled, moved the pointer, typed or touched within the last IDLE_TIMEOUT_MS.
+// scrolled, moved the pointer, typed or touched within the last IDLE_TIMEOUT_MS, or a
+// video they started is playing (lib/curiosity/watching).
 // Step away and it pauses; come back and it picks up where it left off. The quiet
 // stretch before it pauses still counts — that's usually someone reading.
 //
@@ -25,6 +26,7 @@ import {
 } from "@/lib/curiosity/config";
 import { loadSession, saveSession, type VisitorRecord, type VisitRecord } from "@/lib/curiosity/visitor";
 import { referrerHost, report, viewportBucket } from "@/lib/curiosity/report";
+import { isWatching, onWatchingChange } from "@/lib/curiosity/watching";
 
 interface CuriosityValue {
   /** Anonymous ID for this browser — empty until the clock has loaded. */
@@ -128,6 +130,8 @@ export function CuriosityProvider({ children }: { children: ReactNode }) {
       const delta = Math.min(t - s.lastTick, MAX_TICK_MS);
       s.lastTick = t;
 
+      // Watching a video counts as activity, so the idle window starts once it stops
+      if (isWatching()) s.lastActivity = t;
       const paused = document.hidden || t - s.lastActivity > IDLE_TIMEOUT_MS;
       if (!paused) s.visit.activeMs += delta;
       sync(paused);
@@ -172,12 +176,16 @@ export function CuriosityProvider({ children }: { children: ReactNode }) {
     sync(false);
     const id = window.setInterval(tick, TICK_MS);
     ACTIVITY_EVENTS.forEach((e) => window.addEventListener(e, markActivity, { passive: true }));
+    const stopWatchingListener = onWatchingChange(() => {
+      if (isWatching()) markActivity();
+    });
     document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("pagehide", leave);
 
     return () => {
       window.clearInterval(id);
       ACTIVITY_EVENTS.forEach((e) => window.removeEventListener(e, markActivity));
+      stopWatchingListener();
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("pagehide", leave);
       saveSession(s.visitor, s.visit);

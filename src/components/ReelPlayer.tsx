@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { X, ChevronUp, ChevronDown } from "lucide-react";
 import type { Reel } from "@/content/reels";
+import { useReportWatching } from "@/lib/curiosity/watching";
 
 export type { Reel };
 
@@ -161,6 +162,8 @@ export default function ReelPlayer({
   const [target, setTarget] = useState<Dock | null>(null);
   const [footerUp, setFooterUp] = useState(false);
   const [view, setView] = useState<"closed" | "open" | "closing">("closed");
+  // An opened reel plays with sound: the visitor chose to watch, so the clock keeps running
+  useReportWatching(view === "open");
 
   const cardRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLDivElement>(null);

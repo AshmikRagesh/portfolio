@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useReportWatching } from "@/lib/curiosity/watching";
 
 /**
  * A case study screenshot or clip that opens larger when clicked — an expanded view over a
@@ -182,6 +183,8 @@ function Player({
   const [duration, setDuration] = useState(0);
   const [loaded, setLoaded] = useState(0);
   const [active, setActive] = useState(false); // pointer moved recently
+  // A clip the reader started, opened or that plays with sound keeps the curiosity clock running
+  useReportWatching(playing && (narrated || expanded || chose.current));
 
   // Silent clips play while on screen, unless the reader took over
   useEffect(() => {
