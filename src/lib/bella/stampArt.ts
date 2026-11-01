@@ -8,7 +8,7 @@
 //   Front desk    lavender, an oval: the guesthouse with its windows lit
 //   Two in a row  mint, a tilted square: two case studies open side by side
 //   Back again    coral, a round postmark with a dotted rim: a door and a return arrow
-// `ink: "none"` draws just the emboss with no colour, for a stamp not found yet.
+// `ink: "none"` draws it in faint ivory with no colour, for a stamp not found yet.
 //
 // Returns an SVG string so the same art works in React (dangerouslySetInnerHTML,
 // static markup only), in the share image, and anywhere else.
@@ -150,8 +150,9 @@ export function stampSvg(
     `<feComposite in="SourceGraphic" in2="m" operator="in"/></filter></defs>` +
     `<g transform="rotate(${rotate} 100 100)">` +
     `<use href="#${id}a" transform="translate(-1.2 -1.2)" style="color:#fff" opacity="${ghost ? 0.12 : 0.22}"/>` +
-    `<use href="#${id}a" transform="translate(1.6 1.8)" style="color:#000" opacity="${ghost ? 0.45 : 0.4}"/>` +
-    (ghost ? "" : `<use href="#${id}a" style="color:${colour}" filter="url(#${id}f)"/>`) +
+    `<use href="#${id}a" transform="translate(1.6 1.8)" style="color:#000" opacity="${ghost ? 0.3 : 0.4}"/>` +
+    // Not found yet: the same art in faint ivory, so it reads as a blank to collect
+    (ghost ? `<use href="#${id}a" style="color:#f8f1e3" opacity="0.3"/>` : `<use href="#${id}a" style="color:${colour}" filter="url(#${id}f)"/>`) +
     `</g></svg>`
   );
 }

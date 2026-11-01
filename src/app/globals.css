@@ -266,7 +266,7 @@
 .pass-stamp { width: 7.6cqw; height: 7.6cqw; }
 /* Embossed in the card's own colour: a light edge along the bottom, a dark one along the top */
 .pass-title {
-  font-family: "GT Alpina Trial", Georgia, serif; font-size: 8.4cqw; line-height: 1; letter-spacing: -0.2cqw;
+  font-family: "GT Alpina Trial", Georgia, serif; font-size: 11cqw; line-height: 1; letter-spacing: -0.26cqw;
   color: #4d165b; text-shadow: 0 -0.24cqw 0 rgba(10, 0, 14, 0.7), 0 0.24cqw 0 rgba(255, 220, 255, 0.22);
 }
 /* The visitor's own numbers, big */
