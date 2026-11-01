@@ -272,25 +272,49 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
   );
 }
 
-// Guests on the site right now: one bell each, the visitor's own in grape
+// Guests on the site right now, as bells on a front desk: the visitor's own bell in grape
+// with Bella's eyes and a "You" under it, everyone else's in soft lilac. They sway a little.
 function HereNow({ count }: { count: number }) {
-  const bells = Math.min(count, MAX_BELLS);
+  const bells = Math.max(1, Math.min(count, MAX_BELLS));
   return (
     <div className={`flex flex-col gap-[12px] bg-grape-light/50 p-[24px] md:p-[32px] ${CARD}`}>
-      <p className="font-geist text-[14px] leading-[20px] text-secondary">Here right now</p>
-      <p className="font-heading text-[64px] leading-[64px] text-grape tabular-nums">
-        <CountUp value={count} />
-      </p>
-      <div className="flex flex-wrap items-end gap-[6px]" aria-hidden="true">
-        {Array.from({ length: bells }, (_, i) => (
-          <svg key={i} viewBox="36 120 128 108" className={`w-auto ${i === 0 ? "h-[24px]" : "h-[18px]"}`}>
-            <path d={BELL} fill={i === 0 ? "#9D136A" : "rgba(50,7,62,0.22)"} />
-          </svg>
-        ))}
-        {count > MAX_BELLS && <span className="font-geist text-[12px] leading-[16px] text-muted">+{count - MAX_BELLS}</span>}
+      <div className="flex items-baseline justify-between gap-[12px]">
+        <p className="font-geist text-[14px] leading-[20px] text-secondary">Here right now</p>
+        <p className="font-geist text-[12px] leading-[16px] text-muted">Updates live</p>
       </div>
-      <p className="mt-auto font-geist text-[14px] leading-[20px] text-muted">
-        {count <= 1 ? "Just you at the desk" : `You and ${count - 1} more, live`}
+      <p className="flex items-baseline gap-[8px]">
+        <span className="font-heading text-[64px] leading-[64px] text-grape tabular-nums">
+          <CountUp value={count} />
+        </span>
+        <span className="font-geist text-[16px] leading-[24px] text-secondary">{count === 1 ? "guest" : "guests"}</span>
+      </p>
+
+      {/* The desk */}
+      <div className="mt-auto flex flex-col pt-[8px]" aria-hidden="true">
+        <div className="flex items-end gap-[8px] px-[8px]">
+          {Array.from({ length: bells }, (_, i) => (
+            <span key={i} className="desk-bell flex flex-col items-center" style={{ animationDelay: `${i * 0.35}s` }}>
+              <svg viewBox="36 120 128 108" className={`w-auto ${i === 0 ? "h-[40px]" : "h-[28px]"}`}>
+                <path d={BELL} fill={i === 0 ? "#9D136A" : "rgba(157,19,106,0.28)"} />
+                {i === 0 && (
+                  <g>
+                    <ellipse cx="86" cy="184" rx="9" ry="11" fill="#fff" />
+                    <ellipse cx="114" cy="184" rx="9" ry="11" fill="#fff" />
+                    <circle cx="88" cy="186" r="5" fill="#32073e" />
+                    <circle cx="116" cy="186" r="5" fill="#32073e" />
+                  </g>
+                )}
+              </svg>
+            </span>
+          ))}
+          {count > MAX_BELLS && <span className="pb-[2px] font-geist text-[12px] leading-[16px] text-muted">+{count - MAX_BELLS}</span>}
+        </div>
+        <span className="h-[6px] rounded-full bg-heading/15" />
+        <span className="mt-[6px] w-[64px] text-center font-brand text-[10px] uppercase leading-[12px] tracking-[1px] text-grape">You</span>
+      </div>
+
+      <p className="font-geist text-[14px] leading-[20px] text-muted">
+        {count <= 1 ? "Just you at the desk" : `You and ${count - 1} ${count === 2 ? "other" : "others"}`}
       </p>
     </div>
   );

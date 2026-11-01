@@ -263,7 +263,7 @@
 .pass-face::before { content: ""; position: absolute; inset: 3cqw; border-radius: 6px; pointer-events: none; opacity: 0.5; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .12 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
 .pass-stamps { display: flex; gap: 1.6cqw; align-items: center; }
-.pass-stamp { width: 10cqw; height: 10cqw; }
+.pass-stamp { width: 12cqw; height: 12cqw; }
 /* Embossed in the card's own colour: a light edge along the bottom, a dark one along the top */
 .pass-title {
   font-family: "GT Alpina Trial", Georgia, serif; font-size: 12.4cqw; line-height: 1; letter-spacing: -0.3cqw;
@@ -289,6 +289,10 @@
 .ps-section { position: relative; height: 340vh; }
 .ps-section.is-open { height: 100vh; }
 /* What's under the pass rises in once the pass is out */
+/* Bells on the dashboard's front desk sway a little, each on its own beat */
+.desk-bell { transform-origin: 50% 100%; animation: desk-sway 3.2s ease-in-out infinite; }
+@keyframes desk-sway { 0%, 100% { transform: rotate(0deg); } 30% { transform: rotate(-4deg); } 60% { transform: rotate(3deg); } }
+@media (prefers-reduced-motion: reduce) { .desk-bell { animation: none; } }
 .pass-after { animation: pass-after-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 @keyframes pass-after-in { from { opacity: 0; transform: translateY(24px); } }
 @media (prefers-reduced-motion: reduce) { .pass-after { animation: none; } }
