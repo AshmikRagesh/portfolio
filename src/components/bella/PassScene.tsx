@@ -12,7 +12,8 @@
 //   72%+     the visitor's numbers on the pass fade in; once settled the pass leans to
 //            the pointer
 // Once opened it stays open: scrolling back up doesn't close it, and on later visits the
-// pass is already out (localStorage), with no scrolling needed.
+// pass is already out (localStorage), with no scrolling needed. `onOpen` fires once the
+// pass is out (or already was), so the page can hold the rest back until then.
 //
 // A flat blackcurrant envelope on the dark grid, thin fold lines, a liner of small gold
 // bells, the guest number handwritten in gold. With reduced motion there's no pinning:
@@ -95,11 +96,15 @@ export default function PassScene({
   guestNo,
   head,
   pass,
+  onOpen,
 }: {
   guestNo: string;
   head: ReactElement;
   pass: (state: { revealed: boolean; tilt: boolean }) => ReactElement;
+  onOpen?: () => void;
 }) {
+  const onOpenRef = useRef(onOpen);
+  onOpenRef.current = onOpen;
   const section = useRef<HTMLDivElement>(null);
   const headRef = useRef<HTMLDivElement>(null);
   const card = useRef<HTMLDivElement>(null);
@@ -121,6 +126,7 @@ export default function PassScene({
       setStill(true);
       setRevealed(true);
       setSettled(true);
+      onOpenRef.current?.();
       return;
     }
     let raf = 0;
@@ -129,7 +135,10 @@ export default function PassScene({
     try {
       locked = localStorage.getItem(OPENED_KEY) === "1";
     } catch {}
-    if (locked) setOpen(true);
+    if (locked) {
+      setOpen(true);
+      onOpenRef.current?.();
+    }
     const update = () => {
       raf = 0;
       const el = section.current;
@@ -142,6 +151,7 @@ export default function PassScene({
         try {
           localStorage.setItem(OPENED_KEY, "1");
         } catch {}
+        onOpenRef.current?.();
       }
       if (locked) p = 1;
 

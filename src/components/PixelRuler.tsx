@@ -27,6 +27,8 @@ function contentLeft() {
 
 export default function PixelRuler() {
   const pathname = usePathname();
+  // The pass page is dark, so the ruler goes dark with it
+  const night = pathname.startsWith("/pass");
   const rootRef = useRef<HTMLDivElement>(null);
   const progressValueRef = useRef<HTMLSpanElement>(null);
   const hoverValueRef = useRef<HTMLSpanElement>(null);
@@ -65,7 +67,7 @@ export default function PixelRuler() {
     });
     labelsRef.current.forEach((el, i) => {
       if (!el) return;
-      el.style.color = i === nearest ? "#1e0525" : "";
+      el.style.color = i === nearest ? (rootRef.current?.dataset.night ? "#f8f1e3" : "#1e0525") : "";
       el.style.fontWeight = i === nearest ? "500" : "";
     });
   };
@@ -177,7 +179,8 @@ export default function PixelRuler() {
       data-hover="false"
       data-marker="false"
       data-drag="false"
-      className="group/ruler fixed inset-x-0 top-0 z-[51] h-[20px] cursor-pointer touch-none select-none overflow-hidden bg-background [--hx:-60px] [--p:0px] after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-[rgba(30,5,37,0.08)] after:content-[''] data-[marker=true]:cursor-grab data-[drag=true]:cursor-grabbing"
+      data-night={night || undefined}
+      className={`group/ruler fixed inset-x-0 top-0 z-[51] h-[20px] cursor-pointer touch-none select-none overflow-hidden ${night ? "bg-[#140317] after:bg-white/10" : "bg-background after:bg-[rgba(30,5,37,0.08)]"} [--hx:-60px] [--p:0px] after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-[''] data-[marker=true]:cursor-grab data-[drag=true]:cursor-grabbing`}
     >
       {/* Minor ticks every 10px — only the bottom 6px is visible */}
       <i
@@ -192,7 +195,7 @@ export default function PixelRuler() {
           ref={(el) => {
             labelsRef.current[i] = el;
           }}
-          className="pointer-events-none absolute bottom-0 whitespace-nowrap pb-2 pl-1 font-brand text-[10px] leading-[10px] tabular-nums text-muted/80 transition-colors duration-100 before:absolute before:bottom-0 before:left-0 before:h-2 before:w-px before:bg-[rgba(142,130,146,0.6)] before:content-[''] motion-reduce:transition-none"
+          className={`pointer-events-none absolute bottom-0 whitespace-nowrap pb-2 pl-1 font-brand text-[10px] leading-[10px] tabular-nums ${night ? "text-[#f8f1e3]/40" : "text-muted/80"} transition-colors duration-100 before:absolute before:bottom-0 before:left-0 before:h-2 before:w-px before:bg-[rgba(142,130,146,0.6)] before:content-[''] motion-reduce:transition-none`}
           style={{ left: t.at }}
         >
           {t.label}
@@ -201,26 +204,26 @@ export default function PixelRuler() {
 
       {/* HOVER — thin dark hairline + neutral chip under the cursor */}
       <i
-        className="pointer-events-none absolute inset-y-0 w-px bg-heading/40 opacity-0 transition-opacity duration-[120ms] group-data-[hover=true]/ruler:opacity-100 motion-reduce:transition-none"
+        className={`pointer-events-none absolute inset-y-0 w-px ${night ? "bg-[#f8f1e3]/40" : "bg-heading/40"} opacity-0 transition-opacity duration-[120ms] group-data-[hover=true]/ruler:opacity-100 motion-reduce:transition-none`}
         style={{ left: "var(--hx)" }}
       />
       <span
         ref={hoverValueRef}
-        className="pointer-events-none absolute top-[2px] -translate-x-1/2 whitespace-nowrap bg-background px-1 font-brand text-[10px] leading-[12px] tabular-nums text-heading opacity-0 transition-opacity duration-[120ms] group-data-[hover=true]/ruler:opacity-100 motion-reduce:transition-none"
+        className={`pointer-events-none absolute top-[2px] -translate-x-1/2 whitespace-nowrap px-1 font-brand text-[10px] leading-[12px] tabular-nums ${night ? "bg-[#140317] text-[#f8f1e3]" : "bg-background text-heading"} opacity-0 transition-opacity duration-[120ms] group-data-[hover=true]/ruler:opacity-100 motion-reduce:transition-none`}
         style={{ left: CHIP_CLAMP.replace("VAR", "var(--hx)") }}
       />
 
       {/* PROGRESS marker — deepens on marker-hover, strongest while dragging */}
       <i
-        className="pointer-events-none absolute inset-y-0 ml-[-12px] w-[24px] bg-grape/20 transition-colors duration-[120ms] group-data-[marker=true]/ruler:bg-grape/30 group-data-[drag=true]/ruler:bg-grape/40 motion-reduce:transition-none"
+        className={`pointer-events-none absolute inset-y-0 ml-[-12px] w-[24px] transition-colors duration-[120ms] motion-reduce:transition-none ${night ? "bg-[#e3bd62]/15 group-data-[marker=true]/ruler:bg-[#e3bd62]/25 group-data-[drag=true]/ruler:bg-[#e3bd62]/35" : "bg-grape/20 group-data-[marker=true]/ruler:bg-grape/30 group-data-[drag=true]/ruler:bg-grape/40"}`}
         style={{ left: "var(--p)" }}
       >
-        <span className="absolute inset-y-0 left-[11px] w-px bg-grape/90" />
-        <span className="absolute inset-x-0 bottom-0 h-[2px] bg-grape" />
+        <span className={`absolute inset-y-0 left-[11px] w-px ${night ? "bg-[#e3bd62]/90" : "bg-grape/90"}`} />
+        <span className={`absolute inset-x-0 bottom-0 h-[2px] ${night ? "bg-[#e3bd62]" : "bg-grape"}`} />
       </i>
       <span
         ref={progressValueRef}
-        className="pointer-events-none absolute top-[2px] -translate-x-1/2 whitespace-nowrap bg-background px-1 font-brand text-[10px] leading-[12px] tabular-nums text-grape transition-colors duration-[120ms] group-data-[drag=true]/ruler:bg-grape group-data-[drag=true]/ruler:text-white motion-reduce:transition-none"
+        className={`pointer-events-none absolute top-[2px] -translate-x-1/2 whitespace-nowrap px-1 font-brand text-[10px] leading-[12px] tabular-nums transition-colors duration-[120ms] motion-reduce:transition-none ${night ? "bg-[#140317] text-[#e3bd62] group-data-[drag=true]/ruler:bg-[#e3bd62] group-data-[drag=true]/ruler:text-[#1e0525]" : "bg-background text-grape group-data-[drag=true]/ruler:bg-grape group-data-[drag=true]/ruler:text-white"}`}
         style={{ left: CHIP_CLAMP.replace("VAR", "var(--p)") }}
       />
     </div>

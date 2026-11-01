@@ -287,6 +287,10 @@
    Pinned while the visitor scrolls: the seal cracks, the flap opens, the pass rises out
    tilted, the envelope drops away, and the pass settles in the middle, bigger. */
 .ps-section { position: relative; height: 340vh; }
+/* What's under the pass rises in once the pass is out */
+.pass-after { animation: pass-after-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes pass-after-in { from { opacity: 0; transform: translateY(24px); } }
+@media (prefers-reduced-motion: reduce) { .pass-after { animation: none; } }
 .ps-section.is-open { height: 100vh; }
 
 .ps-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
