@@ -11,10 +11,9 @@
 //   50–80%   the pass straightens and settles in the middle, a touch bigger
 //   72%+     the visitor's numbers on the pass fade in; once settled the pass leans to
 //            the pointer
-// Once opened it stays open for the rest of the visit: scrolling back up doesn't close it,
-// and coming back to the page shows the pass already out (sessionStorage). A new visit
-// gets the envelope again. `onOpen` fires once the
-// pass is out (or already was), so the page can hold the rest back until then.
+// Every time the page loads it starts at the top with the envelope sealed. Once opened it
+// stays open while they're on the page: scrolling back up doesn't close it. `onOpen` fires
+// once the pass is out, so the page can hold the rest back until then.
 //
 // A flat blackcurrant envelope on the dark grid, thin fold lines, a liner of small gold
 // bells, the guest number handwritten in gold. With reduced motion there's no pinning:
@@ -23,7 +22,7 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { ringBell } from "@/components/host/bellSound";
 
-const OPENED_KEY = "ash.bella.passOpened"; // sessionStorage: each new visit opens it again
+const OLD_KEY = "ash.bella.passOpened"; // once kept the pass open for good; cleared on load
 
 
 const BELL_PATH =
@@ -134,13 +133,13 @@ export default function PassScene({
     let cracked = false;
     let locked = false;
     try {
-      localStorage.removeItem(OPENED_KEY); // it used to be kept for good
-      locked = sessionStorage.getItem(OPENED_KEY) === "1";
+      localStorage.removeItem(OLD_KEY);
+      sessionStorage.removeItem(OLD_KEY);
     } catch {}
-    if (locked) {
-      setOpen(true);
-      onOpenRef.current?.();
-    }
+    // Start at the top, sealed, even on a reload (no restored scroll position past it)
+    const restore = history.scrollRestoration;
+    history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
     const update = () => {
       raf = 0;
       const el = section.current;
@@ -150,9 +149,6 @@ export default function PassScene({
       // Opened once, it stays open
       if (p >= 0.92 && !locked) {
         locked = true;
-        try {
-          sessionStorage.setItem(OPENED_KEY, "1");
-        } catch {}
         onOpenRef.current?.();
       }
       if (locked) p = 1;
@@ -231,6 +227,7 @@ export default function PassScene({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
+      history.scrollRestoration = restore;
     };
   }, []);
 
