@@ -1,8 +1,8 @@
 "use client";
 
 // ── Bella's line for a moment ─────────────────────────────────────────────────
-// The tooltip Bella shows while it plays a moment (lib/bella/progress): a room key, a
-// new stamp, a celebration, or a welcome back. Same look as the milestone lines: Geist
+// The tooltip Bella shows while it plays a moment (lib/bella/progress): a new stamp,
+// a celebration, or a welcome back. Same look as the milestone lines: Geist
 // on midnight. A stamp shows small beside the words; stamps and celebrations link to the
 // guest card on the Front desk, a welcome back links to where the visitor left off.
 
@@ -15,7 +15,7 @@ export default function BellaLine({ moment, pointer = "top" }: { moment: Moment;
   const link =
     moment.kind === "welcome"
       ? { href: moment.href, text: moment.link }
-      : moment.kind === "stamp" || moment.kind === "celebrate" || moment.kind === "key"
+      : moment.kind === "stamp" || moment.kind === "celebrate"
         ? { href: "/front-desk", text: "See your card" }
         : null;
   return (

@@ -15,20 +15,6 @@ import BellaLine from "@/components/bella/BellaLine";
 
 type QueuedMoment = Moment & { id: number };
 
-// Heavy lids between 11pm and 5am, the visitor's own time
-function useLateShift() {
-  const [late, setLate] = useState(false);
-  useEffect(() => {
-    const check = () => {
-      const h = new Date().getHours();
-      setLate(h >= 23 || h < 5);
-    };
-    check();
-    const id = window.setInterval(check, 60_000);
-    return () => window.clearInterval(id);
-  }, []);
-  return late;
-}
 import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useBellStage } from "@/components/host/BellStage";
@@ -116,8 +102,6 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
   const [ding, setDing] = useState(0);
   const { footerOnStage: ducked } = useBellStage();
   const holding = !ducked && !moment && ((((hovered && !touch) || open) && !speaking) || preview === "holding");
-  const [gaze, setGaze] = useState<{ x: number; y: number } | null>(null);
-  const late = useLateShift();
 
   // Ducking out for the footer's bell, and popping back up. Nothing moves until the first duck.
   const [entrance, setEntrance] = useState<"up" | "duck" | "pop">("up");
@@ -161,7 +145,7 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
     }
   }, [holding, preview]);
 
-  // Moments (lib/bella/progress): a key held out, a stamp found, a goal celebrated
+  // Moments (lib/bella/progress): a stamp found, a goal celebrated
   const [celebrate, setCelebrate] = useState(0);
   useEffect(() => {
     if (!moment) return;
@@ -173,60 +157,8 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
       ringBell();
     }
   }, [moment]);
-  const expression = moment?.kind === "stamp" ? "surprised" : late && mood === "idle" && !holding ? "late" : null;
-  const keyRoom = moment?.kind === "key" ? moment.room : null;
+  const expression = moment?.kind === "stamp" ? "surprised" : null;
 
-  // Now and then, while nothing else is going on: a look around, a peek up, or a wiggle
-  const quiet = useRef(true);
-  quiet.current = !holding && !speaking && !moment && mood === "idle" && !ducked;
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let timer = 0;
-    const steps: number[] = [];
-    const schedule = () => (timer = window.setTimeout(idle, 24_000 + Math.random() * 24_000));
-    const idle = () => {
-      if (quiet.current && !document.hidden) {
-        const roll = Math.random();
-        const seq: [{ x: number; y: number } | null, number][] =
-          roll < 0.4
-            ? [[{ x: -1, y: 0.1 }, 0], [{ x: 1, y: 0.1 }, 700], [null, 1500]]
-            : roll < 0.7
-              ? [[{ x: 0, y: -1 }, 0], [null, 1200]]
-              : [];
-        if (seq.length) seq.forEach(([g, ms]) => steps.push(window.setTimeout(() => setGaze(g), ms)));
-        else setDing((d) => d + 1); // a silent wiggle of the plunger
-      }
-      schedule();
-    };
-    schedule();
-    return () => {
-      window.clearTimeout(timer);
-      steps.forEach(window.clearTimeout);
-    };
-  }, []);
-
-  // Eyes on the work card under the pointer
-  useEffect(() => {
-    const over = (e: PointerEvent) => {
-      const card = (e.target as Element | null)?.closest?.("[data-bella-look]");
-      const me = wrapRef.current?.getBoundingClientRect();
-      if (!card || !me) return;
-      const r = card.getBoundingClientRect();
-      const clamp = (v: number) => Math.max(-1, Math.min(1, v));
-      setGaze({ x: clamp((r.left + r.width / 2 - (me.left + me.width / 2)) / 320), y: clamp((r.top + r.height / 2 - (me.top + me.height / 2)) / 240) });
-    };
-    const out = (e: PointerEvent) => {
-      const from = (e.target as Element | null)?.closest?.("[data-bella-look]");
-      const to = (e.relatedTarget as Element | null)?.closest?.("[data-bella-look]");
-      if (from && from !== to) setGaze(null);
-    };
-    document.addEventListener("pointerover", over, { passive: true });
-    document.addEventListener("pointerout", out, { passive: true });
-    return () => {
-      document.removeEventListener("pointerover", over);
-      document.removeEventListener("pointerout", out);
-    };
-  }, []);
 
   // It rings like a desk bell: when the board comes down, and before it says anything
   useEffect(() => {
@@ -297,10 +229,8 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
           mood={mood}
           holding={holding}
           ding={ding}
-          gaze={gaze}
           glasses={glasses}
           expression={expression}
-          keyRoom={keyRoom}
           celebrate={celebrate}
           className={`block ${entrance === "up" ? "" : `bell-${entrance}`}`}
           style={{ width: HOST.width, height: HOST_HEIGHT, animationDelay: entrance === "pop" ? "160ms" : undefined }}

@@ -3,15 +3,15 @@
 // ── Bella: what a visitor has found ───────────────────────────────────────────
 // Everything Bella rewards is about exploring, never waiting:
 //
-//   room keys   one per case study finished: its end reached after at least a minute
-//               of active time on it. Numbered like the rooms on the work cards.
+//   finished    a case study whose end is reached after at least a minute of active
+//               time on it; finished case studies count towards two of the goals.
 //   stamps      five small finds (lib/bella/stampArt).
 //   goals       a short bow-tie celebration, once per visitor each: two case studies in
 //               one visit, the resume, every case study, the first email copied.
 //
 // It also remembers who the visitor said they're here as, and where they were reading,
 // so a returning visitor can pick up where they left off. All of it lives in this
-// browser's localStorage (keys finished this visit in sessionStorage); the server only
+// browser's localStorage (case studies finished this visit in sessionStorage); the server only
 // hears anonymous counts, through track().
 //
 // Each reward becomes a "moment": queued, then played by whichever Bella is on screen
@@ -105,12 +105,11 @@ export function useProgress(): Progress {
 
 // ── Moments ──
 export type Moment =
-  | { kind: "key"; room: string; line: string }
   | { kind: "stamp"; stamp: StampKey; line: string }
   | { kind: "celebrate"; line: string; stamp?: StampKey }
   | { kind: "welcome"; line: string; href: string; link: string };
 
-const LENGTH: Record<Moment["kind"], number> = { key: 3000, stamp: 3200, celebrate: 3600, welcome: 7000 };
+const LENGTH: Record<Moment["kind"], number> = { stamp: 3200, celebrate: 3600, welcome: 7000 };
 type Queued = Moment & { id: number };
 const queue: Queued[] = [];
 let current: Queued | null = null;
@@ -196,7 +195,6 @@ export function finishCaseStudy(slug: string) {
   if (fresh) {
     save({ ...p, keys: { ...p.keys, [slug]: Date.now() } });
     track("key_earned");
-    pushMoment({ kind: "key", room: study.room, line: `Room key ${study.room}: ${study.name}.` });
   }
   const thisVisit = visitKeys();
   if (!thisVisit.includes(slug)) {

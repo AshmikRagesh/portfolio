@@ -3,7 +3,7 @@
 // ── Case study tracker ────────────────────────────────────────────────────────
 // On a case study page:
 //   finished   once the footer comes into view after at least a minute of active time
-//              on this case study, it's finished: a room key, and maybe a celebration
+//              on this case study, it's finished, which may set off a celebration
 //              (lib/bella/progress finishCaseStudy).
 //   reading    the chapter being read (the last one whose top has passed the middle of
 //              the screen) is remembered, so a returning visitor can pick up there.

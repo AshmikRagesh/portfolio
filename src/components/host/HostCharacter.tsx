@@ -33,13 +33,10 @@
 //              They slide down onto the face, and slip when Bella dozes.
 //   raised     both arms up from behind the dome, holding a card overhead.
 //   expression "surprised": taller eyes, small pupils (a stamp found).
-//              "late": heavy lids, still awake (visits between 11pm and 5am).
-//   keyRoom    one hand out in front holding a room key with that number on its tag.
 //   celebrate  a counter; each bump plays the ~3.4s celebration for a goal: a squash,
 //              a jump that swings like a rung bell, the dome lighting up grape with a
 //              gold rim, the gold bow tie popping on, star eyes, then a hop and back
 //              to normal. Sparks burst twice. Nothing stays afterwards.
-// A gaze beyond ±1 turns the face further round, for a side-on look while hopping.
 //
 // There's no mouth — the face is just the eyes.
 //
@@ -106,9 +103,7 @@ interface Props {
   glasses?: HostGlasses | null;
   /** Both arms up over the dome, holding something above Bella's head (the footer's email card). */
   raised?: boolean;
-  expression?: "surprised" | "late" | null;
-  /** Holding out a room key with this number on its tag. */
-  keyRoom?: string | null;
+  expression?: "surprised" | null;
   /** Bump to play the goal celebration. */
   celebrate?: number;
   className?: string;
@@ -118,7 +113,7 @@ interface Props {
 // easeOutBack — a small overshoot, so the hands land with a little weight
 const settle = (t: number) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
 
-export default function HostCharacter({ mood = "idle", holding = false, ding = 0, gaze = null, glasses = null, raised = false, expression = null, keyRoom = null, celebrate = 0, className = "", style }: Props) {
+export default function HostCharacter({ mood = "idle", holding = false, ding = 0, gaze = null, glasses = null, raised = false, expression = null, celebrate = 0, className = "", style }: Props) {
   const uid = useId().replace(/:/g, "");
   const clipId = `${uid}-dome`;
 
@@ -144,9 +139,7 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
     const { x, y } = m === "dozing" ? { x: 0, y: 0 } : (g ?? look);
     const down = h ? 3 : 0; // glance at the board while holding it
     faceRef.current?.setAttribute("transform", `translate(${x * 7} ${y * 4})`);
-    // Pupils stay inside the whites even when the face turns side-on
-    const px = Math.max(-1.2, Math.min(1.2, x));
-    pupilsRef.current?.setAttribute("transform", `translate(${px * 2.5} ${y * 2.5 + down})`);
+    pupilsRef.current?.setAttribute("transform", `translate(${x * 2.5} ${y * 2.5 + down})`);
     litRef.current?.setAttribute("transform", `translate(${LIGHT.x - x * 4} ${LIGHT.y - y * 3})`);
   };
 
@@ -457,18 +450,6 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
                     <circle cx="116.2" cy="173.6" r="1.3" fill="#fff" />
                   </g>
                 </g>
-              ) : expression === "late" ? (
-                <g className="host-blink">
-                  {/* Heavy lids: the top of each eye cut flat, pupils lower */}
-                  <path d="M76 178 L94 178 Q94 188 85 188 Q76 188 76 178 Z" fill="#fff" />
-                  <path d="M106 178 L124 178 Q124 188 115 188 Q106 188 106 178 Z" fill="#fff" />
-                  <g ref={pupilsRef}>
-                    <circle cx="86" cy="183" r="4.4" fill={MIDNIGHT} />
-                    <circle cx="116" cy="183" r="4.4" fill={MIDNIGHT} />
-                    <circle cx="87.4" cy="181.4" r="1.4" fill="#fff" />
-                    <circle cx="117.4" cy="181.4" r="1.4" fill="#fff" />
-                  </g>
-                </g>
               ) : (
                 <g className="host-blink">
                   {/* Whites stay put; pupils and catchlights follow the cursor */}
@@ -530,23 +511,6 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
 
         {armsInFront && armLayer}
 
-        {/* One hand out in front with a room key, its number on the tag */}
-        {keyRoom && (
-          <g className="host-key">
-            <line x1="140" y1="186" x2="160" y2="222" stroke={MIDNIGHT} strokeWidth="8" strokeLinecap="round" />
-            <g transform="translate(160 222)">
-              <circle r="6.5" fill={GRAPE.mid} />
-              <circle cx="-2" cy="-2.4" r="2" fill="#fff" opacity="0.3" />
-            </g>
-            <g transform="translate(160 228) rotate(14)">
-              <circle cx="0" cy="0" r="3.2" fill="none" stroke={GRAPE.mid} strokeWidth="1.6" />
-              <rect x="-9" y="3" width="18" height="26" rx="3" fill="#fff" stroke={GRAPE.mid} strokeWidth="1.8" />
-              <text x="0" y="21" textAnchor="middle" fontSize="7" fontWeight="600" fill={GRAPE.mid} style={{ fontFamily: "var(--font-brand), monospace" }}>
-                {keyRoom}
-              </text>
-            </g>
-          </g>
-        )}
       </g>
       </g>
 

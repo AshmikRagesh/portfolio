@@ -59,7 +59,7 @@ export const BELLA_EVENTS = {
   email_copy_bella: "Copied the email from Bella",
   email_copy_button: "Copied the email from the button",
   video_watch: "Watched a video",
-  key_earned: "Finished a case study (room key)",
+  key_earned: "Finished a case study",
   stamp_ring: "Stamp: First ring",
   stamp_screen: "Stamp: Screening",
   stamp_desk: "Stamp: Front desk",

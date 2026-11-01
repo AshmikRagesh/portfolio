@@ -5,10 +5,10 @@
 //   arrival      Back again for a new day, and a welcome back with a link to where the
 //                visitor was reading (lib/bella/progress arrive()).
 //   Screening    45 seconds of watching videos the visitor started.
-// Room keys come from CaseStudyTracker; First ring, Front desk and the resume from the
+// Finished case studies come from CaseStudyTracker; First ring, Front desk and the resume from the
 // bells and the navbar.
 //
-// In development, `?bella=celebrate|key|stamp|welcome` plays a sample moment for review.
+// In development, `?bella=celebrate|stamp|welcome` plays a sample moment for review.
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
@@ -18,7 +18,6 @@ import { arrive, awardStamp, pushMoment, type Moment } from "@/lib/bella/progres
 
 const SAMPLES: Record<string, Moment> = {
   celebrate: { kind: "celebrate", line: "Two case studies in one visit.", stamp: "two" },
-  key: { kind: "key", room: "101", line: "Room key 101: Helix." },
   stamp: { kind: "stamp", stamp: "ring", line: "New stamp: First ring." },
   welcome: { kind: "welcome", line: "Welcome back. You were reading Helix, Research.", href: "/works/helix", link: "Continue" },
 };

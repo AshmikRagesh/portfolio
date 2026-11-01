@@ -298,8 +298,7 @@ function FooterBell() {
     const go = (to: number, hops: { h: number; ms: number }[]) => {
       const from = s.x ?? 0;
       trip = { from, to, hops: [...hops, { h: 4, ms: 140 }], travelling: hops.length, start: performance.now() };
-      // Side-on while hopping: the face turns well round towards where it's going
-      if (to !== from) setGaze({ x: Math.sign(to - from) * 1.6, y: 0.2 });
+      if (to !== from) setGaze({ x: Math.sign(to - from), y: 0.2 });
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(tick);
     };
@@ -425,7 +424,7 @@ function FooterBell() {
               onBlur={() => setHovered(false)}
               className="relative z-10 block cursor-pointer select-none rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
             >
-              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} raised={card !== null} expression={momentHere?.kind === "stamp" ? "surprised" : null} keyRoom={momentHere?.kind === "key" ? momentHere.room : null} celebrate={celebrateCount} className="block" style={{ width: layout.width, height }} />
+              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} raised={card !== null} expression={momentHere?.kind === "stamp" ? "surprised" : null} celebrate={celebrateCount} className="block" style={{ width: layout.width, height }} />
             </button>
             {/* Hover: what a click does. Clicked: the card with the address, held overhead */}
             {card ? (
