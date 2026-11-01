@@ -12,6 +12,7 @@ import { COPY_EMAIL_EVENT, EMAIL } from "@/lib/contact";
 import { MessageBoard } from "@/components/host/TimerBoard";
 import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
+import Link from "next/link";
 import PaperTooth from "@/components/PaperTooth";
 
 const socialLinks = [
@@ -547,6 +548,14 @@ export default function Footer() {
               Copy email
             </button>
           </div>
+
+          {/* The guest card lives on its own page, never in the footer */}
+          <Link
+            href="/front-desk"
+            className="relative z-10 -mt-[40px] font-geist text-[14px] leading-[20px] text-white/70 underline underline-offset-4 hover:text-white md:-mt-[48px]"
+          >
+            Your guest card
+          </Link>
 
         </div>
       </div>

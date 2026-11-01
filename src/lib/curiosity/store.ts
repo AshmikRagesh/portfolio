@@ -24,6 +24,12 @@
 //   curiosity:devices                hash, mobile | tablet | desktop → visits
 //   curiosity:events                 hash, Bella event → visits that did it (once per visit)
 //
+// For the Front desk page:
+//   curiosity:present                sorted set, visitorId → time of their latest report (ms);
+//                                    "guests in the house now" counts the last minute
+//   curiosity:guests                 counter, guest numbers handed out so far
+//   curiosity:guestno:<visitorId>    that visitor's guest number
+//
 // The sorted sets are what Phase 2 reads: rank and count on them give "you've
 // stayed longer than N% of visitors" in a single round trip.
 
@@ -36,6 +42,10 @@ const VISIT_TTL_SECONDS = 60 * 60 * 24 * 90;
 export const RECENT_KEEP = 1000;
 
 export const storeConfigured = Boolean(REDIS_URL && TOKEN);
+/** How long a visitor stays on the present list without a report. */
+const PRESENT_KEEP_MS = 5 * 60_000;
+/** "Guests in the house now" counts visitors who reported within this window. */
+const PRESENT_NOW_MS = 60_000;
 
 type Command = (string | number)[];
 
@@ -85,6 +95,9 @@ export async function recordVisit(p: CuriosityPayload) {
     ["ZADD", `curiosity:board:${month}`, "GT", p.activeSeconds, p.visitorId],
     ["ZADD", "curiosity:lifetime", "GT", p.lifetimeSeconds, p.visitorId],
     ["ZADD", "curiosity:durations", "GT", p.activeSeconds, p.visitId],
+    // In the house: refreshed by every heartbeat, gone on the closing report
+    p.final ? ["ZREM", "curiosity:present", p.visitorId] : ["ZADD", "curiosity:present", Date.now(), p.visitorId],
+    ["ZREMRANGEBYSCORE", "curiosity:present", "-inf", Date.now() - PRESENT_KEEP_MS],
   ]);
 
   // Count each visit once — SET NX on a marker means only the first report wins
@@ -100,6 +113,24 @@ export async function recordVisit(p: CuriosityPayload) {
       ["HINCRBY", "curiosity:devices", p.viewport, 1],
     ]);
   }
+}
+
+/** The Front desk: this visitor's guest number (handed out on first ask) and how many are here now. */
+export async function deskFor(visitorId: string): Promise<{ guestNo: number | null; guestsNow: number | null }> {
+  if (!storeConfigured) return { guestNo: null, guestsNow: null };
+  const key = `curiosity:guestno:${visitorId}`;
+  const [{ result: existing }, { result: now }] = await pipeline([
+    ["GET", key],
+    ["ZCOUNT", "curiosity:present", Date.now() - PRESENT_NOW_MS, "+inf"],
+  ]);
+  let guestNo = existing === null ? null : Number(existing);
+  if (guestNo === null) {
+    const [{ result: next }] = await pipeline([["INCR", "curiosity:guests"]]);
+    const [{ result: set }] = await pipeline([["SET", key, next, "NX"]]);
+    // Another request got there first: use the number it set
+    guestNo = set === "OK" ? Number(next) : Number((await pipeline([["GET", key]]))[0].result);
+  }
+  return { guestNo, guestsNow: Math.max(1, Number(now)) };
 }
 
 /** Count a Bella event once per visit — SET NX on a per-visit marker, like visits. */
