@@ -37,14 +37,14 @@ function audio() {
   return ctx;
 }
 
-function strike(c: AudioContext, at: number, level: number) {
+function strike(c: AudioContext, at: number, level: number, fundamental = FUNDAMENTAL) {
   const out = c.createGain();
   out.gain.value = VOLUME * level;
   out.connect(c.destination);
 
   for (const [ratio, amp, fade, detune] of PARTIALS) {
     const osc = c.createOscillator();
-    osc.frequency.value = FUNDAMENTAL * ratio;
+    osc.frequency.value = fundamental * ratio;
     osc.detune.value = detune;
     const env = c.createGain();
     env.gain.setValueAtTime(0, at);
@@ -80,6 +80,15 @@ export function ringBell() {
   lastRing = now;
   strike(c, c.currentTime, 1);
   strike(c, c.currentTime + SECOND_STRIKE_S, 0.75);
+}
+
+/** A rising two-note chime for a celebration: the bell's note, then a fifth above. */
+export function chimeBell() {
+  const c = audio();
+  if (!c || c.state !== "running") return;
+  lastRing = performance.now();
+  strike(c, c.currentTime, 1);
+  strike(c, c.currentTime + 0.14, 0.85, FUNDAMENTAL * 1.5);
 }
 
 /** Wake the audio up on the visitor's first interaction. Returns a cleanup. */

@@ -59,6 +59,21 @@ export const BELLA_EVENTS = {
   email_copy_bella: "Copied the email from Bella",
   email_copy_button: "Copied the email from the button",
   video_watch: "Watched a video",
+  key_earned: "Finished a case study (room key)",
+  stamp_ring: "Stamp: First ring",
+  stamp_screen: "Stamp: Screening",
+  stamp_desk: "Stamp: Front desk",
+  stamp_two: "Stamp: Two in a row",
+  stamp_back: "Stamp: Back again",
+  goal_two: "Celebrated: two case studies in one visit",
+  goal_resume: "Celebrated: resume",
+  goal_all: "Celebrated: every case study",
+  goal_email: "Celebrated: first email copied",
+  here_recruiter: "Here as: recruiter",
+  here_designer: "Here as: designer",
+  here_engineer: "Here as: engineer",
+  here_curious: "Here as: just curious",
+  desk_open: "Opened the Front desk",
 } as const;
 export type BellaEvent = keyof typeof BELLA_EVENTS;
 

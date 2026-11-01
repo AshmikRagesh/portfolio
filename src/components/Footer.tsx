@@ -4,7 +4,9 @@ import HostCharacter, { hostLayout } from "@/components/host/HostCharacter";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useBellStage } from "@/components/host/BellStage";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
-import { ringBell } from "@/components/host/bellSound";
+import { chimeBell, ringBell } from "@/components/host/bellSound";
+import { awardStamp, celebrate, useMoment } from "@/lib/bella/progress";
+import BellaLine from "@/components/bella/BellaLine";
 import { useWatching } from "@/lib/curiosity/watching";
 import { COPY_EMAIL_EVENT, EMAIL } from "@/lib/contact";
 import { MessageBoard } from "@/components/host/TimerBoard";
@@ -110,8 +112,33 @@ function FooterBell() {
   const moverRef = useRef<HTMLDivElement>(null);
   const liftRef = useRef<HTMLDivElement>(null);
 
-  // Under the pointer, or holding up the email card: stays put
-  const still = (hovered && !touch) || card !== null;
+  // Bella's moments play here while this bell is up (lib/bella/progress)
+  const moment = useMoment();
+  const momentHere = onStage ? moment : null;
+  const [celebrateCount, setCelebrateCount] = useState(0);
+  useEffect(() => {
+    if (!momentHere) return;
+    if (momentHere.kind === "celebrate") {
+      setCelebrateCount((c) => c + 1);
+      chimeBell();
+    } else {
+      setDing((d) => d + 1);
+      ringBell();
+    }
+  }, [momentHere]);
+
+  // The first ring earns the First ring stamp, once the pointer moves off
+  const rang = useRef(false);
+  useEffect(() => {
+    if (hovered && !touch) rang.current = true;
+    else if (!hovered && rang.current) {
+      rang.current = false;
+      awardStamp("ring");
+    }
+  }, [hovered, touch]);
+
+  // Under the pointer, holding up the email card, or playing a moment: stays put
+  const still = (hovered && !touch) || card !== null || momentHere !== null;
   const live = useRef({ x: null as number | null, still, width: layout.width });
   live.current.still = still;
   live.current.width = layout.width;
@@ -270,7 +297,8 @@ function FooterBell() {
     const go = (to: number, hops: { h: number; ms: number }[]) => {
       const from = s.x ?? 0;
       trip = { from, to, hops: [...hops, { h: 4, ms: 140 }], travelling: hops.length, start: performance.now() };
-      if (to !== from) setGaze({ x: Math.sign(to - from), y: 0.2 });
+      // Side-on while hopping: the face turns well round towards where it's going
+      if (to !== from) setGaze({ x: Math.sign(to - from) * 1.6, y: 0.2 });
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(tick);
     };
@@ -322,6 +350,14 @@ function FooterBell() {
     };
   }, [onStage]);
 
+  // Keep a card or line on screen when the bell is near either end of the counter
+  const alignOnCounter = () => {
+    const span = Math.max(1, (railRef.current?.clientWidth ?? 0) - layout.width);
+    const at = (live.current.x ?? 0) / span;
+    return at > 0.66 ? "right" : at < 0.34 ? "left" : "center";
+  };
+  const edge = (align: "left" | "center" | "right") => (align === "left" ? "left-0" : align === "right" ? "right-0" : "left-1/2 -translate-x-1/2");
+
   // Copy the email and hold the card up for a few seconds
   const cardTimer = useRef(0);
   const copyEmail = useRef((from: "bella" | "button") => void from);
@@ -329,14 +365,13 @@ function FooterBell() {
     track(from === "button" ? "email_copy_button" : "email_copy_bella");
     ringBell();
     setDing((d) => d + 1);
-    // Keep the card on screen when the bell is near either end of the counter
-    const span = Math.max(1, (railRef.current?.clientWidth ?? 0) - layout.width);
-    const at = (live.current.x ?? 0) / span;
-    const align = at > 0.66 ? "right" : at < 0.34 ? "left" : "center";
+    const align = alignOnCounter();
     const show = (copied: boolean) => {
       setCard({ copied, align });
       window.clearTimeout(cardTimer.current);
       cardTimer.current = window.setTimeout(() => setCard(null), copied ? 4000 : 8000);
+      // The first email copied is a goal: a celebration (and the Front desk stamp) once the card is down
+      if (copied) celebrate("email", "Email copied.", "desk", 4400);
     };
     try {
       navigator.clipboard.writeText(EMAIL).then(() => show(true), () => show(false));
@@ -389,17 +424,21 @@ function FooterBell() {
               onBlur={() => setHovered(false)}
               className="relative z-10 block cursor-pointer select-none rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
             >
-              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} raised={card !== null} className="block" style={{ width: layout.width, height }} />
+              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} raised={card !== null} expression={momentHere?.kind === "stamp" ? "surprised" : null} keyRoom={momentHere?.kind === "key" ? momentHere.room : null} celebrate={celebrateCount} className="block" style={{ width: layout.width, height }} />
             </button>
             {/* Hover: what a click does. Clicked: the card with the address, held overhead */}
             {card ? (
               <div
-                className={`absolute ${card.align === "left" ? "left-0" : card.align === "right" ? "right-0" : "left-1/2 -translate-x-1/2"}`}
+                className={`absolute ${edge(card.align)}`}
                 style={{ bottom: `calc(100% + ${reach}px)` }}
               >
                 <div className="bella-card-in">
                   <MessageBoard title={card.copied ? "Email copied" : "Copy it from here"} text={EMAIL} />
                 </div>
+              </div>
+            ) : momentHere ? (
+              <div className={`absolute bottom-full z-10 mb-[8px] ${edge(alignOnCounter())}`}>
+                <BellaLine key={momentHere.id} moment={momentHere} pointer="bottom" />
               </div>
             ) : (
               hovered &&

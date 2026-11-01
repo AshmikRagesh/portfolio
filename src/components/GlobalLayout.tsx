@@ -7,6 +7,7 @@ import PixelRuler from "@/components/PixelRuler";
 import { CuriosityProvider } from "@/context/CuriosityContext";
 import { BellStageProvider } from "@/components/host/BellStage";
 import TabPresence from "@/components/host/TabPresence";
+import BellaDirector from "@/components/bella/BellaDirector";
 
 export default function GlobalLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -20,6 +21,7 @@ export default function GlobalLayout({ children }: { children: ReactNode }) {
     <CuriosityProvider>
       {/* Bella dozes in the browser tab too, and the title holds the paused time */}
       <TabPresence />
+      <BellaDirector />
       {/* The navbar and footer bells take turns — only one is up at a time */}
       <BellStageProvider>
         {!isDemo && <Navbar />}

@@ -17,6 +17,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
   return (
     <Wrapper
       href={work.href as string}
+      data-bella-look
       className={`group relative flex h-full min-w-0 flex-col rounded-sm border border-line/40 bg-background shadow-[0_2px_0_rgba(200,204,212,0.45)] ${
         isFlagship ? "lg:grid lg:grid-cols-[min(640px,calc(62.5%_-_136px))_minmax(0,1fr)]" : ""
       } ${

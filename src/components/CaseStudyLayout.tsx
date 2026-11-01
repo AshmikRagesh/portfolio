@@ -1,6 +1,7 @@
 import Footer from "@/components/Footer";
 import SectionPill, { type CaseStudySection } from "@/components/case-study/SectionPill";
 import ReelPlayer, { type Reel } from "@/components/ReelPlayer";
+import CaseStudyTracker from "@/components/bella/CaseStudyTracker";
 
 export type { CaseStudySection, Reel };
 
@@ -20,6 +21,8 @@ export default function CaseStudyLayout({ sections, reel, children }: CaseStudyL
         {children}
       </main>
       <SectionPill sections={sections} />
+      {/* Room keys and where the reader is, for Bella */}
+      <CaseStudyTracker sections={sections} />
       {reel && <ReelPlayer reels={[reel]} pill />}
       <Footer />
     </>

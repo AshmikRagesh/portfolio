@@ -10,11 +10,30 @@ import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/C
 import HostCharacter, { hostLayout, type HostGlasses, type HostMood } from "@/components/host/HostCharacter";
 import { useWatching } from "@/lib/curiosity/watching";
 import { track } from "@/lib/curiosity/report";
+import { awardStamp, celebrate, useMoment, type Moment } from "@/lib/bella/progress";
+import BellaLine from "@/components/bella/BellaLine";
+
+type QueuedMoment = Moment & { id: number };
+
+// Heavy lids between 11pm and 5am, the visitor's own time
+function useLateShift() {
+  const [late, setLate] = useState(false);
+  useEffect(() => {
+    const check = () => {
+      const h = new Date().getHours();
+      setLate(h >= 23 || h < 5);
+    };
+    check();
+    const id = window.setInterval(check, 60_000);
+    return () => window.clearInterval(id);
+  }, []);
+  return late;
+}
 import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useBellStage } from "@/components/host/BellStage";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
-import { primeBell, ringBell } from "@/components/host/bellSound";
+import { chimeBell, primeBell, ringBell } from "@/components/host/bellSound";
 
 const navLinks = [
   { label: "Works", href: "#works", Icon: LayoutGrid },
@@ -80,7 +99,7 @@ const BOARD_SHOWN_KEY = "ash.curiosity.boardShown"; // sessionStorage
 // Only one bell is up at a time: while the footer's bell is on screen (BellStage), this
 // one ducks down out of its spot and leaves just its clock there, still counting. When the
 // footer leaves, the clock lifts away and the bell pops back up and rings.
-function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
+function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; moment: QueuedMoment | null }) {
   const { activeSeconds, paused } = useCuriosity();
   const preview = usePreviewMood();
   const watching = useWatching();
@@ -96,7 +115,9 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   const speaking = bubble.message !== null;
   const [ding, setDing] = useState(0);
   const { footerOnStage: ducked } = useBellStage();
-  const holding = !ducked && ((((hovered && !touch) || open) && !speaking) || preview === "holding");
+  const holding = !ducked && !moment && ((((hovered && !touch) || open) && !speaking) || preview === "holding");
+  const [gaze, setGaze] = useState<{ x: number; y: number } | null>(null);
+  const late = useLateShift();
 
   // Ducking out for the footer's bell, and popping back up. Nothing moves until the first duck.
   const [entrance, setEntrance] = useState<"up" | "duck" | "pop">("up");
@@ -127,10 +148,85 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
   const champion = record || preview === "champion";
   const mood: HostMood = preview === "dozing" || (paused && !holding) ? "dozing" : champion ? "champion" : "idle";
 
-  // Count the sign being opened, once per visit, for the stats page
+  // Count the sign being opened, once per visit, for the stats page. The first ring earns
+  // the First ring stamp, given once the sign goes back up so it doesn't cut the sign short.
+  const rang = useRef(false);
   useEffect(() => {
-    if (holding && !preview) track("sign_open");
+    if (holding && !preview) {
+      track("sign_open");
+      rang.current = true;
+    } else if (!holding && rang.current) {
+      rang.current = false;
+      awardStamp("ring");
+    }
   }, [holding, preview]);
+
+  // Moments (lib/bella/progress): a key held out, a stamp found, a goal celebrated
+  const [celebrate, setCelebrate] = useState(0);
+  useEffect(() => {
+    if (!moment) return;
+    if (moment.kind === "celebrate") {
+      setCelebrate((c) => c + 1);
+      chimeBell();
+    } else {
+      setDing((d) => d + 1);
+      ringBell();
+    }
+  }, [moment]);
+  const expression = moment?.kind === "stamp" ? "surprised" : late && mood === "idle" && !holding ? "late" : null;
+  const keyRoom = moment?.kind === "key" ? moment.room : null;
+
+  // Now and then, while nothing else is going on: a look around, a peek up, or a wiggle
+  const quiet = useRef(true);
+  quiet.current = !holding && !speaking && !moment && mood === "idle" && !ducked;
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let timer = 0;
+    const steps: number[] = [];
+    const schedule = () => (timer = window.setTimeout(idle, 24_000 + Math.random() * 24_000));
+    const idle = () => {
+      if (quiet.current && !document.hidden) {
+        const roll = Math.random();
+        const seq: [{ x: number; y: number } | null, number][] =
+          roll < 0.4
+            ? [[{ x: -1, y: 0.1 }, 0], [{ x: 1, y: 0.1 }, 700], [null, 1500]]
+            : roll < 0.7
+              ? [[{ x: 0, y: -1 }, 0], [null, 1200]]
+              : [];
+        if (seq.length) seq.forEach(([g, ms]) => steps.push(window.setTimeout(() => setGaze(g), ms)));
+        else setDing((d) => d + 1); // a silent wiggle of the plunger
+      }
+      schedule();
+    };
+    schedule();
+    return () => {
+      window.clearTimeout(timer);
+      steps.forEach(window.clearTimeout);
+    };
+  }, []);
+
+  // Eyes on the work card under the pointer
+  useEffect(() => {
+    const over = (e: PointerEvent) => {
+      const card = (e.target as Element | null)?.closest?.("[data-bella-look]");
+      const me = wrapRef.current?.getBoundingClientRect();
+      if (!card || !me) return;
+      const r = card.getBoundingClientRect();
+      const clamp = (v: number) => Math.max(-1, Math.min(1, v));
+      setGaze({ x: clamp((r.left + r.width / 2 - (me.left + me.width / 2)) / 320), y: clamp((r.top + r.height / 2 - (me.top + me.height / 2)) / 240) });
+    };
+    const out = (e: PointerEvent) => {
+      const from = (e.target as Element | null)?.closest?.("[data-bella-look]");
+      const to = (e.relatedTarget as Element | null)?.closest?.("[data-bella-look]");
+      if (from && from !== to) setGaze(null);
+    };
+    document.addEventListener("pointerover", over, { passive: true });
+    document.addEventListener("pointerout", out, { passive: true });
+    return () => {
+      document.removeEventListener("pointerover", over);
+      document.removeEventListener("pointerout", out);
+    };
+  }, []);
 
   // It rings like a desk bell: when the board comes down, and before it says anything
   useEffect(() => {
@@ -201,7 +297,11 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
           mood={mood}
           holding={holding}
           ding={ding}
+          gaze={gaze}
           glasses={glasses}
+          expression={expression}
+          keyRoom={keyRoom}
+          celebrate={celebrate}
           className={`block ${entrance === "up" ? "" : `bell-${entrance}`}`}
           style={{ width: HOST.width, height: HOST_HEIGHT, animationDelay: entrance === "pop" ? "160ms" : undefined }}
         />
@@ -238,9 +338,12 @@ export default function Navbar() {
   const record = useRecordHolder();
   // Lines wait while the bell has ducked out for the footer's bell
   const { footerOnStage } = useBellStage();
-  const bubble = useMilestoneBubble(record, footerOnStage);
+  // Bella's moments play here unless the footer's Bella is up
+  const moment = useMoment();
+  const momentHere = moment && !footerOnStage ? moment : null;
+  const bubble = useMilestoneBubble(record, footerOnStage || momentHere !== null);
   const speaking = bubble.message !== null;
-  const showNav = isNavVisible || speaking;
+  const showNav = isNavVisible || speaking || momentHere !== null;
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -301,12 +404,12 @@ export default function Navbar() {
     >
       {/* Main nav row */}
       <nav className="relative flex items-center justify-between h-full nav-container">
-        <NavHost bubble={bubble} record={record} />
+        <NavHost bubble={bubble} record={record} moment={momentHere} />
 
         {/* Host tooltip — just under the bell, its pointer at the bell's centre. Out of
             the layout and above everything on the page. */}
         <div className="absolute z-[60] top-full mt-[4px] left-[20px] md:left-[80px] lg:left-[100px]">
-          <CuriosityBubble bubble={bubble} />
+          {momentHere ? <BellaLine key={momentHere.id} moment={momentHere} /> : <CuriosityBubble bubble={bubble} />}
         </div>
 
         {/* Desktop + tablet: nav links + CTA */}
@@ -330,6 +433,7 @@ export default function Navbar() {
           </ul>
           <Link
             href="/resume"
+            onClick={() => celebrate("resume", "Resume downloaded.")}
             className="flex items-center gap-2 text-white font-brand font-medium text-[14px] uppercase tracking-[1px] px-[16px] h-[42px] rounded-lg transition-colors duration-200 whitespace-nowrap bg-primary hover:bg-grape"
           >
             <SparkleAiIcon size={16} />

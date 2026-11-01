@@ -32,6 +32,14 @@
 //              visitor started plays; the video's light flickers on the lenses.
 //              They slide down onto the face, and slip when Bella dozes.
 //   raised     both arms up from behind the dome, holding a card overhead.
+//   expression "surprised": taller eyes, small pupils (a stamp found).
+//              "late": heavy lids, still awake (visits between 11pm and 5am).
+//   keyRoom    one hand out in front holding a room key with that number on its tag.
+//   celebrate  a counter; each bump plays the ~3.4s celebration for a goal: a squash,
+//              a jump that swings like a rung bell, the dome lighting up grape with a
+//              gold rim, the gold bow tie popping on, star eyes, then a hop and back
+//              to normal. Sparks burst twice. Nothing stays afterwards.
+// A gaze beyond ±1 turns the face further round, for a side-on look while hopping.
 //
 // There's no mouth — the face is just the eyes.
 //
@@ -66,6 +74,8 @@ const FINISH = {
 };
 const GRAPE = { lit: "#c22a88", mid: "#9D136A", shade: "#6e0e4b" };
 const RIM = "#f2c75c"; // gold rims
+const STAR = "M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6 Z";
+const SVG_NS = "http://www.w3.org/2000/svg";
 const IVORY = "#f8f1e3"; // the 3D glasses' frame
 
 // Bottom edge of the base — where the bell rests on a surface
@@ -96,6 +106,11 @@ interface Props {
   glasses?: HostGlasses | null;
   /** Both arms up over the dome, holding something above Bella's head (the footer's email card). */
   raised?: boolean;
+  expression?: "surprised" | "late" | null;
+  /** Holding out a room key with this number on its tag. */
+  keyRoom?: string | null;
+  /** Bump to play the goal celebration. */
+  celebrate?: number;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -103,7 +118,7 @@ interface Props {
 // easeOutBack — a small overshoot, so the hands land with a little weight
 const settle = (t: number) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
 
-export default function HostCharacter({ mood = "idle", holding = false, ding = 0, gaze = null, glasses = null, raised = false, className = "", style }: Props) {
+export default function HostCharacter({ mood = "idle", holding = false, ding = 0, gaze = null, glasses = null, raised = false, expression = null, keyRoom = null, celebrate = 0, className = "", style }: Props) {
   const uid = useId().replace(/:/g, "");
   const clipId = `${uid}-dome`;
 
@@ -129,7 +144,9 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
     const { x, y } = m === "dozing" ? { x: 0, y: 0 } : (g ?? look);
     const down = h ? 3 : 0; // glance at the board while holding it
     faceRef.current?.setAttribute("transform", `translate(${x * 7} ${y * 4})`);
-    pupilsRef.current?.setAttribute("transform", `translate(${x * 2.5} ${y * 2.5 + down})`);
+    // Pupils stay inside the whites even when the face turns side-on
+    const px = Math.max(-1.2, Math.min(1.2, x));
+    pupilsRef.current?.setAttribute("transform", `translate(${px * 2.5} ${y * 2.5 + down})`);
     litRef.current?.setAttribute("transform", `translate(${LIGHT.x - x * 4} ${LIGHT.y - y * 3})`);
   };
 
@@ -212,6 +229,92 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
     return () => window.clearTimeout(t);
   }, [ding]);
 
+  // ── Celebration ─────────────────────────────────────────────────────────────
+  // A 3.4s timeline on Web Animations: [ms, ...values] keyframes, eyes switched by timers.
+  const jumpRef = useRef<SVGGElement>(null);
+  const shadowRef = useRef<SVGEllipseElement>(null);
+  const glowRef = useRef<SVGGElement>(null);
+  const flashRef = useRef<SVGRectElement>(null);
+  const rimRef = useRef<SVGPathElement>(null);
+  const bowRef = useRef<SVGGElement>(null);
+  const sparksRef = useRef<SVGGElement>(null);
+  const [cheer, setCheer] = useState<"squeeze" | "happy" | "stars" | null>(null);
+
+  useEffect(() => {
+    if (!celebrate) return;
+    const sparks = sparksRef.current;
+    const D = 3400;
+    const anims: Animation[] = [];
+    const timers: number[] = [];
+    const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
+    const play = (el: Element | null, pts: number[][], frame: (p: number[]) => Keyframe, easing = "ease-in-out") => {
+      if (!el?.animate) return;
+      anims.push(el.animate(pts.map((p) => ({ ...frame(p), offset: p[0] / D, easing })), { duration: D, fill: "both" }));
+    };
+    const around = (x: number, y: number, mid: string) => `translate(${x}px, ${y}px) ${mid} translate(${-x}px, ${-y}px)`;
+    const glow = [[0, 0], [380, 0], [520, 1], [2900, 1], [3300, 0], [3400, 0]];
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      // Fade into the pose and out again, without the jump
+      const fade = [[0, 0], [300, 1], [2800, 1], [3100, 0], [3400, 0]];
+      [glowRef.current, rimRef.current, bowRef.current].forEach((el) => play(el, fade, (p) => ({ opacity: p[1] })));
+      at(300, () => setCheer("stars"));
+      at(3100, () => setCheer(null));
+    } else {
+      // Squash, jump, swing in the air like a rung bell, land, settle; one hop to finish
+      const body = [[0, 0, 1, 1, 0], [240, 0, 1.14, 0.82, 0], [380, -34, 0.88, 1.16, 0], [540, -52, 1.02, 0.98, -10], [640, -50, 1, 1, 10], [740, -32, 1, 1, -6],
+        [860, -4, 0.96, 1.06, 0], [900, 0, 1.16, 0.84, 0], [1020, -8, 0.96, 1.05, 0], [1140, 0, 1.03, 0.97, 0], [1260, 0, 1, 1, 0], [2900, 0, 1, 1, 0],
+        [3020, 0, 1.08, 0.92, 0], [3160, -12, 0.96, 1.05, 0], [3300, 0, 1.04, 0.96, 0], [3400, 0, 1, 1, 0]];
+      play(jumpRef.current, body, (p) => ({ transform: around(100, 226, `translate(0px, ${p[1]}px) rotate(${p[4]}deg) scale(${p[2]}, ${p[3]})`) }));
+      play(shadowRef.current, [[0, 1, 0.12], [240, 1.12, 0.14], [540, 0.6, 0.05], [900, 1.16, 0.14], [1140, 1, 0.12], [3160, 0.8, 0.08], [3300, 1.06, 0.13], [3400, 1, 0.12]],
+        (p) => ({ transform: around(100, 238, `scale(${p[1]}, 1)`), opacity: p[2] }));
+      play(glowRef.current, glow, (p) => ({ opacity: p[1] }));
+      play(rimRef.current, glow, (p) => ({ opacity: p[1] }));
+      play(flashRef.current, [[0, 0], [380, 0], [440, 0.85], [620, 0], [3400, 0]], (p) => ({ opacity: p[1] }));
+      play(bowRef.current, [[0, 0, -30, 0], [1000, 0, -30, 1], [1180, 1.35, 10, 1], [1300, 1, 0, 1], [1460, 1, -8, 1], [1600, 1, 5, 1], [1720, 1, 0, 1], [2980, 1, 0, 1], [3160, 1.15, -8, 1], [3320, 0, 20, 1], [3400, 0, 20, 0]],
+        (p) => ({ transform: around(100, 211, `rotate(${p[2]}deg) scale(${p[1]})`), opacity: p[3] }), "cubic-bezier(0.3, 0.8, 0.4, 1)");
+      // Two small bursts of sparks: as the dome lights, and as the tie pops on
+      const burst = (cx: number, cy: number, n: number, delay: number, d0: number, d1: number, fan: number) => {
+        if (!sparks) return;
+        const colours = [RIM, "#e0a93a", GRAPE.lit, "#ec6cb3"];
+        for (let j = 0; j < n; j++) {
+          const a = -Math.PI / 2 + (Math.random() - 0.5) * fan, d = d0 + Math.random() * (d1 - d0);
+          const ex = cx + Math.cos(a) * d, ey = cy + Math.sin(a) * d, rot = Math.round(Math.random() * 90);
+          const isStar = j % 3 === 0, sc = isStar ? 0.6 + Math.random() * 0.4 : 1;
+          const el = document.createElementNS(SVG_NS, isStar ? "path" : "circle");
+          if (isStar) el.setAttribute("d", STAR);
+          else el.setAttribute("r", (1.4 + Math.random() * 1.8).toFixed(1));
+          el.setAttribute("fill", colours[j % colours.length]);
+          sparks.appendChild(el);
+          const anim = el.animate(
+            [
+              { transform: `translate(${cx}px, ${cy}px) rotate(0deg) scale(0.2)`, opacity: 0 },
+              { transform: `translate(${cx + (ex - cx) * 0.6}px, ${cy + (ey - cy) * 0.6}px) rotate(${rot / 2}deg) scale(${sc * 1.15})`, opacity: 1, offset: 0.25 },
+              { transform: `translate(${ex}px, ${ey}px) rotate(${rot}deg) scale(${sc})`, opacity: 0.9, offset: 0.7 },
+              { transform: `translate(${ex}px, ${ey + 12}px) rotate(${rot}deg) scale(0.3)`, opacity: 0 },
+            ],
+            { duration: 800 + Math.random() * 400, delay: delay + Math.random() * 80, easing: "cubic-bezier(0.12, 0.8, 0.3, 1)", fill: "both" },
+          );
+          anim.onfinish = () => el.remove();
+          anims.push(anim);
+        }
+      };
+      burst(100, 110, 10, 400, 40, 80, Math.PI * 1.2);
+      burst(100, 208, 12, 1160, 34, 72, Math.PI * 1.5);
+      at(120, () => setCheer("squeeze"));
+      at(420, () => setCheer("happy"));
+      at(1300, () => setCheer("stars"));
+      at(2900, () => setCheer("happy"));
+      at(3400, () => setCheer(null));
+    }
+    return () => {
+      timers.forEach(window.clearTimeout);
+      anims.forEach((a) => a.cancel());
+      sparks?.replaceChildren();
+      setCheer(null);
+    };
+  }, [celebrate]);
+
   const asleep = mood === "dozing";
   const champion = mood === "champion";
   const finish = champion ? FINISH.gold : FINISH.primary;
@@ -252,11 +355,17 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
         <clipPath id={clipId}>
           <path d={DOME} />
         </clipPath>
+        <radialGradient id={`${uid}-glow`} cx="46%" cy="38%" r="72%">
+          <stop offset="0" stopColor="#f08cc4" />
+          <stop offset="0.45" stopColor={GRAPE.lit} />
+          <stop offset="1" stopColor={GRAPE.mid} />
+        </radialGradient>
       </defs>
 
       {/* Shadow beneath */}
-      <ellipse cx="100" cy="238" rx="56" ry="6" fill="#32073e" opacity="0.12" />
+      <ellipse ref={shadowRef} cx="100" cy="238" rx="56" ry="6" fill="#32073e" opacity="0.12" />
 
+      <g ref={jumpRef}>
       <g className="host-tilt">
         {!armsInFront && armLayer}
 
@@ -293,13 +402,40 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
               <path ref={litRef} d={DOME} fill={finish.lit} transform={`translate(${LIGHT.x} ${LIGHT.y})`} />
               {/* A glint that sweeps across on each ding */}
               <rect className="host-sweep" x="20" y="130" width="14" height="100" fill="#fff" opacity="0" transform="skewX(-20)" />
+              {/* Celebrating: the dome lights up grape from inside, after a white flash */}
+              <g ref={glowRef} opacity="0">
+                <path d={DOME} fill={GRAPE.shade} />
+                <path d={DOME} fill={`url(#${uid}-glow)`} transform={`translate(${LIGHT.x} ${LIGHT.y})`} />
+              </g>
+              <rect ref={flashRef} x="40" y="120" width="120" height="104" fill="#fff" opacity="0" />
             </g>
             {/* One curved highlight down the left, as in a polished dome */}
             <path d="M66 198 Q64 168 82 152" stroke="#fff" strokeOpacity="0.18" strokeWidth="5" fill="none" strokeLinecap="round" />
+            {/* Celebrating: a gold rim round the dome */}
+            <path ref={rimRef} d="M48 214 Q48 140 100 140 Q152 140 152 214" stroke={RIM} strokeWidth="2.6" fill="none" strokeLinecap="round" opacity="0" />
 
             {/* Face */}
             <g ref={faceRef}>
-              {champion ? (
+              {cheer === "squeeze" ? (
+                <g stroke={ink} strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round" fill="none">
+                  <path d="M77 169 L92 177 L77 185" />
+                  <path d="M123 169 L108 177 L123 185" />
+                </g>
+              ) : cheer === "happy" ? (
+                <g stroke={ink} strokeWidth="4.2" strokeLinecap="round" fill="none">
+                  <path d="M75 180 Q85 168 95 180" />
+                  <path d="M105 180 Q115 168 125 180" />
+                </g>
+              ) : cheer === "stars" ? (
+                <g>
+                  <ellipse cx="85" cy="176" rx="9.4" ry="11.4" fill="#fff" />
+                  <ellipse cx="115" cy="176" rx="9.4" ry="11.4" fill="#fff" />
+                  <circle cx="87" cy="177" r="5.8" fill={MIDNIGHT} />
+                  <circle cx="117" cy="177" r="5.8" fill={MIDNIGHT} />
+                  <path d={STAR} fill="#fff" transform="translate(88.4 175) scale(0.5)" />
+                  <path d={STAR} fill="#fff" transform="translate(118.4 175) scale(0.5)" />
+                </g>
+              ) : champion ? (
                 <g stroke={ink} strokeWidth="4.2" strokeLinecap="round" fill="none">
                   <path d="M75 180 Q85 168 95 180" />
                   <path d="M105 180 Q115 168 125 180" />
@@ -308,6 +444,30 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
                 <g stroke={ink} strokeWidth="4" strokeLinecap="round" fill="none">
                   <path d="M75 177 Q85 185 95 177" />
                   <path d="M105 177 Q115 185 125 177" />
+                </g>
+              ) : expression === "surprised" ? (
+                <g>
+                  {/* Taller eyes, small pupils */}
+                  <ellipse cx="85" cy="175" rx="10" ry="13" fill="#fff" />
+                  <ellipse cx="115" cy="175" rx="10" ry="13" fill="#fff" />
+                  <g ref={pupilsRef}>
+                    <circle cx="85" cy="175" r="3.6" fill={MIDNIGHT} />
+                    <circle cx="115" cy="175" r="3.6" fill={MIDNIGHT} />
+                    <circle cx="86.2" cy="173.6" r="1.3" fill="#fff" />
+                    <circle cx="116.2" cy="173.6" r="1.3" fill="#fff" />
+                  </g>
+                </g>
+              ) : expression === "late" ? (
+                <g className="host-blink">
+                  {/* Heavy lids: the top of each eye cut flat, pupils lower */}
+                  <path d="M76 178 L94 178 Q94 188 85 188 Q76 188 76 178 Z" fill="#fff" />
+                  <path d="M106 178 L124 178 Q124 188 115 188 Q106 188 106 178 Z" fill="#fff" />
+                  <g ref={pupilsRef}>
+                    <circle cx="86" cy="183" r="4.4" fill={MIDNIGHT} />
+                    <circle cx="116" cy="183" r="4.4" fill={MIDNIGHT} />
+                    <circle cx="87.4" cy="181.4" r="1.4" fill="#fff" />
+                    <circle cx="117.4" cy="181.4" r="1.4" fill="#fff" />
+                  </g>
                 </g>
               ) : (
                 <g className="host-blink">
@@ -358,8 +518,40 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
         <rect x="38" y="212" width="124" height="6" rx="3" fill={GRAPE.mid} />
         <rect x="48" y="213" width="44" height="2" rx="1" fill="#fff" opacity="0.2" />
 
+        {/* Celebrating: the gold bow tie */}
+        <g ref={bowRef} opacity="0">
+          <path d="M100 211 L85 203 Q81 211 85 219 Z" fill={RIM} />
+          <path d="M100 211 L115 203 Q119 211 115 219 Z" fill={RIM} />
+          <path d="M100 211 L85 219 Q83.4 215 83.6 211 Z" fill="#c8952e" opacity="0.6" />
+          <path d="M100 211 L115 219 Q116.6 215 116.4 211 Z" fill="#c8952e" opacity="0.6" />
+          <rect x="95.5" y="206.5" width="9" height="9" rx="2.6" fill="#c8952e" />
+          <rect x="97" y="207.8" width="4" height="2" rx="1" fill="#fff" opacity="0.55" />
+        </g>
+
         {armsInFront && armLayer}
+
+        {/* One hand out in front with a room key, its number on the tag */}
+        {keyRoom && (
+          <g className="host-key">
+            <line x1="140" y1="186" x2="160" y2="222" stroke={MIDNIGHT} strokeWidth="8" strokeLinecap="round" />
+            <g transform="translate(160 222)">
+              <circle r="6.5" fill={GRAPE.mid} />
+              <circle cx="-2" cy="-2.4" r="2" fill="#fff" opacity="0.3" />
+            </g>
+            <g transform="translate(160 228) rotate(14)">
+              <circle cx="0" cy="0" r="3.2" fill="none" stroke={GRAPE.mid} strokeWidth="1.6" />
+              <rect x="-9" y="3" width="18" height="26" rx="3" fill="#fff" stroke={GRAPE.mid} strokeWidth="1.8" />
+              <text x="0" y="21" textAnchor="middle" fontSize="7" fontWeight="600" fill={GRAPE.mid} style={{ fontFamily: "var(--font-brand), monospace" }}>
+                {keyRoom}
+              </text>
+            </g>
+          </g>
+        )}
       </g>
+      </g>
+
+      {/* Celebrating: sparks burst from the dome and the bow tie */}
+      <g ref={sparksRef} />
 
       {/* Ring lines — fan out from the top on each ding */}
       <g className="host-rings" stroke={GRAPE.mid} strokeWidth="3" strokeLinecap="round" fill="none">
