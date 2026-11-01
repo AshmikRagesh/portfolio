@@ -183,7 +183,7 @@ function NavHost({ bubble, record }: { bubble: Bubble; record: boolean }) {
       {/* Above the board, so the hands overlap the rings they hold it by */}
       <Link
         href="/"
-        aria-label={touch ? "Measuring your curiosity — show your time" : "Home — measuring your curiosity"}
+        aria-label={touch ? "Bella, measuring your curiosity — show your time" : "Home — Bella, measuring your curiosity"}
         aria-expanded={touch ? holding : undefined}
         onClick={toggle}
         className="relative z-10 block select-none"

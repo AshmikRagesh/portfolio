@@ -32,8 +32,8 @@ function fill(line: string, { percentile }: MilestoneContext) {
 }
 
 const LINES = {
-  thirtySeconds: ["You've been here 30 seconds. Hover over me to see your time."],
-  thirtySecondsTouch: ["You've been here 30 seconds. Tap me to see your time."],
+  thirtySeconds: ["I'm Bella. You've been here 30 seconds. Hover over me to see your time."],
+  thirtySecondsTouch: ["I'm Bella. You've been here 30 seconds. Tap me to see your time."],
   twoMinutes: ["2 minutes. You've stayed longer than {p}% of people."],
   twoMinutesFallback: ["You've been here 2 minutes now."],
   fiveMinutes: ["5 minutes. Only {top}% of people stay this long."],
