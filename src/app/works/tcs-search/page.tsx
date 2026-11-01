@@ -98,7 +98,7 @@ function TheProblem() {
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Every search returned close to the whole catalogue, with no way to narrow it by place, date or type of trip."
+          situation="Every search returned close to the whole catalogue. Tabs split the results into trips, destination pages and articles, but there was no way to narrow the trips by place, date or type."
           consequence="We believed travellers who were ready to enquire gave up first, and TCS lost those leads."
         />
       </Visual>
