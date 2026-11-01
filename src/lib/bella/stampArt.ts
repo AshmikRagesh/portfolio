@@ -8,7 +8,7 @@
 //   Front desk    lavender, a room key fob on its ring: FRONT DESK, room 01
 //   Two in a row  mint, a luggage tag on a string: two doors, 1 and 2, the second open
 //   Back again    coral, a scalloped seal from The House: the front door and a way back
-// `ink: "none"` draws it faint with its colour drained, for a stamp not found yet.
+// `ink: "none"` draws an empty slot in the stamp's shape, for a stamp not found yet.
 //
 // Returns an SVG string so the same art works in React (dangerouslySetInnerHTML,
 // static markup only), in the share image, and anywhere else.
@@ -226,16 +226,29 @@ export function stampSvg(
     `<feDisplacementMap in="SourceGraphic" scale="1.8" xChannelSelector="R" yChannelSelector="G"/></filter>` +
     `<g id="${id}a" filter="url(#${id}w)">${ART[key](id, date, inks)}</g>` +
     `<g id="${id}s" filter="url(#${id}w)">${ART[key](`${id}s`, date, solid("#000"))}</g>` +
+    (ghost ? `<g id="${id}W" filter="url(#${id}w)">${ART[key](`${id}W`, date, solid("#fff"))}</g>` : "") +
     // Worn print: a fine grain knocks specks out of the ink
     `<filter id="${id}f" x="-5%" y="-5%" width="110%" height="110%">` +
     `<feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="${SEED[key]}" result="b"/>` +
     `<feColorMatrix in="b" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.2 1.75" result="m"/>` +
     `<feComposite in="SourceGraphic" in2="m" operator="in"/></filter>` +
-    // Not found yet: the label with its colour drained, faint, like a blank to collect
-    `<filter id="${id}g"><feColorMatrix type="matrix" values="0.2 0.5 0.1 0 0.62  0.2 0.5 0.1 0 0.56  0.2 0.5 0.1 0 0.5  0 0 0 1 0"/></filter></defs>` +
+    // Not found yet: an empty slot pressed into the card, the stamp's shape sunk in with a
+    // dotted edge round it, and the design only as a faint impression inside
+    `<filter id="${id}g"><feColorMatrix type="matrix" values="0.2 0.5 0.1 0 0.62  0.2 0.5 0.1 0 0.56  0.2 0.5 0.1 0 0.5  0 0 0 1 0"/></filter>` +
+    `<pattern id="${id}p" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="3" height="3" fill="#fff"/><rect x="3" y="3" width="3" height="3" fill="#fff"/></pattern>` +
+    `<mask id="${id}m" maskUnits="userSpaceOnUse" x="-20" y="-20" width="240" height="240"><rect x="-20" y="-20" width="240" height="240" fill="url(#${id}p)"/></mask>` +
+    `<filter id="${id}o" x="-10%" y="-10%" width="120%" height="120%"><feMorphology in="SourceAlpha" operator="dilate" radius="4" result="w"/>` +
+    `<feMorphology in="SourceAlpha" operator="dilate" radius="2.4" result="n"/><feComposite in="w" in2="n" operator="out" result="r"/>` +
+    `<feFlood flood-color="#f8f1e3"/><feComposite in2="r" operator="in"/></filter></defs>` +
     `<g transform="rotate(${rotate} 100 100)">` +
-    `<use href="#${id}s" transform="translate(1.6 2)" opacity="${ghost ? 0.2 : 0.3}"/>` +
-    (ghost ? `<use href="#${id}a" filter="url(#${id}g)" opacity="0.32"/>` : `<use href="#${id}a" filter="url(#${id}f)"/>`) +
+    (ghost
+      ? `<use href="#${id}s" opacity="0.3"/>` +
+        // A shadow along the top-left inside edge, as in a hollow
+        `<mask id="${id}h" maskUnits="userSpaceOnUse" x="-20" y="-20" width="240" height="240"><use href="#${id}W"/><use href="#${id}s" transform="translate(2.4 3)"/></mask>` +
+        `<rect x="-20" y="-20" width="240" height="240" fill="#000" opacity="0.4" mask="url(#${id}h)"/>` +
+        `<use href="#${id}a" filter="url(#${id}g)" opacity="0.07"/>` +
+        `<g mask="url(#${id}m)" opacity="0.32"><use href="#${id}s" filter="url(#${id}o)"/></g>`
+      : `<use href="#${id}s" transform="translate(1.6 2)" opacity="0.3"/><use href="#${id}a" filter="url(#${id}f)"/>`) +
     `</g></svg>`
   );
 }
