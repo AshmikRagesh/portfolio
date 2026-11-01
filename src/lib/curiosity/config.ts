@@ -73,7 +73,8 @@ export const BELLA_EVENTS = {
   here_designer: "Here as: designer",
   here_engineer: "Here as: engineer",
   here_curious: "Here as: just curious",
-  desk_open: "Opened the Front desk",
+  desk_open: "Opened their Curiosity Pass",
+  pass_share: "Shared their Curiosity Pass",
 } as const;
 export type BellaEvent = keyof typeof BELLA_EVENTS;
 
