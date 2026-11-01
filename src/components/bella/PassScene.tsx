@@ -9,9 +9,8 @@
 //   22–52%   the pass rises out of the envelope, tilting a little
 //   48–72%   the envelope drops away and fades; the title above fades out
 //   50–80%   the pass straightens and settles in the middle, a touch bigger
-//   72%+     the line on the pass fades in and the visitor's stamps land around it, the
-//            ones not found yet as blank impressions; once settled the pass leans to the
-//            pointer
+//   72%+     the visitor's numbers on the pass fade in; once settled the pass leans to
+//            the pointer
 // Once opened it stays open: scrolling back up doesn't close it, and on later visits the
 // pass is already out (localStorage), with no scrolling needed.
 //
@@ -21,20 +20,9 @@
 
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { ringBell } from "@/components/host/bellSound";
-import Stamp from "@/components/bella/Stamp";
-import { STAMPS, stampDate, type StampKey } from "@/lib/bella/stampArt";
 
 const OPENED_KEY = "ash.bella.passOpened"; // localStorage
 
-// Where the stamps land round the pass, like stickers on a case: [left, top] as a share
-// of the screen, and a tilt
-const SPOTS: Record<StampKey, [number, number, number]> = {
-  ring: [0.08, 0.16, -8],
-  screen: [0.8, 0.12, 6],
-  desk: [0.1, 0.6, 5],
-  two: [0.82, 0.58, -6],
-  back: [0.44, 0.82, 4],
-};
 
 const BELL_PATH =
   "M48 214 Q48 140 100 140 Q152 140 152 214 Z M76 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M106 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M94 124 h12 v14 h-12 Z M38 212 h124 v14 h-124 Z";
@@ -106,13 +94,10 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 export default function PassScene({
   guestNo,
   head,
-  stamps,
   pass,
 }: {
   guestNo: string;
   head: ReactElement;
-  /** When each stamp was found (missing: not found yet) */
-  stamps: Partial<Record<StampKey, number>>;
   pass: (state: { revealed: boolean; tilt: boolean }) => ReactElement;
 }) {
   const section = useRef<HTMLDivElement>(null);
@@ -327,24 +312,6 @@ export default function PassScene({
               <Seal id={`psh${i}`} half={h} />
             </div>
           ))}
-        </div>
-
-        {/* The stamps, round the pass once it's out */}
-        <div className={`ps-stamps ${revealed ? "is-in" : ""}`}>
-          {STAMPS.map((s, i) => {
-            const [x, y, r] = SPOTS[s.key];
-            const at = stamps[s.key];
-            return (
-              <div
-                key={s.key}
-                className="ps-stamp"
-                style={{ left: `${x * 100}%`, top: `${y * 100}%`, transitionDelay: `${200 + i * 110}ms`, ["--r" as string]: `${r}deg` }}
-                title={at ? `${s.name}: ${s.earned}` : "Not found yet"}
-              >
-                <Stamp stamp={s.key} ink={at ? undefined : "none"} date={at ? stampDate(new Date(at)) : ""} />
-              </div>
-            );
-          })}
         </div>
 
         {!open && (

@@ -2,22 +2,22 @@
 
 // ── The Curiosity Pass ────────────────────────────────────────────────────────
 // The visitor's pass: a blackcurrant card in a gold-foil frame with scalloped corners
-// (lib/bella/passArt), a small embossed Bella, "Curiosity Pass" embossed tone-on-tone
-// across the middle, and one centred line underneath: guest number, the day they
-// arrived, how long they've stayed (and where from, when known). The stamps sit around
-// it on the page, not on it. Everything is sized in container units, so the pass scales
+// (lib/bella/passArt). The five stamps run small along the top (blank impressions for
+// ones not found yet), "Curiosity Pass" is embossed tone-on-tone, and the visitor's own
+// numbers lead: guest number, the day they arrived and how long they've stayed, large,
+// with where they're from underneath when known. Everything is sized in container units, so the pass scales
 // as one piece.
 //
-// `revealed` fades the line in (the envelope scene holds it back until the pass is out);
+// `revealed` fades the numbers in (the envelope scene holds it back until the pass is out);
 // `tilt` lets it lean toward the pointer on an underdamped spring with a light that
 // follows across the foil (imdaryl.com's numbers: k 237.6, ζ 7.5, 10° per unit, at most
 // 1.8 units, 120px of reach). Styles: .pass in globals.css.
 
 import { useEffect, useId, useRef } from "react";
+import Stamp from "@/components/bella/Stamp";
+import { STAMPS } from "@/lib/bella/stampArt";
 import { formatStay, frameSvg, guestNumber, type PassData } from "@/lib/bella/passArt";
 
-const BELL_PATH =
-  "M48 214 Q48 140 100 140 Q152 140 152 214 Z M76 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M106 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M94 124 h12 v14 h-12 Z M38 212 h124 v14 h-124 Z";
 
 const K = 237.6;
 const ZETA = 7.5;
@@ -91,25 +91,35 @@ export default function CuriosityPass({
     };
   }, [tilt]);
 
-  const line = [`Guest no. ${guestNumber(data.n)}`, data.a && `Arrived ${data.a}`, `Stayed ${formatStay(data.s)}`].filter(Boolean).join("  ·  ");
+  const details = [
+    { label: "Guest no.", value: guestNumber(data.n) },
+    { label: "Arrived", value: data.a },
+    { label: "Stayed", value: formatStay(data.s) },
+  ];
 
   return (
     <div className="pass-scene">
       <div ref={ref} className={`pass ${revealed ? "is-revealed" : ""}`} role="group" aria-label="Your Curiosity Pass">
         <span className="pass-frame" aria-hidden="true" dangerouslySetInnerHTML={{ __html: frameSvg(frameId) }} />
         <div className="pass-face">
-          <svg className="pass-bell" viewBox="36 120 128 112" aria-hidden="true">
-            <path fillRule="evenodd" d={BELL_PATH} />
-          </svg>
-          <p className="pass-title">
-            Curiosity
-            <br />
-            Pass
-          </p>
-          <div className="pass-line">
-            <p>{line}</p>
-            {data.f && <p className="pass-from">From {data.f}</p>}
+          {/* The stamps along the top: found ones in colour, the rest blank impressions */}
+          <div className="pass-stamps" aria-label={`${data.k.length} of ${STAMPS.length} stamps found`}>
+            {STAMPS.map((s) => (
+              <span key={s.key} title={data.k.includes(s.key) ? `${s.name}: ${s.earned}` : "Not found yet"}>
+                <Stamp stamp={s.key} ink={data.k.includes(s.key) ? undefined : "none"} className="pass-stamp" />
+              </span>
+            ))}
           </div>
+          <p className="pass-title">Curiosity Pass</p>
+          <dl className="pass-details">
+            {details.map((d) => (
+              <div key={d.label}>
+                <dt>{d.label}</dt>
+                <dd>{d.value}</dd>
+              </div>
+            ))}
+          </dl>
+          {data.f && <p className="pass-from">From {data.f}</p>}
         </div>
         <div className="pass-sheen" aria-hidden="true" />
       </div>

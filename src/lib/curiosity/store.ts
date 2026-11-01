@@ -133,6 +133,54 @@ export async function deskFor(visitorId: string): Promise<{ guestNo: number | nu
   return { guestNo, guestsNow: Math.max(1, Number(now)) };
 }
 
+/**
+ * The house, for the dashboard on the pass page: who's here now, everyone so far, this
+ * month's guests and stays, where this visit sits among them, visits per day for the last
+ * two weeks, and how many visits found each stamp.
+ */
+export async function houseStats(visitorId: string, seconds: number) {
+  if (!storeConfigured) return null;
+  const now = Date.now();
+  const month = new Date().toISOString().slice(0, 7);
+  const [{ result: here }, { result: guests }, { result: visits }, { result: scores }, { result: days }, { result: events }] = await pipeline([
+    ["ZCOUNT", "curiosity:present", now - PRESENT_NOW_MS, "+inf"],
+    ["GET", "curiosity:guests"],
+    ["GET", "curiosity:visits"],
+    ["ZRANGE", `curiosity:board:${month}`, 0, -1, "WITHSCORES"],
+    ["HGETALL", "curiosity:days"],
+    ["HGETALL", "curiosity:events"],
+  ]);
+  const flat = (scores as string[]) ?? [];
+  const others: number[] = [];
+  for (let i = 0; i < flat.length; i += 2) if (flat[i] !== visitorId) others.push(Number(flat[i + 1]));
+  const perDay = new Map<string, number>();
+  const dayFlat = (days as string[]) ?? [];
+  for (let i = 0; i < dayFlat.length; i += 2) perDay.set(dayFlat[i], Number(dayFlat[i + 1]));
+  const lastDays = Array.from({ length: 14 }, (_, i) => {
+    const key = new Date(now - (13 - i) * 86_400_000).toISOString().slice(0, 10);
+    return { day: key, visits: perDay.get(key) ?? 0 };
+  });
+  const ev = new Map<string, number>();
+  const evFlat = (events as string[]) ?? [];
+  for (let i = 0; i < evFlat.length; i += 2) ev.set(evFlat[i], Number(evFlat[i + 1]));
+  const totalVisits = Number(visits ?? 0);
+  return {
+    hereNow: Math.max(1, Number(here)),
+    guests: Number(guests ?? 0),
+    visits: totalVisits,
+    month: {
+      guests: others.length + 1,
+      averageSeconds: others.length ? Math.round(others.reduce((a, b) => a + b, 0) / others.length) : null,
+      longestSeconds: others.length ? Math.max(...others) : null,
+      // Share of this month's other guests this visit has out-stayed
+      beaten: others.length ? Math.round((others.filter((s) => s < seconds).length / others.length) * 100) : null,
+    },
+    lastDays,
+    stamps: Object.fromEntries(["ring", "screen", "desk", "two", "back"].map((k) => [k, totalVisits ? Math.round(((ev.get(`stamp_${k}`) ?? 0) / totalVisits) * 100) : 0])),
+  };
+}
+export type HouseStats = NonNullable<Awaited<ReturnType<typeof houseStats>>>;
+
 /** Count a Bella event once per visit — SET NX on a per-visit marker, like visits. */
 export async function recordEvent(visitId: string, event: BellaEvent) {
   if (!storeConfigured) {
