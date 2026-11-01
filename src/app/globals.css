@@ -248,13 +248,13 @@
 @keyframes host-glasses-on { 0% { transform: translate(0px, -48px); opacity: 0; } 70% { transform: translate(0px, 4px); opacity: 1; } 100% { transform: translate(0px, 0px); opacity: 1; } }
 /* ── The Curiosity Pass (components/bella/CuriosityPass.tsx) ──────────────────
    A blackcurrant card in a gold-foil frame with scalloped corners; "Curiosity Pass"
-   embossed tone-on-tone; details in Geist; five stamps in gold. Sized in container
+   embossed tone-on-tone; details in Roboto Slab; five stamps in gold. Sized in container
    units so it scales as one piece. */
 .pass-scene { width: 100%; perspective: 1400px; }
 .pass {
   position: relative; aspect-ratio: 7 / 5; container-type: inline-size; border-radius: 10px;
   transform-style: preserve-3d; will-change: transform; color: #f8f1e3;
-  font-family: var(--font-geist), system-ui, sans-serif;
+  font-family: var(--font-body), serif;
   filter: drop-shadow(0 16px 24px rgba(30, 5, 37, 0.16)) drop-shadow(0 2px 4px rgba(30, 5, 37, 0.12));
 }
 .pass-frame, .pass-frame svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }

@@ -9,7 +9,7 @@
 //   last two weeks    visits per day, with the daily average; hover or arrow keys
 //                     pick a day
 //   stamps            the share of visits that found each one, in each stamp's ink
-// Numbers in GT Alpina and count up when first seen, labels in Geist, grape for the
+// Numbers in GT Alpina and count up when first seen, labels in Roboto Slab, grape for the
 // visitor's own. Refreshes every
 // 30 seconds so "here right now" stays live.
 
@@ -58,18 +58,18 @@ function VisitsChart({ days }: { days: HouseStats["lastDays"] }) {
     <div className={`flex flex-col gap-[20px] bg-white p-[24px] ${CARD}`}>
       <div className="flex items-start justify-between gap-[16px]">
         <div className="flex flex-col gap-[4px]">
-          <p className="font-geist text-[14px] leading-[20px] text-secondary">Visits, last two weeks</p>
+          <p className="font-body text-[14px] leading-[20px] text-secondary">Visits, last two weeks</p>
           <p className="font-heading text-[32px] leading-[36px] text-heading tabular-nums">{total.toLocaleString()}</p>
         </div>
         <div className="flex flex-col items-end gap-[4px] text-right" aria-live="polite">
-          <p className="font-geist text-[14px] leading-[20px] text-secondary">{pick === null || pick === last ? "Today" : fmtDay(shown.day, true)}</p>
+          <p className="font-body text-[14px] leading-[20px] text-secondary">{pick === null || pick === last ? "Today" : fmtDay(shown.day, true)}</p>
           <p className="font-heading text-[32px] leading-[36px] text-grape tabular-nums">{shown.visits}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-[24px_minmax(0,1fr)] gap-x-[8px]">
         {/* The scale: 0, half and the top */}
-        <div className="relative h-[176px] font-geist text-[12px] leading-[16px] text-muted tabular-nums" aria-hidden="true">
+        <div className="relative h-[176px] font-body text-[12px] leading-[16px] text-muted tabular-nums" aria-hidden="true">
           {[top, top / 2, 0].map((v, i) => (
             <span key={i} className="absolute right-0 -translate-y-1/2" style={{ top: `${(i / 2) * 100}%` }}>
               {v}
@@ -101,7 +101,7 @@ function VisitsChart({ days }: { days: HouseStats["lastDays"] }) {
             style={{ bottom: seen ? `${(avg / top) * 100}%` : 0 }}
             aria-hidden="true"
           >
-            <span className="absolute -top-[10px] left-0 z-[1] rounded-[4px] bg-white px-[6px] font-geist text-[12px] leading-[20px] text-secondary">
+            <span className="absolute -top-[10px] left-0 z-[1] rounded-[4px] bg-white px-[6px] font-body text-[12px] leading-[20px] text-secondary">
               Average {avg.toFixed(1)} a day
             </span>
           </span>
@@ -120,7 +120,7 @@ function VisitsChart({ days }: { days: HouseStats["lastDays"] }) {
                     style={{ height: seen ? `${Math.max(1.5, (d.visits / top) * 100)}%` : "0%", transitionDelay: seen ? `${i * 30}ms, 0ms` : "0ms" }}
                   />
                   {on && (
-                    <span className="pointer-events-none absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-[8px] bg-primary px-[10px] py-[6px] font-geist text-[12px] leading-[16px] text-white shadow-[0_8px_24px_rgba(30,5,37,0.2)]" style={{ bottom: `calc(${(d.visits / top) * 100}% + 10px)` }}>
+                    <span className="pointer-events-none absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-[8px] bg-primary px-[10px] py-[6px] font-body text-[12px] leading-[16px] text-white shadow-[0_8px_24px_rgba(30,5,37,0.2)]" style={{ bottom: `calc(${(d.visits / top) * 100}% + 10px)` }}>
                       <b className="font-medium">{d.visits}</b> {d.visits === 1 ? "visit" : "visits"} · {fmtDay(d.day, true)}
                     </span>
                   )}
@@ -130,7 +130,7 @@ function VisitsChart({ days }: { days: HouseStats["lastDays"] }) {
           </div>
         </div>
         <span />
-        <div className="mt-[8px] flex justify-between font-geist text-[12px] leading-[16px] text-muted">
+        <div className="mt-[8px] flex justify-between font-body text-[12px] leading-[16px] text-muted">
           <span>{fmtDay(days[0].day)}</span>
           <span>{fmtDay(days[Math.floor(last / 2)].day)}</span>
           <span>Today</span>
@@ -146,8 +146,8 @@ function StampsFound({ stamps }: { stamps: HouseStats["stamps"] }) {
   return (
     <div className={`flex flex-col gap-[16px] bg-white p-[24px] ${CARD}`}>
       <div className="flex items-baseline justify-between gap-[16px]">
-        <p className="font-geist text-[14px] leading-[20px] text-secondary">Stamps found by guests</p>
-        <p className="font-geist text-[12px] leading-[16px] text-muted">% of visits</p>
+        <p className="font-body text-[14px] leading-[20px] text-secondary">Stamps found by guests</p>
+        <p className="font-body text-[12px] leading-[16px] text-muted">% of visits</p>
       </div>
       <ul ref={ref} className="-mx-[8px] flex flex-col gap-[4px]">
         {STAMPS.map((s, i) => {
@@ -162,7 +162,7 @@ function StampsFound({ stamps }: { stamps: HouseStats["stamps"] }) {
             >
               <Stamp stamp={s.key} className="h-[36px] w-[36px] transition-transform duration-300 group-hover:-rotate-6 group-focus-visible:-rotate-6" />
               <div className="flex min-w-0 flex-col gap-[4px] group-hover:col-span-2 group-focus-visible:col-span-2">
-                <span className="font-geist text-[14px] leading-[20px] text-heading">{s.name}</span>
+                <span className="font-body text-[14px] leading-[20px] text-heading">{s.name}</span>
                 <span className="grid h-[16px] items-center" aria-hidden="true">
                   <span className="relative col-start-1 row-start-1 block h-[6px] overflow-hidden rounded-full bg-line-soft transition-opacity duration-200 group-hover:opacity-0 group-focus-visible:opacity-0">
                     <span
@@ -170,17 +170,17 @@ function StampsFound({ stamps }: { stamps: HouseStats["stamps"] }) {
                       style={{ width: seen ? `${Math.max(pct ? 2 : 0, pct)}%` : "0%", background: STAMP_INK[s.key], transitionDelay: `${i * 60}ms` }}
                     />
                   </span>
-                  <span className="col-start-1 row-start-1 translate-y-[2px] truncate whitespace-nowrap font-geist text-[12px] leading-[16px] text-secondary opacity-0 transition-[opacity,transform] duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+                  <span className="col-start-1 row-start-1 translate-y-[2px] truncate whitespace-nowrap font-body text-[12px] leading-[16px] text-secondary opacity-0 transition-[opacity,transform] duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
                     {s.earned}
                   </span>
                 </span>
               </div>
-              <span className="text-right font-geist text-[14px] leading-[20px] text-secondary tabular-nums group-hover:hidden group-focus-visible:hidden">{pct}%</span>
+              <span className="text-right font-body text-[14px] leading-[20px] text-secondary tabular-nums group-hover:hidden group-focus-visible:hidden">{pct}%</span>
             </li>
           );
         })}
       </ul>
-      <p className="font-geist text-[12px] leading-[16px] text-muted">Hover or tab to a stamp to see how it’s found.</p>
+      <p className="font-body text-[12px] leading-[16px] text-muted">Hover or tab to a stamp to see how it’s found.</p>
     </div>
   );
 }
@@ -216,9 +216,9 @@ function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value:
 function Tile({ label, children, note }: { label: string; children: React.ReactNode; note?: React.ReactNode }) {
   return (
     <div className={`flex flex-col gap-[12px] bg-white p-[24px] ${CARD}`}>
-      <p className="font-geist text-[14px] leading-[20px] text-secondary">{label}</p>
+      <p className="font-body text-[14px] leading-[20px] text-secondary">{label}</p>
       <div className="font-heading text-[48px] leading-[52px] text-heading tabular-nums">{children}</div>
-      {note && <p className="mt-auto font-geist text-[14px] leading-[20px] text-muted">{note}</p>}
+      {note && <p className="mt-auto font-body text-[14px] leading-[20px] text-muted">{note}</p>}
     </div>
   );
 }
@@ -234,12 +234,12 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
     <div className={`flex flex-col gap-[24px] bg-white p-[24px] md:col-span-2 md:p-[32px] ${CARD}`}>
       <div className="flex flex-wrap items-end justify-between gap-x-[24px] gap-y-[8px]">
         <div className="flex flex-col gap-[8px]">
-          <p className="font-geist text-[14px] leading-[20px] text-secondary">Your stay</p>
+          <p className="font-body text-[14px] leading-[20px] text-secondary">Your stay</p>
           <p className="font-heading text-[64px] leading-[64px] text-grape tabular-nums">
             <CountUp value={seconds} format={formatStay} />
           </p>
         </div>
-        <p className="max-w-[340px] text-balance pb-[6px] font-geist text-[16px] leading-[24px] text-secondary">
+        <p className="max-w-[340px] text-balance pb-[6px] font-body text-[16px] leading-[24px] text-secondary">
           {month.beaten === null
             ? "You’re the first guest this month."
             : yours
@@ -270,12 +270,12 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
             </span>
           </span>
         </div>
-        <div className="relative h-[20px] font-geist text-[12px] leading-[20px] text-muted">
-          {(month.averageSeconds === null || month.averageSeconds / longest > 0.14) && <span className="absolute left-0">0m</span>}
+        <div className="relative h-[20px] font-body text-[12px] leading-[20px] text-muted">
+          {(month.averageSeconds === null || month.averageSeconds / longest > 0.2) && <span className="absolute left-0">0m</span>}
           {month.averageSeconds !== null && (
             <span
-              className={`absolute whitespace-nowrap text-heading ${month.averageSeconds / longest < 0.14 ? "" : "-translate-x-1/2"}`}
-              style={{ left: month.averageSeconds / longest < 0.14 ? 0 : at(month.averageSeconds) }}
+              className={`absolute whitespace-nowrap text-heading ${month.averageSeconds / longest < 0.2 ? "" : "-translate-x-1/2"}`}
+              style={{ left: month.averageSeconds / longest < 0.2 ? 0 : at(month.averageSeconds) }}
             >
               Average {formatStay(month.averageSeconds)}
             </span>
@@ -294,14 +294,14 @@ function HereNow({ count }: { count: number }) {
   return (
     <div className={`flex flex-col gap-[12px] bg-grape-light/50 p-[24px] md:p-[32px] ${CARD}`}>
       <div className="flex items-baseline justify-between gap-[12px]">
-        <p className="font-geist text-[14px] leading-[20px] text-secondary">Here right now</p>
-        <p className="font-geist text-[12px] leading-[16px] text-muted">Updates live</p>
+        <p className="font-body text-[14px] leading-[20px] text-secondary">Here right now</p>
+        <p className="font-body text-[12px] leading-[16px] text-muted">Updates live</p>
       </div>
       <p className="flex items-baseline gap-[8px]">
         <span className="font-heading text-[64px] leading-[64px] text-grape tabular-nums">
           <CountUp value={count} />
         </span>
-        <span className="font-geist text-[16px] leading-[24px] text-secondary">{count === 1 ? "guest" : "guests"}</span>
+        <span className="font-body text-[16px] leading-[24px] text-secondary">{count === 1 ? "guest" : "guests"}</span>
       </p>
 
       {/* The desk */}
@@ -322,13 +322,13 @@ function HereNow({ count }: { count: number }) {
               </svg>
             </span>
           ))}
-          {count > MAX_BELLS && <span className="pb-[2px] font-geist text-[12px] leading-[16px] text-muted">+{count - MAX_BELLS}</span>}
+          {count > MAX_BELLS && <span className="pb-[2px] font-body text-[12px] leading-[16px] text-muted">+{count - MAX_BELLS}</span>}
         </div>
         <span className="h-[6px] rounded-full bg-heading/15" />
         <span className="mt-[6px] w-[64px] text-center font-brand text-[10px] uppercase leading-[12px] tracking-[1px] text-grape">You</span>
       </div>
 
-      <p className="font-geist text-[14px] leading-[20px] text-muted">
+      <p className="font-body text-[14px] leading-[20px] text-muted">
         {count <= 1 ? "Just you at the desk" : `You and ${count - 1} ${count === 2 ? "other" : "others"}`}
       </p>
     </div>
@@ -359,7 +359,7 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
 
   if (stats === undefined) return null;
   if (stats === null)
-    return <p className="font-geist text-[16px] leading-[24px] text-muted">The house’s numbers aren’t available right now.</p>;
+    return <p className="font-body text-[16px] leading-[24px] text-muted">The house’s numbers aren’t available right now.</p>;
 
   const busiest = stats.lastDays.reduce((m, d) => (d.visits > m.visits ? d : m), stats.lastDays[0]);
   const share = Math.round((stats.month.guests / Math.max(1, stats.guests)) * 100);
@@ -373,7 +373,7 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
         <h2 id="house-title" className="font-heading text-[40px] leading-[48px] text-heading">
           The house
         </h2>
-        <p className="font-geist text-[16px] leading-[24px] text-secondary">Who’s here now, and this month so far.</p>
+        <p className="font-body text-[16px] leading-[24px] text-secondary">Who’s here now, and this month so far.</p>
       </div>
 
       <div className="grid gap-[16px] md:grid-cols-3">
