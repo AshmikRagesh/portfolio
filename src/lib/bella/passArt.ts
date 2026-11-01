@@ -12,7 +12,7 @@ import type { StampKey } from "./stampArt";
 export const PASS_W = 700;
 export const PASS_H = 500;
 const MARGIN = 18; // gold frame showing round the panel
-const CORNER = 74; // how far each corner's scallops reach
+const CORNER = 62; // how far each corner's scallops reach
 
 const f1 = (n: number) => n.toFixed(1);
 
@@ -23,7 +23,7 @@ function corner(cx: number, cy: number, from: number, inset: number) {
   for (let i = 0; i <= 36; i++) {
     const t = i / 36;
     const a = ((from - 90 * t) * Math.PI) / 180;
-    const r = CORNER + inset + 10 * Math.sin(Math.PI * t * 3);
+    const r = CORNER + inset + 6 * Math.sin(Math.PI * t * 3);
     pts.push(`${f1(cx + r * Math.cos(a))} ${f1(cy + r * Math.sin(a))}`);
   }
   return pts.join(" L");

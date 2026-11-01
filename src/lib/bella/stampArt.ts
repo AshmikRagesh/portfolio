@@ -1,19 +1,14 @@
 // ── Stamps ────────────────────────────────────────────────────────────────────
-// Five rubber stamps a visitor can collect, each for finding something. All five are
-// the same size, a round impression, so they sit evenly in a row; what sets each apart
-// is its edge and the drawing inside:
-//   First ring    a sunburst of ticks round Bella ringing
-//   Screening     a ring of film perforations round a frame with a play mark
-//   Front desk    a scalloped edge, like a wax seal, round a sealed envelope
-//   Two in a row  a rope edge round two pages fanned open, numbered 1 and 2
-//   Back again    a postmark: serrated edge, the date across a band, a door and a
-//                 return arrow
-// Each has its name round the top and the date it was earned round the bottom.
-//
-// The ink is printed, not drawn: a displacement roughens every edge and a blotchy
-// mask thins the ink in places, as if pressed by hand. Highlights inside the drawings
-// are knocked out with masks, so the paper shows through. `ink` overrides the colour
-// (gold foil on the dark pass).
+// Five stamps a visitor can collect, each for finding something. Like travel stamps
+// pressed into a passport: each has its own shape and colour and a small illustrated
+// scene, and each is embossed (a light edge up-left, a shadow down-right) so it sits in
+// the paper rather than on it.
+//   First ring    pink, a tall rounded badge: Bella engraved in lines, ringing
+//   Screening     gold, a tilted ticket: a cinema screen with a play mark and seats
+//   Front desk    lavender, an oval: the guesthouse with its windows lit
+//   Two in a row  mint, a tilted square: two case studies open side by side
+//   Back again    coral, a round postmark with a dotted rim: a door and a return arrow
+// `ink: "none"` draws just the emboss with no colour, for a stamp not found yet.
 //
 // Returns an SVG string so the same art works in React (dangerouslySetInnerHTML,
 // static markup only), in the share image, and anywhere else.
@@ -28,145 +23,113 @@ export const STAMPS: { key: StampKey; name: string; earned: string }[] = [
   { key: "back", name: "Back again", earned: "Came back on another day." },
 ];
 
-// Inks from the palette, a little deeper than on screen, as stamp ink dries
-const INK: Record<StampKey, string> = {
-  ring: "#9d136a",
-  screen: "#3e0d4b",
-  desk: "#9d136a",
-  two: "#a8761e",
-  back: "#3e0d4b",
+export const STAMP_INK: Record<StampKey, string> = {
+  ring: "#ef6fb6",
+  screen: "#e9c56c",
+  desk: "#b49cf0",
+  two: "#5fd0a3",
+  back: "#f2876a",
 };
 const SEED: Record<StampKey, number> = { ring: 3, screen: 11, desk: 13, two: 17, back: 23 };
+const SERIF = "GT Alpina Trial, Georgia, serif";
 const MONO = "Geist Mono, ui-monospace, monospace";
-const C = 80; // centre of the 160 box
 
 const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 export function stampDate(d: Date) {
   return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-const STAR = "M0 -5 L1.4 -1.4 L5 0 L1.4 1.4 L0 5 L-1.4 1.4 L-5 0 L-1.4 -1.4 Z";
-const star = (x: number, y: number, s = 1) => `<path d="${STAR}" transform="translate(${x} ${y}) scale(${s})" stroke="none"/>`;
-const ring = (r: number, w: number, extra = "") => `<circle cx="${C}" cy="${C}" r="${r}" fill="none" stroke-width="${w}" ${extra}/>`;
-const polar = (r: number, a: number) => [C + r * Math.cos(a), C + r * Math.sin(a)];
-const f1 = (n: number) => n.toFixed(1);
+const title = (x: number, y: number, s: string, size = 17) =>
+  `<text x="${x}" y="${y}" text-anchor="middle" font-family="${SERIF}" font-size="${size}" font-weight="500" letter-spacing="0.5" fill="currentColor" stroke="none">${s}</text>`;
+const small = (x: number, y: number, s: string) =>
+  `<text x="${x}" y="${y}" text-anchor="middle" font-family="${MONO}" font-size="7" font-weight="600" letter-spacing="1.2" fill="currentColor" stroke="none">${s}</text>`;
 
-// Name round the top, date round the bottom, both reading upright
-function lettering(id: string, name: string, date: string, rTop = 52, rBottom = 59) {
-  return (
-    `<path id="${id}t" d="M${C - rTop} ${C} A${rTop} ${rTop} 0 0 1 ${C + rTop} ${C}" fill="none" stroke="none"/>` +
-    `<path id="${id}b" d="M${C - rBottom} ${C} A${rBottom} ${rBottom} 0 0 0 ${C + rBottom} ${C}" fill="none" stroke="none"/>` +
-    `<text font-family="${MONO}" font-size="11" font-weight="600" letter-spacing="2.4" stroke="none"><textPath href="#${id}t" startOffset="50%" text-anchor="middle">${name}</textPath></text>` +
-    `<text font-family="${MONO}" font-size="8" font-weight="600" letter-spacing="1.6" stroke="none"><textPath href="#${id}b" startOffset="50%" text-anchor="middle">${date}</textPath></text>` +
-    star(C - 58, C, 0.8) + star(C + 58, C, 0.8)
-  );
-}
-
-// Bella in miniature: dome, plunger, base, with her eyes and a highlight knocked out
-function bella(id: string, cx: number, cy: number, w: number) {
-  const k = w / 52;
-  const p = (x: number, y: number) => [cx + (x - 26) * k, cy + (y - 30) * k];
-  const [e1x, e1y] = p(19, 26), [e2x, e2y] = p(33, 26), [h1x, h1y] = p(8, 34), [h2x, h2y] = p(7, 20), [h3x, h3y] = p(15, 14);
-  const [dx1, dy1] = p(2, 40), [dx2, dy2] = p(2, 10), [dx3, dy3] = p(26, 10), [dx4, dy4] = p(50, 10), [dx5, dy5] = p(50, 40);
-  const [px, py] = p(22, 2), [bx, by] = p(-3, 40);
-  return (
-    `<mask id="${id}k" maskUnits="userSpaceOnUse"><rect width="160" height="160" fill="#fff"/>` +
-    `<ellipse cx="${f1(e1x)}" cy="${f1(e1y)}" rx="${f1(3.6 * k)}" ry="${f1(4.6 * k)}" fill="#000"/><ellipse cx="${f1(e2x)}" cy="${f1(e2y)}" rx="${f1(3.6 * k)}" ry="${f1(4.6 * k)}" fill="#000"/>` +
-    `<path d="M${f1(h1x)} ${f1(h1y)} Q${f1(h2x)} ${f1(h2y)} ${f1(h3x)} ${f1(h3y)}" stroke="#000" stroke-width="${f1(2.4 * k)}" fill="none" stroke-linecap="round"/></mask>` +
-    `<g mask="url(#${id}k)" stroke="none">` +
-    `<path d="M${f1(dx1)} ${f1(dy1)} Q${f1(dx2)} ${f1(dy2)} ${f1(dx3)} ${f1(dy3)} Q${f1(dx4)} ${f1(dy4)} ${f1(dx5)} ${f1(dy5)} Z"/>` +
-    `<rect x="${f1(px)}" y="${f1(py)}" width="${f1(8 * k)}" height="${f1(9 * k)}" rx="${f1(2 * k)}"/>` +
-    `<rect x="${f1(bx)}" y="${f1(by)}" width="${f1(58 * k)}" height="${f1(7 * k)}" rx="${f1(3.5 * k)}"/></g>`
-  );
-}
-
+// Each scene is drawn in currentColor, in a 200 box
 const ART: Record<StampKey, (id: string, date: string) => string> = {
   ring: (id, date) => {
-    let ticks = "";
-    for (let i = 0; i < 48; i++) {
-      const a = (Math.PI * 2 * i) / 48;
-      const [x1, y1] = polar(i % 2 ? 68 : 66, a), [x2, y2] = polar(74, a);
-      ticks += `M${f1(x1)} ${f1(y1)} L${f1(x2)} ${f1(y2)} `;
-    }
+    let lines = "";
+    for (let y = 92; y <= 140; y += 5) lines += `<path d="M58 ${y} H142"/>`;
     return (
-      `<path d="${ticks}" stroke-width="2.2" stroke-linecap="round" fill="none"/>` +
-      ring(63, 2.6) + ring(44, 1.2, `stroke-dasharray="0.1 4" stroke-linecap="round"`) +
-      lettering(id, "FIRST RING", date) +
-      bella(id, C, C + 4, 40) +
-      `<g stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M56 74 Q51 67 54 59"/><path d="M104 74 Q109 67 106 59"/></g>`
+      `<rect x="46" y="16" width="108" height="168" rx="24" stroke-width="4.5"/>` +
+      `<rect x="55" y="25" width="90" height="150" rx="17" stroke-width="1.6"/>` +
+      title(100, 52, "First ring", 16) +
+      `<clipPath id="${id}d"><path d="M64 141 Q64 92 100 92 Q136 92 136 141 Z"/></clipPath>` +
+      `<mask id="${id}e" maskUnits="userSpaceOnUse"><rect width="200" height="200" fill="#fff"/><ellipse cx="88" cy="118" rx="8" ry="9.5" fill="#000"/><ellipse cx="112" cy="118" rx="8" ry="9.5" fill="#000"/></mask>` +
+      `<g clip-path="url(#${id}d)" mask="url(#${id}e)" stroke-width="2.6">${lines}</g>` +
+      `<path d="M64 141 Q64 92 100 92 Q136 92 136 141" stroke-width="2.6"/>` +
+      `<circle cx="89" cy="119" r="3.6" fill="currentColor" stroke="none"/><circle cx="113" cy="119" r="3.6" fill="currentColor" stroke="none"/>` +
+      `<rect x="95" y="80" width="10" height="11" rx="2.5" fill="currentColor" stroke="none"/>` +
+      `<rect x="56" y="141" width="88" height="9" rx="4.5" fill="currentColor" stroke="none"/>` +
+      `<path d="M66 86 Q58 78 61 68 M134 86 Q142 78 139 68" stroke-width="2.6" stroke-linecap="round"/>` +
+      small(100, 166, date)
     );
   },
 
   screen: (id, date) => {
-    let holes = "";
-    for (let i = 0; i < 28; i++) {
-      const a = (Math.PI * 2 * i) / 28;
-      holes += `<rect x="-2.6" y="-2" width="5.2" height="4" rx="1" transform="translate(${f1(C + 68 * Math.cos(a))} ${f1(C + 68 * Math.sin(a))}) rotate(${f1((a * 180) / Math.PI)})" fill="#000"/>`;
-    }
+    let seats = "";
+    for (let i = 0; i < 7; i++) seats += `<path d="M${50 + i * 16} 140 a6 6 0 0 1 12 0 Z" fill="#000"/>`;
     return (
-      `<mask id="${id}p" maskUnits="userSpaceOnUse"><rect width="160" height="160" fill="#fff"/>${holes}</mask>` +
-      `<circle cx="${C}" cy="${C}" r="68" fill="none" stroke-width="12" mask="url(#${id}p)"/>` +
-      ring(58, 1.4) +
-      lettering(id, "SCREENING", date, 46, 52) +
-      `<rect x="58" y="66" width="44" height="30" rx="4" fill="none" stroke-width="2.6"/>` +
-      `<path d="M74 72 L88 81 L74 90 Z" stroke="none"/>` +
-      `<path d="M58 72 H52 M58 90 H52 M102 72 H108 M102 90 H108" stroke-width="2" stroke-linecap="round" fill="none"/>`
+      `<g transform="rotate(-8 100 100)">` +
+      `<rect x="22" y="40" width="156" height="120" stroke-width="4.5"/>` +
+      title(100, 62, "Screening", 17) +
+      `<mask id="${id}m" maskUnits="userSpaceOnUse"><rect width="200" height="200" fill="#fff"/>` +
+      `<rect x="54" y="80" width="92" height="44" rx="2" fill="none" stroke="#000" stroke-width="3"/>` +
+      `<path d="M94 92 L110 102 L94 112 Z" fill="#000"/>` +
+      `<path d="M30 76 L54 82 M30 128 L54 122 M170 76 L146 82 M170 128 L146 122" stroke="#000" stroke-width="2"/>` +
+      seats +
+      `<text x="164" y="150" text-anchor="end" font-family="${MONO}" font-size="7" font-weight="600" letter-spacing="1.2" fill="#000">${date}</text></mask>` +
+      `<rect x="30" y="70" width="140" height="84" fill="currentColor" stroke="none" mask="url(#${id}m)"/></g>`
     );
   },
 
   desk: (id, date) => {
-    const pts: string[] = [];
-    for (let i = 0; i <= 120; i++) {
-      const a = (Math.PI * 2 * i) / 120;
-      const [x, y] = polar(70 + 3 * Math.abs(Math.sin(a * 12)), a);
-      pts.push(`${f1(x)} ${f1(y)}`);
-    }
+    let windows = "";
+    for (const y of [124, 146]) for (const x of [68, 84, 108, 124]) windows += `<rect x="${x}" y="${y}" width="9" height="12" rx="1" fill="#000"/>`;
     return (
-      `<path d="M${pts.join(" L")} Z" fill="none" stroke-width="2.6" stroke-linejoin="round"/>` +
-      ring(62, 1.4) +
-      lettering(id, "FRONT DESK", date) +
-      `<rect x="57" y="64" width="46" height="32" rx="3" fill="none" stroke-width="2.6"/>` +
-      `<path d="M58 66 L80 83 L102 66" fill="none" stroke-width="2.2" stroke-linejoin="round"/>` +
-      `<mask id="${id}w" maskUnits="userSpaceOnUse"><rect width="160" height="160" fill="#fff"/><path d="M75.5 88 Q75.5 80 80 80 Q84.5 80 84.5 88 Z M74 88 h12 v2 h-12 Z" fill="#000"/></mask>` +
-      `<circle cx="80" cy="85" r="9" stroke="none" mask="url(#${id}w)"/>`
+      `<ellipse cx="100" cy="100" rx="64" ry="86" stroke-width="4.5"/>` +
+      `<ellipse cx="100" cy="100" rx="56" ry="78" stroke-width="1.6"/>` +
+      `<path id="${id}t" d="M48 100 A52 66 0 0 1 152 100" fill="none" stroke="none"/>` +
+      `<text font-family="${SERIF}" font-size="15" font-weight="500" letter-spacing="0.6" fill="currentColor" stroke="none"><textPath href="#${id}t" startOffset="50%" text-anchor="middle">Front desk</textPath></text>` +
+      `<clipPath id="${id}c"><ellipse cx="100" cy="100" rx="56" ry="78"/></clipPath>` +
+      `<mask id="${id}m" maskUnits="userSpaceOnUse"><rect width="200" height="200" fill="#fff"/>${windows}` +
+      `<path d="M94 178 V164 Q100 157 106 164 V178 Z" fill="#000"/><path d="M60 116 H140" stroke="#000" stroke-width="2"/></mask>` +
+      `<g clip-path="url(#${id}c)"><path d="M56 116 L100 84 L144 116 V190 H56 Z" fill="currentColor" stroke="none" mask="url(#${id}m)"/></g>` +
+      `<path d="M96 78 Q96 70 100 70 Q104 70 104 78 Z M95 78 h10 v2 h-10 Z" fill="currentColor" stroke="none"/>` +
+      small(100, 64, date)
     );
   },
 
   two: (id, date) => {
-    // Two pages side by side, overlapping a little, each with its number
-    const page = (dx: number, rot: number, n: string) =>
-      `<g transform="translate(${dx} 0) rotate(${rot} 80 80)"><rect x="68" y="63" width="24" height="32" rx="2" stroke-width="2.4"/>` +
-      `<path d="M72 70 H88 M72 75 H88 M72 80 H84" stroke-width="1.8" stroke-linecap="round" fill="none"/>` +
-      `<text x="80" y="91.5" text-anchor="middle" font-family="${MONO}" font-size="8" font-weight="700" stroke="none">${n}</text></g>`;
+    const page = (x: number, n: string) =>
+      `<path d="M${x} 94 Q${x + 18} 88 ${x + 36} 94 V146 Q${x + 18} 140 ${x} 146 Z" stroke-width="2.6"/>` +
+      `<path d="M${x + 6} 104 H${x + 30} M${x + 6} 112 H${x + 30} M${x + 6} 120 H${x + 24}" stroke-width="1.8" stroke-linecap="round"/>` +
+      `<text x="${x + 18}" y="138" text-anchor="middle" font-family="${SERIF}" font-size="13" fill="currentColor" stroke="none">${n}</text>`;
     return (
-      ring(71, 2, `stroke-dasharray="5 3"`) + ring(66, 2.6) + ring(60, 1.2) +
-      lettering(id, "TWO IN A ROW", date, 50, 55) +
-      // The first page is filled with the paper's colour by a knock-out, so the second sits on top cleanly
-      `<mask id="${id}g" maskUnits="userSpaceOnUse"><rect width="160" height="160" fill="#fff"/><g transform="translate(9 0) rotate(8 80 80)"><rect x="66" y="61" width="28" height="36" rx="3" fill="#000"/></g></mask>` +
-      `<g mask="url(#${id}g)" fill="none">${page(-9, -8, "1")}</g><g fill="none">${page(9, 8, "2")}</g>`
+      `<g transform="rotate(6 100 100)">` +
+      `<rect x="28" y="28" width="144" height="144" stroke-width="5"/>` +
+      `<rect x="38" y="38" width="124" height="124" stroke-width="1.6"/>` +
+      title(100, 68, "Two in a row", 16) +
+      `<path d="M58 154 Q100 166 142 154" stroke-width="2.4"/>` +
+      page(62, "1") + page(102, "2") +
+      `<path d="M100 92 V150" stroke-width="2"/>` +
+      small(100, 82, date) +
+      `</g>`
     );
   },
 
-  back: (id, date) => {
-    let teeth = "";
-    for (let i = 0; i < 56; i++) {
-      const [x, y] = polar(i % 2 ? 74 : 70, (Math.PI * 2 * i) / 56);
-      teeth += `${i ? "L" : "M"}${f1(x)} ${f1(y)} `;
-    }
-    return (
-      `<path d="${teeth}Z" fill="none" stroke-width="2" stroke-linejoin="round"/>` + ring(63, 2.4) +
-      `<path id="${id}t" d="M${C - 52} ${C} A52 52 0 0 1 ${C + 52} ${C}" fill="none" stroke="none"/>` +
-      `<path id="${id}b" d="M${C - 59} ${C} A59 59 0 0 0 ${C + 59} ${C}" fill="none" stroke="none"/>` +
-      `<text font-family="${MONO}" font-size="11" font-weight="600" letter-spacing="2.4" stroke="none"><textPath href="#${id}t" startOffset="50%" text-anchor="middle">BACK AGAIN</textPath></text>` +
-      `<text font-family="${MONO}" font-size="8" font-weight="600" letter-spacing="2" stroke="none"><textPath href="#${id}b" startOffset="50%" text-anchor="middle">FRONT DESK</textPath></text>` +
-      // The date across a band through the middle, as on a postmark
-      `<path d="M24 72 H136 M24 90 H136" stroke-width="1.6" fill="none"/>` +
-      `<text x="80" y="84.5" text-anchor="middle" font-family="${MONO}" font-size="9" font-weight="700" letter-spacing="1.4" stroke="none">${date}</text>` +
-      // A return arrow above the band, three stars below
-      `<path d="M87 58 A8 8 0 1 1 80 54" fill="none" stroke-width="2.2" stroke-linecap="round"/><path d="M80 54 l4 -4 M80 54 l4 4" stroke-width="2.2" stroke-linecap="round" fill="none"/>` +
-      star(70, 104, 0.7) + star(80, 106, 0.9) + star(90, 104, 0.7)
-    );
-  },
+  back: (id, date) => (
+    `<circle cx="100" cy="100" r="84" stroke-width="3.5"/>` +
+    `<circle cx="100" cy="100" r="76" stroke-width="4" stroke-dasharray="0.1 7" stroke-linecap="round"/>` +
+    `<circle cx="100" cy="100" r="68" stroke-width="1.6"/>` +
+    `<path id="${id}t" d="M44 100 A56 56 0 0 1 156 100" fill="none" stroke="none"/>` +
+    `<text font-family="${SERIF}" font-size="16" font-weight="500" letter-spacing="0.6" fill="currentColor" stroke="none"><textPath href="#${id}t" startOffset="50%" text-anchor="middle">Back again</textPath></text>` +
+    // A roof with upturned eaves over an open door, and an arrow coming round to it
+    `<path d="M62 102 Q100 84 138 102 Q130 100 124 104 H76 Q70 100 62 102 Z" fill="currentColor" stroke="none"/>` +
+    `<mask id="${id}m" maskUnits="userSpaceOnUse"><rect width="200" height="200" fill="#fff"/><path d="M92 150 V128 Q100 118 108 128 V150 Z" fill="#000"/><rect x="80" y="112" width="8" height="10" fill="#000"/><rect x="112" y="112" width="8" height="10" fill="#000"/></mask>` +
+    `<rect x="76" y="106" width="48" height="44" fill="currentColor" stroke="none" mask="url(#${id}m)"/>` +
+    `<path d="M126 80 A30 14 0 0 0 74 80" stroke-width="2.6" stroke-linecap="round"/><path d="M74 80 l2 -7 M74 80 l7 2" stroke-width="2.6" stroke-linecap="round"/>` +
+    small(100, 162, date)
+  ),
 };
 
 /** One stamp as an SVG string. `id` must be unique on the page. */
@@ -174,18 +137,21 @@ export function stampSvg(
   key: StampKey,
   { id, date = "", rotate = 0, label, ink }: { id: string; date?: string; rotate?: number; label?: string; ink?: string },
 ) {
-  const colour = ink ?? INK[key];
-  const seed = SEED[key];
+  const colour = ink ?? STAMP_INK[key];
+  const ghost = colour === "none";
   const name = STAMPS.find((s) => s.key === key)?.name ?? key;
+  // The art as a symbol, used three times: light edge, shadow, then the ink
   return (
-    `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${label ?? `Stamp: ${name}`}">` +
-    `<defs><filter id="${id}f" x="-8%" y="-8%" width="116%" height="116%">` +
-    `<feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="${seed}" result="n"/>` +
-    `<feDisplacementMap in="SourceGraphic" in2="n" scale="1.2" xChannelSelector="R" yChannelSelector="G" result="d"/>` +
-    `<feTurbulence type="fractalNoise" baseFrequency="0.28" numOctaves="3" seed="${seed + 7}" result="b"/>` +
-    `<feColorMatrix in="b" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 2.25" result="m"/>` +
-    `<feComposite in="d" in2="m" operator="in"/></filter></defs>` +
-    `<g filter="url(#${id}f)" transform="rotate(${rotate} 80 80)" fill="${colour}" stroke="${colour}" opacity="0.94">` +
-    `${ART[key](id, date)}</g></svg>`
+    `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${label ?? `Stamp: ${name}`}">` +
+    `<defs><g id="${id}a" fill="none" stroke="currentColor">${ART[key](id, date)}</g>` +
+    `<filter id="${id}f" x="-5%" y="-5%" width="110%" height="110%">` +
+    `<feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="2" seed="${SEED[key]}" result="b"/>` +
+    `<feColorMatrix in="b" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.4 1.75" result="m"/>` +
+    `<feComposite in="SourceGraphic" in2="m" operator="in"/></filter></defs>` +
+    `<g transform="rotate(${rotate} 100 100)">` +
+    `<use href="#${id}a" transform="translate(-1.2 -1.2)" style="color:#fff" opacity="${ghost ? 0.12 : 0.22}"/>` +
+    `<use href="#${id}a" transform="translate(1.6 1.8)" style="color:#000" opacity="${ghost ? 0.45 : 0.4}"/>` +
+    (ghost ? "" : `<use href="#${id}a" style="color:${colour}" filter="url(#${id}f)"/>`) +
+    `</g></svg>`
   );
 }

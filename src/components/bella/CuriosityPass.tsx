@@ -2,20 +2,22 @@
 
 // ── The Curiosity Pass ────────────────────────────────────────────────────────
 // The visitor's pass: a blackcurrant card in a gold-foil frame with scalloped corners
-// (lib/bella/passArt), "Curiosity Pass" embossed tone-on-tone across the middle, and
-// the visit's details in Geist underneath: guest number and where they're from, the
-// day they arrived, their stay, who they're here as, and five stamps in gold.
-// Everything is sized in container units, so the pass scales as one piece.
+// (lib/bella/passArt), a small embossed Bella, "Curiosity Pass" embossed tone-on-tone
+// across the middle, and one centred line underneath: guest number, the day they
+// arrived, how long they've stayed (and where from, when known). The stamps sit around
+// it on the page, not on it. Everything is sized in container units, so the pass scales
+// as one piece.
 //
-// `revealed` fades the details in (the envelope scene holds them back until the pass
-// is out); `tilt` lets it lean toward the pointer on an underdamped spring with a light
-// that follows across the foil (imdaryl.com's numbers: k 237.6, ζ 7.5, 10° per unit,
-// at most 1.8 units, 120px of reach). Styles: .pass in globals.css.
+// `revealed` fades the line in (the envelope scene holds it back until the pass is out);
+// `tilt` lets it lean toward the pointer on an underdamped spring with a light that
+// follows across the foil (imdaryl.com's numbers: k 237.6, ζ 7.5, 10° per unit, at most
+// 1.8 units, 120px of reach). Styles: .pass in globals.css.
 
 import { useEffect, useId, useRef } from "react";
-import Stamp from "@/components/bella/Stamp";
-import { STAMPS, stampDate } from "@/lib/bella/stampArt";
 import { formatStay, frameSvg, guestNumber, type PassData } from "@/lib/bella/passArt";
+
+const BELL_PATH =
+  "M48 214 Q48 140 100 140 Q152 140 152 214 Z M76 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M106 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M94 124 h12 v14 h-12 Z M38 212 h124 v14 h-124 Z";
 
 const K = 237.6;
 const ZETA = 7.5;
@@ -24,12 +26,10 @@ const REACH = 120;
 
 export default function CuriosityPass({
   data,
-  stampDates = {},
   revealed = true,
   tilt = true,
 }: {
   data: PassData;
-  stampDates?: Partial<Record<string, number>>;
   revealed?: boolean;
   tilt?: boolean;
 }) {
@@ -91,41 +91,24 @@ export default function CuriosityPass({
     };
   }, [tilt]);
 
-  const found = STAMPS.filter((s) => data.k.includes(s.key));
-  const details = [
-    { label: "Guest", value: data.f ? `No. ${guestNumber(data.n)} · ${data.f}` : `No. ${guestNumber(data.n)}` },
-    { label: "Arrived", value: data.a },
-    { label: "Stay", value: formatStay(data.s) },
-    { label: "Here as", value: data.h ?? "Not answered yet" },
-  ];
+  const line = [`Guest no. ${guestNumber(data.n)}`, data.a && `Arrived ${data.a}`, `Stayed ${formatStay(data.s)}`].filter(Boolean).join("  ·  ");
 
   return (
     <div className="pass-scene">
       <div ref={ref} className={`pass ${revealed ? "is-revealed" : ""}`} role="group" aria-label="Your Curiosity Pass">
         <span className="pass-frame" aria-hidden="true" dangerouslySetInnerHTML={{ __html: frameSvg(frameId) }} />
         <div className="pass-face">
-          <p className="pass-eyebrow">Measuring your curiosity</p>
-          <p className="pass-title" aria-hidden="true">
+          <svg className="pass-bell" viewBox="36 120 128 112" aria-hidden="true">
+            <path fillRule="evenodd" d={BELL_PATH} />
+          </svg>
+          <p className="pass-title">
             Curiosity
             <br />
             Pass
           </p>
-          <dl className="pass-details">
-            {details.map((d, i) => (
-              <div key={d.label} style={{ transitionDelay: `${120 + i * 70}ms` }}>
-                <dt>{d.label}</dt>
-                <dd>{d.value}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className="pass-stamps" style={{ transitionDelay: "420ms" }} aria-label={`${found.length} of ${STAMPS.length} stamps found`}>
-            {STAMPS.map((s) =>
-              data.k.includes(s.key) ? (
-                <Stamp key={s.key} stamp={s.key} ink="#e9c56c" date={stampDates[s.key] ? stampDate(new Date(stampDates[s.key]!)) : ""} className="pass-stamp" />
-              ) : (
-                <span key={s.key} className="pass-stamp is-empty" title="Not found yet" />
-              ),
-            )}
+          <div className="pass-line">
+            <p>{line}</p>
+            {data.f && <p className="pass-from">From {data.f}</p>}
           </div>
         </div>
         <div className="pass-sheen" aria-hidden="true" />

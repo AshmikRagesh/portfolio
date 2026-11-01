@@ -9,7 +9,11 @@
 //   22–52%   the pass rises out of the envelope, tilting a little
 //   48–72%   the envelope drops away and fades; the title above fades out
 //   50–80%   the pass straightens and settles in the middle, a touch bigger
-//   72%+     the details on the pass fade in; once it's settled it leans to the pointer
+//   72%+     the line on the pass fades in and the visitor's stamps land around it, the
+//            ones not found yet as blank impressions; once settled the pass leans to the
+//            pointer
+// Once opened it stays open: scrolling back up doesn't close it, and on later visits the
+// pass is already out (localStorage), with no scrolling needed.
 //
 // A flat blackcurrant envelope on the dark grid, thin fold lines, a liner of small gold
 // bells, the guest number handwritten in gold. With reduced motion there's no pinning:
@@ -17,6 +21,20 @@
 
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { ringBell } from "@/components/host/bellSound";
+import Stamp from "@/components/bella/Stamp";
+import { STAMPS, stampDate, type StampKey } from "@/lib/bella/stampArt";
+
+const OPENED_KEY = "ash.bella.passOpened"; // localStorage
+
+// Where the stamps land round the pass, like stickers on a case: [left, top] as a share
+// of the screen, and a tilt
+const SPOTS: Record<StampKey, [number, number, number]> = {
+  ring: [0.08, 0.16, -8],
+  screen: [0.8, 0.12, 6],
+  desk: [0.1, 0.6, 5],
+  two: [0.82, 0.58, -6],
+  back: [0.44, 0.82, 4],
+};
 
 const BELL_PATH =
   "M48 214 Q48 140 100 140 Q152 140 152 214 Z M76 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M106 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M94 124 h12 v14 h-12 Z M38 212 h124 v14 h-124 Z";
@@ -88,10 +106,13 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 export default function PassScene({
   guestNo,
   head,
+  stamps,
   pass,
 }: {
   guestNo: string;
   head: ReactElement;
+  /** When each stamp was found (missing: not found yet) */
+  stamps: Partial<Record<StampKey, number>>;
   pass: (state: { revealed: boolean; tilt: boolean }) => ReactElement;
 }) {
   const section = useRef<HTMLDivElement>(null);
@@ -108,6 +129,7 @@ export default function PassScene({
   const [revealed, setRevealed] = useState(false);
   const [settled, setSettled] = useState(false);
   const [still, setStill] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -118,12 +140,25 @@ export default function PassScene({
     }
     let raf = 0;
     let cracked = false;
+    let locked = false;
+    try {
+      locked = localStorage.getItem(OPENED_KEY) === "1";
+    } catch {}
+    if (locked) setOpen(true);
     const update = () => {
       raf = 0;
       const el = section.current;
       if (!el) return;
       const vw = window.innerWidth, vh = window.innerHeight;
-      const p = clamp(-el.getBoundingClientRect().top / Math.max(1, el.offsetHeight - vh));
+      let p = clamp(-el.getBoundingClientRect().top / Math.max(1, el.offsetHeight - vh));
+      // Opened once, it stays open
+      if (p >= 0.92 && !locked) {
+        locked = true;
+        try {
+          localStorage.setItem(OPENED_KEY, "1");
+        } catch {}
+      }
+      if (locked) p = 1;
 
       const W = Math.min(620, vw * 0.86, vh * 0.9);
       const H = (W * 5) / 7;
@@ -210,7 +245,7 @@ export default function PassScene({
   }
 
   return (
-    <div ref={section} className="ps-section">
+    <div ref={section} className={`ps-section ${open ? "is-open" : ""}`}>
       <div className="ps-sticky">
         <div ref={headRef} className="ps-head">
           {head}
@@ -237,14 +272,21 @@ export default function PassScene({
         <div ref={front} className="ps-env" style={{ zIndex: 3 }} aria-hidden="true">
           <div className="ps-env-part">
             <svg viewBox="0 0 700 500" preserveAspectRatio="none">
-              <path d="M0 0 L372 268 Q378 273 372 278 L0 500 Z" fill="#3a0c46" />
-              <path d="M700 0 L328 268 Q322 273 328 278 L700 500 Z" fill="#3a0c46" />
-              <path d="M0 500 L330 226 Q350 212 370 226 L700 500 Z" fill="#45124f" />
+              <defs>
+                <linearGradient id="pss1" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stopColor="#33093f" />
+                  <stop offset="1" stopColor="#40104c" />
+                </linearGradient>
+                <linearGradient id="pss2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor="#521960" />
+                  <stop offset="1" stopColor="#3f0f4a" />
+                </linearGradient>
+              </defs>
+              <path d="M0 0 L372 268 Q378 273 372 278 L0 500 Z" fill="url(#pss1)" />
+              <path d="M700 0 L328 268 Q322 273 328 278 L700 500 Z" fill="url(#pss1)" />
+              <path d="M0 500 L330 226 Q350 212 370 226 L700 500 Z" fill="url(#pss2)" />
               <path d="M0 0 L372 268 M700 0 L328 268 M0 500 L330 226 Q350 212 370 226 L700 500" fill="none" stroke="#fff" strokeOpacity="0.08" strokeWidth="2" />
               <rect x="1" y="1" width="698" height="498" rx="4" fill="none" stroke="#fff" strokeOpacity="0.06" strokeWidth="2" />
-              <text x="350" y="388" textAnchor="middle" fontSize="13" letterSpacing="4" fill="#e3bd62" fillOpacity="0.7" style={{ fontFamily: "var(--font-geist), sans-serif", fontWeight: 500 }}>
-                FROM THE FRONT DESK
-              </text>
               <text x="350" y="446" textAnchor="middle" fontSize="46" fill="#e3bd62" transform="rotate(-2 350 446)" style={{ fontFamily: "var(--font-handwriting), cursive" }}>
                 for guest no. {guestNo}
               </text>
@@ -255,7 +297,13 @@ export default function PassScene({
         <div ref={flap} className="ps-env ps-flap" style={{ zIndex: 4 }} aria-hidden="true">
           <div ref={flapOut} className="ps-flap-face">
             <svg viewBox="0 0 700 500" preserveAspectRatio="none">
-              <path d="M0 0 L700 0 L370 296 Q350 312 330 296 Z" fill="#4c1658" />
+              <defs>
+                <linearGradient id="pss3" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor="#47135a" />
+                  <stop offset="1" stopColor="#5c1f6c" />
+                </linearGradient>
+              </defs>
+              <path d="M0 0 L700 0 L370 296 Q350 312 330 296 Z" fill="url(#pss3)" />
               <path d="M0 0 L370 296 Q350 312 330 296 L700 0" fill="none" stroke="#fff" strokeOpacity="0.09" strokeWidth="2" />
             </svg>
           </div>
@@ -281,9 +329,29 @@ export default function PassScene({
           ))}
         </div>
 
-        <p ref={hint} className="ps-hint">
-          <span>Scroll to open</span>
-        </p>
+        {/* The stamps, round the pass once it's out */}
+        <div className={`ps-stamps ${revealed ? "is-in" : ""}`}>
+          {STAMPS.map((s, i) => {
+            const [x, y, r] = SPOTS[s.key];
+            const at = stamps[s.key];
+            return (
+              <div
+                key={s.key}
+                className="ps-stamp"
+                style={{ left: `${x * 100}%`, top: `${y * 100}%`, transitionDelay: `${200 + i * 110}ms`, ["--r" as string]: `${r}deg` }}
+                title={at ? `${s.name}: ${s.earned}` : "Not found yet"}
+              >
+                <Stamp stamp={s.key} ink={at ? undefined : "none"} date={at ? stampDate(new Date(at)) : ""} />
+              </div>
+            );
+          })}
+        </div>
+
+        {!open && (
+          <p ref={hint} className="ps-hint">
+            <span>Scroll to open</span>
+          </p>
+        )}
       </div>
     </div>
   );

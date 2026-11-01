@@ -42,12 +42,7 @@ export async function GET(req: Request) {
     g500 && { name: "Geist", data: g500, weight: 500 as const },
   ].filter(Boolean) as { name: string; data: ArrayBuffer | Buffer; weight: 400 | 500 }[];
 
-  const details = [
-    ["Guest", d.f ? `No. ${guestNumber(d.n)} · ${d.f}` : `No. ${guestNumber(d.n)}`],
-    ["Arrived", d.a || "Today"],
-    ["Stay", formatStay(d.s)],
-    ["Here as", d.h ?? "Curious"],
-  ];
+  const line = [`Guest no. ${guestNumber(d.n)}`, d.a && `Arrived ${d.a}`, `Stayed ${formatStay(d.s)}`].filter(Boolean).join("  ·  ");
   const gold = "#e3bd62";
 
   return new ImageResponse(
@@ -68,41 +63,34 @@ export async function GET(req: Request) {
         <div style={{ position: "relative", width: PASS_W, height: PASS_H, display: "flex", transform: "rotate(-2deg)" }}>
           <img alt="" src={dataUri(frameSvg("og"))} width={PASS_W} height={PASS_H} style={{ position: "absolute", left: 0, top: 0 }} />
           <div style={{ position: "absolute", left: 0, top: 0, width: PASS_W, height: PASS_H, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "60px 80px 48px" }}>
-            <div style={{ fontSize: 14, letterSpacing: 5, textTransform: "uppercase", color: gold, fontWeight: 500 }}>Measuring your curiosity</div>
+            <div style={{ display: "flex", width: 40, height: 40 }} />
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 fontFamily: "Alpina",
-                fontSize: 92,
-                lineHeight: 0.9,
-                color: "#4b1559",
-                textShadow: "0 -2px 0 rgba(10,0,14,0.6), 0 2px 0 rgba(255,220,255,0.16)",
+                fontSize: 108,
+                lineHeight: 0.88,
+                color: "#4d165b",
+                textShadow: "0 -3px 0 rgba(10,0,14,0.7), 0 3px 0 rgba(255,220,255,0.22)",
               }}
             >
               <span>Curiosity</span>
               <span>Pass</span>
             </div>
-            <div style={{ display: "flex", gap: 28 }}>
-              {details.map(([k, v]) => (
-                <div key={k} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                  <span style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: gold, fontWeight: 500 }}>{k}</span>
-                  <span style={{ fontSize: 18, color: "#f8f1e3" }}>{v}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex", gap: 12 }}>
-              {STAMPS.map((s, i) =>
-                d.k.includes(s.key) ? (
-                  <img key={s.key} alt="" src={dataUri(stampSvg(s.key, { id: `o${i}`, ink: "#e9c56c" }))} width={52} height={52} />
-                ) : (
-                  <div key={s.key} style={{ width: 46, height: 46, margin: 3, borderRadius: 46, border: "2px dashed rgba(227,189,98,0.45)" }} />
-                ),
-              )}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, fontSize: 19, color: "#f8f1e3" }}>
+              <span>{line}</span>
+              {d.f ? <span style={{ color: gold }}>From {d.f}</span> : null}
             </div>
           </div>
         </div>
+        {/* The stamps found, round the pass */}
+        {STAMPS.filter((s) => d.k.includes(s.key)).map((s, i) => {
+          const spots: [number, number, number][] = [[40, 30, -8], [1010, 24, 6], [44, 430, 5], [1012, 420, -6], [560, 470, 4]];
+          const [x, y, r] = spots[STAMPS.indexOf(s)];
+          return <img key={s.key} alt="" src={dataUri(stampSvg(s.key, { id: `o${i}`, rotate: r }))} width={150} height={150} style={{ position: "absolute", left: x, top: y }} />;
+        })}
         <div style={{ position: "absolute", bottom: 24, display: "flex", fontSize: 14, letterSpacing: 3, textTransform: "uppercase", color: "rgba(248,241,227,0.5)" }}>
           Ashmik Ragesh · Portfolio
         </div>
