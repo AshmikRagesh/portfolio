@@ -90,7 +90,6 @@ export default function PassPage() {
   const reading = progress.reading && caseStudy(progress.reading.slug);
   const head = (
     <>
-      <p className="font-brand text-[12px] uppercase leading-[16px] tracking-[2px] text-grape">Measuring your curiosity</p>
       <h1 className="font-heading text-[40px] font-medium leading-[44px] text-heading md:text-[52px] md:leading-[56px]">
         Your Curiosity Pass
       </h1>

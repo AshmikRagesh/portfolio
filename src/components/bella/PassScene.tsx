@@ -160,7 +160,7 @@ export default function PassScene({
       const H = (W * 5) / 7;
       const envW = W * 1.3, envH = (envW * 5) / 7;
       // Where the envelope sits at first: under the title, running off the bottom
-      const base = Math.max(vh * 0.13 + 190, vh * 0.42);
+      const base = Math.max(vh * 0.13 + 160, vh * 0.4);
       const envTop = base + vh * 0.85 * inn(seg(p, 0.48, 0.72));
       const envFade = 1 - seg(p, 0.6, 0.72);
 
@@ -216,7 +216,12 @@ export default function PassScene({
         headRef.current.style.opacity = String(1 - h);
         headRef.current.style.transform = `translateY(${-40 * h}px)`;
       }
-      if (hint.current) hint.current.style.opacity = String(1 - seg(p, 0, 0.06));
+      if (hint.current) {
+        // Just under the seal, kept on screen
+        const sealBottom = envTop + envH * 0.61 + envW * 0.085;
+        hint.current.style.top = `${Math.min(sealBottom + 20, vh - 56)}px`;
+        hint.current.style.opacity = String(1 - seg(p, 0, 0.06));
+      }
       setRevealed(p > 0.72);
       setSettled(p > 0.9);
     };
