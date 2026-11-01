@@ -12,7 +12,8 @@
 //   72%+     the visitor's numbers on the pass fade in; once settled the pass leans to
 //            the pointer
 // Every time the page loads it starts at the top with the envelope sealed. Once opened it
-// stays open while they're on the page: scrolling back up doesn't close it. `onOpen` fires
+// stays open while they're on the page, and the section shrinks to one screen, so
+// scrolling back up doesn't close it or take long. `onOpen` fires
 // once the pass is out, so the page can hold the rest back until then.
 //
 // A flat blackcurrant envelope on the dark grid, thin fold lines, a liner of small gold
@@ -143,18 +144,23 @@ export default function PassScene({
       if (!el) return;
       const vw = window.innerWidth, vh = window.innerHeight;
       let p = clamp(-el.getBoundingClientRect().top / Math.max(1, el.offsetHeight - vh));
-      // Opened once, it stays open
+      // Opened once, it stays open, and the long scroll it took folds away: the section
+      // drops to one screen and the page shifts up by the same amount, so the view doesn't
+      // jump and scrolling back up reaches the top straight away
       if (p >= 0.92 && !locked) {
         locked = true;
+        const fold = el.offsetHeight - vh;
+        el.classList.add("is-open");
+        window.scrollTo(0, Math.max(0, window.scrollY - fold));
         onOpenRef.current?.();
       }
       if (locked) p = 1;
 
       const W = Math.min(620, vw * 0.86, vh * 0.9);
       const H = (W * 5) / 7;
-      const envW = W * 1.14, envH = (envW * 5) / 7;
-      // Where the envelope sits at first: the whole of it in view, under the title
-      const base = Math.max(vh * 0.13 + 96, vh * 0.5 - envH * 0.3);
+      const envW = W * 1.3, envH = (envW * 5) / 7;
+      // Where the envelope sits at first: under the title, running off the bottom
+      const base = Math.max(vh * 0.13 + 190, vh * 0.42);
       const envTop = base + vh * 0.85 * inn(seg(p, 0.48, 0.72));
       const envFade = 1 - seg(p, 0.6, 0.72);
 
