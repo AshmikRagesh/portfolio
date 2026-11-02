@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import {
+  CheckCircle,
+  Compass,
   Funnel,
   MapTrifold,
   SlidersHorizontal,
@@ -64,8 +66,8 @@ function Overview() {
     <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
-          TCS&apos;s search page listed every upcoming trip departure in one
-          long list, with no way to narrow it. I redesigned it so travellers
+          TCS&apos;s search page showed every upcoming trip in one long list,
+          with no way to narrow it. I redesigned it so travellers
           can narrow results by destination, trip type, date and length, see
           how many trips match, and see where each one goes. Developers built
           it, and it has been live since July 2026.
@@ -100,8 +102,8 @@ function TheProblem() {
         <p>
           Travellers usually search with something in mind: a place, a month
           or a kind of trip. TCS&apos;s search page couldn&apos;t be narrowed
-          by any of them. In March 2026 its trips tab listed 42 departures of
-          32 trips in date order, with no filters, no sort and no count, and
+          by any of them. In March 2026 its trips tab showed 42 trip cards in
+          date order, with no filters, no sort and no count, and
           the cards didn&apos;t say which countries a trip visited. Travellers
           had to scan the list and open trips to work out which ones fit. TCS
           had no search data to show how often this happened.
@@ -121,9 +123,9 @@ function TheProblem() {
 // Section: Discovery  (research / inputs)
 // ─────────────────────────────────────────────────────────────────────────────
 const OLD_SEARCH_TILES: Parameters<typeof StatTiles>[0]["items"] = [
-  { tag: "List", stat: "42", label: "trip departures in one list, in date order" },
+  { tag: "List", stat: "42", label: "trip cards in one list, soonest date first" },
   { tag: "Control", stat: "0", label: "filters, sort options or result counts", tone: "key" },
-  { tag: "Cards", stat: "0", label: "countries named on a card, so “Asia Unveiled” had to be opened to see where it went" },
+  { tag: "Names", stat: "7", label: "of 32 trip names said which country the trip went to" },
 ];
 
 // How site search got here, step by step (from the two tickets, an archived copy of the old page and the live site)
@@ -148,9 +150,9 @@ const SEARCH_STEPS = [
     when: "Early 2026",
     title: "The page I started from",
     figure: "42",
-    figureLabel: "trip departures in the trips tab",
+    figureLabel: "trip cards, soonest date first",
     detail:
-      "The tabs were live. The trips tab listed 42 departures of 32 trips in date order, with no filters, no count and no countries on the cards.",
+      "The tabs were live. The trips tab showed 42 cards in date order, with no filters, no count and no route on the cards.",
   },
   {
     when: "Feb–May 2026",
@@ -173,16 +175,24 @@ const SEARCH_STEPS = [
 // What the review and the research found: the problems the design had to solve
 const FINDINGS = [
   {
-    lead: "One long list.",
-    text: "The trips tab listed 42 departures of 32 trips in date order. Around the World by Private Jet alone appeared five times.",
+    lead: "One long list, soonest date first.",
+    text: "The trips page showed 42 cards in date order, so trips to the same place were spread out. Someone looking for Africa found its trips at cards 12, 25, 38 and 39.",
   },
   {
-    lead: "No way to narrow it.",
-    text: "No filters for place, month, type of trip or length, no sort, and no count of matching trips.",
+    lead: "No way to narrow it down.",
+    text: "There were no filters for place, month, type of trip or length, and no count of how many trips matched.",
   },
   {
     lead: "Cards didn’t say where a trip went.",
-    text: "Each card showed a status, a title, dates and a length. A name like “Asia Unveiled” didn’t say which countries it visited, so you had to open it.",
+    text: "TCS gives trips names like “Grand Horizons” and “Asia Unveiled”, and the old cards showed only the name and dates. Only 7 of 32 names mentioned a country. Of the trips that stopped in Japan, only one said so.",
+  },
+  {
+    lead: "Full trips were mixed in.",
+    text: "9 of the 42 cards were already waitlisted, with no way to hide them.",
+  },
+  {
+    lead: "The menu didn’t filter.",
+    text: "Clicking Africa in the Find a Trip menu just typed “Africa” into search. Results depended on which trips mentioned the word, and the choice couldn’t be combined with a month or trip type.",
   },
 ];
 
@@ -276,17 +286,27 @@ const CONTEXT_CARDS = [
   {
     icon: <Funnel size={28} weight="fill" className="text-grape" />,
     title: "Narrow by how people plan",
-    description: "Filters for where, when, what kind of trip and how long, using TCS’s own regions and trip types. From the long list with no way to narrow it.",
-  },
-  {
-    icon: <MapTrifold size={28} weight="fill" className="text-grape" />,
-    title: "Show where a trip goes",
-    description: "The countries and route on every card, so no one has to open a trip to check. From cards that didn’t say where a trip went.",
+    description: "Filters for destination, trip type, departure month and length, using TCS’s own regions and trip types. For the long list.",
   },
   {
     icon: <SlidersHorizontal size={28} weight="fill" className="text-grape" />,
     title: "Always show what’s applied",
-    description: "A count of matching trips, removable chips and one tap to clear them all. From a list with no count and nothing to show what was applied.",
+    description: "A count of matching trips and the chosen filters, each easy to remove. For the list with no count.",
+  },
+  {
+    icon: <MapTrifold size={28} weight="fill" className="text-grape" />,
+    title: "Show where a trip goes",
+    description: "The full route on every card, like “Kyoto, Japan → Tokyo, Japan”, so no one has to open a trip to check. For names that didn’t say where.",
+  },
+  {
+    icon: <CheckCircle size={28} weight="fill" className="text-grape" />,
+    title: "Hide what’s full",
+    description: "An availability filter, so travellers can see only the trips they can still book. For the waitlisted trips mixed in.",
+  },
+  {
+    icon: <Compass size={28} weight="fill" className="text-grape" />,
+    title: "Menu links open filters",
+    description: "Africa in the menu opens search with the Africa filter on, ready to add a month or trip type. For the menu that only typed a search.",
   },
 ];
 
@@ -312,14 +332,14 @@ function Context() {
           <p>
             Search split results into three tabs: Expeditions, Destinations,
             and Guides &amp; Resources, from an earlier fix in August 2025.
-            Inside the trips tab, every upcoming departure sat in one list.
+            Inside the trips tab, every upcoming trip date sat in one long list.
           </p>
           <MoreDetail label="How site search got here" className="mt-[20px]">
             <StepStory steps={SEARCH_STEPS} start={2} />
           </MoreDetail>
         </Copy>
         <Visual>
-          <Figure label="The old search page, March 2026: 42 departures in one list" />
+          <Figure label="The old search page, March 2026: 42 trip cards in one list" />
           <StatTiles items={OLD_SEARCH_TILES} />
         </Visual>
       </div>
@@ -328,7 +348,7 @@ function Context() {
           <h3>What the research found</h3>
           <p>
             Reviewing the old page and checking it against published research
-            on search and filtering turned up three problems.
+            on search and filtering turned up five problems.
           </p>
           <Pointers items={FINDINGS} />
           <MoreDetail label="The research behind these" className="mt-[32px]">
