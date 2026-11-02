@@ -446,7 +446,7 @@ const OPTIONS: OptionItem[] = [
       "On a phone the same filters open from a bar at the bottom",
     ],
     didntWork: [
-      "Options inside each filter stay hidden until it’s opened",
+      "The same trip shows once per date: Around the World takes 7 of the 45 cards",
     ],
   },
 ];
