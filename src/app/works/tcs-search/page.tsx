@@ -402,6 +402,7 @@ type OptionItem = {
   shipped?: boolean;
   /** How many of the five research findings it solves */
   solves: string;
+  video: string;
   worked: string[];
   didntWork: string[];
 };
@@ -411,6 +412,7 @@ type OptionItem = {
 const OPTIONS: OptionItem[] = [
   {
     label: "Option 1",
+    video: "/videos/tcs-search/option-1.mp4",
     title: "Region shortcuts, with country tags on the card",
     solves: "Solves 2 of the 5 findings, 3 in part",
     worked: [
@@ -426,6 +428,7 @@ const OPTIONS: OptionItem[] = [
   },
   {
     label: "Option 2",
+    video: "/videos/tcs-search/option-2.mp4",
     title: "A Sort menu, with every country on the card",
     solves: "Solves 1 of the 5 findings, 2 in part",
     worked: [
@@ -442,6 +445,7 @@ const OPTIONS: OptionItem[] = [
   },
   {
     label: "Option 3",
+    video: "/videos/tcs-search/option-3.mp4",
     title: "A row of filters, with the full route on the card",
     shipped: true,
     solves: "Solves all 5 findings",
@@ -471,11 +475,10 @@ function Exploration() {
           as a clickable prototype that runs on the 45 live trips.
         </p>
       </Copy>
-      {OPTIONS.map(({ label, title, shipped, solves, worked, didntWork }) => (
+      {OPTIONS.map(({ label, title, shipped, solves, video, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
-            <OptionCard label={label} title={title} shipped={shipped} stamp="Live" image={`${label} — ${title}`}>
-              <p className="font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted">{solves}</p>
+            <OptionCard label={label} title={title} shipped={shipped} stamp="Live" note={solves} video={video} image={`${label}: ${title}, clickable prototype`}>
               <ProsCons pros={worked} cons={didntWork} />
             </OptionCard>
           </Visual>

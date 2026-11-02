@@ -318,23 +318,39 @@ function Mark({ tone, children }: { tone: "pro" | "con" | "reason"; children: Re
 
 const NOTE = "flex gap-[12px] font-body text-[18px] leading-[30px] text-secondary";
 
-/** What worked (green tick) and what didn't (red cross) */
+const NOTE_HEAD = "font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted";
+
+/**
+ * What worked (green tick) and what didn't (red cross), side by side from tablet up so the
+ * two read as a comparison; one column when there's only one kind
+ */
 export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: string[] }) {
-  return (
+  const both = pros.length > 0 && cons.length > 0;
+  const list = (items: string[], tone: "pro" | "con") => (
     <ul className="flex flex-col gap-[12px]">
-      {pros.map((item) => (
+      {items.map((item) => (
         <li key={item} className={NOTE}>
-          <Mark tone="pro"><Check size={14} strokeWidth={2.5} /></Mark>
-          <span>{item}</span>
-        </li>
-      ))}
-      {cons.map((item) => (
-        <li key={item} className={NOTE}>
-          <Mark tone="con"><X size={14} strokeWidth={2.5} /></Mark>
+          <Mark tone={tone}>{tone === "pro" ? <Check size={14} strokeWidth={2.5} /> : <X size={14} strokeWidth={2.5} />}</Mark>
           <span>{item}</span>
         </li>
       ))}
     </ul>
+  );
+  return (
+    <div className={`grid grid-cols-1 gap-[24px] ${both ? "md:grid-cols-2 md:gap-[32px]" : ""}`}>
+      {pros.length > 0 && (
+        <div className="flex flex-col gap-[12px]">
+          {both && <p className={NOTE_HEAD}>What worked</p>}
+          {list(pros, "pro")}
+        </div>
+      )}
+      {cons.length > 0 && (
+        <div className="flex flex-col gap-[12px]">
+          {both && <p className={NOTE_HEAD}>What didn&apos;t</p>}
+          {list(cons, "con")}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -353,10 +369,11 @@ export function Reasons({ items }: { items: string[] }) {
 }
 
 /**
- * An iteration or design option, every one laid out the same: label, title and notes on
- * the left, the preview on the right filling the card's full height (below on phones).
- * A chosen option has a dark border and a stamp — SHIPPED, or `stamp` for another
- * status such as "In test".
+ * An iteration or design option, every one laid out the same, top to bottom: label, title
+ * and an optional note; the preview across the full width at one 16:9 size (a clip plays
+ * in the case study player); then the notes. Stacking keeps every card's preview the same
+ * size, whatever the length of its notes. A chosen option has a dark border and a stamp —
+ * SHIPPED, or `stamp` for another status such as "In test".
  */
 export function OptionCard({
   label,
@@ -365,6 +382,9 @@ export function OptionCard({
   stamp = "Shipped",
   image,
   src,
+  video,
+  poster,
+  note,
   children,
 }: {
   label: string;
@@ -374,6 +394,11 @@ export function OptionCard({
   image: string;
   /** An illustration to show in place of the grey stand-in, set whole on the surface colour */
   src?: string;
+  /** A clip of the option, played in the case study player */
+  video?: string;
+  poster?: string;
+  /** A short line under the title, e.g. how the option scored */
+  note?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -382,36 +407,28 @@ export function OptionCard({
         shipped ? "border-2 border-primary" : "border border-line-soft"
       }`}
     >
-      <div className="grid grid-cols-1 gap-[8px] md:grid-cols-2">
-        <div className="flex flex-col gap-[16px] p-[12px] md:p-[16px]">
-          <div className="flex flex-wrap items-center gap-[8px]">
-            <Tag tone="grey">{label}</Tag>
-          </div>
-          {title && (
-            <p className="font-heading text-[22px] font-medium leading-[30px] text-heading md:text-[24px] md:leading-[32px]">
-              {title}
-            </p>
-          )}
-          {children}
+      <div className={`flex flex-col gap-[12px] px-[12px] pt-[12px] md:px-[16px] md:pt-[16px] ${shipped ? "pr-[160px] md:pr-[200px]" : ""}`}>
+        <div className="flex flex-wrap items-center gap-[8px]">
+          <Tag tone="grey">{label}</Tag>
         </div>
-        {/* One fixed 4:3 image, whatever the length of the text beside it */}
-        <div className="flex self-start overflow-hidden rounded-lg">
-          {src ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={src}
-              alt={image}
-              className="aspect-[4/3] w-full rounded-lg bg-surface object-contain p-[32px]"
-            />
-          ) : (
-            <ImagePlaceholder
-              label={image}
-              aspect="aspect-[4/3]"
-              radius="rounded-lg"
-            />
-          )}
-        </div>
+        {title && (
+          <p className="font-heading text-[22px] font-medium leading-[30px] text-heading md:text-[24px] md:leading-[32px]">
+            {title}
+          </p>
+        )}
+        {note && <p className={NOTE_HEAD}>{note}</p>}
       </div>
+      <div className="mt-[20px] overflow-hidden rounded-lg">
+        {video ? (
+          <Media video={video} poster={poster} label={image} />
+        ) : src ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={src} alt={image} className="aspect-[16/9] w-full bg-surface object-contain p-[32px]" />
+        ) : (
+          <ImagePlaceholder label={image} aspect="aspect-[16/9]" radius="rounded-lg" />
+        )}
+      </div>
+      <div className="px-[12px] pb-[12px] pt-[24px] md:px-[16px] md:pb-[16px]">{children}</div>
       {shipped && (
         <ShippedStamp
           label={stamp}
