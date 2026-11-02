@@ -484,43 +484,27 @@ const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "Filters that narrow down the search",
-    body: [
-      "The old page showed every departure in one long list, soonest first. Someone looking for Africa had to scroll to card 12 to find the first one.",
-      "V1 adds five filters in one row above the results, in the order a trip is usually planned: where (Destination), what kind (Trip type), when (Departure), how long (Duration) and whether there’s space (Availability). Each option shows how many trips it would leave, like Africa (22) or Golf (2), so no one picks a filter that leads nowhere. The numbers update as filters combine: turn on Africa and Waitlisted drops from 8 to 4.",
-      "On a phone, the same five filters open from a Filters bar fixed to the bottom of the screen, always within reach of a thumb.",
-    ],
+    body: "Five filters sit above the results: destination, trip type, departure, duration and availability. Each option shows how many trips it leaves, like Africa (22), so no choice leads to an empty page. On a phone they open from a bar fixed to the bottom of the screen.",
   },
   {
     num: 2,
     title: "Clear feedback on applied filters",
-    body: [
-      "Once filters are on, a traveller needs to know what they’re looking at. The number of matching trips sits above the results, so picking Africa shows straight away that 22 trips are left.",
-      "Every choice also appears as a chip under the filter row, like Africa or 16–20 days, so it stays visible without opening a dropdown. × on a chip removes just that filter, and Clear filters removes them all and brings back the full list of 45.",
-    ],
+    body: "A count above the results shows how many trips match. Each choice appears as a chip, like Africa: × removes it, and Clear filters resets the list.",
   },
   {
     num: 3,
     title: "More context in every trip card",
-    body: [
-      "The old card showed a photo, a trip name and dates. Only 7 of 32 names mentioned a country, so most travellers had to open a trip to learn where it went.",
-      "The new card is a wide row: photo on the left, details in the middle, View details on the right. The details now include how many destinations the trip has and its full route, like Miami, Florida → Cusco and Machu Picchu, Peru → …, with dates and length on one line: Nov 28 – Dec 22, 2026 · 25 days. A traveller can see that Grand Horizons stops in Tokyo without opening it.",
-    ],
+    body: "The old card showed only a name and dates. The new one adds the full route, so a traveller can see Grand Horizons stops in Tokyo without opening it.",
   },
   {
     num: 4,
     title: "Connecting navigation to search",
-    body: [
-      "The Find a Trip menu lists regions such as Africa. Before, clicking one typed the word “Africa” into search, which only found trips with Africa in their text: 7 trips.",
-      "Now the same link opens search with the Africa filter already on and shows all 22 trips that go there. Because it’s an ordinary filter, it appears as a chip, so a traveller can remove it or add a month on top.",
-    ],
+    body: "Africa in the Find a Trip menu used to type “Africa” into search and find 7 trips. Now it opens search with the Africa filter on: all 22.",
   },
   {
     num: 5,
     title: "Keeping travellers moving when no results match",
-    body: [
-      "With five filters, some combinations match no trip at all, so the no-results page matters more than before.",
-      "V1 keeps what the old page offered, a phone number for a travel expert and a link to Private Custom Travel, and adds a row of curated trips underneath. There’s always a next step: call, ask for a custom trip, or browse something close.",
-    ],
+    body: "Some filter combinations match nothing. The page still offers a travel expert’s phone number and Private Custom Travel, and now lists curated trips below.",
   },
 ];
 
@@ -603,9 +587,7 @@ function Solution() {
         <div key={num} className="cs-sub">
           <Copy>
             <h3>{num}. {title}</h3>
-            {body.map((para) => (
-              <p key={para}>{para}</p>
-            ))}
+            <p>{body}</p>
             {num === 3 && (
               <MoreDetail label="The card, part by part" className="mt-[20px]">
                 <CardParts />
