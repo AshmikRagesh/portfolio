@@ -484,27 +484,27 @@ const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "Filters that narrow down the search",
-    body: "Five filters sit above the results: destination, trip type, departure, duration and availability. Each option shows how many trips it leaves, like Africa (22), before it’s picked. On a phone they open from a bar fixed to the bottom of the screen.",
+    body: "Five filters sit right above the results. Every option tells you how many trips you’ll get, like Africa (22), before you tap it. On a phone, they’re tucked into a bar at the bottom of the screen.",
   },
   {
     num: 2,
     title: "Clear feedback on applied filters",
-    body: "A count above the results shows how many trips match. Each choice appears as a chip, like Africa: × removes it, and Clear filters resets the list.",
+    body: "You always know what you’re looking at. A count shows how many trips match, and each choice shows up as a chip: tap × to drop one, or Clear filters to start over.",
   },
   {
     num: 3,
     title: "More context in every trip card",
-    body: "The old card showed only a name and dates. The new one adds the full route, so a traveller can see Grand Horizons stops in Tokyo without opening it.",
+    body: "The old card only had a name and dates. Now it shows the whole route, so you can spot that Grand Horizons stops in Tokyo without even opening it.",
   },
   {
     num: 4,
     title: "Connecting navigation to search",
-    body: "Africa in the Find a Trip menu used to type “Africa” into search and find 7 trips. Now it opens search with the Africa filter on: all 22.",
+    body: "Clicking Africa in the menu used to just type “Africa” into search, which turned up 7 trips. Now it switches on the Africa filter and shows all 22.",
   },
   {
     num: 5,
     title: "Keeping travellers moving when no results match",
-    body: "Some filter combinations match nothing. The page still offers a travel expert’s phone number and Private Custom Travel, and now lists curated trips below.",
+    body: "Sometimes a mix of filters finds nothing. Instead of a dead end, you still get a travel expert’s number, Private Custom Travel, and a few hand-picked trips to look at.",
   },
 ];
 
