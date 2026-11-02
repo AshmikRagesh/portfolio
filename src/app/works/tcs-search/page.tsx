@@ -422,16 +422,16 @@ const OPTIONS: OptionItem[] = [
   },
   {
     label: "Option 2",
-    title: "Grouped by region, with the countries on the card",
+    title: "A Sort menu, with the countries on the card",
     worked: [
-      "Nothing new to learn: the same list, in order by region",
-      "Full trips sit at the end of each region, out of the way",
+      "One control everyone already knows from shopping sites",
+      "Quick to build, and a single button on a phone",
     ],
     didntWork: [
-      "Sorted, not shorter: someone after December or a 10-day trip still scrolls",
-      "Trips that cross regions repeat under every region they visit",
-      "Regions low on the page are a long scroll away",
-      "On a phone each region is a long column",
+      "Reordered, not shorter: all 45 trips are still there to scroll",
+      "One order at a time, so no way to get Africa trips in December",
+      "Sorting by destination is unclear for trips that visit many places",
+      "The menu’s Africa link still lands on a typed search",
     ],
   },
   {
