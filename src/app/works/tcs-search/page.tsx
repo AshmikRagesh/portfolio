@@ -400,53 +400,61 @@ type OptionItem = {
   label: string;
   title: string;
   shipped?: boolean;
+  /** How many of the five research findings it solves */
+  solves: string;
   worked: string[];
   didntWork: string[];
 };
 
-// Three page ideas, each covering how to narrow and how a card shows where a trip goes
+// Three page ideas, each with its own way to narrow and its own card. Pros and cons match the
+// clickable prototypes, which run on the 45 live trips.
 const OPTIONS: OptionItem[] = [
   {
     label: "Option 1",
     title: "Region shortcuts, with country tags on the card",
+    solves: "Solves 2 of the 5 findings, 3 in part",
     worked: [
       "Every region is one tap away and always in view",
-      "Simple to build: one filter, a switch to hide full trips, and tags on the card",
+      "Simple to build: one filter, one switch and a tag list on the card",
     ],
     didntWork: [
       "Only narrows by place: no month, kind of trip or length",
-      "One region at a time",
-      "Tags show three countries and hide the rest, so an Africa result can start with Peru",
-      "On a phone, eleven region buttons run off the screen",
+      "One region at a time, so Africa and Europe can’t be seen in one list",
+      "Card tags show three countries and hide the rest. Pick Africa and Around the World starts with USA, Peru and Chile",
+      "On a phone the region buttons run off the screen",
     ],
   },
   {
     label: "Option 2",
-    title: "A Sort menu, with the countries on the card",
+    title: "A Sort menu, with every country on the card",
+    solves: "Solves 1 of the 5 findings, 2 in part",
     worked: [
       "One control everyone already knows from shopping sites",
       "Quick to build, and a single button on a phone",
+      "The card lists every country the trip goes to",
     ],
     didntWork: [
       "Reordered, not shorter: all 45 trips are still there to scroll",
       "One order at a time, so no way to get Africa trips in December",
-      "Sorting by destination is unclear for trips that visit many places",
-      "The menu’s Africa link still lands on a typed search",
+      "Trips have no single destination to sort by, and names like Grand Horizons say nothing about place",
+      "The menu’s Africa link can only type “Africa” into search: 7 trips, against 22 that go to Africa",
     ],
   },
   {
     label: "Option 3",
     title: "A row of filters, with the full route on the card",
     shipped: true,
+    solves: "Solves all 5 findings",
     worked: [
       "Five filters fit in one row, within research guidance of fewer than 6 to 8",
-      "Each option shows how many trips it leaves, like Africa (22)",
-      "A chip and Clear filters show what’s applied, beside the count",
-      "Cards keep the full width, so the whole route fits",
+      "Each option shows how many trips it leaves, like Africa (22), and the numbers update as filters combine",
+      "Every choice shows as a chip under the filter row, and Clear filters resets them all",
+      "A wide card keeps room for the full route",
       "On a phone the same filters open from a bar at the bottom",
+      "Find a Trip’s region links open search with that filter on",
     ],
     didntWork: [
-      "The same trip shows once per date: Around the World takes 7 of the 45 cards",
+      "The result count is easy to miss: small grey text at the far right, away from the filters and chips that change it",
     ],
   },
 ];
@@ -459,13 +467,15 @@ function Exploration() {
           The brief named the goal but not the filters, and said nothing about
           the card. I compared three simple page ideas, each built to answer the
           five research findings, with its own way to cut the list down and its
-          own way for a card to show where a trip goes.
+          own way for a card to show where a trip goes. Each is redrawn here
+          as a clickable prototype that runs on the 45 live trips.
         </p>
       </Copy>
-      {OPTIONS.map(({ label, title, shipped, worked, didntWork }) => (
+      {OPTIONS.map(({ label, title, shipped, solves, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
             <OptionCard label={label} title={title} shipped={shipped} stamp="Live" image={`${label} — ${title}`}>
+              <p className="font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted">{solves}</p>
               <ProsCons pros={worked} cons={didntWork} />
             </OptionCard>
           </Visual>
