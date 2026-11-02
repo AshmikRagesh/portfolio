@@ -376,7 +376,8 @@ export function Reasons({ items }: { items: string[] }) {
  * in the case study player); then the notes. Stacking keeps every card's preview the same
  * size, whatever the length of its notes. The media and the notes sit together in one grey
  * well, so each option reads as a single object. A chosen option has a dark border and a
- * stamp — SHIPPED, or `stamp` for another status such as "Selected" or "In test".
+ * stamp pressed onto the media's corner — SHIPPED, or `stamp` for another status such as
+ * "Selected" or "In test".
  */
 export function OptionCard({
   label,
@@ -410,7 +411,7 @@ export function OptionCard({
         shipped ? "border-2 border-primary" : "border border-line-soft"
       }`}
     >
-      <div className={`flex min-h-[64px] flex-col gap-[12px] px-[12px] pb-[4px] pt-[12px] md:px-[16px] md:pt-[16px] ${shipped ? "pr-[176px] md:pr-[232px]" : ""}`}>
+      <div className={`flex min-h-[64px] flex-col gap-[12px] px-[12px] pb-[4px] pt-[12px] md:px-[16px] md:pt-[16px] ${shipped ? "pr-[136px] md:pr-[248px]" : ""}`}>
         <div className="flex flex-wrap items-center gap-[8px]">
           <Tag tone="grey">{label}</Tag>
         </div>
@@ -421,25 +422,29 @@ export function OptionCard({
         )}
         {note && <p className={NOTE_HEAD}>{note}</p>}
       </div>
-      <div className="mt-[16px] rounded-lg bg-surface p-[8px] ring-1 ring-inset ring-line-soft">
-        <div className="overflow-hidden rounded-md">
-          {video ? (
-            <Media video={video} poster={poster} label={image} />
-          ) : src ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={src} alt={image} className="aspect-[16/9] w-full bg-white object-contain p-[32px]" />
-          ) : (
-            <ImagePlaceholder label={image} aspect="aspect-[16/9]" radius="rounded-md" />
-          )}
+      {/* The stamp is pressed onto the media's top-right corner, half on the work and half
+          above it, and the well takes a small thud as it lands */}
+      <div className="relative mt-[16px]">
+        <div className={`rounded-lg bg-surface p-[8px] ring-1 ring-inset ring-line-soft ${shipped ? "stamp-thud" : ""}`}>
+          <div className="overflow-hidden rounded-md">
+            {video ? (
+              <Media video={video} poster={poster} label={image} />
+            ) : src ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={src} alt={image} className="aspect-[16/9] w-full bg-white object-contain p-[32px]" />
+            ) : (
+              <ImagePlaceholder label={image} aspect="aspect-[16/9]" radius="rounded-md" />
+            )}
+          </div>
+          {children}
         </div>
-        {children}
+        {shipped && (
+          <ShippedStamp
+            label={stamp}
+            className="absolute -top-[24px] right-[12px] z-[2] h-[48px] w-auto md:-top-[40px] md:right-[24px] md:h-[80px]"
+          />
+        )}
       </div>
-      {shipped && (
-        <ShippedStamp
-          label={stamp}
-          className="absolute right-[16px] top-[16px] h-[48px] w-auto md:right-[24px] md:top-[20px] md:h-[60px]"
-        />
-      )}
     </div>
   );
 }
