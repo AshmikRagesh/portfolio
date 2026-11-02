@@ -6,7 +6,7 @@
 // sound, do's and don'ts, accessibility, and where it lives in the code. Scenes are
 // live and drawn at navbar size. Used by the development-only /host-states page.
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ComponentProps, type ReactNode } from "react";
 import HostCharacter, { hostLayout, type HostMood } from "@/components/host/HostCharacter";
 import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import CuriosityBubble, { type Bubble } from "@/components/CuriosityBubble";
@@ -22,7 +22,7 @@ const GRIP_MID = (LEFT_HAND.x + RIGHT_HAND.x) / 2;
 const SCENE_WIDTH = 360;
 const HOST_X = SCENE_WIDTH / 2 - HOST.width / 2;
 // How tall each kind of scene's content is, so it can be centred
-const CONTENT = { bell: HOST_HEIGHT, board: LEFT_HAND.y + 6 + 76, tip: HOST_HEIGHT + 10 + 56 };
+export const CONTENT = { bell: HOST_HEIGHT, board: LEFT_HAND.y + 6 + 76, tip: HOST_HEIGHT + 10 + 56 };
 const SceneTop = createContext(16);
 
 const SECTIONS = [
@@ -43,7 +43,7 @@ const SECTIONS = [
 // ── Live helpers ──────────────────────────────────────────────────────────────
 
 /** A clock that counts up from `start`, like a visit in progress. */
-function useTicking(start: number) {
+export function useTicking(start: number) {
   const [s, setS] = useState(start);
   useEffect(() => {
     const id = window.setInterval(() => setS((v) => v + 1), 1000);
@@ -53,7 +53,7 @@ function useTicking(start: number) {
 }
 
 /** Bumps every `ms`, to keep a bell ringing on a loop. */
-function useRinging(ms: number) {
+export function useRinging(ms: number) {
   const [ding, setDing] = useState(1);
   useEffect(() => {
     const id = window.setInterval(() => setDing((d) => d + 1), ms);
@@ -63,7 +63,7 @@ function useRinging(ms: number) {
 }
 
 /** Types `line` out on a loop, as the tooltip does. */
-function useSpeaking(line: string, kind: Bubble["kind"] = "milestone"): Bubble {
+export function useSpeaking(line: string, kind: Bubble["kind"] = "milestone"): Bubble {
   const [count, setCount] = useState(0);
   useEffect(() => {
     setCount(0);
@@ -99,7 +99,7 @@ function Section({ id, title, intro, children }: { id: string; title: string; in
   );
 }
 
-function Stage({ height = 336, content, children }: { height?: number; content: number; children: ReactNode }) {
+export function Stage({ height = 336, content, children }: { height?: number; content: number; children: ReactNode }) {
   const inner = height / 1.5;
   return (
     <div className="relative overflow-hidden rounded-lg border border-line-soft bg-white" style={{ height }}>
@@ -123,16 +123,22 @@ function Scene({ title, when, content, children }: { title: string; when: string
   );
 }
 
-function Host({ mood = "idle", holding = false, ding = 0 }: { mood?: HostMood; holding?: boolean; ding?: number }) {
+// Also used by the Bella case study's live scenes, which add the glasses, a face and the celebration
+export function Host({
+  mood = "idle",
+  holding = false,
+  ding = 0,
+  ...extra
+}: { mood?: HostMood; holding?: boolean; ding?: number } & Pick<ComponentProps<typeof HostCharacter>, "glasses" | "expression" | "celebrate">) {
   const top = useContext(SceneTop);
   return (
     <div className="absolute" style={{ left: HOST_X, top }}>
-      <HostCharacter mood={mood} holding={holding} ding={ding} style={{ width: HOST.width, height: HOST_HEIGHT }} className="relative z-10 block" />
+      <HostCharacter mood={mood} holding={holding} ding={ding} {...extra} style={{ width: HOST.width, height: HOST_HEIGHT }} className="relative z-10 block" />
     </div>
   );
 }
 
-function Board({ seconds, champion = false }: { seconds: number; champion?: boolean }) {
+export function Board({ seconds, champion = false }: { seconds: number; champion?: boolean }) {
   const top = useContext(SceneTop);
   const left = GRIP_MID - BOARD_WIDTH / 2;
   return (
@@ -143,7 +149,7 @@ function Board({ seconds, champion = false }: { seconds: number; champion?: bool
 }
 
 // Centred under the bell, pointer in the middle
-function Tip({ bubble }: { bubble: Bubble }) {
+export function Tip({ bubble }: { bubble: Bubble }) {
   const top = useContext(SceneTop);
   return (
     <div className="absolute z-20 -translate-x-1/2" style={{ left: HOST_X + HOST.width / 2, top: top + HOST_HEIGHT + 10 }}>

@@ -33,3 +33,4 @@ export {
   Footnote,
 } from "./Blocks";
 export { default as BellaMoods } from "./BellaMoods";
+export { default as BellaUseCases } from "./BellaUseCases";

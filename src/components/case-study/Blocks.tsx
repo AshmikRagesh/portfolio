@@ -357,6 +357,7 @@ export function OptionCard({
   shipped,
   stamp = "Shipped",
   image,
+  src,
   children,
 }: {
   label: string;
@@ -364,6 +365,8 @@ export function OptionCard({
   shipped?: boolean;
   stamp?: string;
   image: string;
+  /** An illustration to show in place of the grey stand-in, set whole on the surface colour */
+  src?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -385,11 +388,20 @@ export function OptionCard({
           {children}
         </div>
         <div className="flex overflow-hidden rounded-lg">
-          <ImagePlaceholder
-            label={image}
-            aspect="aspect-[4/3] md:aspect-auto md:h-full md:min-h-[280px]"
-            radius="rounded-lg"
-          />
+          {src ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={src}
+              alt={image}
+              className="aspect-[4/3] w-full rounded-lg bg-surface object-contain p-[32px] md:aspect-auto md:h-full md:min-h-[280px]"
+            />
+          ) : (
+            <ImagePlaceholder
+              label={image}
+              aspect="aspect-[4/3] md:aspect-auto md:h-full md:min-h-[280px]"
+              radius="rounded-lg"
+            />
+          )}
         </div>
       </div>
       {shipped && (
