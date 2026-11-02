@@ -48,7 +48,6 @@ const SECTIONS: CaseStudySection[] = [
   { id: "discovery",   label: "Discovery"   },
   { id: "exploration", label: "Exploration" },
   { id: "solution",    label: "Solution"    },
-  { id: "output",      label: "What shipped" },
   { id: "outcome",     label: "Where it stands" },
   { id: "reflection",  label: "Reflection"  },
 ];
@@ -577,10 +576,11 @@ function Solution() {
     <Chapter id="solution" num={4} title="How the new search works">
       <Copy>
         <p>
-          V1 keeps the tabs and adds five pieces: filters that narrow the
-          list, clear feedback on what&apos;s applied, trip cards that say
-          where a trip goes, menu links that open a filter, and a way forward
-          when nothing matches.
+          V1 has been live since July 2026 at /search, built on Algolia. It
+          keeps the tabs and adds five pieces: filters that narrow the list,
+          clear feedback on what&apos;s applied, trip cards that say where a
+          trip goes, menu links that open a filter, and a way forward when
+          nothing matches.
         </p>
       </Copy>
       {SOLUTION_ITEMS.map(({ num, title, body }) => (
@@ -593,93 +593,21 @@ function Solution() {
                 <CardParts />
               </MoreDetail>
             )}
+            {num === 4 && (
+              <MoreDetail label="How the links work" className="mt-[20px]">
+                <p className="mb-[20px]">
+                  Every filter is saved in the page address, so a menu link or
+                  a shared link opens search with the same filters already on.
+                </p>
+                <FilterFields />
+              </MoreDetail>
+            )}
           </Copy>
           <Visual>
             <Figure label={`V1 live: ${title}`} />
           </Visual>
         </div>
       ))}
-    </Chapter>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: What shipped  (output — the live page against the design)
-// ─────────────────────────────────────────────────────────────────────────────
-const DESIGN_VS_LIVE = [
-  { part: "Filters", design: "A sidebar of checkboxes", live: "A row of five dropdowns; a sheet on phones" },
-  { part: "Tabs", design: "Expeditions, Destinations, Guides & Resources", live: "All, Trips, Destinations, Resources" },
-  { part: "Sort", design: "Sort by relevance", live: "No sort; trips by departure date" },
-  { part: "Count and chips", design: "Count, chips, Clear All", live: "Kept" },
-  { part: "No results", design: "Message, phone, two links, real trips", live: "Kept, almost one to one" },
-  { part: "Menu links", design: "—", live: "Open search with a destination filter on" },
-];
-
-function DesignVsLive() {
-  return (
-    <table className={TABLE}>
-      <thead>
-        <tr className="border-b border-line">
-          <th scope="col" className={TH}>Part</th>
-          <th scope="col" className={TH}>My design, May</th>
-          <th scope="col" className={`${TH} pr-0`}>Live, October</th>
-        </tr>
-      </thead>
-      <tbody>
-        {DESIGN_VS_LIVE.map(({ part, design, live }) => (
-          <tr key={part} className="border-b border-line-soft">
-            <th scope="row" className={`${TD} font-normal text-heading`}>{part}</th>
-            <td className={`${TD} text-secondary`}>{design}</td>
-            <td className={`${TD} pr-0 text-secondary`}>{live}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-function Output() {
-  return (
-    <Chapter id="output" num={5} title="What shipped">
-      <Copy>
-        <p>
-          The new search went live in July 2026 at a new address, /search, on
-          Algolia. Most of the design shipped as drawn. A few parts changed in
-          the build.
-        </p>
-        <div className="!mt-[32px]">
-          <DesignVsLive />
-        </div>
-      </Copy>
-      <Visual>
-        <Figure label="The live search page, October 2026" />
-      </Visual>
-      <div className="cs-sub">
-        <Copy>
-          <h3>How the developers built it</h3>
-          <p>
-            The developers built the new search on Algolia, a hosted search
-            service. Each filter in the design became a field in its search
-            index, and the filters are saved in the page address, so a link can
-            open search with a filter already on and people can share what they
-            found.
-          </p>
-          <MoreDetail label="Each filter and its field" className="mt-[20px]">
-            <FilterFields />
-          </MoreDetail>
-        </Copy>
-      </div>
-      <div className="cs-sub">
-        <Copy>
-          <h3>The menu now lands on a filtered page</h3>
-          <p>
-            Because filters live in the page address, all 11 Find a Trip menu
-            links now open search with a filter already on. Before, they ran a
-            text search, which ranked by matching words. Now Africa shows the
-            same 23 trips, but as a filter you can see and remove.
-          </p>
-        </Copy>
-      </div>
     </Chapter>
   );
 }
@@ -701,7 +629,7 @@ const NEXT_STEPS = [
 
 function Outcome() {
   return (
-    <Chapter id="outcome" num={6} title="Where it stands">
+    <Chapter id="outcome" num={5} title="Where it stands">
       <Copy>
         <p>
           The search is live, but its analytics weren&apos;t shared with the
@@ -759,7 +687,7 @@ const LESSONS = [
 
 function Reflection() {
   return (
-    <Chapter id="reflection" num={7} title="What I learned">
+    <Chapter id="reflection" num={6} title="What I learned">
       <Copy>
         <NumberedPoints items={LESSONS} />
         <p>
@@ -788,7 +716,6 @@ export default function TcsSearchPage() {
       <Context />
       <Exploration />
       <Solution />
-      <Output />
       <Outcome />
       <Reflection />
       <NextCase current="/works/tcs-search" />
