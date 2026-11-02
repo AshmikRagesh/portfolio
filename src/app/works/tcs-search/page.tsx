@@ -90,16 +90,18 @@ function TheProblem() {
     <Chapter id="the-problem" num={1} title="Search made it hard for travellers to find the right trip">
       <Copy>
         <p>
-          People search with a clear idea, like a place, a month or a kind of
-          trip. The old page answered every search with almost all of
-          TCS&apos;s 46 trips: no filters, no count, no sort, and no route on
-          the cards. TCS had no search data to show what this cost them.
+          Travellers usually search with something in mind: a place, a month
+          or a kind of trip. TCS&apos;s search answered with a broad list
+          instead. A search for &ldquo;Summer in Japan&rdquo; returned about 48
+          trips, close to the whole catalogue, and left travellers to scan each
+          card to work out which ones fit. TCS had no search data to show how
+          often this happened.
         </p>
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Even with a destination or trip in mind, travellers got close to the whole catalogue back (about 48 trips for “Summer in Japan”) and were left to work out which ones fit."
-          consequence="Travellers ready to enquire risked giving up before they found their trip, and TCS lost the lead."
+          situation="Even with a destination or trip in mind, travellers got back close to the whole catalogue and had to work out for themselves which trips fit."
+          consequence="Search added work at the moment a traveller was closest to enquiring, the step TCS most needs to make easy."
         />
       </Visual>
     </Chapter>
