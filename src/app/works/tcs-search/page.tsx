@@ -489,7 +489,7 @@ const SOLUTION_ITEMS = [
   {
     num: 2,
     title: "Clear feedback on applied filters",
-    body: "You always know what you’re looking at. A count shows how many trips match, and each choice shows up as a chip: tap × to drop one, or Clear filters to start over.",
+    body: "Added a matching result count and removable filter chips to make the search state clear. Travellers can see which selections are active, remove individual filters or clear them all.",
   },
   {
     num: 3,
@@ -499,12 +499,12 @@ const SOLUTION_ITEMS = [
   {
     num: 4,
     title: "Connecting navigation to search",
-    body: "Clicking Africa in the menu used to just type “Africa” into search, which turned up 7 trips. Now it switches on the Africa filter and shows all 22.",
+    body: "Connected the Find a Trip region links to their matching destination filters. Selecting Africa, for example, opens search with the filter applied and 22 matching trips displayed.",
   },
   {
     num: 5,
     title: "Keeping travellers moving when no results match",
-    body: "Sometimes a mix of filters finds nothing. Instead of a dead end, you still get a travel expert’s number, Private Custom Travel, and a few hand-picked trips to look at.",
+    body: "Designed a no-results state that offers ways to keep exploring. Alongside contact details for a travel expert and Private Custom Travel, it introduces curated alternative trips.",
   },
 ];
 
