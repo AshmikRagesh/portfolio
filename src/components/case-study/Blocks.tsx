@@ -394,18 +394,19 @@ export function OptionCard({
           )}
           {children}
         </div>
-        <div className="flex overflow-hidden rounded-lg">
+        {/* One fixed 4:3 image, whatever the length of the text beside it */}
+        <div className="flex self-start overflow-hidden rounded-lg">
           {src ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={src}
               alt={image}
-              className="aspect-[4/3] w-full rounded-lg bg-surface object-contain p-[32px] md:aspect-auto md:h-full md:min-h-[280px]"
+              className="aspect-[4/3] w-full rounded-lg bg-surface object-contain p-[32px]"
             />
           ) : (
             <ImagePlaceholder
               label={image}
-              aspect="aspect-[4/3] md:aspect-auto md:h-full md:min-h-[280px]"
+              aspect="aspect-[4/3]"
               radius="rounded-lg"
             />
           )}
