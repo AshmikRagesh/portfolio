@@ -4,11 +4,8 @@ import {
   Funnel,
   MagnifyingGlass,
   MapTrifold,
-  PaintBrush,
   Question,
   SlidersHorizontal,
-  SquaresFour,
-  Stack,
 } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import {
@@ -29,6 +26,7 @@ import {
   Timeline,
   OptionCard,
   Footnote,
+  Pointers,
   StepStory,
   PracticeCheck,
   SourceList,
@@ -178,29 +176,24 @@ const SEARCH_STEPS = [
 // What the review and the research found: the problems the design had to solve
 const FINDINGS = [
   {
-    icon: <Stack size={28} weight="fill" className="text-grape" />,
-    title: "Almost everything came back",
-    description: "“Summer in Japan” returned about 48 trips, close to the whole catalogue, with Africa in the top six.",
+    lead: "Almost everything came back.",
+    text: "“Summer in Japan” returned about 48 trips, close to the whole catalogue, with Africa in the top six.",
   },
   {
-    icon: <MapTrifold size={28} weight="fill" className="text-grape" />,
-    title: "Cards hid the route",
-    description: "A status, a title and dates, but not where the trip went, so every card had to be opened.",
+    lead: "Cards hid the route.",
+    text: "A status, a title and dates, but not where the trip went, so every card had to be opened.",
   },
   {
-    icon: <SquaresFour size={28} weight="fill" className="text-grape" />,
-    title: "Tabs sorted, but didn’t shrink",
-    description: "Trips sat apart from articles, but inside the trips tab nothing could be narrowed.",
+    lead: "Tabs sorted, but didn’t shrink.",
+    text: "Trips sat apart from articles, but inside the trips tab nothing could be narrowed.",
   },
   {
-    icon: <SlidersHorizontal size={28} weight="fill" className="text-grape" />,
-    title: "No sense of control",
-    description: "No count of matching trips, nothing to show what was applied, and no sort.",
+    lead: "No sense of control.",
+    text: "No count of matching trips, nothing to show what was applied, and no sort.",
   },
   {
-    icon: <Question size={28} weight="fill" className="text-grape" />,
-    title: "A poor match looked like a good one",
-    description: "The page never said that few trips fitted. Against published best practice it met 0 of 5.",
+    lead: "A poor match looked like a good one.",
+    text: "The page never said that few trips fitted. Against published best practice, it met none of five.",
   },
 ];
 
@@ -289,27 +282,37 @@ const SOURCES: Parameters<typeof SourceList>[0]["sources"] = [
   },
 ];
 
-// What set the rules before anything was drawn
+// What the findings and the brief turned into: each card names where it came from
 const CONTEXT_CARDS = [
   {
     icon: <Funnel size={28} weight="fill" className="text-grape" />,
-    title: "The brief had no filter list",
-    description: "It asked for filters on trip details and availability, but left the list empty. Choosing them was part of the job.",
+    title: "Narrow by how people plan",
+    description: "Where, when, what kind of trip and how long, inside the tabs. From the long list, the tabs that didn’t shrink it, and a brief with no filter list.",
   },
   {
-    icon: <PaintBrush size={28} weight="fill" className="text-grape" />,
-    title: "New branding, familiar patterns",
-    description: "Match the new TCS style, and restyle the filter patterns from Enchanting Travels.",
+    icon: <MapTrifold size={28} weight="fill" className="text-grape" />,
+    title: "Show where a trip goes",
+    description: "The full route on every card, so no one has to open a trip to check it. From the hidden routes.",
+  },
+  {
+    icon: <SlidersHorizontal size={28} weight="fill" className="text-grape" />,
+    title: "Always show what’s applied",
+    description: "A count, removable chips and one tap to clear them all. From the missing sense of control.",
+  },
+  {
+    icon: <Question size={28} weight="fill" className="text-grape" />,
+    title: "Never a dead end",
+    description: "When nothing fits, say so plainly and offer a next step. From the poor match that looked like a good one.",
   },
   {
     icon: <DeviceMobile size={28} weight="fill" className="text-grape" />,
-    title: "Phones and a way back",
-    description: "Filters that fit small screens with clear touch targets, and one tap to clear them all.",
+    title: "Built for phones, in TCS style",
+    description: "Clear touch targets, the new TCS branding and Enchanting Travels patterns, restyled. From the brief.",
   },
   {
     icon: <MagnifyingGlass size={28} weight="fill" className="text-grape" />,
-    title: "No search data",
-    description: "Nothing on what people searched for, so the design leaned on TCS’s suggested searches and its menu.",
+    title: "Start from what TCS knows",
+    description: "With no search data, the filters follow TCS’s menu and suggested searches. From the brief.",
   },
 ];
 
@@ -353,12 +356,8 @@ function Context() {
             Reviewing the page and checking it against published research on
             search and filtering turned up five problems.
           </p>
-        </Copy>
-        <Visual>
-          <CardGrid items={FINDINGS} />
-        </Visual>
-        <Copy>
-          <MoreDetail label="The research behind these" className="mt-[20px]">
+          <Pointers items={FINDINGS} />
+          <MoreDetail label="The research behind these" className="mt-[32px]">
             <div className="flex flex-col gap-[40px]">
               <div>
                 <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
@@ -380,8 +379,8 @@ function Context() {
         <Copy>
           <h3>What shaped the design</h3>
           <p>
-            Four things set the rules before I drew anything: three from the
-            brief, and one about what we didn&apos;t know.
+            Each problem became a rule for the design, alongside what the brief
+            asked for.
           </p>
         </Copy>
         <Visual>

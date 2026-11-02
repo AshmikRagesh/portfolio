@@ -156,7 +156,9 @@ export function Quotes({ items }: { items: { text: React.ReactNode; attribution:
 }
 
 /** Icon cards — research insights, challenges, fronts, reasons. Three sit in one row;
- * five go three over two; the rest pair up. */
+ * five go three over two; the rest pair up. From tablet up each card shares its row's
+ * lines (a subgrid), so icons, titles and lines start level across a row even when one
+ * title wraps. */
 export function CardGrid({
   items,
   plain,
@@ -176,19 +178,20 @@ export function CardGrid({
       {items.map(({ icon, title, description }) => (
         <div
           key={title}
-          className={`flex flex-col ${plain ? "gap-[12px]" : "gap-[16px] rounded-xl border border-line-soft bg-white p-[20px]"}`}
+          className={`flex flex-col md:row-span-3 md:grid md:grid-rows-subgrid ${
+            plain ? "gap-[12px] md:gap-y-[12px]" : "gap-[16px] rounded-xl border border-line-soft bg-white p-[20px] md:gap-y-[16px]"
+          }`}
         >
           <div className="shrink-0">{icon}</div>
-          <div className={`flex flex-col ${plain ? "gap-[8px]" : "gap-[12px]"}`}>
-            <h4
-              className={`font-heading tracking-[0px] text-heading ${
-                plain ? "text-[20px] leading-[28px]" : "text-[24px] leading-[30px]"
-              }`}
-            >
-              {title}
-            </h4>
-            <p className="font-body text-[18px] leading-[30px] text-muted">{description}</p>
-          </div>
+          <h4
+            className={`font-heading tracking-[0px] text-heading ${
+              plain ? "text-[20px] leading-[28px]" : "text-[24px] leading-[30px]"
+            }`}
+          >
+            {title}
+          </h4>
+          {/* Sits a touch closer to its title than the title does to the icon */}
+          <p className="-mt-[4px] font-body text-[18px] leading-[30px] text-muted">{description}</p>
         </div>
       ))}
     </div>
@@ -254,7 +257,7 @@ export function PullQuote({
 // estimate (dashed border, so a guess never passes for data)
 const TILE = {
   plain: { box: "border border-line-soft bg-white", tag: "grey", stat: "text-heading" },
-  key: { box: "bg-grape-light/60", tag: "grape", stat: "text-grape" },
+  key: { box: "border border-transparent bg-grape-light/60", tag: "grape", stat: "text-grape" },
   estimate: { box: "border border-dashed border-line bg-white", tag: "grey", stat: "text-heading" },
 } as const;
 
@@ -262,7 +265,9 @@ const TILE_COLS = { 2: "md:grid-cols-2", 3: "md:grid-cols-3" } as const;
 
 /**
  * Two or three facts as tiles side by side — an optional tag, the number at the shared stat size,
- * a line saying what it counts. Mark the point `key` and any guess `estimate`.
+ * a line saying what it counts. Mark the point `key` and any guess `estimate`. From tablet up
+ * the tiles share their row's lines (a subgrid), so tags, numbers and lines start level
+ * across tiles even when one number or line runs longer; a tile without a tag keeps the slot.
  */
 export function StatTiles({
   items,
@@ -270,17 +275,19 @@ export function StatTiles({
   items: { tag?: string; stat: string; label: string; tone?: keyof typeof TILE }[];
 }) {
   const cols = TILE_COLS[items.length as keyof typeof TILE_COLS] ?? TILE_COLS[3];
+  const tagged = items.some((item) => item.tag);
   return (
     <div className={`grid grid-cols-1 gap-[16px] md:gap-[24px] ${cols}`}>
       {items.map(({ tag, stat, label, tone = "plain" }) => {
         const look = TILE[tone];
         return (
-          <div key={label} className={`flex flex-col gap-[16px] rounded-xl p-[24px] ${look.box}`}>
-            {tag && (
-              <div>
-                <Tag tone={look.tag}>{tag}</Tag>
-              </div>
-            )}
+          <div
+            key={label}
+            className={`flex flex-col gap-[16px] rounded-xl p-[24px] md:grid md:grid-rows-subgrid md:gap-y-[16px] ${
+              tagged ? "md:row-span-3" : "md:row-span-2"
+            } ${look.box}`}
+          >
+            {tagged && <div>{tag && <Tag tone={look.tag}>{tag}</Tag>}</div>}
             <span className={`font-heading text-stat font-medium md:text-stat-md lg:text-stat-lg ${look.stat}`}>
               {stat}
             </span>

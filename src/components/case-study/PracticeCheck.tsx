@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Check, Minus, Plus, X } from "lucide-react";
 
 /**
- * A page checked against published best practice. A summary line counts what it met, met
- * in part and missed (a coloured mark for each); under it one row per practice, with the
+ * A page checked against published best practice. A summary line counts what it met and
+ * met in part; under it one row per practice, with the
  * verdict's round mark (green tick, grey dash, red cross) and the practice. Each row opens
  * to show what the page actually did and the evidence, with its source, easing open like
  * MoreDetail. Several can be open at once.
@@ -32,27 +32,13 @@ export default function PracticeCheck({ items, subject }: { items: Practice[]; s
 
   return (
     <div className="rounded-xl border border-line-soft bg-white p-[24px] font-body md:p-[32px]">
-      {/* Summary: how the page did, in three counts */}
-      <div className="flex flex-col gap-[16px] border-b border-line-soft pb-[24px] md:flex-row md:items-end md:justify-between">
-        <div className="flex flex-col gap-[4px]">
-          <span className="font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted">{subject}</span>
-          <span className="font-heading text-[24px] leading-[32px] text-heading md:text-[28px] md:leading-[36px]">
-            Met {count("met")} of {items.length} best practices
-          </span>
-        </div>
-        <ul className="m-0 flex list-none flex-wrap gap-[16px] p-0 text-[14px] leading-[20px] text-secondary">
-          {(["met", "partly", "missing"] as const).map((v) => {
-            const { icon: Icon, box, word } = MARK[v];
-            return (
-              <li key={v} className="flex items-center gap-[8px]">
-                <span className={`flex size-[20px] items-center justify-center rounded-full ${box}`}>
-                  <Icon size={12} strokeWidth={3} aria-hidden="true" />
-                </span>
-                {word} <span className="font-medium text-heading">{count(v)}</span>
-              </li>
-            );
-          })}
-        </ul>
+      {/* Summary: how the page did */}
+      <div className="flex flex-col gap-[4px] border-b border-line-soft pb-[24px]">
+        <span className="font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted">{subject}</span>
+        <span className="font-heading text-[24px] leading-[32px] text-heading md:text-[28px] md:leading-[36px]">
+          Met {count("met")} of {items.length} best practices
+          {count("partly") > 0 && <span className="text-secondary">, {count("partly")} in part</span>}
+        </span>
       </div>
 
       <ul className="m-0 flex list-none flex-col p-0">
