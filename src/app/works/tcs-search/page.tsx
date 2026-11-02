@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { DeviceMobile, Funnel, MagnifyingGlass, PaintBrush } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import {
   Hero,
@@ -8,16 +7,20 @@ import {
   Meta,
   Visual,
   Figure,
-  CardGrid,
   ProblemStatement,
+  PullQuote,
   StatTiles,
   MoreDetail,
   NextCase,
   ProsCons,
   NumberedPoints,
+  Pointers,
   Timeline,
   OptionCard,
   Footnote,
+  StepStory,
+  PracticeCheck,
+  SourceList,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1151 (site search filters). Built from
@@ -117,169 +120,187 @@ const OLD_SEARCH_TILES: Parameters<typeof StatTiles>[0]["items"] = [
   { tag: "Cards", stat: "0", label: "routes shown, so seeing where a trip went meant opening it" },
 ];
 
+// How site search got here, step by step (from the two tickets, the design file and the live site)
+const SEARCH_STEPS = [
+  {
+    when: "Before Aug 2025",
+    title: "One mixed list",
+    figure: "All",
+    figureLabel: "content types in a single list",
+    detail:
+      "The search page mixed trips, destination pages and articles in one list, with type filters to switch between them.",
+  },
+  {
+    when: "Aug 2025",
+    title: "Tabs and quick links",
+    figure: "252",
+    figureLabel: "results for a Japan search, in the design",
+    detail:
+      "An earlier ticket swapped the type filters for three tabs, Expeditions, Destinations and Guides & Resources, and added quick links to popular searches. The list got tidier, not shorter.",
+  },
+  {
+    when: "Early 2026",
+    title: "The page I started from",
+    figure: "~48",
+    figureLabel: "trips for “Summer in Japan”",
+    detail:
+      "The tabs were live, but the trips tab still showed close to the whole catalogue, with no filters, no count and no route on the cards.",
+  },
+  {
+    when: "Feb–May 2026",
+    title: "This project",
+    figure: "5",
+    figureLabel: "ways to narrow, designed",
+    detail:
+      "I designed filters for where, when, what kind of trip, how long and availability, with applied-filter chips, a result count and a no-results page.",
+  },
+  {
+    when: "Jul 2026",
+    title: "V1 live",
+    figure: "12",
+    figureLabel: "trips for “Japan”, checked Nov 2026",
+    detail:
+      "Developers built V1 on Algolia. A search now returns the trips that match, and the menu links open filtered results.",
+  },
+];
+
+// What I noticed on the old page, and what each one led to
 const OBSERVATIONS = [
   {
-    title: "Too many results",
-    description:
-      "“Summer in Japan” returned about 48 trips, close to the whole catalogue, with Africa among the first six.",
-    result:
-      "travellers needed to narrow by what they already had in mind: where, when, what kind of trip, and how long.",
+    lead: "Almost everything came back.",
+    text: "Africa trips sat in the top six for “Summer in Japan”.",
+    result: "Let travellers narrow by where, when, what kind of trip and how long.",
   },
   {
-    title: "Cards didn’t say where a trip went",
-    description: "They showed a status, a title and dates, but no route.",
-    result: "every card shows the full route and the number of destinations.",
+    lead: "Cards hid the route.",
+    text: "A status, a title and dates, but not where the trip went.",
+    result: "Show the full route on every card.",
   },
   {
-    title: "Tabs sorted the pile, but didn’t shrink it",
-    description:
-      "Trips sat apart from articles, but inside the trips tab nothing could be narrowed.",
-    result: "narrowing had to work inside the trips tab, alongside the tabs rather than instead of them.",
+    lead: "Tabs sorted, but didn’t shrink.",
+    text: "Inside the trips tab, nothing could be narrowed.",
+    result: "Narrow inside the tabs, not instead of them.",
   },
   {
-    title: "No sense of control",
-    description:
-      "There was no count of matching trips, no way to see what was applied, and no sort.",
-    result: "the page shows how many trips match, what’s applied, and one way to clear it all.",
+    lead: "No sense of control.",
+    text: "No count, nothing to show what was applied, no sort.",
+    result: "A count, removable chips and one way to clear it all.",
   },
   {
-    title: "A poor match looked like a good one",
-    description: "Instead of saying few trips fitted, the page showed nearly all of them.",
-    result: "when nothing fits, the page says so plainly and still offers a next step.",
+    lead: "A poor match looked like a good one.",
+    text: "The page never said that few trips fitted.",
+    result: "When nothing fits, say so, and offer a next step.",
   },
 ];
 
-// Outside research, each checked on its source page (2 Nov 2026). No TCS search data existed.
-const RESEARCH_TILES: Parameters<typeof StatTiles>[0]["items"] = [
-  { tag: "Industry", stat: "34%", label: "of sites filter so poorly that people can't narrow a long list", tone: "estimate" },
-  { tag: "Industry", stat: "~50%", label: "of sites give no good way forward when a search finds nothing", tone: "estimate" },
-];
-
-const RESEARCH = [
+// The old page against published best practice. Every claim checked on its source, 2 Nov 2026.
+const PRACTICES: Parameters<typeof PracticeCheck>[0]["items"] = [
   {
-    finding: "34% of 344 benchmarked sites have poor filtering.",
-    source: { label: "Baymard, filtering benchmark", href: "https://baymard.com/ecommerce-product-lists/benchmark/page-types/filtering-options" },
-    applies: "Filters had to match how travellers choose a trip: where, when, what kind and how long.",
+    practice: "Filters on the details people choose by",
+    verdict: "missing",
+    found: "No filters at all. Place, month, type of trip and length couldn’t be narrowed.",
+    evidence: "34% of 344 benchmarked sites filter so poorly it’s “almost impossible” to narrow a list.",
+    source: { label: "Baymard, filtering", href: "https://baymard.com/ecommerce-product-lists/benchmark/page-types/filtering-options" },
   },
   {
-    finding: "Nearly 50% of sites fail to help people recover from a search with no results. The fix: related categories, other searches, a support phone number and popular items.",
-    source: { label: "Baymard, No Results page", href: "https://baymard.com/research-articles/no-results-page" },
-    applies: "The no-results page offers a phone number, Private Custom Travel and matching trips.",
+    practice: "Applied filters shown, each one removable",
+    verdict: "missing",
+    found: "With no filters there was nothing to show, remove or clear.",
+    evidence: "Sites “should always display applied filters in an overview”, on desktop and mobile; 28% don’t.",
+    source: { label: "Baymard, applied filters", href: "https://baymard.com/blog/how-to-design-applied-filters" },
   },
   {
-    finding: "A No Results page must clearly say that nothing matched, and give a next step.",
+    practice: "A count of matching results",
+    verdict: "missing",
+    found: "No count, so 48 cards looked no different from 4.",
+    evidence: "GetYourGuide’s search redesign showed result counts and applied filters, and lifted engagement on its search page by 3.5%.",
+    source: { label: "GetYourGuide", href: "https://www.getyourguide.careers/posts/how-we-redesigned-our-search-experience" },
+  },
+  {
+    practice: "Say clearly when nothing matched",
+    verdict: "missing",
+    found: "The page never said no. A poor match came back as nearly every trip.",
+    evidence: "A no-results page must clearly state that no results have been found.",
     source: { label: "Nielsen Norman Group", href: "https://www.nngroup.com/articles/search-no-results-serp/" },
-    applies: "A plain headline that says nothing was found, then the ways forward.",
   },
   {
+    practice: "A way forward from a dead end",
+    verdict: "partly",
+    found: "A Private Custom Travel banner sat under every list, but there was no phone number or related search.",
+    evidence: "Nearly 50% of sites fail here. Offer related categories, other searches, a sales phone number and popular items.",
+    source: { label: "Baymard, no results", href: "https://baymard.com/research-articles/no-results-page" },
+  },
+];
+
+// Every source, by topic, and what it changed in the design
+const SOURCES: Parameters<typeof SourceList>[0]["sources"] = [
+  {
+    topic: "Filtering",
+    finding: "34% of 344 benchmarked sites filter so poorly that people can’t narrow a long list.",
+    applies: "Filters built on how travellers choose a trip: where, when, what kind and how long.",
+    source: { label: "Baymard, filtering benchmark", href: "https://baymard.com/ecommerce-product-lists/benchmark/page-types/filtering-options" },
+  },
+  {
+    topic: "Filtering",
+    finding: "Always show applied filters in an overview, on desktop and mobile. 28% of sites don’t.",
+    applies: "Removable chips above the results, with Clear all.",
+    source: { label: "Baymard, applied filters", href: "https://baymard.com/blog/how-to-design-applied-filters" },
+  },
+  {
+    topic: "Filtering",
     finding: "Facets are expensive: every item needs data for each one, so make sure people really need them.",
-    source: { label: "Nielsen Norman Group, Filters vs. facets", href: "https://www.nngroup.com/articles/filters-vs-facets/" },
-    applies: "Keep the filter list short, built on details every trip already has.",
+    applies: "A short list of filters, built on details every trip already has.",
+    source: { label: "Nielsen Norman Group, filters vs. facets", href: "https://www.nngroup.com/articles/filters-vs-facets/" },
   },
   {
+    topic: "No results",
+    finding: "Nearly 50% of sites give no good way forward after a search that finds nothing.",
+    applies: "A phone number, Private Custom Travel and matching trips on the no-results page.",
+    source: { label: "Baymard, no-results page", href: "https://baymard.com/research-articles/no-results-page" },
+  },
+  {
+    topic: "No results",
+    finding: "A no-results page must clearly state that nothing was found.",
+    applies: "A plain headline first, then the ways forward.",
+    source: { label: "Nielsen Norman Group, no results", href: "https://www.nngroup.com/articles/search-no-results-serp/" },
+  },
+  {
+    topic: "Phones",
     finding: "46% of desktop and 58% of mobile sites have mediocre or worse search, across 170+ sites.",
+    applies: "Filters designed for phones as a sheet, not a squeezed desktop sidebar.",
     source: { label: "Baymard, search query types", href: "https://baymard.com/blog/ecommerce-search-query-types" },
-    applies: "Phones needed their own filter design, not a squeezed desktop sidebar.",
   },
   {
-    finding: "16% of visitors use site search (20% on desktop, 14% on mobile), and they are 21% more likely to convert. From 4,000 online stores.",
-    source: { label: "Luigi's Box", href: "https://www.luigisbox.com/blog/site-search-data/" },
-    applies: "Searchers are a small group with clear intent, which is why a page that ignored their intent cost leads.",
-  },
-  {
-    finding: "GetYourGuide flattened its filters, showed applied filters and result counts, and saw a 3.5% uplift in engagement on its search page.",
+    topic: "Case study",
+    finding: "GetYourGuide flattened its filters, showed applied filters and result counts, and saw a 3.5% uplift in engagement.",
+    applies: "Chips, Clear all and a count, from a travel company solving the same problem.",
     source: { label: "GetYourGuide, search redesign", href: "https://www.getyourguide.careers/posts/how-we-redesigned-our-search-experience" },
-    applies: "Removable filter chips, Clear all and a result count.",
   },
 ];
 
-function ResearchTable() {
-  return (
-    <table className={TABLE}>
-      <thead>
-        <tr className="border-b border-line">
-          <th scope="col" className={TH}>Finding</th>
-          <th scope="col" className={TH}>Source</th>
-          <th scope="col" className={`${TH} pr-0`}>How it applies</th>
-        </tr>
-      </thead>
-      <tbody>
-        {RESEARCH.map(({ finding, source, applies }) => (
-          <tr key={source.href} className="border-b border-line-soft">
-            <th scope="row" className={`${TD} font-normal text-heading`}>{finding}</th>
-            <td className={`${TD} text-secondary`}>
-              <a href={source.href} target="_blank" rel="noreferrer">{source.label}</a>
-            </td>
-            <td className={`${TD} pr-0 text-secondary`}>{applies}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-// How site search got here, step by step (from the two tickets and the live site)
-const SEARCH_HISTORY = [
-  { when: "Before Aug 2025", step: "One mixed list", change: "Trips, destinations and articles in a single list" },
-  { when: "Aug 2025", step: "Tabs and quick links", change: "Three tabs split the list by type; still 252 results for a Japan search" },
-  { when: "Early 2026", step: "The page I started from", change: "Tabs live, but “Summer in Japan” still shows about 48 trips" },
-  { when: "Feb–May 2026", step: "This project", change: "Filters, chips, a result count and a no-results page" },
-  { when: "Jul–Oct 2026", step: "Live", change: "New search on Algolia, menu links open filtered results" },
-];
-
-function SearchHistory() {
-  return (
-    <table className={TABLE}>
-      <thead>
-        <tr className="border-b border-line">
-          <th scope="col" className={TH}>When</th>
-          <th scope="col" className={TH}>Step</th>
-          <th scope="col" className={`${TH} pr-0`}>What changed</th>
-        </tr>
-      </thead>
-      <tbody>
-        {SEARCH_HISTORY.map(({ when, step, change }) => (
-          <tr key={when} className="border-b border-line-soft">
-            <td className={`${TD} whitespace-nowrap text-muted`}>{when}</td>
-            <th scope="row" className={`${TD} font-normal text-heading`}>{step}</th>
-            <td className={`${TD} pr-0 text-secondary`}>{change}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-const CONTEXT_CARDS = [
+// What the brief set before anything was drawn
+const BRIEF_RULES = [
   {
-    icon: <Funnel size={28} weight="fill" className="text-grape" />,
-    title: "The brief had no filter list",
-    description:
-      "It asked for filters on trip details and availability, but the list itself was empty. Choosing which filters, and how many, was part of the job.",
+    lead: "No filter list.",
+    text: "The brief asked for filters on trip details and availability, but left the list empty, so choosing them was part of the job.",
   },
   {
-    icon: <PaintBrush size={28} weight="fill" className="text-grape" />,
-    title: "New branding, familiar patterns",
-    description:
-      "The page had to match the new TCS website style, and the brief pointed to the filters on Enchanting Travels as the pattern to restyle.",
+    lead: "New branding, familiar patterns.",
+    text: "Match the new TCS style, and restyle the filter patterns from Enchanting Travels.",
   },
   {
-    icon: <DeviceMobile size={28} weight="fill" className="text-grape" />,
-    title: "Phones and a way back",
-    description:
-      "Filters had to adapt to small screens with clear touch targets, and there had to be one tap to clear them all.",
+    lead: "Phones, and a way back.",
+    text: "Filters that fit small screens with clear touch targets, and one tap to clear them all.",
   },
   {
-    icon: <MagnifyingGlass size={28} weight="fill" className="text-grape" />,
-    title: "No search data to start from",
-    description:
-      "There were no numbers on what people searched for or how often they found nothing. The design leaned on TCS's own suggested searches and its menu.",
+    lead: "No search data.",
+    text: "Nothing on what people searched for, so the design leaned on TCS’s suggested searches and its menu.",
   },
 ];
 
 function Context() {
   return (
-    <Chapter id="discovery" num={2} title="Discovery and research">
+    <Chapter id="discovery" num={2} title="A tidier list, not a shorter one">
       <Copy>
         <p>
           I started with the search page as it was: what it returned for a
@@ -290,78 +311,59 @@ function Context() {
       </Copy>
       <div className="cs-sub">
         <Copy>
-          <h3>Evaluating the existing experience</h3>
+          <h3>One search, almost every trip</h3>
           <p>
-            Search split results into three tabs: Expeditions, Destinations,
-            and Guides &amp; Resources. That came from an earlier fix in August
-            2025. It made the list tidier, not shorter, and gave travellers
-            little to work with when they were looking for something specific.
+            Search already split results into three tabs: Expeditions,
+            Destinations, and Guides &amp; Resources. That came from an earlier
+            fix in August 2025. It made the list tidier, but not shorter.
           </p>
           <MoreDetail label="How site search got here" className="mt-[20px]">
-            <SearchHistory />
+            <StepStory steps={SEARCH_STEPS} start={2} />
           </MoreDetail>
         </Copy>
         <Visual>
-          <Figure label="The old search page: “Summer in Japan” returned about 48 trips" />
+          <Figure label="The old search page, from the design file: “Summer in Japan” returned about 48 trips" />
           <StatTiles items={OLD_SEARCH_TILES} />
-          <Footnote>Counted from the live page as captured in the design file.</Footnote>
         </Visual>
       </div>
       <div className="cs-sub">
         <Copy>
-          <h3>Key observations</h3>
-          <NumberedPoints items={OBSERVATIONS} stacked />
+          <h3>What I noticed, and what it led to</h3>
+          <Pointers items={OBSERVATIONS} />
         </Copy>
       </div>
       <div className="cs-sub">
         <Copy>
-          <h3>What the research said</h3>
+          <h3>How it measured up</h3>
           <p>
-            With no TCS data, I looked at how search and filtering perform
-            across other sites, and at how similar teams fixed it. Two numbers
-            framed the problem.
+            With no TCS data, I checked the old page against published research
+            on search and filtering. Open a row to see what the page did and
+            the evidence.
           </p>
         </Copy>
         <Visual>
-          <StatTiles items={RESEARCH_TILES} />
-          <Footnote>
-            Industry figures, not TCS data:{" "}
-            <a href="https://baymard.com/ecommerce-product-lists/benchmark/page-types/filtering-options" target="_blank" rel="noreferrer">
-              Baymard, filtering benchmark of 344 sites
-            </a>
-            ;{" "}
-            <a href="https://baymard.com/research-articles/no-results-page" target="_blank" rel="noreferrer">
-              Baymard, No Results page
-            </a>
-            .
-          </Footnote>
+          <PracticeCheck subject="The old search page" items={PRACTICES} />
         </Visual>
         <Copy>
-          <MoreDetail label="All the research, and how it applies" className="mt-[20px]">
-            <ResearchTable />
+          <MoreDetail label="All the research, and how I used it" className="mt-[20px]">
+            <SourceList sources={SOURCES} />
           </MoreDetail>
         </Copy>
       </div>
       <div className="cs-sub">
         <Copy>
-          <h3>What shaped the design</h3>
-          <p>
-            Four things set the rules before I drew anything: two from the
-            brief, one about phones, and one about what we didn&apos;t know.
-          </p>
+          <h3>What the brief set</h3>
+          <Pointers items={BRIEF_RULES} />
         </Copy>
-        <Visual>
-          <CardGrid items={CONTEXT_CARDS} />
-        </Visual>
       </div>
       <div className="cs-sub">
         <Copy>
           <h3>The opportunity</h3>
-          <p>
-            How might we help travellers get from what they have in mind to the
-            few trips that fit, and still give them a way forward when nothing
-            does?
-          </p>
+          <PullQuote
+            label="How might we"
+            text="help travellers get from what they have in mind to the few trips that fit,"
+            emphasis="and still give them a way forward when nothing does?"
+          />
           <p>
             <strong>What success looked like:</strong> a traveller can narrow a
             broad search to the handful of trips that fit, see what&apos;s

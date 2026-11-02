@@ -4,10 +4,11 @@ import useInView from "./useInView";
 
 /**
  * Simple pointers: a small grape dot, then a short bold lead in the heading colour and the
- * rest of the point in the body text, on one flowing line. The points rise in one after
+ * rest of the point in the body text, on one flowing line. A point can carry a `result`,
+ * what it led to, set under it in grape after an arrow. The points rise in one after
  * another when they scroll into view; with reduced motion they simply show.
  */
-type Pointer = { lead: string; text: string };
+type Pointer = { lead: string; text: string; result?: string };
 
 export default function Pointers({ items }: { items: Pointer[] }) {
   const [ref, shown] = useInView<HTMLDivElement>(0.3);
@@ -26,9 +27,18 @@ export default function Pointers({ items }: { items: Pointer[] }) {
           >
             {/* The dot sits on the first line of text */}
             <span aria-hidden="true" className="mt-[12px] h-[8px] w-[8px] rounded-full bg-grape" />
-            <p className="m-0 font-body text-[18px] leading-[30px] text-secondary">
-              <strong className="font-medium text-heading">{item.lead}</strong> {item.text}
-            </p>
+            <div className="flex flex-col gap-[4px]">
+              <p className="m-0 font-body text-[18px] leading-[30px] text-secondary">
+                <strong className="font-medium text-heading">{item.lead}</strong> {item.text}
+              </p>
+              {item.result && (
+                <p className="m-0 font-body text-[16px] leading-[26px] text-grape">
+                  <span aria-hidden="true">→ </span>
+                  <span className="sr-only">Led to: </span>
+                  {item.result}
+                </p>
+              )}
+            </div>
           </li>
         ))}
       </ul>

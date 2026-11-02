@@ -10,6 +10,9 @@ export { default as BeforeAfter } from "./BeforeAfter";
 export { default as ComponentCount } from "./ComponentCount";
 export { default as Pointers } from "./Pointers";
 export { default as ReviewThread, type ThreadItem } from "./ReviewThread";
+export { default as StepStory } from "./StepStory";
+export { default as PracticeCheck } from "./PracticeCheck";
+export { default as SourceList } from "./SourceList";
 export {
   Copy,
   Lead,
