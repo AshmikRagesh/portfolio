@@ -299,13 +299,14 @@ export function StatTiles({
   );
 }
 
-// Round marks for the notes: solid green tick for what worked, solid red cross for what
-// didn't, dark number for the reasons the shipped option won — white symbol on each
+// Round marks for the notes, soft so the media stays the hero: a green tick on pale green
+// for what worked, a red cross on pale red for what didn't, a dark number on pale grape for
+// the reasons the shipped option won
 function Mark({ tone, children }: { tone: "pro" | "con" | "reason"; children: React.ReactNode }) {
   const tones = {
-    pro: "bg-success text-white",
-    con: "bg-warning text-white",
-    reason: "bg-primary text-white",
+    pro: "bg-success/[0.16] text-success",
+    con: "bg-warning/[0.16] text-warning",
+    reason: "bg-grape-light text-primary",
   };
   return (
     <span
@@ -320,12 +321,10 @@ const NOTE = "flex gap-[12px] font-body text-[16px] leading-[26px] text-secondar
 
 const NOTE_HEAD = "font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted";
 
-// A soft tinted panel with a plain heading in the body face: green for what worked, red for
-// what didn't, grey for why the chosen option won
-const PANEL_TONE = { pro: "bg-success-bg/70", con: "bg-warning/[0.06]", reason: "bg-surface" } as const;
-function NotePanel({ tone, heading, children }: { tone: keyof typeof PANEL_TONE; heading: string; children: React.ReactNode }) {
+// One column of notes inside the option card's grey well, headed in the body face
+function NotePanel({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
-    <div className={`flex flex-col gap-[16px] rounded-lg p-[20px] md:p-[24px] ${PANEL_TONE[tone]}`}>
+    <div className="flex flex-col gap-[16px] px-[12px] pb-[12px] pt-[20px] md:px-[16px] md:pb-[16px]">
       <p className="font-body text-[16px] font-semibold leading-[24px] text-heading">{heading}</p>
       {children}
     </div>
@@ -333,24 +332,24 @@ function NotePanel({ tone, heading, children }: { tone: keyof typeof PANEL_TONE;
 }
 
 /**
- * What worked (green tick) and what didn't (red cross), each in its own tinted panel, side
- * by side from tablet up so the two read as a comparison
+ * What worked (green tick) and what didn't (red cross), side by side from tablet up so the
+ * two read as a comparison, split by a hairline (stacked, with a rule between, on phones)
  */
 export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: string[] }) {
   const list = (items: string[], tone: "pro" | "con") => (
     <ul className="flex flex-col gap-[12px]">
       {items.map((item) => (
         <li key={item} className={NOTE}>
-          <Mark tone={tone}>{tone === "pro" ? <Check size={14} strokeWidth={2.5} /> : <X size={14} strokeWidth={2.5} />}</Mark>
+          <Mark tone={tone}>{tone === "pro" ? <Check size={14} strokeWidth={3} /> : <X size={14} strokeWidth={3} />}</Mark>
           <span>{item}</span>
         </li>
       ))}
     </ul>
   );
   return (
-    <div className={`grid grid-cols-1 gap-[8px] ${pros.length && cons.length ? "md:grid-cols-2" : ""}`}>
-      {pros.length > 0 && <NotePanel tone="pro" heading="What worked">{list(pros, "pro")}</NotePanel>}
-      {cons.length > 0 && <NotePanel tone="con" heading="What didn’t">{list(cons, "con")}</NotePanel>}
+    <div className={`grid grid-cols-1 divide-y divide-line-soft ${pros.length && cons.length ? "md:grid-cols-2 md:divide-x md:divide-y-0" : ""}`}>
+      {pros.length > 0 && <NotePanel heading="What worked">{list(pros, "pro")}</NotePanel>}
+      {cons.length > 0 && <NotePanel heading="What didn’t">{list(cons, "con")}</NotePanel>}
     </div>
   );
 }
@@ -358,7 +357,7 @@ export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: str
 /** Why the shipped option won, numbered */
 export function Reasons({ items }: { items: string[] }) {
   return (
-    <NotePanel tone="reason" heading="Why it won">
+    <NotePanel heading="Why it won">
       <ol className="flex flex-col gap-[12px]">
         {items.map((r, i) => (
           <li key={r} className={NOTE}>
@@ -375,8 +374,8 @@ export function Reasons({ items }: { items: string[] }) {
  * An iteration or design option, every one laid out the same, top to bottom: label, title
  * and an optional note; the preview across the full width at one 16:9 size (a clip plays
  * in the case study player); then the notes. Stacking keeps every card's preview the same
- * size, whatever the length of its notes. The media and the note panels share one inner
- * edge, so the card reads as a single tidy block. A chosen option has a dark border and a
+ * size, whatever the length of its notes. The media and the notes sit together in one grey
+ * well, so each option reads as a single object. A chosen option has a dark border and a
  * stamp — SHIPPED, or `stamp` for another status such as "Selected" or "In test".
  */
 export function OptionCard({
@@ -422,17 +421,19 @@ export function OptionCard({
         )}
         {note && <p className={NOTE_HEAD}>{note}</p>}
       </div>
-      <div className="mt-[16px] overflow-hidden rounded-lg">
-        {video ? (
-          <Media video={video} poster={poster} label={image} />
-        ) : src ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={src} alt={image} className="aspect-[16/9] w-full bg-surface object-contain p-[32px]" />
-        ) : (
-          <ImagePlaceholder label={image} aspect="aspect-[16/9]" radius="rounded-lg" />
-        )}
+      <div className="mt-[16px] rounded-lg bg-surface p-[8px] ring-1 ring-inset ring-line-soft">
+        <div className="overflow-hidden rounded-md">
+          {video ? (
+            <Media video={video} poster={poster} label={image} />
+          ) : src ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={src} alt={image} className="aspect-[16/9] w-full bg-white object-contain p-[32px]" />
+          ) : (
+            <ImagePlaceholder label={image} aspect="aspect-[16/9]" radius="rounded-md" />
+          )}
+        </div>
+        {children}
       </div>
-      <div className="mt-[8px]">{children}</div>
       {shipped && (
         <ShippedStamp
           label={stamp}
