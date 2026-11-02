@@ -9,22 +9,22 @@ import {
   Visual,
   Figure,
   CardGrid,
-  ProblemStatement,
   PullQuote,
   OptionCard,
   ProsCons,
   NumberedPoints,
   Pointers,
-  Metrics,
-  Footnote,
+  Timeline,
+  ImagePlaceholder,
   BellaMoods,
   NextCase,
 } from "@/components/case-study";
 
-// DRAFT, 1 Nov 2026. Structure and facts from my-portfolio/case-studies/bella-notes.md and the
-// mascot write-ups it lists (Duolingo, PostHog, Mailchimp, Clippy, Tripadvisor). Quotes are
-// Ashmik's own; the joining copy is a placeholder for him to rewrite in his words
-// (case-study-guide.md cuts AI first drafts). Figures are placeholders until recorded.
+// DRAFT, 2 Nov 2026. Bella's own outline, set by Ashmik (not the Problem → Outcome template):
+// what Bella is and why → everything tried → top three and the pick → research → use cases
+// and enhancements → what Bella can do and how → what it solves and what it can be. No
+// results section. Facts from my-portfolio/case-studies/bella-notes.md; quotes are Ashmik's,
+// the joining copy is a placeholder for him to rewrite. Figures are placeholders.
 // Not on the homepage list yet, so it doesn't change the "all five read" goal.
 
 export const metadata: Metadata = {
@@ -34,34 +34,38 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS: CaseStudySection[] = [
-  { id: "overview",    label: "Overview"    },
-  { id: "the-problem", label: "The Problem" },
-  { id: "research",    label: "Research"    },
-  { id: "directions",  label: "Directions"  },
-  { id: "details",     label: "Details"     },
-  { id: "output",      label: "What shipped" },
-  { id: "outcome",     label: "Outcome"     },
-  { id: "reflection",  label: "Reflection"  },
+  { id: "overview",     label: "Overview"      },
+  { id: "explorations", label: "Explorations"  },
+  { id: "top-three",    label: "Top three"     },
+  { id: "research",     label: "Research"      },
+  { id: "use-cases",    label: "Use cases"     },
+  { id: "abilities",    label: "What Bella does" },
+  { id: "purpose",      label: "What it can be" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Overview  (with Role / Team / Timeline)
+// Section: Overview  (what Bella is, and why we made it)
 // ─────────────────────────────────────────────────────────────────────────────
 function Overview() {
   return (
-    <Chapter id="overview" num={0} title="Overview">
+    <Chapter id="overview" num={0} title="Meet Bella">
       <Copy>
         <p>
-          Bella is the desk bell in this site&apos;s navbar. It keeps each
-          visit&apos;s active time, shows it on a small sign when you hover,
-          and rings when it has something to say. I designed it over ten
-          days, directing every decision, and built it with Claude Code. It
-          is live on the site, but has not met real visitors yet.
+          Bella is the desk bell that runs the front desk of this portfolio.
+          It sits in the navbar as the logo, keeps track of how long you
+          actually spend here, and shows it on a small sign when you hover.
+          When it has something to say, it rings first.
+        </p>
+        <p>
+          I made Bella for two reasons. I wanted to know whether people really
+          read my work, and for how long. And I wanted visitors to have a
+          reason to look around a little longer. A plain clock in the corner
+          did neither, so the clock became a character.
         </p>
         <Meta
-          role="Designer and director. Character, motion, copy, sound, and what gets measured"
+          role="Designer and director. Character, illustration, motion, copy and sound"
           team="Ashmik Ragesh (Design), built with Claude Code"
-          timeline="23 Oct to 1 Nov 2026, ready for launch"
+          timeline="23 Oct to 1 Nov 2026, live on the site"
         />
       </Copy>
       <Visual>
@@ -72,29 +76,157 @@ function Overview() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: The Problem
+// Section: Explorations  (every character and illustration tried)
 // ─────────────────────────────────────────────────────────────────────────────
-function TheProblem() {
+// `kept` marks the version that made it into the final Bella
+const EXPLORATIONS: { title: string; note: string; items: { name: string; kept?: boolean }[] }[] = [
+  {
+    title: "Characters",
+    note: "Three directions from the site's guesthouse theme.",
+    items: [{ name: "Key tag" }, { name: "Bellhop" }, { name: "Desk bell", kept: true }],
+  },
+  {
+    title: "Finish",
+    note: "From cute and flat to full metal, and back to the design system.",
+    items: [
+      { name: "Flat plum with cheeks" },
+      { name: "Polished plum metal" },
+      { name: "Full chrome" },
+      { name: "Chrome with charcoal" },
+      { name: "Blackcurrant and grape", kept: true },
+      { name: "Gold, for the champion", kept: true },
+    ],
+  },
+  {
+    title: "Face",
+    note: "Each round took something away.",
+    items: [{ name: "Eyes, smile and cheeks" }, { name: "Brows and a mouth" }, { name: "Eyes only", kept: true }],
+  },
+  {
+    title: "Sign",
+    note: "Where the time shows when you hover.",
+    items: [
+      { name: "Dark flip clock" },
+      { name: "Brass and ivory plaque" },
+      { name: "Compact plaque" },
+      { name: "Pencil-drawn board" },
+      { name: "Grape wood frame" },
+      { name: "Ivory with a grape edge" },
+      { name: "Neutral, hairline title", kept: true },
+    ],
+  },
+  {
+    title: "Tooltip",
+    note: "How Bella's lines appear.",
+    items: [
+      { name: "Grape speech bubble" },
+      { name: "Front desk rich tooltip" },
+      { name: "Card with a percentile bar" },
+      { name: "Compact dark, with a pointer", kept: true },
+    ],
+  },
+];
+
+function Explorations() {
   return (
-    <Chapter id="the-problem" num={1} title="A timer that measured nothing">
+    <Chapter id="explorations" num={1} title="Everything we tried">
       <Copy>
         <p>
-          The navbar already had a timer with the line &ldquo;Measuring your
-          curiosity&rdquo;. It counted wall-clock time in the browser, kept
-          running in a hidden tab, and sent nothing anywhere. I had no way to
-          know whether anyone read my work, or for how long.
-        </p>
-        <p>
-          It also gave visitors no reason to stay. A clock ticking in the
-          corner is easy to ignore.
+          Bella went through many versions in ten days. Most rounds ended the
+          same way: a version looked good on its own but didn&apos;t belong on
+          the site, so it moved back toward the design system.
         </p>
       </Copy>
-      <Visual>
-        <ProblemStatement
-          situation="The portfolio showed every visitor a timer, but it counted time nobody spent reading and kept the number to itself."
-          consequence="I couldn't tell which work held attention, and nothing on the page asked a visitor to look a little longer."
+      {EXPLORATIONS.map(({ title, note, items }) => (
+        <div key={title} className="cs-sub">
+          <Copy>
+            <h3>{title}</h3>
+            <p>{note}</p>
+          </Copy>
+          <Visual>
+            <ul className="m-0 grid list-none grid-cols-2 gap-[16px] p-0 md:grid-cols-3 lg:grid-cols-4">
+              {items.map(({ name, kept }) => (
+                <li key={name} className="flex flex-col gap-[8px]">
+                  <ImagePlaceholder label={name} aspect="aspect-square" radius="rounded-lg" />
+                  <p className="font-body text-[14px] leading-[22px] text-secondary">
+                    {name}
+                    {kept && <span className="ml-[8px] font-medium text-grape">Kept</span>}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </Visual>
+        </div>
+      ))}
+    </Chapter>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section: Top three  (and the one we picked)
+// ─────────────────────────────────────────────────────────────────────────────
+const TOP_THREE = [
+  {
+    label: "Option 1",
+    title: "Key tag",
+    chosen: false,
+    pros: ["Ties straight to the guesthouse theme", "Could hold the time like a room number"],
+    cons: ["At navbar size the details went missing", "Read as an object, not a character"],
+  },
+  {
+    label: "Option 2",
+    title: "Bellhop",
+    chosen: false,
+    pros: ["A host with hands, ready to greet"],
+    cons: ["A whole person is too much detail for 40px"],
+  },
+  {
+    label: "Option 3",
+    title: "Desk bell",
+    chosen: true,
+    pros: [
+      "The silhouette reads at 40px",
+      "An object that already makes a sound and calls for attention",
+      "Belongs at a front desk, like the rest of the site",
+    ],
+    cons: [],
+  },
+];
+
+function TopThree() {
+  return (
+    <Chapter id="top-three" num={2} title="The top three, and Bella">
+      <Copy>
+        <p>The key tag went furthest before it lost.</p>
+        <PullQuote
+          label="Why the key tag lost"
+          text="In the header the key tag looks really small and"
+          emphasis="the details go missing."
         />
-      </Visual>
+      </Copy>
+      {TOP_THREE.map(({ label, title, chosen, pros, cons }) => (
+        <div key={label} className="cs-sub">
+          <Visual>
+            <OptionCard label={label} title={title} shipped={chosen} stamp="Selected" image={`${label}: ${title}`}>
+              <ProsCons pros={pros} cons={cons} />
+            </OptionCard>
+          </Visual>
+        </div>
+      ))}
+      <div className="cs-sub">
+        <Copy>
+          <p>
+            Once picked, the bell drifted. Shaded and chromed, it stopped
+            looking like itself.
+          </p>
+          <PullQuote
+            label="The brief that fixed it"
+            text="It doesn't feel like a bell anymore."
+            emphasis="Make sure it feels like a bell, and maybe acts like a bell as well."
+          />
+          <p>So Bella rings: a short double ding before every line it says.</p>
+        </Copy>
+      </div>
     </Chapter>
   );
 }
@@ -132,7 +264,7 @@ const LESSONS = [
 
 function Research() {
   return (
-    <Chapter id="research" num={2} title="What other mascots taught">
+    <Chapter id="research" num={3} title="What other mascots taught">
       <Copy>
         <p>
           I asked for a small, very minimal character that could be the logo
@@ -155,191 +287,65 @@ function Research() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Directions  (key tag, bellhop, desk bell)
+// Section: Use cases  (the enhancements made after the first Bella)
 // ─────────────────────────────────────────────────────────────────────────────
-const DIRECTIONS = [
+const USE_CASES = [
   {
-    label: "Direction 1",
-    title: "Key tag",
-    chosen: false,
-    pros: ["Ties straight to the guesthouse theme", "Could hold the time like a room number"],
-    cons: ["At navbar size the details went missing", "Read as an object, not a character"],
+    title: "Reading a case study",
+    description: "Bella puts on round gold reading glasses while you read a case study.",
   },
   {
-    label: "Direction 2",
-    title: "Bellhop",
-    chosen: false,
-    pros: ["A host with hands, ready to greet"],
-    cons: ["A whole person is too much detail for 40px", "Not taken past the first sketches"],
+    title: "Watching a video",
+    description: "3D glasses go on, and a video you started counts as time spent, so Bella doesn't doze mid-reel.",
   },
   {
-    label: "Direction 3",
-    title: "Desk bell",
-    chosen: true,
-    pros: [
-      "The silhouette reads at 40px",
-      "An object that already makes a sound and calls for attention",
-      "Belongs at a front desk, like the rest of the site",
-    ],
-    cons: [],
+    title: "Leaving the tab",
+    description: "The favicon dozes and the tab title shows your paused time, so you can see where you left off.",
+  },
+  {
+    title: "Getting in touch",
+    description: "The footer Bella holds up my email with a Copy email button beside it.",
+  },
+  {
+    title: "Reaching a goal",
+    description:
+      "Two case studies in a visit, all of them read, the resume downloaded or the email copied: Bella wears a gold bow tie for about three seconds, then nothing stays.",
+  },
+  {
+    title: "Exploring the site",
+    description: "Five stamps to find: First ring, Screening, Front desk, Two in a row and Back again.",
+  },
+  {
+    title: "Keeping a record",
+    description: "Your Curiosity Pass slides out of an envelope, holds your stamps, and can be shared.",
+  },
+  {
+    title: "Staying longest",
+    description: "The longest visit this month turns Bella gold, with a Champion of Curiosity sign.",
   },
 ];
 
-function Directions() {
+function UseCases() {
   return (
-    <Chapter id="directions" num={3} title="Key tag, bellhop or desk bell">
+    <Chapter id="use-cases" num={4} title="Use cases and enhancements">
       <Copy>
         <p>
-          Three directions came out of the site&apos;s guesthouse theme. The
-          key tag went furthest before it lost.
+          The first Bella only kept time. Each enhancement after that came from
+          a moment in a real visit, and asked what Bella should do there.
         </p>
-        <PullQuote
-          label="Why the key tag lost"
-          text="In the header the key tag looks really small and"
-          emphasis="the details go missing."
-        />
-      </Copy>
-      {DIRECTIONS.map(({ label, title, chosen, pros, cons }) => (
-        <div key={label} className="cs-sub">
-          <Visual>
-            <OptionCard label={label} title={title} shipped={chosen} stamp="Chosen" image={`${label}: ${title}`}>
-              <ProsCons pros={pros} cons={cons} />
-            </OptionCard>
-          </Visual>
-        </div>
-      ))}
-      <div className="cs-sub">
-        <Copy>
-          <p>
-            The desk bell then drifted. Shaded and chromed, it stopped looking
-            like itself.
-          </p>
-          <PullQuote
-            label="The brief that fixed it"
-            text="It doesn't feel like a bell anymore."
-            emphasis="Make sure it feels like a bell, and maybe acts like a bell as well."
-          />
-          <p>
-            So Bella rings: a short double ding before every line it says.
-          </p>
-        </Copy>
-      </div>
-    </Chapter>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Details  (finish, face, sign, tooltip, copy, movement)
-// ─────────────────────────────────────────────────────────────────────────────
-const DETAILS = [
-  {
-    title: "Finish",
-    tried: "Flat plum with cheeks, polished plum metal, full chrome, chrome with charcoal",
-    kept: "Blackcurrant dome and grape base, from the design system. Gold only for the champion.",
-    why: "“The silver colour with our colour is not working at all.”",
-  },
-  {
-    title: "Face",
-    tried: "Eyes, smile and cheeks; eyes with brows and a mouth",
-    kept: "Eyes only.",
-    why: "“Right now it looks really cute, and the realistic version looks a little off.”",
-  },
-  {
-    title: "Sign",
-    tried: "A dark flip clock, a brass and ivory plaque, a pencil-drawn board, a grape wood frame",
-    kept: "A light neutral sign under the bell with a hairline title, reading 4m 16s.",
-    why: "“For a user who would hover over it a lot of times this would be very heavy.”",
-  },
-  {
-    title: "Tooltip",
-    tried: "A grape speech bubble, a “Front desk” rich tooltip, a card with a percentile bar and buttons",
-    kept: "A compact dark tooltip with a pointer.",
-    why: "“It feels like a toast message instead of a tooltip.”",
-  },
-  {
-    title: "Copy",
-    tried: "Deadpan lines, then a playful hotel host with a few random lines per moment",
-    kept: "Plain front-desk facts. No jokes, no visit counts.",
-    why: "The playful lines “feel like AI”.",
-  },
-  {
-    title: "Movement",
-    tried: "Bella travelling between sections as you scroll; a hand-off from navbar to footer",
-    kept: "One Bella in the navbar and one in the footer, and only one up at a time.",
-    why: "“Let's stop making changes to the movement of the character.”",
-  },
-];
-
-function Details() {
-  return (
-    <Chapter id="details" num={4} title="Every detail, pushed back to the system">
-      <Copy>
-        <p>
-          Most rounds ended the same way: the new version looked good alone
-          but didn&apos;t belong on the site. Each time, Bella moved back
-          toward the design system&apos;s own colours, type and weight.
-        </p>
-      </Copy>
-      {DETAILS.map(({ title, tried, kept, why }) => (
-        <div key={title} className="cs-sub">
-          <Copy>
-            <h3>{title}</h3>
-            <ProsCons pros={[kept]} cons={[tried]} />
-            <p>{why}</p>
-          </Copy>
-        </div>
-      ))}
-      <Visual>
-        <Figure label="The variations, side by side" />
-      </Visual>
-    </Chapter>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: What shipped  (output)
-// ─────────────────────────────────────────────────────────────────────────────
-const SHIPPED = [
-  {
-    title: "Only real attention counts",
-    description:
-      "The clock pauses when the tab is hidden or after 30 seconds without input. A video you started counts as reading.",
-  },
-  {
-    title: "A sign on hover, a tap on phones",
-    description: "Hover, focus or tap the bell and the sign drops with your time, like 4m 16s.",
-  },
-  {
-    title: "Three lines a visit",
-    description: "At 0:30, 2:00 and 5:00 Bella rings and says one plain line. The first one is “I'm Bella”.",
-  },
-  {
-    title: "Small goals, briefly celebrated",
-    description:
-      "Two case studies in a visit, all of them read, the resume downloaded or the email copied: a gold bow tie for about three seconds, then nothing stays.",
-  },
-  {
-    title: "A pass to keep",
-    description: "Five stamps to find, and a Curiosity Pass you can open from an envelope and share.",
-  },
-];
-
-function Output() {
-  return (
-    <Chapter id="output" num={5} title="What shipped">
-      <Copy>
-        <NumberedPoints items={SHIPPED} stacked />
+        <NumberedPoints items={USE_CASES} stacked />
       </Copy>
       <Visual>
-        <Figure label="Bella on the site: the sign, a line and the footer" />
+        <Figure label="Bella's glasses, bow tie, stamps and pass" />
       </Visual>
       <div className="cs-sub">
         <Copy>
-          <h3>What I chose not to build</h3>
+          <h3>What we chose not to add</h3>
           <p>
             A halo and wings for celebrations (&ldquo;the circular motion is
-            not needed&rdquo;), a guest card in the footer, hands straightening
-            the bow tie, and a ten-minute cap on the clock. Visit counts appear
+            not needed&rdquo;), Bella travelling between sections as you
+            scroll, a guest card in the footer, hands straightening the bow
+            tie, and a ten-minute cap on the clock. Visit counts appear
             nowhere.
           </p>
         </Copy>
@@ -349,75 +355,88 @@ function Output() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Outcome  (not measured yet, and how it will be)
+// Section: What Bella does, and how
 // ─────────────────────────────────────────────────────────────────────────────
-const MEASURES = [
-  { stat: "Active time", label: "Average and median per visit, already on the stats page" },
-  { stat: "Sign opens", label: "Share of visits that hover or tap Bella" },
-  { stat: "2:00 and 5:00", label: "Share of visits that reach each line" },
-  { stat: "Footer", label: "Share of visits that reach the footer Bella" },
+const ABILITIES = [
+  {
+    lead: "Keeps real time.",
+    text: "The clock only runs while you're here. It pauses when the tab is hidden or after 30 seconds without input, and sends the time to the server as you go.",
+  },
+  {
+    lead: "Shows your time.",
+    text: "Hover, focus or tap the bell and a sign drops below it, reading like 4m 16s. Tap again on a phone to hide it.",
+  },
+  {
+    lead: "Rings and speaks.",
+    text: "At 0:30, 2:00 and 5:00 Bella rings a short double ding and types one plain line. The first is “I'm Bella”.",
+  },
+  {
+    lead: "Changes mood.",
+    text: "Idle, it blinks and follows the cursor. When the clock pauses, it dozes. On the longest visit this month, it turns gold.",
+  },
+  {
+    lead: "Appears once at a time.",
+    text: "A smaller Bella pops up in the footer and hops along the counter. While it's up, the navbar Bella ducks and leaves its clock behind.",
+  },
 ];
 
-function Outcome() {
+function Abilities() {
   return (
-    <Chapter id="outcome" num={6} title="Not measured yet">
+    <Chapter id="abilities" num={5} title="What Bella can do, and how">
       <Copy>
-        <p>
-          Bella is built and on the site, but no real visitor has met it yet.
-          Everything recorded so far is from testing, so there is no result to
-          report. When it launches, these are the numbers that will say
-          whether it works.
-        </p>
-        <Metrics items={MEASURES} />
-        <Footnote>
-          Status as of 1 November 2026. Events for hovers, sign opens and taps
-          are recorded from launch.
-        </Footnote>
+        <Pointers items={ABILITIES} />
       </Copy>
+      <Visual>
+        <Figure label="Bella on the site: the sign, a line and the footer" />
+      </Visual>
     </Chapter>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Reflection
+// Section: What it solves, and what it can be
 // ─────────────────────────────────────────────────────────────────────────────
-const WORKED = [
+const SOLVES = [
   {
-    lead: "The system was the tiebreaker.",
-    text: "Whenever a version looked off, moving it back to the design system's colours and weight fixed it.",
+    lead: "I can see what holds attention.",
+    text: "Active time per visit and per case study tells me which work people actually read.",
   },
   {
-    lead: "Acting like the object.",
-    text: "Making Bella ring, instead of only look like a bell, did more for its character than any shading.",
+    lead: "Visitors get a reason to stay.",
+    text: "Lines, stamps and goals invite a second case study without getting in the way of the first.",
   },
   {
-    lead: "Saying no to movement.",
-    text: "Two movement ideas worked technically and still came out. One Bella at a time is calmer.",
-  },
-];
-
-const NEXT_TIME = [
-  {
-    lead: "I'd set the events up first.",
-    text: "Hovers and sign opens weren't recorded from the start, so the first visitors are the baseline.",
-  },
-  {
-    lead: "I'd sketch the silhouette earlier.",
-    text: "The key tag lost on size. Testing every direction at 40px on day one would have saved a round.",
+    lead: "The site has a host.",
+    text: "A portfolio that greets you and notices you feels less like a folder of files.",
   },
 ];
 
-function Reflection() {
+const NEXT = [
+  {
+    title: "A curiosity score",
+    description: "Count more than time: which case studies you opened, how far you scrolled, what you came back to.",
+  },
+  {
+    title: "A guestbook and a Hall of Curiosity",
+    description: "Leave your name on the way out, and see the most curious guests, moderated by me.",
+  },
+  {
+    title: "Bella pointing to your pass",
+    description: "A link in the 5:00 line that opens your Curiosity Pass.",
+  },
+];
+
+function Purpose() {
   return (
-    <Chapter id="reflection" num={7} title="What I learned">
+    <Chapter id="purpose" num={6} title="What Bella solves, and what it can be">
       <Copy>
-        <h3>What worked</h3>
-        <Pointers items={WORKED} />
+        <h3>What it solves</h3>
+        <Pointers items={SOLVES} />
       </Copy>
       <div className="cs-sub">
         <Copy>
-          <h3>What I&apos;d change</h3>
-          <Pointers items={NEXT_TIME} />
+          <h3>What it can be</h3>
+          <Timeline items={NEXT} />
         </Copy>
       </div>
     </Chapter>
@@ -432,13 +451,12 @@ export default function BellaPage() {
     <CaseStudyLayout sections={SECTIONS}>
       <Hero title="Designing Bella, a front-desk bell that measures curiosity" date="2026" />
       <Overview />
-      <TheProblem />
+      <Explorations />
+      <TopThree />
       <Research />
-      <Directions />
-      <Details />
-      <Output />
-      <Outcome />
-      <Reflection />
+      <UseCases />
+      <Abilities />
+      <Purpose />
       <NextCase current="/works/bella" />
     </CaseStudyLayout>
   );
