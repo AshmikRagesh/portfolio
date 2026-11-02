@@ -336,20 +336,32 @@ export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: str
       ))}
     </ul>
   );
+  if (!both) return list(pros.length ? pros : cons, pros.length ? "pro" : "con");
+
+  // Two tinted panels, green and red, each headed in the body face with a count
+  const panel = (items: string[], tone: "pro" | "con") => (
+    <div
+      className={`flex flex-col gap-[16px] rounded-lg p-[20px] md:p-[24px] ${
+        tone === "pro" ? "bg-success-bg/70" : "bg-warning/[0.06]"
+      }`}
+    >
+      <p className="flex items-center gap-[8px] font-body text-[16px] font-semibold leading-[24px] text-heading">
+        {tone === "pro" ? "What worked" : "What didn’t"}
+        <span
+          className={`inline-flex h-[20px] min-w-[20px] items-center justify-center rounded-full px-[6px] text-[12px] font-medium leading-none text-white ${
+            tone === "pro" ? "bg-success" : "bg-warning"
+          }`}
+        >
+          {items.length}
+        </span>
+      </p>
+      {list(items, tone)}
+    </div>
+  );
   return (
-    <div className={`grid grid-cols-1 gap-[24px] ${both ? "md:grid-cols-2 md:gap-[32px]" : ""}`}>
-      {pros.length > 0 && (
-        <div className="flex flex-col gap-[12px]">
-          {both && <p className={NOTE_HEAD}>What worked</p>}
-          {list(pros, "pro")}
-        </div>
-      )}
-      {cons.length > 0 && (
-        <div className="flex flex-col gap-[12px]">
-          {both && <p className={NOTE_HEAD}>What didn&apos;t</p>}
-          {list(cons, "con")}
-        </div>
-      )}
+    <div className="grid grid-cols-1 gap-[12px] md:grid-cols-2 md:gap-[16px]">
+      {panel(pros, "pro")}
+      {panel(cons, "con")}
     </div>
   );
 }
