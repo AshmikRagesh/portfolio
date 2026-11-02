@@ -87,7 +87,7 @@ function Overview() {
 // ─────────────────────────────────────────────────────────────────────────────
 function TheProblem() {
   return (
-    <Chapter id="the-problem" num={1} title="Travellers knew what they wanted. Search couldn't show it to them.">
+    <Chapter id="the-problem" num={1} title="Search made it hard for travellers to find the right trip">
       <Copy>
         <p>
           People search with a clear idea, like a place, a month or a kind of
@@ -98,8 +98,8 @@ function TheProblem() {
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Every search returned close to the whole catalogue. Tabs split the results into trips, destination pages and articles, but there was no way to narrow the trips by place, date or type."
-          consequence="We believed travellers who were ready to enquire gave up first, and TCS lost those leads."
+          situation="Even with a destination or trip in mind, travellers got close to the whole catalogue back (about 48 trips for “Summer in Japan”) and were left to work out which ones fit."
+          consequence="Travellers ready to enquire risked giving up before they found their trip, and TCS lost the lead."
         />
       </Visual>
     </Chapter>
