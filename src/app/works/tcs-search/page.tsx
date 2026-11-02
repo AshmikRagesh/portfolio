@@ -484,7 +484,7 @@ const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "Filters that narrow down the search",
-    body: "Five filters sit above the results: destination, trip type, departure, duration and availability. Each option shows how many trips it leaves, like Africa (22), so no choice leads to an empty page. On a phone they open from a bar fixed to the bottom of the screen.",
+    body: "Five filters sit above the results: destination, trip type, departure, duration and availability. Each option shows how many trips it leaves, like Africa (22), before it’s picked. On a phone they open from a bar fixed to the bottom of the screen.",
   },
   {
     num: 2,
