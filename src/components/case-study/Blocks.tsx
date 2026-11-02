@@ -416,7 +416,7 @@ export function OptionCard({
           <Tag tone="grey">{label}</Tag>
         </div>
         {title && (
-          <p className="font-heading text-[22px] font-medium leading-[30px] text-heading md:text-[24px] md:leading-[32px]">
+          <p className="font-heading text-[24px] font-medium leading-[32px] text-heading md:text-[28px] md:leading-[36px]">
             {title}
           </p>
         )}
