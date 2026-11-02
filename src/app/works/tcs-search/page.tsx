@@ -39,7 +39,7 @@ import {
 export const metadata: Metadata = {
   title: "Search that helps you narrow it down · Ashmik Ragesh",
   description:
-    "Redesigned the TCS World Travel search page with filters, a result count and a no-results page that is never empty, so travellers can narrow the whole catalogue to the trips they want.",
+    "Redesigned the TCS World Travel search page with filters, a result count and trip cards that show the route, so travellers can narrow a long list to the trips that fit.",
 };
 
 const SECTIONS: CaseStudySection[] = [
@@ -69,15 +69,16 @@ function Overview() {
           TCS&apos;s search page showed every upcoming trip in one long list,
           with no way to narrow it. I redesigned it so travellers
           can narrow results by destination, trip type, date and length, see
-          how many trips match, and see where each one goes. Developers built
+          how many trips match, and see each trip&apos;s route on its card.
+          Developers built
           it, and it has been live since July 2026.
         </p>
         <Meta
           role={
             <>
               Product Designer. Owned the design end to end: the flow, the
-              filters, and the results and no-results pages, on desktop and
-              phone, through to developer handoff.
+              filters, the trip card, and the results and no-results pages,
+              on desktop and phone, through to developer handoff.
             </>
           }
           // TODO: add Travis's role once known
@@ -403,58 +404,62 @@ type OptionItem = {
   didntWork: string[];
 };
 
-// The earlier fix, my design, and what went live
+// Three page ideas, each covering how to narrow and how a card shows where a trip goes
 const OPTIONS: OptionItem[] = [
   {
     label: "Option 1",
-    title: "Tabs only, the August 2025 fix",
+    title: "Region shortcuts, with country tags on the card",
     worked: [
-      "Trips, destinations and articles no longer sit in one list",
-      "Quick links in the search box offer popular searches",
+      "Every region is one tap away and always in view",
+      "The simplest to build: one filter and a tag list on the card",
     ],
     didntWork: [
-      "A Japan search still returned 252 results",
-      "No way to narrow by place, date, trip type or length",
+      "Only narrows by place: no month, kind of trip or length",
+      "One region at a time",
+      "Tags list countries but not the order, and “+6 more” hides most of a long trip",
+      "On a phone, eleven region buttons run off the screen",
     ],
   },
   {
     label: "Option 2",
-    title: "A sidebar of checkbox filters, my design",
+    title: "Trip finder questions, with a route map on the card",
     worked: [
-      "Every option is visible at once, with a count for the results",
-      "Chosen filters show as chips above the results, with Clear All",
-      "Room for all 11 destinations without hiding any",
+      "Feels like talking to a travel expert, which helps people still deciding",
+      "One question per screen is easy on a phone",
     ],
     didntWork: [
-      "Takes a column away from the trip cards",
-      "On a phone it has to become a separate sheet",
+      "No trips show until every question is answered",
+      "Changing one answer means stepping back through the questions",
+      "A map needs drawing for every trip, and its place names are too small on a phone",
+      "Slows down travellers who already know what they want",
     ],
   },
   {
     label: "Option 3",
-    title: "A row of filter dropdowns",
+    title: "A row of filters, with the full route on the card",
     shipped: true,
     worked: [
-      "Results keep the full width of the page",
-      "The same five filters open as a sheet on a phone",
+      "Five filters fit in one row, within research guidance of fewer than 6 to 8",
+      "Each option shows how many trips it leaves, like Africa (22)",
+      "A chip and Clear filters show what’s applied, beside the count",
+      "Cards keep the full width, so the whole route fits",
+      "On a phone the same filters open from a bar at the bottom",
     ],
     didntWork: [
-      "Options stay hidden until a dropdown is opened",
-      "Sort was left out",
+      "Options inside each filter stay hidden until it’s opened",
     ],
   },
 ];
 
 function Exploration() {
   return (
-    <Chapter id="exploration" num={3} title="Three ways to narrow the results">
+    <Chapter id="exploration" num={3} title="Three ways to find the right trip">
       <Copy>
         <p>
-          The brief named the goal but not the filters. I worked out which
-          filters TCS buyers needed and how they should sit on the page. These
-          are the three layouts the page has gone through.
+          The brief named the goal but not the filters, and said nothing about
+          the card. I compared three page ideas, each with its own way to
+          narrow the list and its own way for a card to show where a trip goes.
         </p>
-        {/* TODO: who moved the filters into dropdowns after handoff, and why (Ashmik) */}
       </Copy>
       {OPTIONS.map(({ label, title, shipped, worked, didntWork }) => (
         <div key={label} className="cs-sub">
@@ -485,15 +490,47 @@ const SOLUTION_ITEMS = [
   },
   {
     num: 3,
-    title: "Cards that say where a trip goes",
-    body: "Each trip card shows its status, the number of destinations, the full route and the dates, so you can compare trips without opening them.",
+    title: "A card that says where the trip goes",
+    body: "The old card showed a name and dates. The new one is a wide row with the number of destinations and the full route, so travellers can compare trips without opening them.",
   },
   {
     num: 4,
-    title: "A no-results page that's never empty",
-    body: "It says plainly that nothing matched, gives the phone number for a travel expert, links to Private Custom Travel, and lists real trips underneath. Nearly half of sites get this page wrong.",
+    title: "A no-results page that still leads somewhere",
+    body: "Filters can narrow a list to nothing, so this page mattered more. It kept what the old page offered, a phone number for a travel expert and Private Custom Travel, and now lists curated trips underneath. Nearly half of sites get this page wrong.",
   },
 ];
+
+// The trip card, part by part: the old page (archived March 2026) against V1 (live)
+const CARD_PARTS = [
+  { part: "Layout", before: "Image on top, text below", after: "A wide row: image left, details middle, button right" },
+  { part: "Where it goes", before: "Nothing", after: "The number of destinations and the full route, e.g. Miami, Florida → Cusco and Machu Picchu, Peru → …" },
+  { part: "Dates and length", before: "Under the View details button", after: "One line: Nov 28 – Dec 22, 2026 · 25 days" },
+  { part: "View details", before: "Between the title and the dates", after: "On its own, at the right" },
+  { part: "Status, subtitle, title", before: "Status on the image", after: "Kept" },
+];
+
+function CardParts() {
+  return (
+    <table className={TABLE}>
+      <thead>
+        <tr className="border-b border-line">
+          <th scope="col" className={TH}>Part</th>
+          <th scope="col" className={TH}>Old card</th>
+          <th scope="col" className={`${TH} pr-0`}>New card</th>
+        </tr>
+      </thead>
+      <tbody>
+        {CARD_PARTS.map(({ part, before, after }) => (
+          <tr key={part} className="border-b border-line-soft">
+            <th scope="row" className={`${TD} font-normal text-heading`}>{part}</th>
+            <td className={`${TD} text-secondary`}>{before}</td>
+            <td className={`${TD} pr-0 text-secondary`}>{after}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
 
 // Each filter on the page, the field Algolia filters on, and its name in the address bar
 const FILTER_FIELDS = [
@@ -532,9 +569,9 @@ function Solution() {
     <Chapter id="solution" num={4} title="How the new search works">
       <Copy>
         <p>
-          The page keeps the three tabs and adds what was missing: a way to
-          narrow, a way to see what you&apos;ve narrowed, and a way out when
-          nothing fits.
+          The page keeps the tabs and adds what was missing: a way to narrow,
+          a way to see what you&apos;ve narrowed, a card that shows where each
+          trip goes, and a way forward when nothing fits.
         </p>
       </Copy>
       {SOLUTION_ITEMS.map(({ num, title, body }) => (
@@ -542,6 +579,11 @@ function Solution() {
           <Copy>
             <h3>{num}. {title}</h3>
             <p>{body}</p>
+            {num === 3 && (
+              <MoreDetail label="The card, part by part" className="mt-[20px]">
+                <CardParts />
+              </MoreDetail>
+            )}
             {num === 4 && (
               <Footnote>
                 Source:{" "}
@@ -704,6 +746,10 @@ const LESSONS = [
   {
     title: "A list in date order isn't a way to choose",
     description: "Someone who knows where they want to go needs to narrow, not scroll. Filters did that.",
+  },
+  {
+    title: "A trip's name isn't where it goes",
+    description: "Names like Grand Horizons sell the mood. The route on the card is what lets someone choose.",
   },
   {
     title: "Search has to understand how people talk",
