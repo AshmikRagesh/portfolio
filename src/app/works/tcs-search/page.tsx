@@ -484,7 +484,7 @@ const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "Filters that narrow down the search",
-    body: "Five filters sit right above the results. Every option tells you how many trips you’ll get, like Africa (22), before you tap it. On a phone, they’re tucked into a bar at the bottom of the screen.",
+    body: "Introduced five filters above the results: destination, trip type, departure, duration and availability. Each option shows how many trips it will return, such as Africa (22), and on phones the filters open from a bar fixed to the bottom of the screen.",
   },
   {
     num: 2,
@@ -494,7 +494,7 @@ const SOLUTION_ITEMS = [
   {
     num: 3,
     title: "More context in every trip card",
-    body: "The old card only had a name and dates. Now it shows the whole route, so you can spot that Grand Horizons stops in Tokyo without even opening it.",
+    body: "Redesigned the trip card to show the full route alongside the name and dates. Travellers can see that Grand Horizons stops in Tokyo, for example, without opening the trip.",
   },
   {
     num: 4,
