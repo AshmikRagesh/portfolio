@@ -121,27 +121,31 @@ const OBSERVATIONS = [
   {
     title: "Too many results",
     description:
-      "A search for “Summer in Japan” returned about 48 trips, close to the whole catalogue, with Africa among the first six. The Japan trips were in there, but hard to pick out.",
+      "“Summer in Japan” returned about 48 trips, close to the whole catalogue, with Africa among the first six.",
+    result:
+      "travellers needed to narrow by what they already had in mind: where, when, what kind of trip, and how long.",
   },
   {
-    title: "Little trip information",
-    description:
-      "Cards showed a status, a title and dates, but no route. Travellers couldn't tell where a trip went without opening it.",
+    title: "Cards didn’t say where a trip went",
+    description: "They showed a status, a title and dates, but no route.",
+    result: "every card shows the full route and the number of destinations.",
   },
   {
-    title: "Tabs sorted the pile, but didn't shrink it",
+    title: "Tabs sorted the pile, but didn’t shrink it",
     description:
-      "Trips, destinations and articles lived in separate tabs. That kept trips apart from articles, but inside the trips tab nothing could be narrowed.",
+      "Trips sat apart from articles, but inside the trips tab nothing could be narrowed.",
+    result: "narrowing had to work inside the trips tab, alongside the tabs rather than instead of them.",
   },
   {
-    title: "No control",
+    title: "No sense of control",
     description:
-      "There was no way to filter by place, date, trip type or length, no sort, and no count of how many trips matched.",
+      "There was no count of matching trips, no way to see what was applied, and no sort.",
+    result: "the page shows how many trips match, what’s applied, and one way to clear it all.",
   },
   {
-    title: "A search never came back empty",
-    description:
-      "Even when nothing matched, the page still showed trips, so a poor match and no match looked the same.",
+    title: "A poor match looked like a good one",
+    description: "Instead of saying few trips fitted, the page showed nearly all of them.",
+    result: "when nothing fits, the page says so plainly and still offers a next step.",
   },
 ];
 
@@ -149,7 +153,6 @@ const OBSERVATIONS = [
 const RESEARCH_TILES: Parameters<typeof StatTiles>[0]["items"] = [
   { tag: "Industry", stat: "34%", label: "of sites filter so poorly that people can't narrow a long list", tone: "estimate" },
   { tag: "Industry", stat: "~50%", label: "of sites give no good way forward when a search finds nothing", tone: "estimate" },
-  { tag: "Industry", stat: "16%", label: "of visitors use site search, and they're 21% more likely to convert", tone: "estimate" },
 ];
 
 const RESEARCH = [
@@ -279,10 +282,10 @@ function Context() {
     <Chapter id="discovery" num={2} title="Discovery and research">
       <Copy>
         <p>
-          I started by reviewing the live search page: what it returned for a
+          I started with the search page as it was: what it returned for a
           typical search, what each card told you, and what you could do with
           the results. TCS had no search data, so this review, the earlier
-          search tickets and outside research were what I had to go on.
+          search tickets and published research were what I had to go on.
         </p>
       </Copy>
       <div className="cs-sub">
@@ -315,7 +318,7 @@ function Context() {
           <h3>What the research said</h3>
           <p>
             With no TCS data, I looked at how search and filtering perform
-            across other sites, and at how similar teams fixed it. Three numbers
+            across other sites, and at how similar teams fixed it. Two numbers
             framed the problem.
           </p>
         </Copy>
@@ -329,10 +332,6 @@ function Context() {
             ;{" "}
             <a href="https://baymard.com/research-articles/no-results-page" target="_blank" rel="noreferrer">
               Baymard, No Results page
-            </a>
-            ;{" "}
-            <a href="https://www.luigisbox.com/blog/site-search-data/" target="_blank" rel="noreferrer">
-              Luigi&apos;s Box, 4,000 online stores
             </a>
             .
           </Footnote>
@@ -359,14 +358,14 @@ function Context() {
         <Copy>
           <h3>The opportunity</h3>
           <p>
-            Search needed to do more than return matching content. It needed to
-            help travellers make sense of the results and find the trips that
-            fit what they had in mind.
+            How might we help travellers get from what they have in mind to the
+            few trips that fit, and still give them a way forward when nothing
+            does?
           </p>
           <p>
-            <strong>What success looked like:</strong> a traveller can get from
-            a broad search to the handful of trips that fit, and a search that
-            finds nothing still offers a next step.
+            <strong>What success looked like:</strong> a traveller can narrow a
+            broad search to the handful of trips that fit, see what&apos;s
+            applied at a glance, and never hit a dead end.
           </p>
         </Copy>
       </div>
