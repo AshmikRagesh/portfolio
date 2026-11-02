@@ -1,4 +1,15 @@
 import type { Metadata } from "next";
+import {
+  DeviceMobile,
+  Funnel,
+  MagnifyingGlass,
+  MapTrifold,
+  PaintBrush,
+  Question,
+  SlidersHorizontal,
+  SquaresFour,
+  Stack,
+} from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import {
   Hero,
@@ -7,6 +18,7 @@ import {
   Meta,
   Visual,
   Figure,
+  CardGrid,
   ProblemStatement,
   PullQuote,
   StatTiles,
@@ -14,7 +26,6 @@ import {
   NextCase,
   ProsCons,
   NumberedPoints,
-  Pointers,
   Timeline,
   OptionCard,
   Footnote,
@@ -115,7 +126,7 @@ function TheProblem() {
 // Section: Discovery  (research / inputs)
 // ─────────────────────────────────────────────────────────────────────────────
 const OLD_SEARCH_TILES: Parameters<typeof StatTiles>[0]["items"] = [
-  { tag: "Results", stat: "~48", label: "trip cards for “Summer in Japan”, close to the whole catalogue" },
+  { tag: "Results", stat: "48", label: "trip cards for “Summer in Japan”, close to the whole catalogue" },
   { tag: "Control", stat: "0", label: "filters, sort options or result counts", tone: "key" },
   { tag: "Cards", stat: "0", label: "routes shown, so seeing where a trip went meant opening it" },
 ];
@@ -164,32 +175,32 @@ const SEARCH_STEPS = [
   },
 ];
 
-// What I noticed on the old page, and what each one led to
-const OBSERVATIONS = [
+// What the review and the research found: the problems the design had to solve
+const FINDINGS = [
   {
-    lead: "Almost everything came back.",
-    text: "Africa trips sat in the top six for “Summer in Japan”.",
-    result: "Let travellers narrow by where, when, what kind of trip and how long.",
+    icon: <Stack size={28} weight="fill" className="text-grape" />,
+    title: "Almost everything came back",
+    description: "“Summer in Japan” returned about 48 trips, close to the whole catalogue, with Africa in the top six.",
   },
   {
-    lead: "Cards hid the route.",
-    text: "A status, a title and dates, but not where the trip went.",
-    result: "Show the full route on every card.",
+    icon: <MapTrifold size={28} weight="fill" className="text-grape" />,
+    title: "Cards hid the route",
+    description: "A status, a title and dates, but not where the trip went, so every card had to be opened.",
   },
   {
-    lead: "Tabs sorted, but didn’t shrink.",
-    text: "Inside the trips tab, nothing could be narrowed.",
-    result: "Narrow inside the tabs, not instead of them.",
+    icon: <SquaresFour size={28} weight="fill" className="text-grape" />,
+    title: "Tabs sorted, but didn’t shrink",
+    description: "Trips sat apart from articles, but inside the trips tab nothing could be narrowed.",
   },
   {
-    lead: "No sense of control.",
-    text: "No count, nothing to show what was applied, no sort.",
-    result: "A count, removable chips and one way to clear it all.",
+    icon: <SlidersHorizontal size={28} weight="fill" className="text-grape" />,
+    title: "No sense of control",
+    description: "No count of matching trips, nothing to show what was applied, and no sort.",
   },
   {
-    lead: "A poor match looked like a good one.",
-    text: "The page never said that few trips fitted.",
-    result: "When nothing fits, say so, and offer a next step.",
+    icon: <Question size={28} weight="fill" className="text-grape" />,
+    title: "A poor match looked like a good one",
+    description: "The page never said that few trips fitted. Against published best practice it met 0 of 5.",
   },
 ];
 
@@ -278,23 +289,27 @@ const SOURCES: Parameters<typeof SourceList>[0]["sources"] = [
   },
 ];
 
-// What the brief set before anything was drawn
-const BRIEF_RULES = [
+// What set the rules before anything was drawn
+const CONTEXT_CARDS = [
   {
-    lead: "No filter list.",
-    text: "The brief asked for filters on trip details and availability, but left the list empty, so choosing them was part of the job.",
+    icon: <Funnel size={28} weight="fill" className="text-grape" />,
+    title: "The brief had no filter list",
+    description: "It asked for filters on trip details and availability, but left the list empty. Choosing them was part of the job.",
   },
   {
-    lead: "New branding, familiar patterns.",
-    text: "Match the new TCS style, and restyle the filter patterns from Enchanting Travels.",
+    icon: <PaintBrush size={28} weight="fill" className="text-grape" />,
+    title: "New branding, familiar patterns",
+    description: "Match the new TCS style, and restyle the filter patterns from Enchanting Travels.",
   },
   {
-    lead: "Phones, and a way back.",
-    text: "Filters that fit small screens with clear touch targets, and one tap to clear them all.",
+    icon: <DeviceMobile size={28} weight="fill" className="text-grape" />,
+    title: "Phones and a way back",
+    description: "Filters that fit small screens with clear touch targets, and one tap to clear them all.",
   },
   {
-    lead: "No search data.",
-    text: "Nothing on what people searched for, so the design leaned on TCS’s suggested searches and its menu.",
+    icon: <MagnifyingGlass size={28} weight="fill" className="text-grape" />,
+    title: "No search data",
+    description: "Nothing on what people searched for, so the design leaned on TCS’s suggested searches and its menu.",
   },
 ];
 
@@ -308,6 +323,11 @@ function Context() {
           the results. TCS had no search data, so this review, the earlier
           search tickets and published research were what I had to go on.
         </p>
+        <PullQuote
+          label="The brief"
+          text="Site search results do not offer filtering options,"
+          emphasis="making it difficult for users to narrow down relevant itineraries."
+        />
       </Copy>
       <div className="cs-sub">
         <Copy>
@@ -328,42 +348,46 @@ function Context() {
       </div>
       <div className="cs-sub">
         <Copy>
-          <h3>What I noticed, and what it led to</h3>
-          <Pointers items={OBSERVATIONS} />
-        </Copy>
-      </div>
-      <div className="cs-sub">
-        <Copy>
-          <h3>How it measured up</h3>
+          <h3>What the research found</h3>
           <p>
-            With no TCS data, I checked the old page against published research
-            on search and filtering. Open a row to see what the page did and
-            the evidence.
+            Reviewing the page and checking it against published research on
+            search and filtering turned up five problems.
           </p>
         </Copy>
         <Visual>
-          <PracticeCheck subject="The old search page" items={PRACTICES} />
+          <CardGrid items={FINDINGS} />
         </Visual>
         <Copy>
-          <MoreDetail label="All the research, and how I used it" className="mt-[20px]">
-            <SourceList sources={SOURCES} />
+          <MoreDetail label="The research behind these" className="mt-[20px]">
+            <div className="flex flex-col gap-[40px]">
+              <div>
+                <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
+                  The old page against best practice
+                </h4>
+                <PracticeCheck subject="The old search page" items={PRACTICES} />
+              </div>
+              <div>
+                <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
+                  Every source, and how I used it
+                </h4>
+                <SourceList sources={SOURCES} />
+              </div>
+            </div>
           </MoreDetail>
         </Copy>
       </div>
       <div className="cs-sub">
         <Copy>
-          <h3>What the brief set</h3>
-          <Pointers items={BRIEF_RULES} />
+          <h3>What shaped the design</h3>
+          <p>
+            Four things set the rules before I drew anything: three from the
+            brief, and one about what we didn&apos;t know.
+          </p>
         </Copy>
-      </div>
-      <div className="cs-sub">
+        <Visual>
+          <CardGrid items={CONTEXT_CARDS} />
+        </Visual>
         <Copy>
-          <h3>The opportunity</h3>
-          <PullQuote
-            label="How might we"
-            text="help travellers get from what they have in mind to the few trips that fit,"
-            emphasis="and still give them a way forward when nothing does?"
-          />
           <p>
             <strong>What success looked like:</strong> a traveller can narrow a
             broad search to the handful of trips that fit, see what&apos;s
