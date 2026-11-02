@@ -479,37 +479,48 @@ function Exploration() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Solution  (how the design works)
 // ─────────────────────────────────────────────────────────────────────────────
-// V1 piece by piece, each answering a research finding. Checked on the live site, 2 Nov 2026.
+// V1 piece by piece. Every number checked on the live site, 2 Nov 2026.
 const SOLUTION_ITEMS = [
   {
     num: 1,
-    title: "Five filters, in the order people plan a trip",
-    answers: "One long list · No way to narrow it · Full trips mixed in",
-    body: "Destination, trip type, departure month, duration and availability sit in one row above the results. Each option shows how many trips it would leave, like Africa (22) or Golf (2), and the numbers update as filters combine: with Africa on, Waitlisted drops to 4. On a phone, the same five open from a Filters bar fixed to the bottom of the screen.",
+    title: "Filters that narrow down the search",
+    body: [
+      "The old page showed every departure in one long list, soonest first. Someone looking for Africa had to scroll to card 12 to find the first one.",
+      "V1 adds five filters in one row above the results, in the order a trip is usually planned: where (Destination), what kind (Trip type), when (Departure), how long (Duration) and whether there’s space (Availability). Each option shows how many trips it would leave, like Africa (22) or Golf (2), so no one picks a filter that leads nowhere. The numbers update as filters combine: turn on Africa and Waitlisted drops from 8 to 4.",
+      "On a phone, the same five filters open from a Filters bar fixed to the bottom of the screen, always within reach of a thumb.",
+    ],
   },
   {
     num: 2,
-    title: "A count and chips that show what’s applied",
-    answers: "No way to narrow it",
-    body: "The number of matching trips sits above the results. Every choice shows as a chip under the filter row: × removes one, and Clear filters removes them all.",
+    title: "Clear feedback on applied filters",
+    body: [
+      "Once filters are on, a traveller needs to know what they’re looking at. The number of matching trips sits above the results, so picking Africa shows straight away that 22 trips are left.",
+      "Every choice also appears as a chip under the filter row, like Africa or 16–20 days, so it stays visible without opening a dropdown. × on a chip removes just that filter, and Clear filters removes them all and brings back the full list of 45.",
+    ],
   },
   {
     num: 3,
-    title: "A card that says where the trip goes",
-    answers: "Cards didn’t say where",
-    body: "The old card showed a name and dates. The new one is a wide row with the number of destinations and the full route, so a traveller can see that Grand Horizons stops in Tokyo without opening it.",
+    title: "More context in every trip card",
+    body: [
+      "The old card showed a photo, a trip name and dates. Only 7 of 32 names mentioned a country, so most travellers had to open a trip to learn where it went.",
+      "The new card is a wide row: photo on the left, details in the middle, View details on the right. The details now include how many destinations the trip has and its full route, like Miami, Florida → Cusco and Machu Picchu, Peru → …, with dates and length on one line: Nov 28 – Dec 22, 2026 · 25 days. A traveller can see that Grand Horizons stops in Tokyo without opening it.",
+    ],
   },
   {
     num: 4,
-    title: "Menu links that open a filter",
-    answers: "The menu didn’t filter",
-    body: "Find a Trip’s region links used to type the region’s name into search. Now Africa opens search with the Africa filter on: 22 trips, shown as a chip a traveller can see, remove or add a month to.",
+    title: "Connecting navigation to search",
+    body: [
+      "The Find a Trip menu lists regions such as Africa. Before, clicking one typed the word “Africa” into search, which only found trips with Africa in their text: 7 trips.",
+      "Now the same link opens search with the Africa filter already on and shows all 22 trips that go there. Because it’s an ordinary filter, it appears as a chip, so a traveller can remove it or add a month on top.",
+    ],
   },
   {
     num: 5,
-    title: "A no-results page that still leads somewhere",
-    answers: "Needed once filters exist",
-    body: "Filters can narrow a list to nothing, so this page mattered more. It kept what the old page offered, a phone number for a travel expert and Private Custom Travel, and now lists curated trips underneath. Nearly half of sites get this page wrong.",
+    title: "Keeping travellers moving when no results match",
+    body: [
+      "With five filters, some combinations match no trip at all, so the no-results page matters more than before.",
+      "V1 keeps what the old page offered, a phone number for a travel expert and a link to Private Custom Travel, and adds a row of curated trips underneath. There’s always a next step: call, ask for a custom trip, or browse something close.",
+    ],
   },
 ];
 
@@ -582,33 +593,23 @@ function Solution() {
     <Chapter id="solution" num={4} title="How the new search works">
       <Copy>
         <p>
-          V1 keeps the tabs and adds five pieces, one for each research
-          finding: filters to narrow the list, a count and chips to show
-          what&apos;s applied, a card that says where a trip goes, menu links
-          that open a filter, and a way forward when nothing fits.
+          V1 keeps the tabs and adds five pieces: filters that narrow the
+          list, clear feedback on what&apos;s applied, trip cards that say
+          where a trip goes, menu links that open a filter, and a way forward
+          when nothing matches.
         </p>
       </Copy>
-      {SOLUTION_ITEMS.map(({ num, title, answers, body }) => (
+      {SOLUTION_ITEMS.map(({ num, title, body }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>{num}. {title}</h3>
-            <p className="!mt-[8px] font-body text-[14px] leading-[22px] text-muted">
-              <span className="font-semibold text-secondary">Answers:</span> {answers}
-            </p>
-            <p>{body}</p>
+            {body.map((para) => (
+              <p key={para}>{para}</p>
+            ))}
             {num === 3 && (
               <MoreDetail label="The card, part by part" className="mt-[20px]">
                 <CardParts />
               </MoreDetail>
-            )}
-            {num === 5 && (
-              <Footnote>
-                Source:{" "}
-                <a href="https://baymard.com/research-articles/no-results-page" target="_blank" rel="noreferrer">
-                  Baymard, no-results page research
-                </a>
-                .
-              </Footnote>
             )}
           </Copy>
           <Visual>
