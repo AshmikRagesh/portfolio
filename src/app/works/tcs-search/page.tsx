@@ -417,10 +417,8 @@ const OPTIONS: OptionItem[] = [
       "Simple to build: one filter, one switch and a tag list on the card",
     ],
     didntWork: [
-      "Only narrows by place: no month, kind of trip or length",
-      "One region at a time, so Africa and Europe can’t be seen in one list",
+      "Only narrows by place, one region at a time: no month, kind of trip or length",
       "Card tags show three countries and hide the rest. Pick Africa and Around the World starts with USA, Peru and Chile",
-      "On a phone the region buttons run off the screen",
     ],
   },
   {
@@ -429,13 +427,10 @@ const OPTIONS: OptionItem[] = [
     title: "A Sort menu, with every country on the card",
     worked: [
       "One control everyone already knows from shopping sites",
-      "Quick to build, and a single button on a phone",
       "The card lists every country the trip goes to",
     ],
     didntWork: [
       "Reordered, not shorter: all 45 trips are still there to scroll",
-      "One order at a time, so no way to get Africa trips in December",
-      "Trips have no single destination to sort by, and names like Grand Horizons say nothing about place",
       "The menu’s Africa link can only type “Africa” into search: 7 trips, against 22 that go to Africa",
     ],
   },
@@ -445,11 +440,9 @@ const OPTIONS: OptionItem[] = [
     title: "A row of filters, with the full route on the card",
     shipped: true,
     worked: [
-      "Five filters fit in one row, within research guidance of fewer than 6 to 8",
-      "Each option shows how many trips it leaves, like Africa (22), and the numbers update as filters combine",
-      "Every choice shows as a chip under the filter row, and Clear filters resets them all",
+      "Five filters fit in one row, each showing how many trips it leaves, like Africa (22)",
+      "Every choice shows as a chip, and Clear filters resets them all",
       "A wide card keeps room for the full route",
-      "On a phone the same filters open from a bar at the bottom",
       "Find a Trip’s region links open search with that filter on",
     ],
     didntWork: [
