@@ -411,27 +411,27 @@ const OPTIONS: OptionItem[] = [
     title: "Region shortcuts, with country tags on the card",
     worked: [
       "Every region is one tap away and always in view",
-      "The simplest to build: one filter and a tag list on the card",
+      "Simple to build: one filter, a switch to hide full trips, and tags on the card",
     ],
     didntWork: [
       "Only narrows by place: no month, kind of trip or length",
       "One region at a time",
-      "Tags list countries but not the order, and “+6 more” hides most of a long trip",
+      "Tags show three countries and hide the rest, so an Africa result can start with Peru",
       "On a phone, eleven region buttons run off the screen",
     ],
   },
   {
     label: "Option 2",
-    title: "Trip finder questions, with a route map on the card",
+    title: "Grouped by region, with the countries on the card",
     worked: [
-      "Feels like talking to a travel expert, which helps people still deciding",
-      "One question per screen is easy on a phone",
+      "Nothing new to learn: the same list, in order by region",
+      "Full trips sit at the end of each region, out of the way",
     ],
     didntWork: [
-      "No trips show until every question is answered",
-      "Changing one answer means stepping back through the questions",
-      "A map needs drawing for every trip, and its place names are too small on a phone",
-      "Slows down travellers who already know what they want",
+      "Sorted, not shorter: someone after December or a 10-day trip still scrolls",
+      "Trips that cross regions repeat under every region they visit",
+      "Regions low on the page are a long scroll away",
+      "On a phone each region is a long column",
     ],
   },
   {
@@ -457,8 +457,9 @@ function Exploration() {
       <Copy>
         <p>
           The brief named the goal but not the filters, and said nothing about
-          the card. I compared three page ideas, each with its own way to
-          narrow the list and its own way for a card to show where a trip goes.
+          the card. I compared three simple page ideas, each built to answer the
+          five research findings, with its own way to cut the list down and its
+          own way for a card to show where a trip goes.
         </p>
       </Copy>
       {OPTIONS.map(({ label, title, shipped, worked, didntWork }) => (
