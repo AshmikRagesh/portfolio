@@ -101,7 +101,7 @@ function TheProblem() {
       <Visual>
         <ProblemStatement
           situation="Even with a destination or trip in mind, travellers got back close to the whole catalogue and had to work out for themselves which trips fit."
-          consequence="Search added work at the moment a traveller was closest to enquiring, the step TCS most needs to make easy."
+          consequence="A trip a traveller can’t find is a trip they can’t enquire about, and TCS, which sells through enquiries, couldn’t see how many gave up."
         />
       </Visual>
     </Chapter>
