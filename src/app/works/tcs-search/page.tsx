@@ -473,7 +473,7 @@ function Exploration() {
       {OPTIONS.map(({ label, title, shipped, video, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
-            <OptionCard label={label} title={title} shipped={shipped} stamp="Live" video={video} image={`${label}: ${title}, clickable prototype`}>
+            <OptionCard label={label} title={title} shipped={shipped} stamp="Selected" video={video} image={`${label}: ${title}, clickable prototype`}>
               <ProsCons pros={worked} cons={didntWork} />
             </OptionCard>
           </Visual>

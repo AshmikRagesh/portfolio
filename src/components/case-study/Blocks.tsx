@@ -316,16 +316,27 @@ function Mark({ tone, children }: { tone: "pro" | "con" | "reason"; children: Re
   );
 }
 
-const NOTE = "flex gap-[12px] font-body text-[18px] leading-[30px] text-secondary";
+const NOTE = "flex gap-[12px] font-body text-[16px] leading-[26px] text-secondary md:text-[18px] md:leading-[30px]";
 
 const NOTE_HEAD = "font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted";
 
+// A soft tinted panel with a plain heading in the body face: green for what worked, red for
+// what didn't, grey for why the chosen option won
+const PANEL_TONE = { pro: "bg-success-bg/70", con: "bg-warning/[0.06]", reason: "bg-surface" } as const;
+function NotePanel({ tone, heading, children }: { tone: keyof typeof PANEL_TONE; heading: string; children: React.ReactNode }) {
+  return (
+    <div className={`flex flex-col gap-[16px] rounded-lg p-[20px] md:p-[24px] ${PANEL_TONE[tone]}`}>
+      <p className="font-body text-[16px] font-semibold leading-[24px] text-heading">{heading}</p>
+      {children}
+    </div>
+  );
+}
+
 /**
- * What worked (green tick) and what didn't (red cross), side by side from tablet up so the
- * two read as a comparison; one column when there's only one kind
+ * What worked (green tick) and what didn't (red cross), each in its own tinted panel, side
+ * by side from tablet up so the two read as a comparison
  */
 export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: string[] }) {
-  const both = pros.length > 0 && cons.length > 0;
   const list = (items: string[], tone: "pro" | "con") => (
     <ul className="flex flex-col gap-[12px]">
       {items.map((item) => (
@@ -336,32 +347,10 @@ export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: str
       ))}
     </ul>
   );
-  if (!both) return list(pros.length ? pros : cons, pros.length ? "pro" : "con");
-
-  // Two tinted panels, green and red, each headed in the body face with a count
-  const panel = (items: string[], tone: "pro" | "con") => (
-    <div
-      className={`flex flex-col gap-[16px] rounded-lg p-[20px] md:p-[24px] ${
-        tone === "pro" ? "bg-success-bg/70" : "bg-warning/[0.06]"
-      }`}
-    >
-      <p className="flex items-center gap-[8px] font-body text-[16px] font-semibold leading-[24px] text-heading">
-        {tone === "pro" ? "What worked" : "What didn’t"}
-        <span
-          className={`inline-flex h-[20px] min-w-[20px] items-center justify-center rounded-full px-[6px] text-[12px] font-medium leading-none text-white ${
-            tone === "pro" ? "bg-success" : "bg-warning"
-          }`}
-        >
-          {items.length}
-        </span>
-      </p>
-      {list(items, tone)}
-    </div>
-  );
   return (
-    <div className="grid grid-cols-1 gap-[12px] md:grid-cols-2 md:gap-[16px]">
-      {panel(pros, "pro")}
-      {panel(cons, "con")}
+    <div className={`grid grid-cols-1 gap-[8px] ${pros.length && cons.length ? "md:grid-cols-2" : ""}`}>
+      {pros.length > 0 && <NotePanel tone="pro" heading="What worked">{list(pros, "pro")}</NotePanel>}
+      {cons.length > 0 && <NotePanel tone="con" heading="What didn’t">{list(cons, "con")}</NotePanel>}
     </div>
   );
 }
@@ -369,14 +358,16 @@ export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: str
 /** Why the shipped option won, numbered */
 export function Reasons({ items }: { items: string[] }) {
   return (
-    <ol className="flex flex-col gap-[12px]">
-      {items.map((r, i) => (
-        <li key={r} className={NOTE}>
-          <Mark tone="reason">{i + 1}</Mark>
-          <span>{r}</span>
-        </li>
-      ))}
-    </ol>
+    <NotePanel tone="reason" heading="Why it won">
+      <ol className="flex flex-col gap-[12px]">
+        {items.map((r, i) => (
+          <li key={r} className={NOTE}>
+            <Mark tone="reason">{i + 1}</Mark>
+            <span>{r}</span>
+          </li>
+        ))}
+      </ol>
+    </NotePanel>
   );
 }
 
@@ -384,8 +375,9 @@ export function Reasons({ items }: { items: string[] }) {
  * An iteration or design option, every one laid out the same, top to bottom: label, title
  * and an optional note; the preview across the full width at one 16:9 size (a clip plays
  * in the case study player); then the notes. Stacking keeps every card's preview the same
- * size, whatever the length of its notes. A chosen option has a dark border and a stamp —
- * SHIPPED, or `stamp` for another status such as "In test".
+ * size, whatever the length of its notes. The media and the note panels share one inner
+ * edge, so the card reads as a single tidy block. A chosen option has a dark border and a
+ * stamp — SHIPPED, or `stamp` for another status such as "Selected" or "In test".
  */
 export function OptionCard({
   label,
@@ -419,7 +411,7 @@ export function OptionCard({
         shipped ? "border-2 border-primary" : "border border-line-soft"
       }`}
     >
-      <div className={`flex flex-col gap-[12px] px-[12px] pt-[12px] md:px-[16px] md:pt-[16px] ${shipped ? "pr-[160px] md:pr-[200px]" : ""}`}>
+      <div className={`flex min-h-[64px] flex-col gap-[12px] px-[12px] pb-[4px] pt-[12px] md:px-[16px] md:pt-[16px] ${shipped ? "pr-[176px] md:pr-[232px]" : ""}`}>
         <div className="flex flex-wrap items-center gap-[8px]">
           <Tag tone="grey">{label}</Tag>
         </div>
@@ -430,7 +422,7 @@ export function OptionCard({
         )}
         {note && <p className={NOTE_HEAD}>{note}</p>}
       </div>
-      <div className="mt-[20px] overflow-hidden rounded-lg">
+      <div className="mt-[16px] overflow-hidden rounded-lg">
         {video ? (
           <Media video={video} poster={poster} label={image} />
         ) : src ? (
@@ -440,11 +432,11 @@ export function OptionCard({
           <ImagePlaceholder label={image} aspect="aspect-[16/9]" radius="rounded-lg" />
         )}
       </div>
-      <div className="px-[12px] pb-[12px] pt-[24px] md:px-[16px] md:pb-[16px]">{children}</div>
+      <div className="mt-[8px]">{children}</div>
       {shipped && (
         <ShippedStamp
           label={stamp}
-          className="absolute right-[16px] top-[20px] h-[52px] w-[136px] md:right-[28px] md:top-[28px] md:h-[64px] md:w-[168px]"
+          className="absolute right-[16px] top-[16px] h-[48px] w-auto md:right-[24px] md:top-[20px] md:h-[60px]"
         />
       )}
     </div>
