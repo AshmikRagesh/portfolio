@@ -479,25 +479,36 @@ function Exploration() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Solution  (how the design works)
 // ─────────────────────────────────────────────────────────────────────────────
+// V1 piece by piece, each answering a research finding. Checked on the live site, 2 Nov 2026.
 const SOLUTION_ITEMS = [
   {
     num: 1,
-    title: "Five filters, picked from how people choose a trip",
-    body: "Destination, trip type, departure month, length and availability. These are the questions a traveller answers before they enquire.",
+    title: "Five filters, in the order people plan a trip",
+    answers: "One long list · No way to narrow it · Full trips mixed in",
+    body: "Destination, trip type, departure month, duration and availability sit in one row above the results. Each option shows how many trips it would leave, like Africa (22) or Golf (2), and the numbers update as filters combine: with Africa on, Waitlisted drops to 4. On a phone, the same five open from a Filters bar fixed to the bottom of the screen.",
   },
   {
     num: 2,
-    title: "A count and chips you can undo",
-    body: "A line above the results says how many trips match. Each filter you pick shows as a chip with an ×, and Clear All resets the page in one tap.",
+    title: "A count and chips that show what’s applied",
+    answers: "No way to narrow it",
+    body: "The number of matching trips sits above the results. Every choice shows as a chip under the filter row: × removes one, and Clear filters removes them all.",
   },
   {
     num: 3,
     title: "A card that says where the trip goes",
-    body: "The old card showed a name and dates. The new one is a wide row with the number of destinations and the full route, so travellers can compare trips without opening them.",
+    answers: "Cards didn’t say where",
+    body: "The old card showed a name and dates. The new one is a wide row with the number of destinations and the full route, so a traveller can see that Grand Horizons stops in Tokyo without opening it.",
   },
   {
     num: 4,
+    title: "Menu links that open a filter",
+    answers: "The menu didn’t filter",
+    body: "Find a Trip’s region links used to type the region’s name into search. Now Africa opens search with the Africa filter on: 22 trips, shown as a chip a traveller can see, remove or add a month to.",
+  },
+  {
+    num: 5,
     title: "A no-results page that still leads somewhere",
+    answers: "Needed once filters exist",
     body: "Filters can narrow a list to nothing, so this page mattered more. It kept what the old page offered, a phone number for a travel expert and Private Custom Travel, and now lists curated trips underneath. Nearly half of sites get this page wrong.",
   },
 ];
@@ -571,22 +582,26 @@ function Solution() {
     <Chapter id="solution" num={4} title="How the new search works">
       <Copy>
         <p>
-          The page keeps the tabs and adds what was missing: a way to narrow,
-          a way to see what you&apos;ve narrowed, a card that shows where each
-          trip goes, and a way forward when nothing fits.
+          V1 keeps the tabs and adds five pieces, one for each research
+          finding: filters to narrow the list, a count and chips to show
+          what&apos;s applied, a card that says where a trip goes, menu links
+          that open a filter, and a way forward when nothing fits.
         </p>
       </Copy>
-      {SOLUTION_ITEMS.map(({ num, title, body }) => (
+      {SOLUTION_ITEMS.map(({ num, title, answers, body }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>{num}. {title}</h3>
+            <p className="!mt-[8px] font-body text-[14px] leading-[22px] text-muted">
+              <span className="font-semibold text-secondary">Answers:</span> {answers}
+            </p>
             <p>{body}</p>
             {num === 3 && (
               <MoreDetail label="The card, part by part" className="mt-[20px]">
                 <CardParts />
               </MoreDetail>
             )}
-            {num === 4 && (
+            {num === 5 && (
               <Footnote>
                 Source:{" "}
                 <a href="https://baymard.com/research-articles/no-results-page" target="_blank" rel="noreferrer">
@@ -597,7 +612,7 @@ function Solution() {
             )}
           </Copy>
           <Visual>
-            <Figure label={`Solution ${num} — ${title}`} />
+            <Figure label={`V1 live: ${title}`} />
           </Visual>
         </div>
       ))}
