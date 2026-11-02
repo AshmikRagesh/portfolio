@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import {
-  DeviceMobile,
   Funnel,
-  MagnifyingGlass,
   MapTrifold,
-  Question,
   SlidersHorizontal,
 } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
@@ -67,12 +64,11 @@ function Overview() {
     <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
-          Searching &ldquo;Summer in Japan&rdquo; on the TCS website showed
-          about 48 trips, close to the whole catalogue. I redesigned the search
-          page so travellers can narrow results by destination, trip type, date
-          and length, and so a search that finds nothing still leads to a
-          person or a trip. Developers built it, and it has been live since
-          July 2026.
+          TCS&apos;s search page listed every upcoming trip departure in one
+          long list, with no way to narrow it. I redesigned it so travellers
+          can narrow results by destination, trip type, date and length, see
+          how many trips match, and see where each one goes. Developers built
+          it, and it has been live since July 2026.
         </p>
         <Meta
           role={
@@ -103,16 +99,17 @@ function TheProblem() {
       <Copy>
         <p>
           Travellers usually search with something in mind: a place, a month
-          or a kind of trip. TCS&apos;s search answered with a broad list
-          instead. A search for &ldquo;Summer in Japan&rdquo; returned about 48
-          trips, close to the whole catalogue, and left travellers to scan each
-          card to work out which ones fit. TCS had no search data to show how
-          often this happened.
+          or a kind of trip. TCS&apos;s search page couldn&apos;t be narrowed
+          by any of them. In March 2026 its trips tab listed 42 departures of
+          32 trips in date order, with no filters, no sort and no count, and
+          the cards didn&apos;t say which countries a trip visited. Travellers
+          had to scan the list and open trips to work out which ones fit. TCS
+          had no search data to show how often this happened.
         </p>
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Even with a destination or trip in mind, travellers got back close to the whole catalogue and had to work out for themselves which trips fit."
+          situation="Even with a destination or trip in mind, travellers got one long list they couldn’t narrow, and had to work out for themselves which trips fit."
           consequence="A trip a traveller can’t find is a trip they can’t enquire about, and TCS, which sells through enquiries, couldn’t see how many gave up."
         />
       </Visual>
@@ -124,12 +121,12 @@ function TheProblem() {
 // Section: Discovery  (research / inputs)
 // ─────────────────────────────────────────────────────────────────────────────
 const OLD_SEARCH_TILES: Parameters<typeof StatTiles>[0]["items"] = [
-  { tag: "Results", stat: "48", label: "trip cards for “Summer in Japan”, close to the whole catalogue" },
+  { tag: "List", stat: "42", label: "trip departures in one list, in date order" },
   { tag: "Control", stat: "0", label: "filters, sort options or result counts", tone: "key" },
-  { tag: "Cards", stat: "0", label: "routes shown, so seeing where a trip went meant opening it" },
+  { tag: "Cards", stat: "0", label: "countries named on a card, so “Asia Unveiled” had to be opened to see where it went" },
 ];
 
-// How site search got here, step by step (from the two tickets, the design file and the live site)
+// How site search got here, step by step (from the two tickets, an archived copy of the old page and the live site)
 const SEARCH_STEPS = [
   {
     when: "Before Aug 2025",
@@ -142,18 +139,18 @@ const SEARCH_STEPS = [
   {
     when: "Aug 2025",
     title: "Tabs and quick links",
-    figure: "252",
-    figureLabel: "results for a Japan search, in the design",
+    figure: "3",
+    figureLabel: "tabs to split results by type",
     detail:
-      "An earlier ticket swapped the type filters for three tabs, Expeditions, Destinations and Guides & Resources, and added quick links to popular searches. The list got tidier, not shorter.",
+      "An earlier ticket swapped the type filters for three tabs, Expeditions, Destinations and Guides & Resources, and added quick links to popular searches.",
   },
   {
     when: "Early 2026",
     title: "The page I started from",
-    figure: "~48",
-    figureLabel: "trips for “Summer in Japan”",
+    figure: "42",
+    figureLabel: "trip departures in the trips tab",
     detail:
-      "The tabs were live, but the trips tab still showed close to the whole catalogue, with no filters, no count and no route on the cards.",
+      "The tabs were live. The trips tab listed 42 departures of 32 trips in date order, with no filters, no count and no countries on the cards.",
   },
   {
     when: "Feb–May 2026",
@@ -176,24 +173,16 @@ const SEARCH_STEPS = [
 // What the review and the research found: the problems the design had to solve
 const FINDINGS = [
   {
-    lead: "Almost everything came back.",
-    text: "“Summer in Japan” returned about 48 trips, close to the whole catalogue, with Africa in the top six.",
+    lead: "One long list.",
+    text: "The trips tab listed 42 departures of 32 trips in date order. Around the World by Private Jet alone appeared five times.",
   },
   {
-    lead: "Cards hid the route.",
-    text: "A status, a title and dates, but not where the trip went, so every card had to be opened.",
+    lead: "No way to narrow it.",
+    text: "No filters for place, month, type of trip or length, no sort, and no count of matching trips.",
   },
   {
-    lead: "Tabs sorted, but didn’t shrink.",
-    text: "Trips sat apart from articles, but inside the trips tab nothing could be narrowed.",
-  },
-  {
-    lead: "No sense of control.",
-    text: "No count of matching trips, nothing to show what was applied, and no sort.",
-  },
-  {
-    lead: "A poor match looked like a good one.",
-    text: "The page never said that few trips fitted. Against published best practice, it met none of five.",
+    lead: "Cards didn’t say where a trip went.",
+    text: "Each card showed a status, a title, dates and a length. A name like “Asia Unveiled” didn’t say which countries it visited, so you had to open it.",
   },
 ];
 
@@ -216,21 +205,21 @@ const PRACTICES: Parameters<typeof PracticeCheck>[0]["items"] = [
   {
     practice: "A count of matching results",
     verdict: "missing",
-    found: "No count, so 48 cards looked no different from 4.",
+    found: "No count, so a long list gave no sense of how many trips fitted.",
     evidence: "GetYourGuide’s search redesign showed result counts and applied filters, and lifted engagement on its search page by 3.5%.",
     source: { label: "GetYourGuide", href: "https://www.getyourguide.careers/posts/how-we-redesigned-our-search-experience" },
   },
   {
     practice: "Say clearly when nothing matched",
-    verdict: "missing",
-    found: "The page never said no. A poor match came back as nearly every trip.",
+    verdict: "met",
+    found: "A search with no matches said so plainly: “Sorry, your search found no results.”",
     evidence: "A no-results page must clearly state that no results have been found.",
     source: { label: "Nielsen Norman Group", href: "https://www.nngroup.com/articles/search-no-results-serp/" },
   },
   {
     practice: "A way forward from a dead end",
-    verdict: "partly",
-    found: "A Private Custom Travel banner sat under every list, but there was no phone number or related search.",
+    verdict: "met",
+    found: "The no-results message offered a phone number, Contact Us, Private Custom Travel and trips by region.",
     evidence: "Nearly 50% of sites fail here. Offer related categories, other searches, a sales phone number and popular items.",
     source: { label: "Baymard, no results", href: "https://baymard.com/research-articles/no-results-page" },
   },
@@ -259,13 +248,13 @@ const SOURCES: Parameters<typeof SourceList>[0]["sources"] = [
   {
     topic: "No results",
     finding: "Nearly 50% of sites give no good way forward after a search that finds nothing.",
-    applies: "A phone number, Private Custom Travel and matching trips on the no-results page.",
+    applies: "Kept the old page’s phone number and Private Custom Travel on the no-results page.",
     source: { label: "Baymard, no-results page", href: "https://baymard.com/research-articles/no-results-page" },
   },
   {
     topic: "No results",
     finding: "A no-results page must clearly state that nothing was found.",
-    applies: "A plain headline first, then the ways forward.",
+    applies: "Kept a plain headline first, then the ways forward.",
     source: { label: "Nielsen Norman Group, no results", href: "https://www.nngroup.com/articles/search-no-results-serp/" },
   },
   {
@@ -287,43 +276,28 @@ const CONTEXT_CARDS = [
   {
     icon: <Funnel size={28} weight="fill" className="text-grape" />,
     title: "Narrow by how people plan",
-    description: "Where, when, what kind of trip and how long, inside the tabs. From the long list, the tabs that didn’t shrink it, and a brief with no filter list.",
+    description: "Filters for where, when, what kind of trip and how long, using TCS’s own regions and trip types. From the long list with no way to narrow it.",
   },
   {
     icon: <MapTrifold size={28} weight="fill" className="text-grape" />,
     title: "Show where a trip goes",
-    description: "The full route on every card, so no one has to open a trip to check it. From the hidden routes.",
+    description: "The countries and route on every card, so no one has to open a trip to check. From cards that didn’t say where a trip went.",
   },
   {
     icon: <SlidersHorizontal size={28} weight="fill" className="text-grape" />,
     title: "Always show what’s applied",
-    description: "A count, removable chips and one tap to clear them all. From the missing sense of control.",
-  },
-  {
-    icon: <Question size={28} weight="fill" className="text-grape" />,
-    title: "Never a dead end",
-    description: "When nothing fits, say so plainly and offer a next step. From the poor match that looked like a good one.",
-  },
-  {
-    icon: <DeviceMobile size={28} weight="fill" className="text-grape" />,
-    title: "Built for phones, in TCS style",
-    description: "Clear touch targets, the new TCS branding and Enchanting Travels patterns, restyled. From the brief.",
-  },
-  {
-    icon: <MagnifyingGlass size={28} weight="fill" className="text-grape" />,
-    title: "Start from what TCS knows",
-    description: "With no search data, the filters follow TCS’s menu and suggested searches. From the brief.",
+    description: "A count of matching trips, removable chips and one tap to clear them all. From a list with no count and nothing to show what was applied.",
   },
 ];
 
 function Context() {
   return (
-    <Chapter id="discovery" num={2} title="A tidier list, not a shorter one">
+    <Chapter id="discovery" num={2} title="One long list, no way to narrow it">
       <Copy>
         <p>
-          I started with the search page as it was: what it returned for a
-          typical search, what each card told you, and what you could do with
-          the results. TCS had no search data, so this review, the earlier
+          I started with the search page as it was: what the trips tab
+          listed, what each card told you, and what you could do with the
+          results. TCS had no search data, so this review, the earlier
           search tickets and published research were what I had to go on.
         </p>
         <PullQuote
@@ -334,18 +308,18 @@ function Context() {
       </Copy>
       <div className="cs-sub">
         <Copy>
-          <h3>One search, almost every trip</h3>
+          <h3>The page I started from</h3>
           <p>
-            Search already split results into three tabs: Expeditions,
-            Destinations, and Guides &amp; Resources. That came from an earlier
-            fix in August 2025. It made the list tidier, but not shorter.
+            Search split results into three tabs: Expeditions, Destinations,
+            and Guides &amp; Resources, from an earlier fix in August 2025.
+            Inside the trips tab, every upcoming departure sat in one list.
           </p>
           <MoreDetail label="How site search got here" className="mt-[20px]">
             <StepStory steps={SEARCH_STEPS} start={2} />
           </MoreDetail>
         </Copy>
         <Visual>
-          <Figure label="The old search page, from the design file: “Summer in Japan” returned about 48 trips" />
+          <Figure label="The old search page, March 2026: 42 departures in one list" />
           <StatTiles items={OLD_SEARCH_TILES} />
         </Visual>
       </div>
@@ -353,8 +327,8 @@ function Context() {
         <Copy>
           <h3>What the research found</h3>
           <p>
-            Reviewing the page and checking it against published research on
-            search and filtering turned up five problems.
+            Reviewing the old page and checking it against published research
+            on search and filtering turned up three problems.
           </p>
           <Pointers items={FINDINGS} />
           <MoreDetail label="The research behind these" className="mt-[32px]">
@@ -379,8 +353,8 @@ function Context() {
         <Copy>
           <h3>What shaped the design</h3>
           <p>
-            Each problem became a rule for the design, alongside what the brief
-            asked for.
+            Each problem became a rule for the design, for desktop and phone,
+            as the brief asked.
           </p>
         </Copy>
         <Visual>
@@ -389,8 +363,8 @@ function Context() {
         <Copy>
           <p>
             <strong>What success looked like:</strong> a traveller can narrow a
-            broad search to the handful of trips that fit, see what&apos;s
-            applied at a glance, and never hit a dead end.
+            long list to the handful of trips that fit, see what&apos;s applied
+            at a glance, and tell where each trip goes without opening it.
           </p>
         </Copy>
       </div>
@@ -708,8 +682,8 @@ function Outcome() {
 // TODO: Ashmik to rewrite in his own words; these are placeholders from the notes
 const LESSONS = [
   {
-    title: "A tidier list isn't a shorter one",
-    description: "Tabs sorted the results but didn't help anyone narrow them. Filters did.",
+    title: "A list in date order isn't a way to choose",
+    description: "Someone who knows where they want to go needs to narrow, not scroll. Filters did that.",
   },
   {
     title: "Search has to understand how people talk",
