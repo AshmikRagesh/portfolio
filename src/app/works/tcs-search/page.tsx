@@ -576,11 +576,9 @@ function Solution() {
     <Chapter id="solution" num={4} title="How the new search works">
       <Copy>
         <p>
-          V1 has been live since July 2026 at /search, built on Algolia. It
-          keeps the tabs and adds five pieces: filters that narrow the list,
-          clear feedback on what&apos;s applied, trip cards that say where a
-          trip goes, menu links that open a filter, and a way forward when
-          nothing matches.
+          V1 kept the familiar tabs and added five changes, one for each
+          problem the research found. Together, they help travellers narrow a
+          long list down to the trips that suit them.
         </p>
       </Copy>
       {SOLUTION_ITEMS.map(({ num, title, body }) => (
