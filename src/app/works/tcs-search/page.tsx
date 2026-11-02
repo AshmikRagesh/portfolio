@@ -400,8 +400,6 @@ type OptionItem = {
   label: string;
   title: string;
   shipped?: boolean;
-  /** How many of the five research findings it solves */
-  solves: string;
   video: string;
   worked: string[];
   didntWork: string[];
@@ -414,7 +412,6 @@ const OPTIONS: OptionItem[] = [
     label: "Option 1",
     video: "/videos/tcs-search/option-1.mp4",
     title: "Region shortcuts, with country tags on the card",
-    solves: "Solves 2 of the 5 findings, 3 in part",
     worked: [
       "Every region is one tap away and always in view",
       "Simple to build: one filter, one switch and a tag list on the card",
@@ -430,7 +427,6 @@ const OPTIONS: OptionItem[] = [
     label: "Option 2",
     video: "/videos/tcs-search/option-2.mp4",
     title: "A Sort menu, with every country on the card",
-    solves: "Solves 1 of the 5 findings, 2 in part",
     worked: [
       "One control everyone already knows from shopping sites",
       "Quick to build, and a single button on a phone",
@@ -448,7 +444,6 @@ const OPTIONS: OptionItem[] = [
     video: "/videos/tcs-search/option-3.mp4",
     title: "A row of filters, with the full route on the card",
     shipped: true,
-    solves: "Solves all 5 findings",
     worked: [
       "Five filters fit in one row, within research guidance of fewer than 6 to 8",
       "Each option shows how many trips it leaves, like Africa (22), and the numbers update as filters combine",
@@ -475,10 +470,10 @@ function Exploration() {
           as a clickable prototype that runs on the 45 live trips.
         </p>
       </Copy>
-      {OPTIONS.map(({ label, title, shipped, solves, video, worked, didntWork }) => (
+      {OPTIONS.map(({ label, title, shipped, video, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
-            <OptionCard label={label} title={title} shipped={shipped} stamp="Live" note={solves} video={video} image={`${label}: ${title}, clickable prototype`}>
+            <OptionCard label={label} title={title} shipped={shipped} stamp="Live" video={video} image={`${label}: ${title}, clickable prototype`}>
               <ProsCons pros={worked} cons={didntWork} />
             </OptionCard>
           </Visual>
