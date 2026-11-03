@@ -29,8 +29,6 @@ type Stat = {
   label: string;
   note?: string;
   improve?: boolean;
-  // Shown as a row of dots, e.g. [1, 7] for "1 in 7", with the first `n` filled
-  ratio?: [number, number];
 };
 
 const EASE = "ease-[cubic-bezier(0.2,0.7,0.2,1)]";
@@ -325,20 +323,6 @@ export default function ResultsCard({
                   <CountUp value={s.after} run={shown} />
                 </span>
                 {s.change && <span className="sr-only">, {s.change}</span>}
-                {s.ratio && (
-                  <span className="ml-auto flex items-center gap-[4px] self-center" aria-label={`${s.ratio[0]} in ${s.ratio[1]}`}>
-                    {Array.from({ length: s.ratio[1] }, (_, d) => (
-                      <span
-                        key={d}
-                        aria-hidden="true"
-                        className={`size-[8px] rounded-full transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
-                          d < s.ratio![0] ? "bg-warning" : "bg-warning/20"
-                        } ${shown ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
-                        style={{ transitionDelay: `${800 + d * 60}ms` }}
-                      />
-                    ))}
-                  </span>
-                )}
               </dd>
             </div>
           </div>

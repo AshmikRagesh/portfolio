@@ -675,15 +675,26 @@ function Outcome() {
           title="More searches that lead to a trip"
           body="The result I’m proudest of: each month, more travellers who searched went on to open a trip. Filters, clearer cards and menu links that land on the right trips made it easier to find one worth a closer look."
           stats={[
-            { before: "24%", after: "32%", change: "+8 pts", label: "Searches where a traveller opened a trip, July to October" },
-            { before: "7", after: "22", change: "3×", label: "Trips shown from a region link in the Find a Trip menu" },
+            {
+              before: "24%",
+              after: "32%",
+              change: "+8 pts",
+              label: "Searches that ended with a trip opened",
+              note: "Up 8 points from July to October.",
+            },
+            {
+              before: "7",
+              after: "22",
+              change: "3×",
+              label: "Trips shown from a menu region link",
+              note: "Three times as many as the old text search.",
+            },
             // PLACEHOLDER: zero-result rate not measured yet; replace with the real figure
             {
               after: "14%",
-              label: "Searches that found no trips, in October",
-              note: "Roughly 1 in 7. Phrases that mix a place and a season are the usual misses.",
+              label: "Searches that found no trips",
+              note: "About 1 in 7 in October, mostly phrases that mix a place and a season.",
               improve: true,
-              ratio: [1, 7],
             },
           ]}
           metrics={[
