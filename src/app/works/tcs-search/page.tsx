@@ -301,7 +301,7 @@ function Context() {
         <Copy>
           <h3>What we heard from travellers</h3>
           <p>
-            <strong>7 frequent TCS travellers interviewed.</strong> Two
+            <span className="text-heading underline decoration-grape decoration-[2px] underline-offset-[6px]">7 frequent TCS travellers interviewed.</span> Two
             recurring observations stood out:
           </p>
           <UserQuotes items={TRAVELLER_QUOTES} />
