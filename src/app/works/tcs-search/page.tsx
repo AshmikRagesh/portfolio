@@ -16,7 +16,7 @@ import {
   Figure,
   CardGrid,
   ProblemStatement,
-  UserQuotes,
+  ChatQuotes,
   BarRows,
   Highlight,
   ResultsCard,
@@ -25,8 +25,6 @@ import {
   MoreDetail,
   NextCase,
   ProsCons,
-  NumberedPoints,
-  Timeline,
   OptionCard,
   Pointers,
 } from "@/components/case-study";
@@ -118,7 +116,7 @@ function TheProblem() {
           and open individual trips to understand where each journey went.
         </p>
         <p>
-          Search performance data wasn&apos;t available to the design team,
+          <Highlight>Search performance data wasn&apos;t available</Highlight> to the design team,
           making it difficult to understand how often travellers encountered
           these issues.
         </p>
@@ -146,8 +144,8 @@ const AUDIT: Parameters<typeof BarRows>[0]["items"] = [
 
 // What frequent travellers said in the interviews
 const TRAVELLER_QUOTES = [
-  { text: "I want to know where the trip goes and which destinations it covers without having to open every trip.", attribution: "Frequent TCS traveller" },
-  { text: "The number of matching trips is easy to miss when I’m changing filters.", attribution: "Frequent TCS traveller" },
+  { text: "I want to know where the trip goes and which destinations it covers without having to open every trip.", from: "Frequent TCS traveller" },
+  { text: "The number of matching trips is easy to miss when I’m changing filters.", from: "Frequent TCS traveller" },
 ];
 
 // The five priorities the interviews and the audit shaped
@@ -198,11 +196,7 @@ function Context() {
             <Highlight><span className="text-heading">7 frequent TCS travellers interviewed.</span></Highlight> Two
             recurring observations stood out:
           </p>
-        </Copy>
-        <Visual>
-          <UserQuotes items={TRAVELLER_QUOTES} />
-        </Visual>
-        <Copy>
+          <ChatQuotes label="What two frequent TCS travellers said" items={TRAVELLER_QUOTES} />
           <p>
             These conversations highlighted two important needs: <Highlight>better
             visibility into trip itineraries and clearer feedback when
@@ -220,8 +214,8 @@ function Context() {
           </p>
           <BarRows heads={["What I reviewed", "Finding"]} items={AUDIT} />
           <p className="mt-[24px]">
-            Travellers had limited ways to narrow the list, distinguish
-            available trips or understand where a journey went from the card
+            Travellers had <Highlight>limited ways to narrow the list, distinguish
+            available trips or understand where a journey went</Highlight> from the card
             itself.
           </p>
         </Copy>
@@ -318,8 +312,8 @@ function Exploration() {
         </p>
         <p>
           I compared how each concept addressed the five research findings,
-          particularly how travellers could filter trips and understand their
-          routes without opening individual cards.
+          particularly how travellers could <Highlight>filter trips and understand their
+          routes without opening individual cards</Highlight>.
         </p>
         <p>
           Each concept is recreated as a <Highlight>clickable prototype using
@@ -348,27 +342,27 @@ const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "Filters that narrow down the search",
-    body: "Introduced five filters above the results: destination, trip type, departure, duration and availability. Each option shows how many trips it will return before you pick it, and on phones the filters open from a bar fixed to the bottom of the screen.",
+    body: <>Introduced five filters above the results: destination, trip type, departure, duration and availability. <Highlight>Each option shows how many trips it will return before you pick it</Highlight>, and on phones the filters open from a bar fixed to the bottom of the screen.</>,
   },
   {
     num: 2,
     title: "Clear feedback on applied filters",
-    body: "Added a matching result count and removable filter chips to make the search state clear. Travellers can see which selections are active, remove individual filters or clear them all.",
+    body: <>Added a <Highlight>matching result count and removable filter chips</Highlight> to make the search state clear. Travellers can see which selections are active, remove individual filters or clear them all.</>,
   },
   {
     num: 3,
     title: "More context in every trip card",
-    body: "Redesigned the trip card to show the full route alongside the name and dates, so travellers can see every stop without opening the trip.",
+    body: <>Redesigned the trip card to show the full route alongside the name and dates, so travellers can <Highlight>see every stop without opening the trip</Highlight>.</>,
   },
   {
     num: 4,
     title: "Connecting navigation to search",
-    body: "In the site’s top menu, Find a Trip lists regions like Africa and Europe. Those links used to type the region’s name into search, which only found trips that mentioned that word. Now each link opens search with that region’s filter already on, so it shows every trip in the region, three times as many as before, and you can add a month or trip type straight away.",
+    body: <>In the site’s top menu, Find a Trip lists regions like Africa and Europe. Those links used to type the region’s name into search, which only found trips that mentioned that word. Now each link <Highlight>opens search with that region’s filter already on</Highlight>, so it shows every trip in the region, three times as many as before, and you can add a month or trip type straight away.</>,
   },
   {
     num: 5,
     title: "Keeping travellers moving when no results match",
-    body: "Designed a no-results state that offers ways to keep exploring. Alongside contact details for a travel expert and Private Custom Travel, it introduces curated alternative trips.",
+    body: <>Designed a no-results state that offers ways to keep exploring. Alongside contact details for a travel expert and Private Custom Travel, it <Highlight>introduces curated alternative trips</Highlight>.</>,
   },
 ];
 
@@ -520,7 +514,7 @@ function Outcome() {
         <Copy>
           <h3>What V1 doesn&apos;t do yet</h3>
           <p>
-            Four months live also showed where V1 falls short. V2 is designed
+            Four months live also showed <Highlight>where V1 falls short</Highlight>. V2 is designed
             to close each gap, and will be built with <HelixLink />.
           </p>
           <div className="mt-[32px]">
@@ -540,30 +534,30 @@ function Outcome() {
 const WORKED = [
   {
     lead: "Filters before sorting.",
-    text: "We explored sorting, but with 45 trips in the results, changing their order didn’t solve the bigger problem. Filters helped travellers narrow the list to what was relevant. Sorting could follow in V2.",
+    text: <>We explored sorting, but with 45 trips in the results, changing their order didn’t solve the bigger problem. <Highlight>Filters helped travellers narrow the list to what was relevant.</Highlight> Sorting could follow in V2.</>,
   },
   {
     lead: "Ship, learn, and iterate.",
-    text: "V1 went live a month after the brief. Getting the experience into production gave us an opportunity to see how it worked in practice and identify what needed to improve in V2.",
+    text: <><Highlight>V1 went live a month after the brief.</Highlight> Getting the experience into production gave us an opportunity to see how it worked in practice and identify what needed to improve in V2.</>,
   },
   {
     lead: "Test with people who know the product.",
-    text: "Frequent TCS travellers helped us spot details we had overlooked, including how easy it was to miss the result count.",
+    text: <>Frequent TCS travellers helped us spot details we had overlooked, including <Highlight>how easy it was to miss the result count</Highlight>.</>,
   },
 ];
 
 const NEXT_TIME = [
   {
     lead: "Validate key decisions with users earlier.",
-    text: "We knew the result count was visually separated from the filters, but hadn’t recognised how easily it could be overlooked. Testing this earlier could have helped us address it before launch.",
+    text: <>We knew the result count was visually separated from the filters, but hadn’t recognised how easily it could be overlooked. <Highlight>Testing this earlier could have helped us address it before launch.</Highlight></>,
   },
   {
     lead: "Validate the implementation, not just the design.",
-    text: "The search hint appeared almost white against a white background in the live build. Reviewing the implemented experience before release would have helped catch this contrast issue.",
+    text: <>The search hint appeared <Highlight>almost white against a white background</Highlight> in the live build. Reviewing the implemented experience before release would have helped catch this contrast issue.</>,
   },
   {
     lead: "Plan measurement before launch.",
-    text: "Tracking started in July, so the 1.3× growth reflects change since launch, not a true before-and-after comparison. Defining baseline metrics and tracking zero-result searches from day one would have made it easier to understand search performance over time.",
+    text: <>Tracking started in July, so the 1.3× growth reflects change since launch, not a true before-and-after comparison. <Highlight>Defining baseline metrics and tracking zero-result searches from day one</Highlight> would have made it easier to understand search performance over time.</>,
   },
 ];
 

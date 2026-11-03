@@ -8,7 +8,7 @@ import useInView from "./useInView";
  * what it led to, set under it in grape after an arrow. The points rise in one after
  * another when they scroll into view; with reduced motion they simply show.
  */
-type Pointer = { lead: string; text: string; result?: string };
+type Pointer = { lead: string; text: React.ReactNode; result?: string };
 
 export default function Pointers({ items }: { items: Pointer[] }) {
   const [ref, shown] = useInView<HTMLDivElement>(0.3);
