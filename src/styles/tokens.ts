@@ -17,8 +17,6 @@ export const tokens = {
     surface:        "#f8f9fa",  // Light cards, sidebar bg
     placeholder:    "#f0f0f0",  // Image placeholder bg
     vanilla:        "#ece5d8",  // Warm alternative surface
-    "legal-pad":    "#f4eca6",  // Yellow notepad paper — hero experience pad
-    "legal-pad-deep": "#e6db86", // Notepad binding strip and the sheet underneath
 
     // ── Lines / borders ───────────────────────────────────────────────
     "line-soft":    "#edf0f3",  // Subtle dividers
