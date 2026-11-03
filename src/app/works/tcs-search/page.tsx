@@ -730,31 +730,31 @@ function Outcome() {
 // tester feedback and four months of results.
 const WORKED = [
   {
-    lead: "Filters first, sort later.",
-    text: "The Sort menu we explored still left all 45 trips to scroll. Filters cut the list to what fits, like Africa (22), so they came first. Sort follows in V2.",
+    lead: "Filters before sorting.",
+    text: "We explored sorting, but with 45 trips in the results, changing their order didn’t solve the bigger problem. Filters helped travellers narrow the list to what was relevant, such as Africa (22). Sorting could follow in V2.",
   },
   {
-    lead: "Ship the simple version first.",
-    text: "V1 went live a month after the brief, and four months of real use showed what V2 needs.",
+    lead: "Ship, learn, and iterate.",
+    text: "V1 went live a month after the brief. Getting the experience into production gave us an opportunity to see how it worked in practice and identify what needed to improve in V2.",
   },
   {
-    lead: "Frequent travellers spot what we miss.",
-    text: "Testing V1 with travellers who book with TCS often is how we learned the result count was easy to miss.",
+    lead: "Test with people who know the product.",
+    text: "Frequent TCS travellers helped us spot details we had overlooked, including how easy it was to miss the result count.",
   },
 ];
 
 const NEXT_TIME = [
   {
-    lead: "I’d fix the known flaw before launch.",
-    text: "We chose the filter row knowing its count was easy to miss. Our testers felt it, and it’s now the first gap V2 has to close.",
+    lead: "Validate key decisions with users earlier.",
+    text: "We knew the result count was visually separated from the filters, but hadn’t recognised how easily it could be overlooked. Testing this earlier could have helped us address it before launch.",
   },
   {
-    lead: "I’d check the live build, not just the design.",
-    text: "The search hint shipped near-white on a white field. A quick look at the live page would have caught it.",
+    lead: "Validate the implementation, not just the design.",
+    text: "The search hint appeared almost white against a white background in the live build. Reviewing the implemented experience before release would have helped catch this contrast issue.",
   },
   {
-    lead: "I’d measure from day one.",
-    text: "Tracking started in July, so the 1.3× is growth since launch, not a true before and after. Counting searches that find nothing from the start would show if the 14% is rising or falling.",
+    lead: "Plan measurement before launch.",
+    text: "Tracking started in July, so the 1.3× growth reflects change since launch, not a true before-and-after comparison. Defining baseline metrics and tracking zero-result searches from day one would have made it easier to understand search performance over time.",
   },
 ];
 
