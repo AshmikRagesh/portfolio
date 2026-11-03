@@ -266,17 +266,21 @@ function linkHref(href: string, pathname: string) {
   return href.startsWith("/") || pathname === "/" ? href : `/${href}`;
 }
 
-// A tab: on hover, the pink highlighter from the case studies sweeps behind the word
+// A tab: on hover, the grape highlighter sweeps behind the word. The page you're on
+// (Pass, Fancy paper) stays grape.
 function NavTab({ label, href, pathname }: { label: string; href: string; pathname: string }) {
   const resume = href === "/resume";
-  const className = "nav-tab font-brand text-lead font-normal text-text-base/85 uppercase tracking-[1px] whitespace-nowrap";
+  const current = href.startsWith("/") && pathname === href;
+  const className = `nav-tab font-geist text-body font-medium tracking-[-0.1px] whitespace-nowrap ${
+    current ? "text-grape" : "text-text-base/85"
+  }`;
   const inner = <span className="nav-tab-label">{label}</span>;
   return resume ? (
-    <Link href={href} onClick={() => celebrate("resume", "Resume downloaded.")} className={className}>
+    <Link href={href} onClick={() => celebrate("resume", "Resume downloaded.")} aria-current={current ? "page" : undefined} className={className}>
       {inner}
     </Link>
   ) : (
-    <a href={linkHref(href, pathname)} className={className}>
+    <a href={linkHref(href, pathname)} aria-current={current ? "page" : undefined} className={className}>
       {inner}
     </a>
   );
@@ -351,8 +355,12 @@ export default function Navbar() {
   return (
     <header
       onFocusCapture={() => setIsNavVisible(true)}
-      className={`fixed top-[20px] right-0 left-0 h-[68px] z-50 bg-background border-b border-line transition-[transform,box-shadow] duration-300 ease-in-out ${
-        scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
+      // At the top it sits flat on the page with a hairline; once the page scrolls under it,
+      // it turns frosted with a soft lift
+      className={`fixed top-[20px] right-0 left-0 h-[68px] z-50 border-b transition-[transform,box-shadow,background-color,border-color] duration-300 ease-in-out ${
+        scrolled
+          ? "bg-background/80 backdrop-blur-md backdrop-saturate-150 border-line-soft shadow-[0_8px_24px_-12px_rgba(30,5,37,0.16)]"
+          : "bg-background border-line-soft"
       } ${showNav ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >
       {/* Main nav row — the bell on the left, the tabs on the right */}
@@ -368,7 +376,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop + tablet: the tabs */}
-        <ul className="hidden md:flex items-center gap-[32px]">
+        <ul className="hidden md:flex items-center gap-[28px]">
           {navLinks.map((link) => (
             <li key={link.label}>
               <NavTab {...link} pathname={pathname} />
@@ -379,7 +387,7 @@ export default function Navbar() {
         {/* Mobile: just the menu */}
         <div className="md:hidden flex items-center">
           <button
-            className="flex items-center justify-center size-[38px] rounded-full border-[0.5px] border-line bg-[rgba(30,5,37,0.08)] p-[4px] text-heading"
+            className="flex items-center justify-center size-[40px] rounded-full border border-line-soft bg-surface text-heading transition-colors duration-200 hover:border-line"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
           >
@@ -390,14 +398,17 @@ export default function Navbar() {
 
       {/* Mobile drawer */}
       {menuOpen && (
-        <div className="md:hidden bg-background border-b border-line">
+        <div className="md:hidden bg-background border-b border-line-soft shadow-[0_8px_24px_-12px_rgba(30,5,37,0.16)]">
           {/* Nav items — each with a bottom divider */}
           <ul>
             {navLinks.map(({ label, href }) => (
               <li key={label} className="border-b border-line-soft">
                 <a
                   href={linkHref(href, pathname)}
-                  className="flex items-center gap-3 font-brand text-lead font-normal text-text-base/85 uppercase tracking-[1px] px-[20px] py-5 transition-colors duration-200 hover:text-black"
+                  aria-current={href.startsWith("/") && pathname === href ? "page" : undefined}
+                  className={`flex items-center font-geist text-body font-medium tracking-[-0.1px] px-[20px] py-[16px] transition-colors duration-200 hover:text-grape ${
+                    href.startsWith("/") && pathname === href ? "text-grape" : "text-text-base/85"
+                  }`}
                   onClick={() => setMenuOpen(false)}
                 >
                   {label}
