@@ -383,7 +383,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop + tablet: the tabs */}
-        <ul className="hidden md:flex items-center gap-[24px]">
+        <ul className="hidden md:flex items-center gap-[16px]">
           {navLinks.map((link) => (
             <li key={link.label}>
               <NavTab {...link} pathname={pathname} />
