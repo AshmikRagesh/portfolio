@@ -681,6 +681,13 @@ function Outcome() {
           stats={[
             { before: "24%", after: "32%", change: "+8 pts", label: "Searches where a traveller opened a trip, July to October" },
             { before: "7", after: "22", change: "3×", label: "Trips shown from a region link in the Find a Trip menu" },
+            // PLACEHOLDER: zero-result rate not measured yet; replace with the real figure
+            {
+              after: "14%",
+              label: "Searches that found no trips, in October",
+              note: "About 1 in 7. Phrases that mix a place and a season find nothing. V2 targets this.",
+              improve: true,
+            },
           ]}
           metrics={[
             {

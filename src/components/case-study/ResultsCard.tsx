@@ -2,12 +2,13 @@
 
 import { useEffect, useState, type KeyboardEvent } from "react";
 import { ArrowDown, ArrowUp } from "@phosphor-icons/react/dist/ssr";
+import { Tag } from "@/components/Tag";
 import useInView from "./useInView";
 
 /**
  * A results card, sized to sit in the text column: the headline number with what it
- * means and a short paragraph, two supporting stats in boxes side by side (each as
- * before → after), then a line chart of one metric by month. All type comes from the
+ * means and a short paragraph, two or three supporting stats in tagged boxes side by
+ * side (wins as before → after, and any number still to improve in the warning colour), then a line chart of one metric by month. All type comes from the
  * DS scale.
  * When it scrolls into view the card rises in, the headline and the new stat values count
  * up, the line and the fill under it draw left to right, each point popping in as the line
@@ -19,7 +20,16 @@ import useInView from "./useInView";
  */
 type Point = { label: string; value: number };
 type Metric = { name: string; points: Point[]; caption: string; max?: number };
-type Stat = { before: string; after: string; change: string; label: string };
+// A stat is a win (grape) unless it's marked `improve`: a number not yet in our favour,
+// set in the warning colour with a note on what's behind it
+type Stat = {
+  before?: string;
+  after: string;
+  change?: string;
+  label: string;
+  note?: string;
+  improve?: boolean;
+};
 
 const EASE = "ease-[cubic-bezier(0.2,0.7,0.2,1)]";
 const DRAW = 1400;
@@ -270,21 +280,43 @@ export default function ResultsCard({
         <p className="mt-[8px] font-body text-body text-secondary md:text-body-md">{body}</p>
       </div>
 
-      {/* Supporting stats: two white boxes side by side, the label above, then the old
-          value muted and the new one in grape */}
-      <dl className="m-0 mt-[24px] grid grid-cols-1 gap-[12px] md:grid-cols-2 md:gap-[16px]">
+      {/* Supporting stats: white boxes side by side, each tagged. A win shows the old value
+          muted and the new one in grape; a number still to improve shows in the warning
+          colour with a note on what's behind it */}
+      <dl
+        className={`m-0 mt-[24px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${
+          stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"
+        }`}
+      >
         {stats.map((s, i) => (
           <div key={s.label} {...rise(200 + i * 150)}>
-            <div className="h-full rounded-md bg-white p-[16px] ring-1 ring-inset ring-primary/5 md:p-[20px]">
-              <dt className="font-body text-body text-secondary">{s.label}</dt>
-              <dd className="m-0 mt-[12px] flex items-baseline gap-[8px]">
-                <span className="font-heading text-h4 text-muted md:text-h4-md">{s.before}</span>
-                <span aria-hidden="true" className="font-body text-body text-muted">→</span>
-                <span className="font-heading text-h2 text-grape md:text-h2-md">
-                  <CountUp value={s.after} run={shown} />
+            <div
+              className={`flex h-full flex-col gap-[12px] rounded-md bg-white p-[16px] ring-1 ring-inset md:p-[20px] ${
+                s.improve ? "ring-warning/30" : "ring-primary/5"
+              }`}
+            >
+              <span className="self-start">
+                <Tag face="geist" tone={s.improve ? "grey" : "grape"}>
+                  {s.improve ? "Still to improve" : "Improved"}
+                </Tag>
+              </span>
+              {/* Number first, so the numbers line up across the boxes */}
+              <dt className="order-3 font-body text-body text-secondary">{s.label}</dt>
+              <dd className="order-2 m-0 flex flex-col gap-[8px]">
+                <span className="flex items-baseline gap-[8px]">
+                  {s.before && (
+                    <>
+                      <span className="font-heading text-h4 text-muted md:text-h4-md">{s.before}</span>
+                      <span aria-hidden="true" className="font-body text-body text-muted">→</span>
+                    </>
+                  )}
+                  <span className={`font-heading text-h2 md:text-h2-md ${s.improve ? "text-warning" : "text-grape"}`}>
+                    <CountUp value={s.after} run={shown} />
+                  </span>
+                  {s.change && <span className="sr-only">, {s.change}</span>}
                 </span>
-                <span className="sr-only">, {s.change}</span>
               </dd>
+              {s.note && <dd className="order-4 m-0 font-body text-body text-muted">{s.note}</dd>}
             </div>
           </div>
         ))}
