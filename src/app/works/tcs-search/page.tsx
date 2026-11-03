@@ -711,16 +711,16 @@ function Outcome() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Reflection
 // ─────────────────────────────────────────────────────────────────────────────
-// What worked, and what I'd change. Facts from the case study: filter order and counts,
-// the Grand Horizons route, May brief → June launch, tracking from July.
+// What worked, and what I'd change, drawn only from V1: its explorations, what shipped and
+// its four months of results.
 const WORKED = [
   {
-    lead: "Filters follow how people plan.",
-    text: "Where, what kind of trip, when and how long, then whether there’s space. Each option shows its count before you tap, like Africa (22).",
+    lead: "Narrowing beats reordering.",
+    text: "The Sort menu we explored still left all 45 trips to scroll. Filters in the order people plan cut the list to what fits, like Africa (22).",
   },
   {
     lead: "A trip’s name isn’t where it goes.",
-    text: "Names like Grand Horizons sell the mood. The route on the card is what tells you it stops in Tokyo.",
+    text: "Names like Grand Horizons sell the mood. The route on the V1 card is what tells you it stops in Tokyo.",
   },
   {
     lead: "Ship the simple version first.",
@@ -730,12 +730,12 @@ const WORKED = [
 
 const NEXT_TIME = [
   {
-    lead: "I’d measure before launch.",
-    text: "Tracking started in July, so there’s no number for the old page. The 1.3× is growth since launch, not a true before and after.",
+    lead: "I’d fix the known flaw before launch.",
+    text: "We chose the filter row knowing its result count was easy to miss. Four months later, it’s the first gap V2 has to close.",
   },
   {
-    lead: "I’d test real phrases early.",
-    text: "Places and typos worked, phrases didn’t, and we only learned that once search was live.",
+    lead: "I’d measure before launch.",
+    text: "Tracking started in July, so there’s no number for the old page. The 1.3× is growth since launch, not a true before and after.",
   },
 ];
 
