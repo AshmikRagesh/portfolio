@@ -37,7 +37,7 @@ function Tab({ hover, label, active = false }: { hover: Hover; label: string; ac
         {label}
         {hover === "circled" && (
           <svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
-            <path pathLength={1} vectorEffect="non-scaling-stroke" d="M84 6C66 0 22 1 8 12-3 22 14 37 50 37c36 0 50-10 44-23C88 3 62 1 38 4" />
+            <path pathLength={1} d="M84 6C66 0 22 1 8 12-3 22 14 37 50 37c36 0 50-10 44-23C88 3 62 1 38 4" />
           </svg>
         )}
       </span>
@@ -61,6 +61,54 @@ function Frame({ id, name, note, children, tall = false }: { id: string; name: s
       </div>
       <div className={`relative bg-background border-y border-line ${tall ? "" : "h-[68px]"}`}>{children}</div>
     </section>
+  );
+}
+
+// ── Tab styles ────────────────────────────────────────────────────────────────
+// The live navbar's layout (bell left, tabs right) with the live pen-circle hover, in
+// different type, colour and grouping. Pass is the page you're on, so its circle shows.
+const TAB_LABELS = ["Work", "Play", "About", "Pass", "Fancy paper"];
+
+const TAB_STYLES: { id: string; name: string; note: string; tab: string; gap: string; group?: string }[] = [
+  { id: "1", name: "Live now", note: "Geist 16px medium caps in grey (#524555).", tab: "font-geist text-body-md font-medium uppercase tracking-[0.5px] text-secondary", gap: "gap-[28px]" },
+  { id: "2", name: "Quiet sans", note: "Geist 14px regular caps, a little softer, more air between tabs. The plain, minimal look most product sites use.", tab: "font-geist text-body font-normal uppercase tracking-[1px] text-text-base/70", gap: "gap-[36px]" },
+  { id: "3", name: "Editorial serif", note: "GT Alpina, the headline font, at 18px caps in blackcurrant. Reads like a magazine masthead and ties to the hero.", tab: "font-heading text-h4 font-normal uppercase tracking-[1px] text-heading", gap: "gap-[32px]" },
+  { id: "4", name: "Slab", note: "Roboto Slab, the paragraph font, at 16px caps. Feels typed on paper, like the rest of the body copy.", tab: "font-body text-body-md font-normal uppercase tracking-[1px] text-secondary", gap: "gap-[28px]" },
+  { id: "5", name: "Small label caps", note: "Geist Mono 12px caps with wide spacing, lighter grey. A tidier take on the original, like labels on a ticket.", tab: "font-brand text-caption uppercase tracking-[2px] text-muted", gap: "gap-[32px]" },
+  { id: "6", name: "Handwritten", note: "Nanum Pen, the handwriting from the tags, in blackcurrant caps. Pairs with the pen circle; the most playful.", tab: "font-handwriting text-[24px] leading-[24px] uppercase text-heading", gap: "gap-[28px]" },
+  { id: "7", name: "Grouped capsule", note: "Geist 14px medium caps inside one soft rounded capsule on the right, so the tabs read as one object.", tab: "font-geist text-body font-medium uppercase tracking-[1px] text-text-base/80 px-[12px]", gap: "gap-[4px]", group: "rounded-full border border-line-soft bg-surface px-[8px] h-[48px]" },
+];
+
+function TabStyles() {
+  return (
+    <div className="flex flex-col gap-[40px]">
+      {TAB_STYLES.map((v) => (
+        <Frame key={v.id} id={v.id} name={v.name} note={v.note}>
+          <nav className="nav-container flex h-full items-center justify-between">
+            <Bell />
+            <ul className={`m-0 flex list-none items-center p-0 ${v.gap} ${v.group ?? ""}`}>
+              {TAB_LABELS.map((label) => (
+                <li key={label}>
+                  <a
+                    href="#"
+                    onClick={(e) => e.preventDefault()}
+                    aria-current={label === "Pass" ? "page" : undefined}
+                    className={`nav-tab whitespace-nowrap ${v.tab}`}
+                  >
+                    <span className="nav-tab-label">
+                      {label}
+                      <svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
+                        <path pathLength={1} d="M84 6C66 0 22 1 8 12-3 22 14 37 50 37c36 0 50-10 44-23C88 3 62 1 38 4" />
+                      </svg>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </Frame>
+      ))}
+    </div>
   );
 }
 
@@ -160,9 +208,20 @@ export default function NavLab() {
         </p>
       </div>
 
+      {/* Tab styles — the current round */}
+      <div className="mt-[40px] flex flex-col gap-[24px]">
+        <div className="page-container">
+          <h2 className="m-0 font-heading text-h2-md text-heading">Tab styles</h2>
+          <p className="m-0 mt-[4px] max-w-[640px] font-body text-[14px] leading-[20px] text-secondary">
+            Same layout as the live navbar, same pen-circle hover. Only the type, colour and grouping change. Pass is the page you&apos;re on.
+          </p>
+        </div>
+        <TabStyles />
+      </div>
+
       {/* Hover ideas */}
-      <div className="page-container mt-[40px] flex flex-col gap-[8px]">
-        <h2 className="m-0 font-heading text-h2-md text-heading">1 · Hover ideas</h2>
+      <div className="page-container mt-[96px] flex flex-col gap-[8px]">
+        <h2 className="m-0 font-heading text-h2-md text-heading">Earlier round · Hover ideas</h2>
         <div className="mt-[8px] grid grid-cols-1 gap-[12px] md:grid-cols-2">
           {HOVERS.map((h, i) => (
             <button
@@ -193,7 +252,7 @@ export default function NavLab() {
       {/* Layouts */}
       <div className="mt-[64px] flex flex-col gap-[24px]">
         <div className="page-container">
-          <h2 className="m-0 font-heading text-h2-md text-heading">2 · Layouts</h2>
+          <h2 className="m-0 font-heading text-h2-md text-heading">Earlier round · Layouts</h2>
           <p className="m-0 mt-[4px] font-body text-[14px] leading-[20px] text-secondary">
             Showing hover: <span className="text-grape">{HOVERS.find((h) => h.id === hover)?.name}</span>
           </p>

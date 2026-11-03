@@ -3,7 +3,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutGrid, Shapes, CircleUser, Ticket, FileText, type LucideIcon } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useCuriosity } from "@/context/CuriosityContext";
 import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/CuriosityBubble";
 import HostCharacter, { hostLayout, type HostGlasses, type HostMood } from "@/components/host/HostCharacter";
@@ -21,13 +21,12 @@ import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { chimeBell, primeBell, ringBell } from "@/components/host/bellSound";
 
 // All on the right of the bell. Fancy paper is a tab like the others, not a button.
-// Each with a small icon the same size as the text
-const navLinks: { label: string; href: string; Icon: LucideIcon }[] = [
-  { label: "Work", href: "#works", Icon: LayoutGrid },
-  { label: "Play", href: "#play", Icon: Shapes },
-  { label: "About", href: "#about", Icon: CircleUser },
-  { label: "Pass", href: "/pass", Icon: Ticket },
-  { label: "Fancy paper", href: "/resume", Icon: FileText },
+const navLinks = [
+  { label: "Work", href: "#works" },
+  { label: "Play", href: "#play" },
+  { label: "About", href: "#about" },
+  { label: "Pass", href: "/pass" },
+  { label: "Fancy paper", href: "/resume" },
 ];
 
 // Host size in the navbar — the 68px row leaves a little air above and below
@@ -267,19 +266,20 @@ function linkHref(href: string, pathname: string) {
   return href.startsWith("/") || pathname === "/" ? href : `/${href}`;
 }
 
-// A tab: on hover, the grape highlighter sweeps behind the word. The page you're on
-// (Pass, Fancy paper) stays grape.
-function NavTab({ label, href, Icon, pathname }: { label: string; href: string; Icon: LucideIcon; pathname: string }) {
+// A tab: on hover, a quick pen loop is drawn round the word, like the circled marks in the
+// case studies. The page you're on (Pass, Fancy paper) keeps its circle.
+function NavTab({ label, href, pathname }: { label: string; href: string; pathname: string }) {
   const resume = href === "/resume";
   const current = href.startsWith("/") && pathname === href;
-  const className = `nav-tab font-geist text-body-md font-medium tracking-[-0.2px] whitespace-nowrap ${
+  const className = `nav-tab font-geist text-body-md font-medium uppercase tracking-[0.5px] whitespace-nowrap ${
     current ? "text-grape" : "text-secondary"
   }`;
-  // The icon sits inside the label, so the highlighter sweeps over both
   const inner = (
-    <span className="nav-tab-label inline-flex items-center gap-[6px]">
-      <Icon size={16} strokeWidth={1.75} aria-hidden="true" className="shrink-0" />
+    <span className="nav-tab-label">
       {label}
+      <svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
+        <path pathLength={1} d="M84 6C66 0 22 1 8 12-3 22 14 37 50 37c36 0 50-10 44-23C88 3 62 1 38 4" />
+      </svg>
     </span>
   );
   return resume ? (
@@ -408,17 +408,16 @@ export default function Navbar() {
         <div className="md:hidden bg-background border-b border-line-soft shadow-[0_8px_24px_-12px_rgba(30,5,37,0.16)]">
           {/* Nav items — each with a bottom divider */}
           <ul>
-            {navLinks.map(({ label, href, Icon }) => (
+            {navLinks.map(({ label, href }) => (
               <li key={label} className="border-b border-line-soft">
                 <a
                   href={linkHref(href, pathname)}
                   aria-current={href.startsWith("/") && pathname === href ? "page" : undefined}
-                  className={`flex items-center gap-[8px] font-geist text-body-md font-medium tracking-[-0.2px] px-[20px] py-[16px] transition-colors duration-200 hover:text-grape ${
+                  className={`flex items-center font-geist text-body-md font-medium uppercase tracking-[0.5px] px-[20px] py-[16px] transition-colors duration-200 hover:text-grape ${
                     href.startsWith("/") && pathname === href ? "text-grape" : "text-secondary"
                   }`}
                   onClick={() => setMenuOpen(false)}
                 >
-                  <Icon size={16} strokeWidth={1.75} aria-hidden="true" className="shrink-0" />
                   {label}
                 </a>
               </li>
