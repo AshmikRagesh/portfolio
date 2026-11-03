@@ -1,11 +1,11 @@
 // ── Marker sound ──────────────────────────────────────────────────────────────
-// The faint scratch of a highlighter pulled across paper, synthesised with the Web
+// The faint swish of a fat felt-tip marker on thick paper, synthesised with the Web
 // Audio API (no file to load), for the case study Highlight marks.
 //
-// A burst of noise, band-passed to the papery middle of the range, swells in, holds
-// through the stroke and tails off; the band drifts up a little as the pen speeds up
-// and a quick wobble in level gives it the grain of a felt tip on paper. It's kept
-// very quiet on purpose: something you notice only if you're listening.
+// Soft, low "brown" noise (no hiss or crackle) through a gentle low-pass that opens up
+// as the stroke speeds through the middle and closes as it slows, under a smooth swell
+// in and fade out, so it reads as a glide rather than static. It's kept very quiet on
+// purpose: something you notice only if you're listening.
 //
 // Browsers keep audio switched off until the visitor has interacted with the page, so
 // the marks stay silent until their first click, tap or key press; primeMarker()
@@ -13,8 +13,8 @@
 
 type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
 
-const VOLUME = 0.035; // very low, on purpose
-const STROKE_S = 0.7; // matches the marker sweep in globals.css
+const VOLUME = 0.04; // very low, on purpose (brown noise is quieter than it reads here)
+const STROKE_S = 0.55;
 const COOLDOWN_MS = 500;
 
 let ctx: AudioContext | null = null;
@@ -37,37 +37,43 @@ export function playMarker() {
   last = now;
 
   const at = c.currentTime;
-  const length = Math.floor(c.sampleRate * (STROKE_S + 0.2));
+
+  // Brown noise: white noise, smoothed, so its energy sits low and soft
+  const length = Math.floor(c.sampleRate * (STROKE_S + 0.05));
   const buffer = c.createBuffer(1, length, c.sampleRate);
   const data = buffer.getChannelData(0);
-  // Noise with a fast, uneven wobble in level: the felt tip catching the paper's grain
+  let smooth = 0;
   for (let i = 0; i < length; i++) {
-    const grain = 0.75 + 0.25 * Math.sin(i / 90 + Math.sin(i / 1700) * 3);
-    data[i] = (Math.random() * 2 - 1) * grain;
+    smooth = (smooth + 0.02 * (Math.random() * 2 - 1)) / 1.02;
+    data[i] = smooth * 3.5;
   }
   const source = c.createBufferSource();
   source.buffer = buffer;
 
-  const band = c.createBiquadFilter();
-  band.type = "bandpass";
-  band.Q.value = 0.9;
-  band.frequency.setValueAtTime(2200, at);
-  band.frequency.linearRampToValueAtTime(3200, at + STROKE_S * 0.6);
-  band.frequency.linearRampToValueAtTime(2600, at + STROKE_S);
+  const tone = c.createBiquadFilter();
+  tone.type = "lowpass";
+  tone.Q.value = 0.7;
+  tone.frequency.setValueAtTime(900, at);
+  tone.frequency.linearRampToValueAtTime(1800, at + STROKE_S * 0.55);
+  tone.frequency.linearRampToValueAtTime(1100, at + STROKE_S);
 
-  const soften = c.createBiquadFilter();
-  soften.type = "lowpass";
-  soften.frequency.value = 6000;
-
+  // A smooth swell in and a long fade out, with no hard edges to click
+  const points = 64;
+  const curve = new Float32Array(points);
+  const attack = 0.25;
+  for (let i = 0; i < points; i++) {
+    const t = i / (points - 1);
+    const rise = Math.sin((Math.min(1, t / attack) * Math.PI) / 2);
+    const fall = t < attack ? 1 : Math.pow(1 - (t - attack) / (1 - attack), 1.6);
+    curve[i] = VOLUME * rise * fall;
+  }
   const env = c.createGain();
   env.gain.setValueAtTime(0, at);
-  env.gain.linearRampToValueAtTime(VOLUME, at + 0.06);
-  env.gain.setValueAtTime(VOLUME * 0.85, at + STROKE_S * 0.8);
-  env.gain.exponentialRampToValueAtTime(0.0001, at + STROKE_S + 0.15);
+  env.gain.setValueCurveAtTime(curve, at, STROKE_S);
 
-  source.connect(band).connect(soften).connect(env).connect(c.destination);
+  source.connect(tone).connect(env).connect(c.destination);
   source.start(at);
-  source.stop(at + STROKE_S + 0.2);
+  source.stop(at + STROKE_S + 0.05);
 }
 
 /** Wake the audio up on the visitor's first interaction (once per page). */
