@@ -58,7 +58,7 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        <Figure label="Artemis — insurance selection final design" />
+        <Figure name="Artemis — insurance selection final design" />
       </Visual>
     </Chapter>
   );

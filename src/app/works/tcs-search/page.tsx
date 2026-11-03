@@ -220,7 +220,11 @@ function Context() {
           </p>
         </Copy>
         <Visual>
-          <Figure label="The old search page, March 2026: 42 trip cards in one list" />
+          <Figure
+            src="/images/tcs-search/old-search.webp"
+            alt="The old TCS search page: a long grid of trip and destination cards with no filters"
+            label="The old search page: every kind of result in one grid, with no filters"
+          />
         </Visual>
       </div>
       <div className="cs-sub">
@@ -342,7 +346,7 @@ const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "Filters that narrow down the search",
-    body: <>Introduced five filters above the results: destination, trip type, departure, duration and availability. <Highlight>Each option shows how many trips it will return before you pick it</Highlight>, and on phones the filters open from a bar fixed to the bottom of the screen.</>,
+    body: <>Introduced five filters above the results: destination, trip type, departure, duration and availability. <Highlight>Each option shows how many trips it will return before you pick it</Highlight>, and on phones the filters open in a bottom sheet.</>,
   },
   {
     num: 2,
@@ -423,7 +427,12 @@ function Solution() {
             )}
           </Copy>
           <Visual>
-            <Figure label={`V1 live: ${title}`} />
+            {/* The recording for each change; 4 (menu region links) still to record */}
+            <Figure
+              name={`Recording: ${title}`}
+              alt={`Screen recording: ${title}`}
+              video={num === 4 ? undefined : `/videos/tcs-search/solution-${num}.mp4`}
+            />
           </Visual>
         </div>
       ))}
@@ -588,6 +597,7 @@ export default function TcsSearchPage() {
       <Hero
         title="From every trip at once to the few that fit: filters for TCS search"
         date="May 2026"
+        image="/images/tcs-search/hero.webp"
       />
       <Overview />
       <TheProblem />

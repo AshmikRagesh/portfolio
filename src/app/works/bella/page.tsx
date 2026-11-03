@@ -386,7 +386,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            <Figure label={`Live site: ${title.toLowerCase()}`} name={`Recording: ${slug}`} />
+            <Figure name={`Recording: ${slug}`} alt={`Live site: ${title.toLowerCase()}`} />
           </Visual>
           {tried && (
             <>

@@ -68,7 +68,7 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        <Figure label="Helix on Claude Code" />
+        <Figure name="Helix on Claude Code" />
       </Visual>
     </Chapter>
   );

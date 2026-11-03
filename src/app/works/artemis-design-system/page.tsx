@@ -61,7 +61,7 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        <Figure label="Artemis — system at a glance" />
+        <Figure name="Artemis — system at a glance" />
       </Visual>
     </Chapter>
   );

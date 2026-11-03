@@ -64,7 +64,7 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        <Figure label="Artemis 3.0 Reservations Module — overview screenshot" />
+        <Figure name="Artemis 3.0 Reservations Module — overview screenshot" />
       </Visual>
     </Chapter>
   );
@@ -93,7 +93,7 @@ function Background() {
         </p>
       </Copy>
       <Visual>
-        <Figure label="Artemis Reservations — background context image" />
+        <Figure name="Artemis Reservations — background context image" />
       </Visual>
       <Research />
       <Challenges />
@@ -260,7 +260,7 @@ function TheProblem() {
         </p>
       </Copy>
       <Visual>
-        <Figure label="Artemis Reservations — the problem illustration" />
+        <Figure name="Artemis Reservations — the problem illustration" />
       </Visual>
       <Visual>
         <ProblemStatement
