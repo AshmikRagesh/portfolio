@@ -5,6 +5,7 @@ export { default as MoreDetail } from "./MoreDetail";
 export { default as PreviewLink } from "./PreviewLink";
 export { default as NextCase } from "./NextCase";
 export { VariantProvider, VariantFigure } from "./VariantSwitch";
+export { Highlight, Circled } from "./Marks";
 export { default as RolloutPhases } from "./RolloutPhases";
 export { default as BeforeAfter } from "./BeforeAfter";
 export { default as ComponentCount } from "./ComponentCount";
@@ -21,6 +22,7 @@ export {
   Figure,
   Quotes,
   UserQuotes,
+  BarRows,
   CardGrid,
   ProblemStatement,
   PullQuote,

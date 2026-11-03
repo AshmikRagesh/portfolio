@@ -1,8 +1,10 @@
 import { ArrowRight, Check, X } from "lucide-react";
+import { Quotes as QuoteMark } from "@phosphor-icons/react/dist/ssr";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
 import ImagePlaceholder from "./ImagePlaceholder";
 import Media from "./Media";
+import { Circled } from "./Marks";
 import ShippedStamp from "./ShippedStamp";
 import TrendUpArrow from "./TrendUpArrow";
 
@@ -230,19 +232,63 @@ export function ProblemStatement({
 }
 
 /**
- * What people said in research, as plain quotes in the reading column: each one verbatim,
- * set apart by a grape rule, with who said it underneath. For short user quotes inside a
- * section; Quotes (the notepad cards) is for a wall of feedback.
+ * What people said in research, as plain quotes in the reading column: a large grape quote
+ * mark, the words verbatim in the heading face, and who said it underneath. For short user
+ * quotes inside a section; Quotes (the notepad cards) is for a wall of feedback.
  */
 export function UserQuotes({ items }: { items: { text: React.ReactNode; attribution: string }[] }) {
   return (
-    <div className="my-[32px] flex flex-col gap-[24px] md:my-[40px] md:gap-[32px]">
+    <div className="my-[32px] flex flex-col gap-[32px] md:my-[40px] md:gap-[40px]">
       {items.map(({ text, attribution }, i) => (
-        <figure key={i} className="m-0 border-l-[2px] border-grape pl-[20px] md:pl-[24px]">
-          <blockquote className="m-0 font-heading text-h4 text-heading md:text-h4-md">“{text}”</blockquote>
-          <figcaption className="mt-[8px] font-body text-body text-muted md:text-body-md">{attribution}</figcaption>
+        <figure key={i} className="m-0">
+          <QuoteMark aria-hidden="true" size={32} weight="fill" className="mb-[12px] text-grape" />
+          <blockquote className="m-0 font-heading text-h3 text-heading md:text-h3-md">{text}</blockquote>
+          <figcaption className="mt-[12px] font-body text-body text-muted md:text-body-md">{attribution}</figcaption>
         </figure>
       ))}
+    </div>
+  );
+}
+
+/**
+ * A few counted findings as rows: what was counted on the left, the number on the right, and
+ * a bar under each showing how much of the whole it is (`of`). A count with no `of` fills the
+ * bar unless it's zero. `circled` loops a pen mark around the number that matters most.
+ */
+export function BarRows({
+  heads,
+  items,
+}: {
+  heads?: [string, string];
+  items: { label: string; value: number; of?: number; circled?: boolean }[];
+}) {
+  return (
+    <div className="mt-[32px]">
+      {heads && (
+        <div className="mb-[16px] flex justify-between border-b border-line pb-[12px] font-brand text-caption uppercase text-muted">
+          <span>{heads[0]}</span>
+          <span>{heads[1]}</span>
+        </div>
+      )}
+      <ul className="m-0 flex list-none flex-col gap-[24px] p-0">
+        {items.map(({ label, value, of, circled }) => {
+          const share = of ? value / of : value > 0 ? 1 : 0;
+          const shown = of ? `${value} of ${of}` : String(value);
+          return (
+            <li key={label}>
+              <div className="flex items-baseline justify-between gap-[16px]">
+                <span className="font-body text-body text-secondary md:text-body-md">{label}</span>
+                <span className="shrink-0 font-heading text-h4 tabular-nums text-heading md:text-h4-md">
+                  {circled ? <Circled>{shown}</Circled> : shown}
+                </span>
+              </div>
+              <div aria-hidden="true" className="mt-[10px] h-[8px] overflow-hidden rounded-full bg-grape-light/70">
+                <div className="h-full rounded-full bg-grape" style={{ width: `${share * 100}%` }} />
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }

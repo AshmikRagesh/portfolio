@@ -17,6 +17,8 @@ import {
   CardGrid,
   ProblemStatement,
   UserQuotes,
+  BarRows,
+  Highlight,
   ResultsCard,
   ChangeList,
   PreviewLink,
@@ -27,8 +29,6 @@ import {
   Timeline,
   OptionCard,
   Pointers,
-  PracticeCheck,
-  SourceList,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1151 (site search filters). Built from
@@ -137,123 +137,17 @@ function TheProblem() {
 // Section: Discovery  (research / inputs)
 // ─────────────────────────────────────────────────────────────────────────────
 // What the audit of the old search page counted
-const AUDIT = [
-  { reviewed: "Trip cards in one list", finding: "42" },
-  { reviewed: "Filters and sorting controls", finding: "0" },
-  { reviewed: "Waitlisted trips in the results", finding: "9" },
-  { reviewed: "Trip names mentioning a country", finding: "7 of 32" },
+const AUDIT: Parameters<typeof BarRows>[0]["items"] = [
+  { label: "Trip cards in one list", value: 42 },
+  { label: "Filters and sorting controls", value: 0, circled: true },
+  { label: "Waitlisted trips in the results", value: 9, of: 42 },
+  { label: "Trip names mentioning a country", value: 7, of: 32 },
 ];
-
-function AuditTable() {
-  return (
-    <table className={`${TABLE} mt-[32px]`}>
-      <thead>
-        <tr className="border-b border-line">
-          <th scope="col" className={TH}>What I reviewed</th>
-          <th scope="col" className={`${TH} pr-0 text-right`}>Finding</th>
-        </tr>
-      </thead>
-      <tbody>
-        {AUDIT.map(({ reviewed, finding }) => (
-          <tr key={reviewed} className="border-b border-line-soft">
-            <th scope="row" className={`${TD} font-normal text-secondary`}>{reviewed}</th>
-            <td className={`${TD} pr-0 text-right font-medium text-heading`}>{finding}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
 
 // What frequent travellers said in the interviews
 const TRAVELLER_QUOTES = [
   { text: "I want to know where the trip goes and which destinations it covers without having to open every trip.", attribution: "Frequent TCS traveller" },
   { text: "The number of matching trips is easy to miss when I’m changing filters.", attribution: "Frequent TCS traveller" },
-];
-
-// The old page against published best practice. Every claim checked on its source, 2 Nov 2026.
-const PRACTICES: Parameters<typeof PracticeCheck>[0]["items"] = [
-  {
-    practice: "Filters on the details people choose by",
-    verdict: "missing",
-    found: "No filters at all. Place, month, type of trip and length couldn’t be narrowed.",
-    evidence: "34% of 344 benchmarked sites filter so poorly it’s “almost impossible” to narrow a list.",
-    source: { label: "Baymard, filtering", href: "https://baymard.com/ecommerce-product-lists/benchmark/page-types/filtering-options" },
-  },
-  {
-    practice: "Applied filters shown, each one removable",
-    verdict: "missing",
-    found: "With no filters there was nothing to show, remove or clear.",
-    evidence: "Sites “should always display applied filters in an overview”, on desktop and mobile; 28% don’t.",
-    source: { label: "Baymard, applied filters", href: "https://baymard.com/blog/how-to-design-applied-filters" },
-  },
-  {
-    practice: "A count of matching results",
-    verdict: "missing",
-    found: "No count, so a long list gave no sense of how many trips fitted.",
-    evidence: "GetYourGuide’s search redesign showed result counts and applied filters, and lifted engagement on its search page by 3.5%.",
-    source: { label: "GetYourGuide", href: "https://www.getyourguide.careers/posts/how-we-redesigned-our-search-experience" },
-  },
-  {
-    practice: "Say clearly when nothing matched",
-    verdict: "met",
-    found: "A search with no matches said so plainly: “Sorry, your search found no results.”",
-    evidence: "A no-results page must clearly state that no results have been found.",
-    source: { label: "Nielsen Norman Group", href: "https://www.nngroup.com/articles/search-no-results-serp/" },
-  },
-  {
-    practice: "A way forward from a dead end",
-    verdict: "met",
-    found: "The no-results message offered a phone number, Contact Us, Private Custom Travel and trips by region.",
-    evidence: "Nearly 50% of sites fail here. Offer related categories, other searches, a sales phone number and popular items.",
-    source: { label: "Baymard, no results", href: "https://baymard.com/research-articles/no-results-page" },
-  },
-];
-
-// Every source, by topic, and what it changed in the design
-const SOURCES: Parameters<typeof SourceList>[0]["sources"] = [
-  {
-    topic: "Filtering",
-    finding: "34% of 344 benchmarked sites filter so poorly that people can’t narrow a long list.",
-    applies: "Filters built on how travellers choose a trip: where, when, what kind and how long.",
-    source: { label: "Baymard, filtering benchmark", href: "https://baymard.com/ecommerce-product-lists/benchmark/page-types/filtering-options" },
-  },
-  {
-    topic: "Filtering",
-    finding: "Always show applied filters in an overview, on desktop and mobile. 28% of sites don’t.",
-    applies: "Removable chips above the results, with Clear all.",
-    source: { label: "Baymard, applied filters", href: "https://baymard.com/blog/how-to-design-applied-filters" },
-  },
-  {
-    topic: "Filtering",
-    finding: "Facets are expensive: every item needs data for each one, so make sure people really need them.",
-    applies: "A short list of filters, built on details every trip already has.",
-    source: { label: "Nielsen Norman Group, filters vs. facets", href: "https://www.nngroup.com/articles/filters-vs-facets/" },
-  },
-  {
-    topic: "No results",
-    finding: "Nearly 50% of sites give no good way forward after a search that finds nothing.",
-    applies: "Kept the old page’s phone number and Private Custom Travel on the no-results page.",
-    source: { label: "Baymard, no-results page", href: "https://baymard.com/research-articles/no-results-page" },
-  },
-  {
-    topic: "No results",
-    finding: "A no-results page must clearly state that nothing was found.",
-    applies: "Kept a plain headline first, then the ways forward.",
-    source: { label: "Nielsen Norman Group, no results", href: "https://www.nngroup.com/articles/search-no-results-serp/" },
-  },
-  {
-    topic: "Phones",
-    finding: "46% of desktop and 58% of mobile sites have mediocre or worse search, across 170+ sites.",
-    applies: "Filters designed for phones as a sheet, not a squeezed desktop sidebar.",
-    source: { label: "Baymard, search query types", href: "https://baymard.com/blog/ecommerce-search-query-types" },
-  },
-  {
-    topic: "Case study",
-    finding: "GetYourGuide flattened its filters, showed applied filters and result counts, and saw a 3.5% uplift in engagement.",
-    applies: "Chips, Clear all and a count, from a travel company solving the same problem.",
-    source: { label: "GetYourGuide, search redesign", href: "https://www.getyourguide.careers/posts/how-we-redesigned-our-search-experience" },
-  },
 ];
 
 // The five priorities the interviews and the audit shaped
@@ -301,7 +195,7 @@ function Context() {
         <Copy>
           <h3>What we heard from travellers</h3>
           <p>
-            <span className="text-heading underline decoration-grape decoration-[2px] underline-offset-[6px]">7 frequent TCS travellers interviewed.</span> Two
+            <Highlight><span className="text-heading">7 frequent TCS travellers interviewed.</span></Highlight> Two
             recurring observations stood out:
           </p>
           <UserQuotes items={TRAVELLER_QUOTES} />
@@ -320,28 +214,12 @@ function Context() {
             Destinations, and Guides &amp; Resources. Within Expeditions,
             upcoming trips appeared in one long list, ordered by departure date.
           </p>
-          <AuditTable />
+          <BarRows heads={["What I reviewed", "Finding"]} items={AUDIT} />
           <p className="mt-[24px]">
             Travellers had limited ways to narrow the list, distinguish
             available trips or understand where a journey went from the card
             itself.
           </p>
-          <MoreDetail label="The research behind these" className="mt-[32px]">
-            <div className="flex flex-col gap-[40px]">
-              <div>
-                <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
-                  The old page against best practice
-                </h4>
-                <PracticeCheck subject="The old search page" items={PRACTICES} />
-              </div>
-              <div>
-                <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
-                  Every source, and how I used it
-                </h4>
-                <SourceList sources={SOURCES} />
-              </div>
-            </div>
-          </MoreDetail>
         </Copy>
         <Visual>
           <Figure label="The old search page, March 2026: 42 trip cards in one list" />
