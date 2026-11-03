@@ -36,6 +36,6 @@ export {
   Footnote,
 } from "./Blocks";
 export { default as ExplorationCard } from "./ExplorationCard";
-export { default as BellaUseCases, type BellaSceneName } from "./BellaUseCases";
+export { default as BellaStates } from "./BellaStates";
 export { default as ResultsCard } from "./ResultsCard";
 export { default as ChangeList } from "./ChangeList";

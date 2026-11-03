@@ -14,16 +14,15 @@ import {
   Pointers,
   Timeline,
   ExplorationCard,
-  BellaUseCases,
-  type BellaSceneName,
+  BellaStates,
   NextCase,
 } from "@/components/case-study";
 
 // DRAFT, 2 Nov 2026. Bella's own outline, set by Ashmik (not the Problem → Outcome template):
-// what Bella is and why → research → everything tried → top three → the final Bella →
-// the solution (how Bella hosts a visit), each step shown live → what it solves and what it can be. No
-// results section. Stills are in public/images/bella (scripts/draw-bella-explorations.py);
-// the solution's scenes are the live character. Facts from
+// what Bella is and why → research → four characters → the final two → finishing the bell →
+// Bella on the live site, one use case at a time (recordings), with the sign and tooltip
+// rounds under their use case → what it solves and what it can be. No results section.
+// Stills are in public/images/bella (scripts/draw-bella-explorations.py). Facts from
 // my-portfolio/case-studies/bella-notes.md; quotes are Ashmik's, the joining copy is a
 // placeholder for him to rewrite. Not on the homepage list yet, so it doesn't change the
 // "all five read" goal.
@@ -37,9 +36,10 @@ export const metadata: Metadata = {
 const SECTIONS: CaseStudySection[] = [
   { id: "overview",     label: "Overview"       },
   { id: "research",     label: "Research"       },
-  { id: "explorations", label: "Explorations"   },
-  { id: "top-three",    label: "Top three"      },
-  { id: "solution",     label: "A visit"        },
+  { id: "characters",   label: "Characters"     },
+  { id: "choosing",     label: "The final two"  },
+  { id: "finish",       label: "Finishing"      },
+  { id: "solution",     label: "On the site"    },
   { id: "purpose",      label: "What it can be" },
 ];
 
@@ -129,65 +129,31 @@ function Research() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Explorations  (every character and illustration tried)
+// Section: The characters  (four directions, flat and then with depth)
 // ─────────────────────────────────────────────────────────────────────────────
-// `kept` marks the version that made it into the final Bella
-const EXPLORATIONS: { title: string; note: string; items: { name: string; src: string; kept?: boolean }[] }[] = [
+const CHARACTERS = [
   {
     title: "First sketches",
     note: "Three directions from the site's guesthouse theme, each in one colour. The door hanger came later, drawn for this write-up.",
-    items: [
-      { name: "Key tag", src: art("sketch-key-tag") },
-      { name: "Bellhop", src: art("sketch-bellhop") },
-      { name: "Desk bell", src: art("sketch-desk-bell") },
-      { name: "Door hanger", src: art("sketch-door-hanger") },
-    ],
+    stage: "sketch",
   },
   {
     title: "With depth",
     note: "“Even though it is flat, it doesn't have depth or character to it.” So each got a lit side, a shade side and a shadow.",
-    items: [
-      { name: "Key tag", src: art("depth-key-tag") },
-      { name: "Bellhop", src: art("depth-bellhop") },
-      { name: "Desk bell", src: art("depth-desk-bell") },
-      { name: "Door hanger", src: art("depth-door-hanger") },
-    ],
-  },
-  {
-    title: "Finish",
-    note: "From cute and flat to full metal, and back to the design system.",
-    items: [
-      { name: "Flat plum", src: art("finish-flat-plum") },
-      { name: "Chrome with charcoal", src: art("finish-chrome-charcoal") },
-      { name: "Blackcurrant and grape", src: art("finish-blackcurrant"), kept: true },
-      { name: "Gold, for the champion", src: art("finish-gold"), kept: true },
-    ],
-  },
-  {
-    title: "Sign",
-    note: "Where the time shows when you hover.",
-    items: [
-      { name: "Dark flip clock", src: art("sign-flip-clock") },
-      { name: "Brass and ivory plaque", src: art("sign-brass-ivory") },
-      { name: "Grape wood frame", src: art("sign-grape-wood") },
-      { name: "Cream plaque with flip digits", src: art("sign-neutral"), kept: true },
-    ],
-  },
-  {
-    title: "Tooltip",
-    note: "How Bella's lines appear.",
-    items: [
-      { name: "Grape speech bubble", src: art("tip-grape-bubble") },
-      { name: "Front desk rich tooltip", src: art("tip-front-desk") },
-      { name: "Card with a percentile bar", src: art("tip-percentile-card") },
-      { name: "Compact dark, with a pointer", src: art("tip-compact-dark"), kept: true },
-    ],
+    stage: "depth",
   },
 ];
 
-function Explorations() {
+const CHARACTER_NAMES = [
+  { name: "Key tag", file: "key-tag" },
+  { name: "Bellhop", file: "bellhop" },
+  { name: "Door hanger", file: "door-hanger" },
+  { name: "Desk bell", file: "desk-bell" },
+];
+
+function Characters() {
   return (
-    <Chapter id="explorations" num={2} title="Everything we tried">
+    <Chapter id="characters" num={2} title="Four characters">
       <Copy>
         <p>
           Bella went through many versions in ten days. Most rounds ended the
@@ -195,18 +161,14 @@ function Explorations() {
           the site, so it moved back toward the design system.
         </p>
       </Copy>
-      {EXPLORATIONS.map(({ title, note, items }) => (
+      {CHARACTERS.map(({ title, note, stage }) => (
         <div key={title} className="cs-sub">
           <Copy>
             <h3>{title}</h3>
             <p>{note}</p>
           </Copy>
           <Visual>
-            <ul className="m-0 grid list-none grid-cols-2 gap-[16px] p-0 md:grid-cols-4">
-              {items.map((item) => (
-                <ExplorationCard key={item.name} {...item} />
-              ))}
-            </ul>
+            <CardRow items={CHARACTER_NAMES.map(({ name, file }) => ({ name, src: art(`${stage}-${file}`) }))} />
           </Visual>
         </div>
       ))}
@@ -214,10 +176,21 @@ function Explorations() {
   );
 }
 
+/** A row of exploration cards: two across on phones, four from tablet up */
+function CardRow({ items }: { items: { name: string; src: string; kept?: boolean }[] }) {
+  return (
+    <ul className="m-0 grid list-none grid-cols-2 gap-[16px] p-0 md:grid-cols-4">
+      {items.map((item) => (
+        <ExplorationCard key={item.name} {...item} />
+      ))}
+    </ul>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Top three
+// Section: Choosing the character  (the final two: key tag and desk bell)
 // ─────────────────────────────────────────────────────────────────────────────
-const TOP_THREE = [
+const FINAL_TWO = [
   {
     label: "Option 1",
     title: "Key tag",
@@ -228,14 +201,6 @@ const TOP_THREE = [
   },
   {
     label: "Option 2",
-    title: "Bellhop",
-    src: art("depth-bellhop"),
-    chosen: false,
-    pros: ["A host with a hat, ready to greet"],
-    cons: ["Not taken past the first two rounds"],
-  },
-  {
-    label: "Option 3",
     title: "Desk bell",
     src: art("depth-desk-bell"),
     chosen: true,
@@ -248,13 +213,18 @@ const TOP_THREE = [
   },
 ];
 
-function TopThree() {
+const NOT_TAKEN = [
+  { lead: "Bellhop.", text: "Not taken past the first two rounds." },
+  { lead: "Door hanger.", text: "Drawn later, for this write-up, so it never competed." },
+];
+
+function Choosing() {
   return (
-    <Chapter id="top-three" num={3} title="The top three">
+    <Chapter id="choosing" num={3} title="The final two">
       <Copy>
         <p>
-          Three characters made it to the shortlist. The key tag went furthest
-          before it lost.
+          Two characters went head to head: the key tag and the desk bell. The
+          key tag went furthest before it lost.
         </p>
         <PullQuote
           label="Why the key tag lost"
@@ -262,7 +232,7 @@ function TopThree() {
           emphasis="the details go missing."
         />
       </Copy>
-      {TOP_THREE.map(({ label, title, src, chosen, pros, cons }) => (
+      {FINAL_TWO.map(({ label, title, src, chosen, pros, cons }) => (
         <div key={label} className="cs-sub">
           <Visual>
             <OptionCard label={label} title={title} shipped={chosen} stamp="Selected" image={title} src={src}>
@@ -273,28 +243,23 @@ function TopThree() {
       ))}
       <div className="cs-sub">
         <Copy>
-          <h3>Refining the desk bell</h3>
-          <p>
-            Once picked, the bell drifted. Shaded and chromed, it stopped
-            looking like itself.
-          </p>
-          <PullQuote
-            label="The brief that fixed it"
-            text="It doesn't feel like a bell anymore."
-            emphasis="Make sure it feels like a bell, and maybe acts like a bell as well."
-          />
-          <Pointers items={FINAL_CHOICES} />
+          <h3>The other two</h3>
+          <Pointers items={NOT_TAKEN} />
         </Copy>
-        <Visual>
-          <ul className="m-0 grid list-none grid-cols-2 gap-[16px] p-0 md:grid-cols-4">
-            <ExplorationCard name="The first sketch, 23 Oct" src={art("sketch-desk-bell")} />
-            <ExplorationCard name="Bella, as it ships" src={art("final-bella")} kept />
-          </ul>
-        </Visual>
       </div>
     </Chapter>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section: Finishing the bell  (colour, face, hands and sound)
+// ─────────────────────────────────────────────────────────────────────────────
+const FINISHES = [
+  { name: "Flat plum", src: art("finish-flat-plum") },
+  { name: "Chrome with charcoal", src: art("finish-chrome-charcoal") },
+  { name: "Blackcurrant and grape", src: art("finish-blackcurrant"), kept: true },
+  { name: "Gold, for the champion", src: art("finish-gold"), kept: true },
+];
 
 const FINAL_CHOICES = [
   { lead: "Finish.", text: "Blackcurrant dome and grape base, from the design system. Gold only for the champion." },
@@ -303,62 +268,109 @@ const FINAL_CHOICES = [
   { lead: "Sound.", text: "A short synthesised double ding before every line." },
 ];
 
+function Finishing() {
+  return (
+    <Chapter id="finish" num={4} title="Finishing the bell">
+      <Copy>
+        <p>
+          Once picked, the bell drifted. Shaded and chromed, it stopped looking
+          like itself.
+        </p>
+        <PullQuote
+          label="The brief that fixed it"
+          text="It doesn't feel like a bell anymore."
+          emphasis="Make sure it feels like a bell, and maybe acts like a bell as well."
+        />
+      </Copy>
+      <Visual>
+        <CardRow items={FINISHES} />
+      </Visual>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What we settled on</h3>
+          <Pointers items={FINAL_CHOICES} />
+        </Copy>
+      </div>
+    </Chapter>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Solution  (how Bella hosts a visit, step by step, each step live)
+// Section: Solution  (Bella on the live site, one use case at a time)
 // ─────────────────────────────────────────────────────────────────────────────
-const VISIT: { num: number; title: string; body: string; scenes: BellaSceneName[] }[] = [
+// Each use case gets Ashmik's screen recording of the live site:
+// video="/videos/bella/<slug>.mp4" with a poster. Placeholders until then. The sign and
+// tooltip explorations sit under the use case they belong to.
+const SIGNS = [
+  { name: "Dark flip clock", src: art("sign-flip-clock") },
+  { name: "Brass and ivory plaque", src: art("sign-brass-ivory") },
+  { name: "Grape wood frame", src: art("sign-grape-wood") },
+  { name: "Cream plaque with flip digits", src: art("sign-neutral"), kept: true },
+];
+
+const TOOLTIPS = [
+  { name: "Grape speech bubble", src: art("tip-grape-bubble") },
+  { name: "Front desk rich tooltip", src: art("tip-front-desk") },
+  { name: "Card with a percentile bar", src: art("tip-percentile-card") },
+  { name: "Compact dark, with a pointer", src: art("tip-compact-dark"), kept: true },
+];
+
+const USE_CASES: {
+  num: number;
+  slug: string;
+  title: string;
+  body: string;
+  tried?: { label: string; items: { name: string; src: string; kept?: boolean }[] };
+}[] = [
   {
     num: 1,
+    slug: "greets",
     title: "It greets you",
     body: "At 0:30, 2:00 and 5:00 Bella rings once and types one plain line in a small tooltip. Three lines a visit, never over the work.",
-    scenes: ["hello"],
+    tried: { label: "Tooltips we tried", items: TOOLTIPS },
   },
   {
     num: 2,
+    slug: "time",
     title: "It keeps your time",
     body: "Hover, focus or tap the bell and it lowers a sign with your active time, like 4m 16s. On phones, tap again to hide it.",
-    scenes: ["time"],
+    tried: { label: "Signs we tried", items: SIGNS },
   },
   {
     num: 3,
+    slug: "reads",
     title: "It reads and watches with you",
     body: "Round gold reading glasses while a case study is open, and 3D glasses while a video you started plays. The clock keeps counting through both.",
-    scenes: ["reading", "watching"],
   },
   {
     num: 4,
+    slug: "dozes",
     title: "It dozes when you leave",
     body: "Hide the tab or stop for 30 seconds and the clock pauses and Bella falls asleep, so only real attention counts. The browser tab dozes too, and its title shows your paused time.",
-    scenes: ["dozing"],
   },
   {
     num: 5,
+    slug: "celebrates",
     title: "It celebrates what you find",
     body: "Reading two case studies, reading all of them, downloading the resume or copying the email earns a gold bow tie for about three seconds. Five stamps are hidden around the site; when you find one, Bella looks surprised and the stamp lands on your Curiosity Pass.",
-    scenes: ["goal", "stamp"],
   },
   {
     num: 6,
+    slug: "champion",
     title: "It crowns the longest stay",
     body: "The longest visit this month turns Bella and the sign gold. Visit counts appear nowhere.",
-    scenes: ["champion"],
-  },
-];
-
-const AROUND_THE_SITE = [
-  {
-    lead: "In the footer.",
-    text: "A smaller Bella pops up and hops along the counter, holding my email with a Copy email button. While it's up, the navbar Bella ducks and leaves its clock behind.",
   },
   {
-    lead: "On your pass.",
-    text: "Stamps you find land on a Curiosity Pass that slides out of an envelope and can be shared.",
+    num: 7,
+    slug: "footer",
+    title: "It follows you round the site",
+    body: "In the footer, a smaller Bella pops up and hops along the counter, holding my email with a Copy email button. While it's up, the navbar Bella ducks and leaves its clock behind.",
   },
 ];
 
 function Solution() {
   return (
-    <Chapter id="solution" num={4} title="How Bella hosts a visit">
+    <Chapter id="solution" num={5} title="Bella on the site today">
       <Copy>
         <p>
           The first Bella only kept time. Every addition after that came from a
@@ -366,24 +378,33 @@ function Solution() {
           they are in the order a visitor meets them.
         </p>
       </Copy>
-      {VISIT.map(({ num, title, body, scenes }) => (
+      {USE_CASES.map(({ num, slug, title, body, tried }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>{num}. {title}</h3>
             <p>{body}</p>
           </Copy>
           <Visual>
-            <BellaUseCases scenes={scenes} />
+            <Figure label={`Live site: ${title.toLowerCase()}`} name={`Recording: ${slug}`} />
           </Visual>
+          {tried && (
+            <>
+              <Copy>
+                <h4>{tried.label}</h4>
+              </Copy>
+              <Visual>
+                <CardRow items={tried.items} />
+              </Visual>
+            </>
+          )}
         </div>
       ))}
       <div className="cs-sub">
         <Copy>
-          <h3>7. It follows you round the site</h3>
-          <Pointers items={AROUND_THE_SITE} />
+          <h3>Every state, at a glance</h3>
         </Copy>
         <Visual>
-          <Figure label="The footer Bella and the Curiosity Pass" />
+          <BellaStates />
         </Visual>
       </div>
       <div className="cs-sub">
@@ -513,7 +534,7 @@ const NEXT = [
 
 function Purpose() {
   return (
-    <Chapter id="purpose" num={5} title="What Bella solves, and what it can be">
+    <Chapter id="purpose" num={6} title="What Bella solves, and what it can be">
       <Copy>
         <p>
           Bella has two jobs: give visitors a reason to look around, and tell
@@ -549,8 +570,9 @@ export default function BellaPage() {
       <Hero title="Designing Bella, a front-desk bell that measures curiosity" date="2026" />
       <Overview />
       <Research />
-      <Explorations />
-      <TopThree />
+      <Characters />
+      <Choosing />
+      <Finishing />
       <Solution />
       <Purpose />
       <NextCase current="/works/bella" />
