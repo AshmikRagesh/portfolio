@@ -15,12 +15,13 @@ import {
   Timeline,
   ExplorationCard,
   BellaUseCases,
+  type BellaSceneName,
   NextCase,
 } from "@/components/case-study";
 
 // DRAFT, 2 Nov 2026. Bella's own outline, set by Ashmik (not the Problem → Outcome template):
 // what Bella is and why → research → everything tried → top three → the final Bella →
-// the solution, with every use case shown live → what it solves and what it can be. No
+// the solution (how Bella hosts a visit), each step shown live → what it solves and what it can be. No
 // results section. Stills are in public/images/bella (scripts/draw-bella-explorations.py);
 // the solution's scenes are the live character. Facts from
 // my-portfolio/case-studies/bella-notes.md; quotes are Ashmik's, the joining copy is a
@@ -38,8 +39,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "research",     label: "Research"       },
   { id: "explorations", label: "Explorations"   },
   { id: "top-three",    label: "Top three"      },
-  { id: "final",        label: "The final Bella" },
-  { id: "solution",     label: "Solution"       },
+  { id: "solution",     label: "A visit"        },
   { id: "purpose",      label: "What it can be" },
 ];
 
@@ -135,11 +135,12 @@ function Research() {
 const EXPLORATIONS: { title: string; note: string; items: { name: string; src: string; kept?: boolean }[] }[] = [
   {
     title: "First sketches",
-    note: "Three directions from the site's guesthouse theme, each in one colour.",
+    note: "Three directions from the site's guesthouse theme, each in one colour. The door hanger came later, drawn for this write-up.",
     items: [
       { name: "Key tag", src: art("sketch-key-tag") },
       { name: "Bellhop", src: art("sketch-bellhop") },
       { name: "Desk bell", src: art("sketch-desk-bell") },
+      { name: "Door hanger", src: art("sketch-door-hanger") },
     ],
   },
   {
@@ -149,6 +150,7 @@ const EXPLORATIONS: { title: string; note: string; items: { name: string; src: s
       { name: "Key tag", src: art("depth-key-tag") },
       { name: "Bellhop", src: art("depth-bellhop") },
       { name: "Desk bell", src: art("depth-desk-bell") },
+      { name: "Door hanger", src: art("depth-door-hanger") },
     ],
   },
   {
@@ -269,13 +271,31 @@ function TopThree() {
           </Visual>
         </div>
       ))}
+      <div className="cs-sub">
+        <Copy>
+          <h3>Refining the desk bell</h3>
+          <p>
+            Once picked, the bell drifted. Shaded and chromed, it stopped
+            looking like itself.
+          </p>
+          <PullQuote
+            label="The brief that fixed it"
+            text="It doesn't feel like a bell anymore."
+            emphasis="Make sure it feels like a bell, and maybe acts like a bell as well."
+          />
+          <Pointers items={FINAL_CHOICES} />
+        </Copy>
+        <Visual>
+          <ul className="m-0 grid list-none grid-cols-2 gap-[16px] p-0 md:grid-cols-4">
+            <ExplorationCard name="The first sketch, 23 Oct" src={art("sketch-desk-bell")} />
+            <ExplorationCard name="Bella, as it ships" src={art("final-bella")} kept />
+          </ul>
+        </Visual>
+      </div>
     </Chapter>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: The final Bella  (finalising the desk bell)
-// ─────────────────────────────────────────────────────────────────────────────
 const FINAL_CHOICES = [
   { lead: "Finish.", text: "Blackcurrant dome and grape base, from the design system. Gold only for the champion." },
   { lead: "Face.", text: "Eyes only. No mouth, no cheeks." },
@@ -283,50 +303,52 @@ const FINAL_CHOICES = [
   { lead: "Sound.", text: "A short synthesised double ding before every line." },
 ];
 
-function Final() {
-  return (
-    <Chapter id="final" num={4} title="Finalising Bella">
-      <Copy>
-        <p>
-          Once picked, the bell drifted. Shaded and chromed, it stopped looking
-          like itself.
-        </p>
-        <PullQuote
-          label="The brief that fixed it"
-          text="It doesn't feel like a bell anymore."
-          emphasis="Make sure it feels like a bell, and maybe acts like a bell as well."
-        />
-        <Pointers items={FINAL_CHOICES} />
-      </Copy>
-      <Visual>
-        <div className="grid grid-cols-2 gap-[16px]">
-          {[
-            { src: art("sketch-desk-bell"), name: "The first sketch, 23 Oct" },
-            { src: art("final-bella"), name: "Bella, as it ships" },
-          ].map(({ src, name }) => (
-            <figure key={name} className="m-0 flex flex-col gap-[8px]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt={name} className="aspect-[4/3] w-full rounded-lg border border-line-soft bg-white object-contain p-[40px]" />
-              <figcaption className="text-center font-body text-[14px] leading-[22px] text-secondary">{name}</figcaption>
-            </figure>
-          ))}
-        </div>
-      </Visual>
-    </Chapter>
-  );
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// Section: Solution  (how Bella hosts a visit, step by step, each step live)
+// ─────────────────────────────────────────────────────────────────────────────
+const VISIT: { num: number; title: string; body: string; scenes: BellaSceneName[] }[] = [
+  {
+    num: 1,
+    title: "It greets you",
+    body: "At 0:30, 2:00 and 5:00 Bella rings once and types one plain line in a small tooltip. Three lines a visit, never over the work.",
+    scenes: ["hello"],
+  },
+  {
+    num: 2,
+    title: "It keeps your time",
+    body: "Hover, focus or tap the bell and it lowers a sign with your active time, like 4m 16s. On phones, tap again to hide it.",
+    scenes: ["time"],
+  },
+  {
+    num: 3,
+    title: "It reads and watches with you",
+    body: "Round gold reading glasses while a case study is open, and 3D glasses while a video you started plays. The clock keeps counting through both.",
+    scenes: ["reading", "watching"],
+  },
+  {
+    num: 4,
+    title: "It dozes when you leave",
+    body: "Hide the tab or stop for 30 seconds and the clock pauses and Bella falls asleep, so only real attention counts. The browser tab dozes too, and its title shows your paused time.",
+    scenes: ["dozing"],
+  },
+  {
+    num: 5,
+    title: "It celebrates what you find",
+    body: "Reading two case studies, reading all of them, downloading the resume or copying the email earns a gold bow tie for about three seconds. Five stamps are hidden around the site; when you find one, Bella looks surprised and the stamp lands on your Curiosity Pass.",
+    scenes: ["goal", "stamp"],
+  },
+  {
+    num: 6,
+    title: "It crowns the longest stay",
+    body: "The longest visit this month turns Bella and the sign gold. Visit counts appear nowhere.",
+    scenes: ["champion"],
+  },
+];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Solution  (what Bella does, and every use case, live)
-// ─────────────────────────────────────────────────────────────────────────────
 const AROUND_THE_SITE = [
   {
     lead: "In the footer.",
     text: "A smaller Bella pops up and hops along the counter, holding my email with a Copy email button. While it's up, the navbar Bella ducks and leaves its clock behind.",
-  },
-  {
-    lead: "In the browser tab.",
-    text: "The favicon dozes and the tab title shows your paused time when you leave.",
   },
   {
     lead: "On your pass.",
@@ -336,25 +358,32 @@ const AROUND_THE_SITE = [
 
 function Solution() {
   return (
-    <Chapter id="solution" num={5} title="Everything Bella does">
+    <Chapter id="solution" num={4} title="How Bella hosts a visit">
       <Copy>
         <p>
           The first Bella only kept time. Every addition after that came from a
-          moment in a real visit, and asked what Bella should do there. The
-          clock only counts while you&apos;re here: it pauses when the tab is
-          hidden or after 30 seconds without input.
+          moment in a real visit, and asked what Bella should do there. Here
+          they are in the order a visitor meets them.
         </p>
       </Copy>
-      <Visual>
-        <BellaUseCases />
-      </Visual>
+      {VISIT.map(({ num, title, body, scenes }) => (
+        <div key={num} className="cs-sub">
+          <Copy>
+            <h3>{num}. {title}</h3>
+            <p>{body}</p>
+          </Copy>
+          <Visual>
+            <BellaUseCases scenes={scenes} />
+          </Visual>
+        </div>
+      ))}
       <div className="cs-sub">
         <Copy>
-          <h3>Around the site</h3>
+          <h3>7. It follows you round the site</h3>
           <Pointers items={AROUND_THE_SITE} />
         </Copy>
         <Visual>
-          <Figure label="The footer Bella, the tab and the Curiosity Pass" />
+          <Figure label="The footer Bella and the Curiosity Pass" />
         </Visual>
       </div>
       <div className="cs-sub">
@@ -364,8 +393,7 @@ function Solution() {
             A halo and wings for celebrations (&ldquo;the circular motion is
             not needed&rdquo;), Bella travelling between sections as you
             scroll, a guest card in the footer, hands straightening the bow
-            tie, and a ten-minute cap on the clock. Visit counts appear
-            nowhere.
+            tie, and a ten-minute cap on the clock.
           </p>
         </Copy>
       </div>
@@ -376,6 +404,83 @@ function Solution() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: What it solves, and what it can be
 // ─────────────────────────────────────────────────────────────────────────────
+// Each feature, and what it does for the visitor and for me. Draft copy, from the notes.
+const FEATURES = [
+  {
+    feature: "Active-time clock",
+    visitor: "Only time you actually spend here counts. Nothing runs while you're away.",
+    me: "I see real attention, not tabs left open, so I know which visits were read.",
+  },
+  {
+    feature: "The sign",
+    visitor: "Your time is one hover away, and out of the way the rest of the time.",
+    me: "The number I care about lives in the logo, not in a dashboard I have to open.",
+  },
+  {
+    feature: "Three lines a visit",
+    visitor: "A little company at 0:30, 2:00 and 5:00, in plain words.",
+    me: "A nudge to keep reading that never covers the work.",
+  },
+  {
+    feature: "Glasses",
+    visitor: "Bella notices what you're doing: reading, or watching.",
+    me: "Shows care for detail before anyone opens a case study.",
+  },
+  {
+    feature: "Dozing",
+    visitor: "You're never counted when you've stepped away.",
+    me: "Hidden tabs and idle time stay out of the numbers.",
+  },
+  {
+    feature: "Goals and the bow tie",
+    visitor: "A small reward for exploring.",
+    me: "Rewards what I hope visitors do: read a second case study, take the resume, get in touch.",
+  },
+  {
+    feature: "Stamps and the pass",
+    visitor: "Something to find, collect and share.",
+    me: "A reason to look beyond the first page.",
+  },
+  {
+    feature: "The champion",
+    visitor: "A record to beat.",
+    me: "A reason to stay a little longer.",
+  },
+  {
+    feature: "Footer Bella",
+    visitor: "My email, copied in one click.",
+    me: "Getting in touch is the easiest last step on the page.",
+  },
+];
+
+const TH = "pb-[12px] pr-[16px] font-brand text-[12px] font-normal uppercase leading-[16px] text-muted";
+const TD = "py-[14px] pr-[16px] align-top";
+
+function FeatureTable() {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[560px] border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
+        <thead>
+          <tr className="border-b border-line-soft">
+            <th scope="col" className={TH}>Feature</th>
+            <th scope="col" className={TH}>For visitors</th>
+            <th scope="col" className={`${TH} pr-0`}>For me</th>
+          </tr>
+        </thead>
+        <tbody>
+          {FEATURES.map(({ feature, visitor, me }) => (
+            <tr key={feature} className="border-b border-line-soft">
+              <th scope="row" className={`${TD} font-medium text-heading`}>{feature}</th>
+              <td className={`${TD} text-secondary`}>{visitor}</td>
+              <td className={`${TD} pr-0 text-secondary`}>{me}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 const SOLVES = [
   {
     lead: "I can see what holds attention.",
@@ -408,11 +513,23 @@ const NEXT = [
 
 function Purpose() {
   return (
-    <Chapter id="purpose" num={6} title="What Bella solves, and what it can be">
+    <Chapter id="purpose" num={5} title="What Bella solves, and what it can be">
       <Copy>
+        <p>
+          Bella has two jobs: give visitors a reason to look around, and tell
+          me whether they did. Every feature has to do one, and most do both.
+        </p>
         <h3>What it solves</h3>
         <Pointers items={SOLVES} />
       </Copy>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Every feature, and who it helps</h3>
+        </Copy>
+        <Visual>
+          <FeatureTable />
+        </Visual>
+      </div>
       <div className="cs-sub">
         <Copy>
           <h3>What it can be</h3>
@@ -434,7 +551,6 @@ export default function BellaPage() {
       <Research />
       <Explorations />
       <TopThree />
-      <Final />
       <Solution />
       <Purpose />
       <NextCase current="/works/bella" />

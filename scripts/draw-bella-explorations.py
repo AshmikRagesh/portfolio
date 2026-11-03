@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Draws the still illustrations for the Bella case study into public/images/bella/.
 
-- sketch-*  the first three directions, as drawn on 23 Oct 2026 (flat, one colour each)
+- sketch-*  the first three directions, as drawn on 23 Oct 2026 (flat, one colour each), plus
+  a door hanger drawn on 3 Nov for the case study
 - depth-*   the same three with depth: lit side, shade side and a smile
 - finish-*, sign-*, tip-*  the later rounds, redrawn on the desk bell from the
   design notes (my-portfolio/case-studies/bella-notes.md); the code only kept the winners
@@ -57,6 +58,13 @@ SKETCHES = {
         f'<rect x="41" y="30" width="8" height="8" rx="2" fill="{GRAPE}"/><rect x="36" y="36" width="18" height="4" rx="2" fill="{GRAPE}"/>'
         f'<path d="M14 84 Q14 42 45 42 Q76 42 76 84 Z" fill="{DARK}"/><rect x="8" y="84" width="74" height="8" rx="4" fill="{GRAPE}"/>'
         + SKETCH_FACE(45, 64),
+    ),
+    "sketch-door-hanger": svg(
+        "-15 -2 100 104",
+        f'<path d="M14 14 Q14 6 22 6 L48 6 Q56 6 56 14 L56 88 Q56 96 48 96 L22 96 Q14 96 14 88 Z" fill="{GRAPE_SHADE}" mask="url(#dh)"/>'
+        + SKETCH_FACE(35, 60),
+        '<mask id="dh"><rect x="0" y="0" width="70" height="100" fill="#fff"/>'
+        '<circle cx="35" cy="22" r="8" fill="#000"/><rect x="35" y="20" width="30" height="4" fill="#000"/></mask>',
     ),
 }
 
@@ -122,6 +130,23 @@ DEPTHS = {
         False,
     ),
 }
+
+
+HANGER = "M64 110 Q64 98 76 98 L124 98 Q136 98 136 110 L136 222 Q136 234 124 234 L76 234 Q64 234 64 222 Z"
+HANGER_HOLE = (
+    '<mask id="dhm"><rect x="0" y="0" width="200" height="260" fill="#fff"/>'
+    '<circle cx="100" cy="128" r="13" fill="#000"/><rect x="100" y="125" width="40" height="6" fill="#000"/></mask>'
+)
+DEPTHS["depth-door-hanger"] = svg(
+    "30 84 140 164",
+    f'<ellipse cx="100" cy="240" rx="40" ry="6" fill="{DARK}" opacity=".14"/>'
+    f'<g mask="url(#dhm)"><path d="{HANGER}" fill="#4a0832"/>'
+    f'<g clip-path="url(#dhc)"><path d="{HANGER}" fill="{GRAPE_SHADE}" transform="translate(-6 -7)"/>'
+    '<ellipse cx="80" cy="150" rx="12" ry="7" fill="#fff" opacity=".16" transform="rotate(-24 80 150)"/></g></g>'
+    + eyes(100, 178)
+    + smile(100, 178),
+    f'<clipPath id="dhc"><path d="{HANGER}"/></clipPath>' + HANGER_HOLE,
+)
 
 
 # ── The desk bell, in each finish ───────────────────────────────────

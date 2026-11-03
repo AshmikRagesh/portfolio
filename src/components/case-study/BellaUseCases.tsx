@@ -8,8 +8,22 @@ import { MILESTONES } from "@/lib/curiosity/milestones";
 /**
  * Bella's use cases as live scenes: the real character and sign from the navbar, drawn at
  * navbar size and scaled up (see HostStates' Stage), each looping the moment it shows.
- * One per row on phones, two across from tablet up.
+ * `scenes` picks which to show; two or more sit side by side from tablet up, each with a
+ * small label.
  */
+
+export type BellaSceneName = "time" | "hello" | "reading" | "watching" | "dozing" | "goal" | "stamp" | "champion";
+
+const LABELS: Record<BellaSceneName, string> = {
+  time: "Your time on the sign",
+  hello: "A line at 0:30",
+  reading: "Reading a case study",
+  watching: "Watching a video",
+  dozing: "Tab hidden or idle",
+  goal: "A goal reached",
+  stamp: "A stamp found",
+  champion: "The longest stay this month",
+};
 
 /** Bumps every `ms`, to replay the goal celebration on a loop. */
 function useCelebrating(ms: number) {
@@ -21,57 +35,93 @@ function useCelebrating(ms: number) {
   return n;
 }
 
-function UseCase({ title, how, content, children }: { title: string; how: string; content: number; children: React.ReactNode }) {
+function TimeScene() {
+  const visit = useTicking(256);
+  const ringing = useRinging(3600);
   return (
-    <figure className="m-0 flex flex-col gap-[12px]">
-      <Stage height={288} content={content}>
-        {children}
-      </Stage>
-      <figcaption>
-        <p className="font-body text-[16px] font-medium leading-[24px] text-heading">{title}</p>
-        <p className="font-body text-[14px] leading-[22px] text-secondary">{how}</p>
-      </figcaption>
-    </figure>
+    <Stage height={288} content={CONTENT.board}>
+      <Host holding ding={ringing} />
+      <Board seconds={visit} />
+    </Stage>
   );
 }
 
-export default function BellaUseCases() {
-  const visit = useTicking(256);
+function HelloScene() {
+  const ringing = useRinging(3600);
+  const thirty = useSpeaking(MILESTONES[0].say({ percentile: null }));
+  return (
+    <Stage height={288} content={CONTENT.tip}>
+      <Host ding={ringing} />
+      <Tip bubble={thirty} />
+    </Stage>
+  );
+}
+
+function GoalScene() {
+  const celebrating = useCelebrating(5200);
+  return (
+    <Stage height={288} content={CONTENT.bell}>
+      <Host celebrate={celebrating} />
+    </Stage>
+  );
+}
+
+function ChampionScene() {
   const record = useTicking(2 * 3600 - 640);
   const ringing = useRinging(3600);
-  const celebrating = useCelebrating(5200);
-  const thirty = useSpeaking(MILESTONES[0].say({ percentile: null }));
-
   return (
-    <div className="grid grid-cols-1 gap-[32px] md:grid-cols-2">
-      <UseCase content={CONTENT.board} title="Shows your time" how="Hover, focus or tap: Bella rings and lowers a sign with your active time.">
-        <Host holding ding={ringing} />
-        <Board seconds={visit} />
-      </UseCase>
-      <UseCase content={CONTENT.tip} title="Says hello" how="At 0:30, 2:00 and 5:00 it rings once and types one plain line.">
-        <Host ding={ringing} />
-        <Tip bubble={thirty} />
-      </UseCase>
-      <UseCase content={CONTENT.bell} title="Reads with you" how="Round gold reading glasses while a case study is open.">
-        <Host glasses="reading" />
-      </UseCase>
-      <UseCase content={CONTENT.bell} title="Watches with you" how="3D glasses while a video you started plays, and the clock keeps counting.">
-        <Host glasses="video" />
-      </UseCase>
-      <UseCase content={CONTENT.bell} title="Dozes when you leave" how="Hidden tab or 30 seconds without input: the clock pauses and Bella sleeps.">
-        <Host mood="dozing" />
-      </UseCase>
-      <UseCase content={CONTENT.bell} title="Celebrates a goal" how="Two case studies, all of them, the resume or the email: a gold bow tie for about three seconds.">
-        <Host celebrate={celebrating} />
-      </UseCase>
-      <UseCase content={CONTENT.bell} title="Spots a stamp" how="Five stamps to find. Bella looks surprised and the stamp lands on your pass.">
-        <Host expression="surprised" />
-        <Stamp stamp="ring" rotate={-8} className="absolute left-[228px] top-[16px] h-[56px] w-[56px]" />
-      </UseCase>
-      <UseCase content={CONTENT.board} title="Crowns the longest stay" how="The longest visit this month turns Bella and the sign gold.">
-        <Host mood="champion" holding ding={ringing} />
-        <Board seconds={record} champion />
-      </UseCase>
+    <Stage height={288} content={CONTENT.board}>
+      <Host mood="champion" holding ding={ringing} />
+      <Board seconds={record} champion />
+    </Stage>
+  );
+}
+
+const SCENES: Record<BellaSceneName, () => React.ReactNode> = {
+  time: TimeScene,
+  hello: HelloScene,
+  reading: () => (
+    <Stage height={288} content={CONTENT.bell}>
+      <Host glasses="reading" />
+    </Stage>
+  ),
+  watching: () => (
+    <Stage height={288} content={CONTENT.bell}>
+      <Host glasses="video" />
+    </Stage>
+  ),
+  dozing: () => (
+    <Stage height={288} content={CONTENT.bell}>
+      <Host mood="dozing" />
+    </Stage>
+  ),
+  goal: GoalScene,
+  stamp: () => (
+    <Stage height={288} content={CONTENT.bell}>
+      <Host expression="surprised" />
+      <Stamp stamp="ring" rotate={-8} className="absolute left-[228px] top-[16px] h-[56px] w-[56px]" />
+    </Stage>
+  ),
+  champion: ChampionScene,
+};
+
+export default function BellaUseCases({ scenes }: { scenes: BellaSceneName[] }) {
+  const labelled = scenes.length > 1;
+  return (
+    <div className={`grid grid-cols-1 gap-[32px] ${labelled ? "md:grid-cols-2" : ""}`}>
+      {scenes.map((name) => {
+        const Scene = SCENES[name];
+        return (
+          <figure key={name} className="m-0 flex flex-col gap-[12px]">
+            <Scene />
+            {labelled && (
+              <figcaption className="text-center font-body text-[12px] font-medium leading-[16px] text-muted">
+                {LABELS[name]}
+              </figcaption>
+            )}
+          </figure>
+        );
+      })}
     </div>
   );
 }
