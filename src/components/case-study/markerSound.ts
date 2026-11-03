@@ -1,12 +1,12 @@
 // ── Marker sound ──────────────────────────────────────────────────────────────
-// The rasp of a highlighter's felt tip dragged across paper, synthesised with the Web
-// Audio API (no file to load), for the case study Highlight marks.
+// A highlighter stroke across paper, synthesised with the Web Audio API (no file to
+// load), for the case study Highlight marks.
 //
-// A real felt tip doesn't hiss evenly: it catches on the paper's fibres and lets go,
-// many times a second (stick-slip). So the noise comes in tiny bursts, roughly 95 a
-// second with a little jitter, band-passed to the paper's papery middle-high range and
-// rising slightly as the stroke speeds up. A faint squeak sits in the middle of the
-// stroke, as a fresh marker gives, and the stroke ends on a quick lift. It's kept very
+// Paper friction is irregular: the felt never catches at a steady rhythm (a steady
+// rhythm is heard as a pitch, which is what makes friction sound like a drill). So the
+// noise is roughened by two random drifts, one slow and one fast, with no pattern to
+// them. Its level and brightness follow the hand: the stroke speeds up, the sound gets
+// louder and brighter, then it eases off as the pen slows and lifts. It's kept very
 // quiet on purpose: something you notice only if you're listening.
 //
 // Browsers keep audio switched off until the visitor has interacted with the page, so
@@ -15,10 +15,8 @@
 
 type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
 
-const VOLUME = 0.03; // the rasp; very low, on purpose
-const SQUEAK = 0.0035; // the felt tip's faint squeak, far under the rasp
-const STROKE_S = 0.36;
-const CATCHES_PER_S = 95; // how often the tip catches the paper
+const VOLUME = 0.09; // very low, on purpose (the stroke's shape keeps most of it quieter still)
+const STROKE_S = 0.48;
 const COOLDOWN_MS = 500;
 
 let ctx: AudioContext | null = null;
@@ -43,66 +41,39 @@ export function playMarker() {
   const at = c.currentTime;
   const sr = c.sampleRate;
 
-  // Noise in small bursts: each catch of the tip, then a 3ms fade back to the drag
-  const length = Math.floor(sr * (STROKE_S + 0.05));
+  const length = Math.floor(sr * STROKE_S);
   const buffer = c.createBuffer(1, length, sr);
   const data = buffer.getChannelData(0);
-  const fade = Math.exp(-1 / (sr * 0.003));
-  let nextCatch = 0;
-  let burst = 0;
+  let slow = 0; // the paper's unevenness under the pen
+  let fast = 0; // the felt's fine grain
   for (let i = 0; i < length; i++) {
-    if (i >= nextCatch) {
-      burst = 1;
-      nextCatch = i + Math.floor((sr / CATCHES_PER_S) * (0.75 + Math.random() * 0.5));
-    }
-    burst *= fade;
-    data[i] = (Math.random() * 2 - 1) * (0.45 + 0.55 * burst);
+    const t = i / length;
+    // The hand: speeds up quickly, then slows into the lift
+    const speed = Math.sin(Math.PI * Math.pow(t, 0.8));
+    slow += (Math.random() - 0.5) * 0.35 - slow * 0.08;
+    fast += (Math.random() - 0.5) * 0.9 - fast * 0.35;
+    const grain = Math.max(0, 0.6 + slow * 1.2 + fast * 0.35);
+    data[i] = (Math.random() * 2 - 1) * grain * speed;
   }
-  const rasp = c.createBufferSource();
-  rasp.buffer = buffer;
+  const source = c.createBufferSource();
+  source.buffer = buffer;
 
-  const low = c.createBiquadFilter();
-  low.type = "highpass";
-  low.frequency.value = 1500;
-  const paper = c.createBiquadFilter();
-  paper.type = "bandpass";
-  paper.Q.value = 0.9;
-  paper.frequency.setValueAtTime(3800, at);
-  paper.frequency.linearRampToValueAtTime(4600, at + STROKE_S * 0.6);
-  paper.frequency.linearRampToValueAtTime(4000, at + STROKE_S);
+  const body = c.createBiquadFilter();
+  body.type = "highpass";
+  body.frequency.value = 900;
+  // Brighter while the stroke is fastest
+  const bright = c.createBiquadFilter();
+  bright.type = "lowpass";
+  bright.Q.value = 0.5;
+  bright.frequency.setValueAtTime(2600, at);
+  bright.frequency.linearRampToValueAtTime(5200, at + STROKE_S * 0.45);
+  bright.frequency.linearRampToValueAtTime(3000, at + STROKE_S);
 
-  // Quick touch down, a steady drag, a quick lift
   const level = c.createGain();
-  level.gain.setValueAtTime(0, at);
-  level.gain.linearRampToValueAtTime(VOLUME, at + 0.012);
-  level.gain.setValueAtTime(VOLUME * 0.9, at + STROKE_S - 0.06);
-  level.gain.linearRampToValueAtTime(0, at + STROKE_S);
+  level.gain.value = VOLUME;
 
-  rasp.connect(low).connect(paper).connect(level).connect(c.destination);
-  rasp.start(at);
-  rasp.stop(at + STROKE_S + 0.05);
-
-  // The squeak: a soft tone gliding up with a slight wobble, in the middle of the stroke
-  const s0 = at + 0.05;
-  const sLen = STROKE_S - 0.1;
-  const squeak = c.createOscillator();
-  squeak.frequency.setValueAtTime(2300, s0);
-  squeak.frequency.linearRampToValueAtTime(2550, s0 + sLen);
-  const wobble = c.createOscillator();
-  const wobbleDepth = c.createGain();
-  wobble.frequency.value = 9;
-  wobbleDepth.gain.value = 28;
-  wobble.connect(wobbleDepth).connect(squeak.frequency);
-  const squeakLevel = c.createGain();
-  squeakLevel.gain.setValueAtTime(0, s0);
-  squeakLevel.gain.linearRampToValueAtTime(SQUEAK, s0 + sLen * 0.3);
-  squeakLevel.gain.linearRampToValueAtTime(SQUEAK * 0.8, s0 + sLen * 0.7);
-  squeakLevel.gain.linearRampToValueAtTime(0, s0 + sLen);
-  squeak.connect(squeakLevel).connect(c.destination);
-  squeak.start(s0);
-  wobble.start(s0);
-  squeak.stop(s0 + sLen + 0.02);
-  wobble.stop(s0 + sLen + 0.02);
+  source.connect(body).connect(bright).connect(level).connect(c.destination);
+  source.start(at);
 }
 
 /** Wake the audio up on the visitor's first interaction (once per page). */

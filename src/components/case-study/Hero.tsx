@@ -48,10 +48,10 @@ export default function Hero({
         </svg>
       )}
 
-      {/* A fade only as deep as the title needs, so the image still shows through */}
+      {/* Dark behind the date and title, clearing fast above them, so the image still shows */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[64%] bg-gradient-to-t from-midnight/80 via-midnight/30 to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[64%] bg-[linear-gradient(to_top,rgba(30,5,37,0.92)_0%,rgba(30,5,37,0.82)_32%,rgba(30,5,37,0.4)_62%,rgba(30,5,37,0)_100%)]"
       />
 
       <div className="cs-column pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-start gap-[16px] pb-[40px] md:pb-[56px]">
