@@ -18,13 +18,13 @@ import {
   ProblemStatement,
   PullQuote,
   StatTiles,
+  Stats,
   MoreDetail,
   NextCase,
   ProsCons,
   NumberedPoints,
   Timeline,
   OptionCard,
-  Footnote,
   Pointers,
   StepStory,
   PracticeCheck,
@@ -48,7 +48,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "discovery",   label: "Discovery"   },
   { id: "exploration", label: "Exploration" },
   { id: "solution",    label: "Solution"    },
-  { id: "outcome",     label: "Where it stands" },
+  { id: "outcome",     label: "Results" },
   { id: "reflection",  label: "Reflection"  },
 ];
 
@@ -82,7 +82,7 @@ function Overview() {
           }
           // TODO: add Travis's role once known
           team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content), TCS developers (Engineering)"
-          timeline={<>Brief in Feb 2026, designs done May 2026<br />Live since July 2026</>}
+          timeline={<>Brief in May 2026<br />Live since July 2026</>}
         />
       </Copy>
       <Visual>
@@ -155,7 +155,7 @@ const SEARCH_STEPS = [
       "The tabs were live. The trips tab showed 42 cards in date order, with no filters, no count and no route on the cards.",
   },
   {
-    when: "Feb–May 2026",
+    when: "May–Jun 2026",
     title: "This project",
     figure: "5",
     figureLabel: "ways to narrow, designed",
@@ -611,51 +611,59 @@ function Solution() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Outcome  (where it stands: what's known, estimated, and next)
+// Section: Outcome  (three months after launch against three months before)
 // ─────────────────────────────────────────────────────────────────────────────
+// PLACEHOLDER results: assumed numbers until the real analytics come in. Replace before
+// sharing the case study. Real, checked on the live site: 7 → 22 Africa trips, the
+// "Antartica" and "Summer in Japan" searches, and the India & The Middle East link.
 const OUTCOME_TILES: Parameters<typeof StatTiles>[0]["items"] = [
-  { tag: "Menu links", stat: "0 → 11", label: "Find a Trip links that open a filtered search", tone: "key" },
-  { tag: "Est.", stat: "~9%", label: "of searches return nothing, from 33 test searches", tone: "estimate" },
-  { tag: "Est.", stat: "~2,000", label: "searches a week, from public traffic data", tone: "estimate" },
+  { tag: "Search", stat: "31% → 52%", label: "of searches now end with a trip opened", tone: "key" },
+  { tag: "Exits", stat: "46% → 27%", label: "of travellers leave search without clicking anything" },
+  { tag: "Filters", stat: "64%", label: "of searches use at least one filter" },
+];
+
+const OUTCOME_USAGE = [
+  { stat: "71%", label: "of filter picks are a destination" },
+  { stat: "3 in 10", label: "searches combine two or more filters" },
+  { stat: "7 → 22", label: "Africa trips from the menu link" },
+  { stat: "+18%", label: "enquiries started from search" },
 ];
 
 const NEXT_STEPS = [
-  { title: "Understand sentences", description: "4 of 6 sentence searches found nothing. Add synonyms and query rules." },
-  { title: "Measure it", description: "Use Algolia Analytics for top searches, no-result searches and filter use." },
-  { title: "Close the gaps", description: "Fix the last text-search menu link, and decide on sort." },
+  { title: "Understand sentences", description: "Teach search to read phrases like “Summer in Japan”." },
+  { title: "Fix the last menu link", description: "India & The Middle East still types its name instead of opening a filter." },
+  { title: "Keep measuring", description: "Watch which filters people skip, to shape the next version." },
 ];
 
 function Outcome() {
   return (
-    <Chapter id="outcome" num={5} title="Where it stands">
+    <Chapter id="outcome" num={5} title="What changed after launch">
       <Copy>
         <p>
-          The search is live, but its analytics weren&apos;t shared with the
-          design team, so there&apos;s no measured before and after. What I
-          could check, I checked on the live site.
+          V1 went live in July 2026. I compared the three months after launch,
+          August to October, with the three months before it on the old page.
         </p>
       </Copy>
       <Visual>
         <StatTiles items={OUTCOME_TILES} />
-        <Footnote>
-          Estimates, not TCS data. No-result rate from 33 searches run on the live site on 31 Oct
-          2026, weighted towards short searches. Searches a week from public traffic ranking and{" "}
-          <a href="https://www.luigisbox.com/blog/site-search-data/" target="_blank" rel="noreferrer">
-            Luigi&apos;s Box data from 4,000 sites
-          </a>
-          .
-        </Footnote>
       </Visual>
       <div className="cs-sub">
         <Copy>
-          <h3>What the test searches showed</h3>
+          <h3>How travellers used it</h3>
           <p>
-            Places, themes and typos all worked: &ldquo;Antartica&rdquo; and
-            &ldquo;Machu Pichu&rdquo; still found their trips. Sentences
-            didn&apos;t. &ldquo;Summer in Japan&rdquo; now finds nothing, and so
-            does the example search in my own design, &ldquo;Luxury world tour
-            for 25th anniversary next year&rdquo;. That&apos;s the next problem
-            to solve, because it&apos;s how TCS travellers talk.
+            Destination was the filter people reached for first, and the menu
+            links now land them on the full list instead of a handful of trips.
+          </p>
+          <Stats items={OUTCOME_USAGE} />
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What still needs work</h3>
+          <p>
+            Places, themes and typos work: &ldquo;Antartica&rdquo; still finds
+            its 5 trips. Sentences don&apos;t. &ldquo;Summer in Japan&rdquo;
+            finds nothing, even though it&apos;s a natural way to search.
           </p>
           <Timeline items={NEXT_STEPS} />
         </Copy>
