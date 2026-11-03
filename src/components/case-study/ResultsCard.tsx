@@ -5,7 +5,7 @@ import useInView from "./useInView";
 
 /**
  * A results card, sized to sit in the text column: the headline number with what it
- * means and a short paragraph, two supporting stats in one split panel (each as
+ * means and a short paragraph, two supporting stats in boxes side by side (each as
  * before → after), then a line chart of one metric by month. All type comes from the
  * DS scale.
  * When it scrolls into view the card rises in, the headline counts up, the stats follow,
@@ -150,7 +150,7 @@ function Chart({ metric, shown: inView }: { metric: Metric; shown: boolean }) {
                 />
                 {/* Value above the point in focus */}
                 <span
-                  className={`pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded-sm bg-primary px-[6px] py-[2px] font-body text-caption text-white transition-[opacity,transform] duration-300 ${EASE} motion-reduce:transition-none ${
+                  className={`pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded-sm bg-primary px-[6px] py-[2px] font-geist text-caption text-white transition-[opacity,transform] duration-300 ${EASE} motion-reduce:transition-none ${
                     on && shown ? "translate-y-0 opacity-100" : "translate-y-[4px] opacity-0"
                   }`}
                   style={{ top: `calc(${y(p.value)}% - 32px)` }}
@@ -211,15 +211,12 @@ export default function ResultsCard({
         <p className="mt-[8px] font-body text-body text-secondary md:text-body-md">{body}</p>
       </div>
 
-      {/* Supporting stats: one white panel split in two, the label above, then the old
+      {/* Supporting stats: two white boxes side by side, the label above, then the old
           value muted and the new one in grape */}
-      <dl className="m-0 mt-[24px] grid grid-cols-1 rounded-md bg-white ring-1 ring-inset ring-primary/5 md:grid-cols-2">
+      <dl className="m-0 mt-[24px] grid grid-cols-1 gap-[12px] md:grid-cols-2 md:gap-[16px]">
         {stats.map((s, i) => (
-          <div
-            key={s.label}
-            className={`p-[16px] md:p-[20px] ${i ? "border-t border-line-soft md:border-l md:border-t-0" : ""}`}
-          >
-            <div {...rise(200 + i * 150)}>
+          <div key={s.label} {...rise(200 + i * 150)}>
+            <div className="h-full rounded-md bg-white p-[16px] ring-1 ring-inset ring-primary/5 md:p-[20px]">
               <dt className="font-body text-body text-secondary">{s.label}</dt>
               <dd className="m-0 mt-[12px] flex items-baseline gap-[8px]">
                 <span className="font-heading text-h4 text-muted md:text-h4-md">{s.before}</span>
@@ -243,7 +240,7 @@ export default function ResultsCard({
                   role="tab"
                   aria-selected={i === tab}
                   onClick={() => setTab(i)}
-                  className={`rounded-full px-[12px] py-[4px] font-body text-caption transition-colors duration-200 ${
+                  className={`rounded-full px-[12px] py-[4px] font-geist text-caption transition-colors duration-200 ${
                     i === tab ? "bg-primary text-white" : "bg-white text-secondary hover:text-heading"
                   }`}
                 >

@@ -10,16 +10,30 @@ export type ProjectType = "Case study" | "Side project" | "Exploration" | "Taste
 export type Discipline = "Design systems" | "Product design" | "Interaction design" | "UX research" | "AI";
 
 const BASE =
-  "inline-flex h-[24px] shrink-0 items-center whitespace-nowrap rounded-xs px-[8px] font-brand text-[12px] uppercase leading-[16px] tracking-[0px]";
+  "inline-flex h-[24px] shrink-0 items-center whitespace-nowrap rounded-xs px-[8px] text-[12px] leading-[16px] tracking-[0px]";
+
+// Works cards keep Geist Mono capitals; case studies use plain Geist in their tags
+const FACES = {
+  mono: "font-brand uppercase",
+  geist: "font-geist",
+};
 
 const TONES = {
   grape: "bg-grape text-white",
   grey: "bg-[#E5E7EB] text-primary",
 };
 
-/** Any label in the tag shape — case studies use it for iteration / option labels */
-export function Tag({ tone, children }: { tone: keyof typeof TONES; children: React.ReactNode }) {
-  return <span className={`${BASE} gap-[4px] ${TONES[tone]}`}>{children}</span>;
+/** Any label in the tag shape — case studies use it (in Geist) for iteration / option labels */
+export function Tag({
+  tone,
+  face = "mono",
+  children,
+}: {
+  tone: keyof typeof TONES;
+  face?: keyof typeof FACES;
+  children: React.ReactNode;
+}) {
+  return <span className={`${BASE} gap-[4px] ${FACES[face]} ${TONES[tone]}`}>{children}</span>;
 }
 
 export function TypeTag({ type }: { type: ProjectType }) {

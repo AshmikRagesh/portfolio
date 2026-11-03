@@ -64,7 +64,7 @@ export default function PreviewLink({
           </span>
           <span className="flex flex-col gap-[6px] p-[14px]">
             <span className="block">
-              <Tag tone="grey">{preview.tag}</Tag>
+              <Tag face="geist" tone="grey">{preview.tag}</Tag>
             </span>
             <span className="block font-heading text-[18px] leading-[24px] text-heading">{preview.title}</span>
             <span className="block font-body text-[14px] leading-[22px] text-secondary">{preview.description}</span>

@@ -41,7 +41,7 @@ export default function ChangeList({
           </p>
           <div className="mt-[16px] grid grid-cols-1 items-stretch gap-[8px] md:grid-cols-[minmax(0,1fr)_32px_minmax(0,1fr)]">
             <div className="flex flex-col gap-[8px] rounded-md bg-surface p-[12px] md:p-[16px]">
-              <span className="self-start rounded-full bg-white px-[8px] py-[2px] font-body text-caption text-secondary ring-1 ring-inset ring-line-soft">
+              <span className="self-start rounded-full bg-white px-[8px] py-[2px] font-geist text-caption text-secondary ring-1 ring-inset ring-line-soft">
                 {from} today
               </span>
               <p className="font-body text-body text-secondary md:text-body-md">{today}</p>
@@ -56,7 +56,7 @@ export default function ChangeList({
               <ArrowRight size={20} weight="bold" className="rotate-90 md:rotate-0" />
             </span>
             <div className="flex flex-col gap-[8px] rounded-md bg-grape-light/60 p-[12px] md:p-[16px]">
-              <span className="self-start rounded-full bg-grape px-[8px] py-[2px] font-body text-caption text-white">In {to}</span>
+              <span className="self-start rounded-full bg-grape px-[8px] py-[2px] font-geist text-caption text-white">In {to}</span>
               <p className="font-body text-body text-heading md:text-body-md">{next}</p>
             </div>
           </div>

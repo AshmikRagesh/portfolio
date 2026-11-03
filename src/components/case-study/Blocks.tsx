@@ -245,7 +245,7 @@ export function PullQuote({
 }) {
   return (
     <div className="my-[40px] border-l-[4px] border-grape pl-[24px] md:my-[48px] md:pl-[32px]">
-      <Tag tone="grey">{label}</Tag>
+      <Tag face="geist" tone="grey">{label}</Tag>
       <p className="mt-[16px] font-heading text-[22px] leading-[32px] text-heading md:text-[26px] md:leading-[38px]">
         {text} <span className="text-grape">{emphasis}</span>
       </p>
@@ -287,7 +287,7 @@ export function StatTiles({
               tagged ? "md:row-span-3" : "md:row-span-2"
             } ${look.box}`}
           >
-            {tagged && <div>{tag && <Tag tone={look.tag}>{tag}</Tag>}</div>}
+            {tagged && <div>{tag && <Tag face="geist" tone={look.tag}>{tag}</Tag>}</div>}
             <span className={`font-heading text-stat font-medium md:text-stat-md lg:text-stat-lg ${look.stat}`}>
               {stat}
             </span>
@@ -413,7 +413,7 @@ export function OptionCard({
     >
       <div className={`flex min-h-[64px] flex-col gap-[12px] px-[12px] pb-[4px] pt-[12px] md:px-[16px] md:pt-[16px] ${shipped ? "pr-[136px] md:pr-[248px]" : ""}`}>
         <div className="flex flex-wrap items-center gap-[8px]">
-          <Tag tone="grey">{label}</Tag>
+          <Tag face="geist" tone="grey">{label}</Tag>
         </div>
         {title && (
           <p className="font-heading text-[24px] font-medium leading-[32px] text-heading md:text-[28px] md:leading-[36px]">
