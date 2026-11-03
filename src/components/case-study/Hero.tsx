@@ -48,10 +48,10 @@ export default function Hero({
         </svg>
       )}
 
-      {/* The same fade the expanded reel uses on phones */}
+      {/* A fade only as deep as the title needs, so the image still shows through */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[80%] bg-gradient-to-t from-midnight/90 via-midnight/60 to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[64%] bg-gradient-to-t from-midnight/80 via-midnight/30 to-transparent"
       />
 
       <div className="cs-column pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-start gap-[16px] pb-[40px] md:pb-[56px]">
@@ -76,7 +76,7 @@ export default function Hero({
             </a>
           )}
         </div>
-        <h1 className="text-balance text-left font-heading text-[40px] font-normal leading-[44px] tracking-[-2px] text-white md:text-[44px] md:leading-[48px] lg:text-[50px] lg:leading-[54px]">
+        <h1 className="text-balance text-left font-heading text-[40px] font-normal leading-[44px] tracking-[-2px] text-white [text-shadow:0_2px_24px_rgba(18,2,15,0.4)] md:text-[44px] md:leading-[48px] lg:text-[50px] lg:leading-[54px]">
           {title}
         </h1>
       </div>

@@ -427,11 +427,10 @@ function Solution() {
             )}
           </Copy>
           <Visual>
-            {/* The recording for each change; 4 (menu region links) still to record */}
             <Figure
               name={`Recording: ${title}`}
               alt={`Screen recording: ${title}`}
-              video={num === 4 ? undefined : `/videos/tcs-search/solution-${num}.mp4`}
+              video={`/videos/tcs-search/solution-${num}.mp4`}
             />
           </Visual>
         </div>
