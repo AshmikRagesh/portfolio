@@ -20,16 +20,14 @@ import { useBellStage } from "@/components/host/BellStage";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { chimeBell, primeBell, ringBell } from "@/components/host/bellSound";
 
-// Split either side of the bell: Work and Play on the left, Fancy paper and About on the right
-const leftLinks = [
+// All on the right of the bell. Fancy paper is a tab like the others, not a button.
+const navLinks = [
   { label: "Work", href: "#works" },
   { label: "Play", href: "#play" },
-];
-const rightLinks = [
-  { label: "Fancy paper", href: "/resume" },
   { label: "About", href: "#about" },
+  { label: "Pass", href: "/pass" },
+  { label: "Fancy paper", href: "/resume" },
 ];
-const navLinks = [...leftLinks, ...rightLinks];
 
 // Host size in the navbar — the 68px row leaves a little air above and below
 const HOST_HEIGHT = 56;
@@ -357,41 +355,29 @@ export default function Navbar() {
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
       } ${showNav ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >
-      {/* Main nav row — from md up the bell is in the middle with the links split either side;
-          on phones the bell is on the left and the menu on the right */}
-      <nav className="relative grid grid-cols-[1fr_auto_1fr] items-center h-full nav-container">
-        <ul className="hidden md:flex items-center gap-[32px]">
-          {leftLinks.map((link) => (
-            <li key={link.label}>
-              <NavTab {...link} pathname={pathname} />
-            </li>
-          ))}
-        </ul>
-
-        <div className="relative col-start-1 row-start-1 md:col-start-2">
+      {/* Main nav row — the bell on the left, the tabs on the right */}
+      <nav className="relative flex items-center justify-between h-full nav-container">
+        <div className="relative">
           <NavHost bubble={bubble} record={record} moment={momentHere} />
 
-          {/* Host tooltip — just under the bell, its pointer at the bell's centre (centred on
-              it from md up). Out of the layout and above everything on the page. */}
-          <div className="absolute z-[60] top-full mt-[4px] left-0 md:left-1/2 md:-translate-x-1/2">
-            {momentHere ? (
-              <BellaLine key={momentHere.id} moment={momentHere} pointerCenterMd />
-            ) : (
-              <CuriosityBubble bubble={bubble} align="center-md" />
-            )}
+          {/* Host tooltip — just under the bell, its pointer at the bell's centre. Out of
+              the layout and above everything on the page. */}
+          <div className="absolute z-[60] top-full mt-[4px] left-0">
+            {momentHere ? <BellaLine key={momentHere.id} moment={momentHere} /> : <CuriosityBubble bubble={bubble} />}
           </div>
         </div>
 
-        <ul className="hidden md:flex items-center justify-end gap-[32px]">
-          {rightLinks.map((link) => (
+        {/* Desktop + tablet: the tabs */}
+        <ul className="hidden md:flex items-center gap-[32px]">
+          {navLinks.map((link) => (
             <li key={link.label}>
               <NavTab {...link} pathname={pathname} />
             </li>
           ))}
         </ul>
 
-        {/* Mobile: just the menu, on the right */}
-        <div className="md:hidden col-start-3 row-start-1 flex items-center justify-end">
+        {/* Mobile: just the menu */}
+        <div className="md:hidden flex items-center">
           <button
             className="flex items-center justify-center size-[38px] rounded-full border-[0.5px] border-line bg-[rgba(30,5,37,0.08)] p-[4px] text-heading"
             onClick={() => setMenuOpen(!menuOpen)}
