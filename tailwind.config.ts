@@ -25,6 +25,8 @@ const config: Config = {
         surface:       tokens.colors.surface,
         placeholder:   tokens.colors.placeholder,
         vanilla:       tokens.colors.vanilla,
+        "legal-pad":   tokens.colors["legal-pad"],
+        "legal-pad-deep": tokens.colors["legal-pad-deep"],
         // Lines
         "line-soft":   tokens.colors["line-soft"],
         line:          tokens.colors.line,

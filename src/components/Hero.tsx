@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ExperiencePad from "@/components/ExperiencePad";
 
 const PORTRAIT_SRC = "/images/portrait-sketch.png";
 
@@ -16,15 +17,18 @@ export default function Hero() {
         </p>
       </div>
 
-      {/* Portrait */}
-      <div className="relative overflow-hidden w-[80%] aspect-[502/514] md:w-[502px] md:h-[514px] md:aspect-auto lg:w-[502px] lg:h-[514px]">
-        <Image
-          src={PORTRAIT_SRC}
-          alt="Portrait of Ashmik Ragesh"
-          width={2048}
-          height={2076}
-          className="absolute left-[-4%] top-[-2.71%] w-[108%] max-w-none"
-        />
+      {/* Portrait + experience pad — stacked below lg, side by side from lg (502 + 32 + 288 = 822px) */}
+      <div className="flex w-full flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-center lg:gap-8">
+        <div className="relative overflow-hidden w-[80%] aspect-[502/514] md:w-[502px] md:h-[514px] md:aspect-auto lg:w-[502px] lg:h-[514px] lg:shrink-0">
+          <Image
+            src={PORTRAIT_SRC}
+            alt="Portrait of Ashmik Ragesh"
+            width={2048}
+            height={2076}
+            className="absolute left-[-4%] top-[-2.71%] w-[108%] max-w-none"
+          />
+        </div>
+        <ExperiencePad />
       </div>
     </section>
   );
