@@ -183,7 +183,7 @@ export default function RolloutPhases({ phases, perPhase = 4 }: { phases: Phase[
                   aria-hidden="true"
                   className={`flex w-full flex-col-reverse gap-[6px] rounded-lg border p-[6px] transition-[background-color,border-color,transform] duration-500 ${EASE} motion-reduce:transition-none md:gap-[8px] md:p-[8px] ${
                     on
-                      ? "-translate-y-[4px] border-grape/20 bg-grape-light/60"
+                      ? "-translate-y-[4px] border-grape/20 bg-grape-light/45"
                       : reached
                         ? "border-transparent bg-grape-light/30 group-hover:bg-grape-light/50"
                         : "border-dashed border-primary/15 bg-transparent group-hover:border-grape/40"

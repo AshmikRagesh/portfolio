@@ -54,7 +54,7 @@ export default function ChangeList({
             >
               <ArrowRight size={20} weight="bold" className="rotate-90 md:rotate-0" />
             </span>
-            <div className="flex flex-col gap-[8px] rounded-md bg-grape-light/60 p-[12px] md:p-[16px]">
+            <div className="flex flex-col gap-[8px] rounded-md bg-grape-light/45 p-[12px] md:p-[16px]">
               <span className="self-start">
                 <Tag face="geist" tone="grape">In {to}</Tag>
               </span>

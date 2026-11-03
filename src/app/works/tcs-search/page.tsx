@@ -309,14 +309,22 @@ const OPTIONS: OptionItem[] = [
 
 function Exploration() {
   return (
-    <Chapter id="exploration" num={3} title="Three ways to find the right trip">
+    <Chapter id="exploration" num={3} title="Exploring three ways to find the right trip">
       <Copy>
         <p>
-          The brief named the goal but not the filters, and said nothing about
-          the card. I compared three simple page ideas, each built to answer the
-          five research findings, with its own way to cut the list down and its
-          own way for a card to show where a trip goes. Each is redrawn here
-          as a <Highlight>clickable prototype that runs on the 45 live trips</Highlight>.
+          The brief defined the goal, but left the interaction details open. I
+          explored three different search layouts, each taking a different
+          approach to narrowing results and presenting trip information.
+        </p>
+        <p>
+          I compared how each concept addressed the five research findings,
+          particularly how travellers could filter trips and understand their
+          routes without opening individual cards.
+        </p>
+        <p>
+          Each concept is recreated as a <Highlight>clickable prototype using
+          the 45 live trips</Highlight>, making it possible to compare the
+          approaches in a realistic search experience.
         </p>
       </Copy>
       {OPTIONS.map(({ label, title, shipped, video, worked, didntWork }) => (
@@ -364,39 +372,6 @@ const SOLUTION_ITEMS = [
   },
 ];
 
-// The trip card, part by part: the old page (archived March 2026) against V1 (live)
-const CARD_PARTS = [
-  { part: "Layout", before: "Image on top, text below", after: "A wide row: image left, details middle, button right" },
-  { part: "Where it goes", before: "Nothing", after: "The number of destinations and the full route, city by city" },
-  { part: "Dates and length", before: "Under the View details button", after: "One line: Nov 28 – Dec 22, 2026 · 25 days" },
-  { part: "View details", before: "Between the title and the dates", after: "On its own, at the right" },
-  { part: "Status, subtitle, title", before: "Status on the image", after: "Kept" },
-];
-
-function CardParts() {
-  return (
-    <table className={TABLE}>
-      <thead>
-        <tr className="border-b border-line">
-          <th scope="col" className={TH}>Part</th>
-          <th scope="col" className={TH}>Old card</th>
-          <th scope="col" className={`${TH} pr-0`}>New card</th>
-        </tr>
-      </thead>
-      <tbody>
-        {CARD_PARTS.map(({ part, before, after }) => (
-          <tr key={part} className="border-b border-line-soft">
-            <th scope="row" className={`${TD} font-normal text-heading`}>{part}</th>
-            <td className={`${TD} text-secondary`}>{before}</td>
-            <td className={`${TD} pr-0 text-secondary`}>{after}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-// Each filter on the page, the field Algolia filters on, and its name in the address bar
 const FILTER_FIELDS = [
   { filter: "Destinations", field: "destination_parents", url: "destinations" },
   { filter: "Trip type", field: "trip_categories", url: "trip-types" },
@@ -443,11 +418,6 @@ function Solution() {
           <Copy>
             <h3>{num}. {title}</h3>
             <p>{body}</p>
-            {num === 3 && (
-              <MoreDetail label="The card, part by part" className="mt-[20px]">
-                <CardParts />
-              </MoreDetail>
-            )}
             {num === 4 && (
               <MoreDetail label="How the links work" className="mt-[20px]">
                 <p className="mb-[20px]">

@@ -176,7 +176,7 @@ export function CardGrid({
         ? "md:grid-cols-3"
         : "md:grid-cols-2";
   return (
-    <div className={`grid grid-cols-1 ${plain ? "gap-[32px] md:gap-[40px]" : "gap-[16px] md:gap-[24px]"} ${layout}`}>
+    <div className={`cs-stagger grid grid-cols-1 ${plain ? "gap-[32px] md:gap-[40px]" : "gap-[16px] md:gap-[24px]"} ${layout}`}>
       {items.map(({ icon, title, description }) => (
         <div
           key={title}
@@ -239,7 +239,7 @@ export function ProblemStatement({
  */
 export function UserQuotes({ items }: { items: { text: React.ReactNode; attribution: string }[] }) {
   return (
-    <div className={`grid grid-cols-1 gap-[16px] md:gap-[24px] ${items.length > 1 ? "md:grid-cols-2" : "mx-auto w-full max-w-[700px]"}`}>
+    <div className={`cs-stagger grid grid-cols-1 gap-[16px] md:gap-[24px] ${items.length > 1 ? "md:grid-cols-2" : "mx-auto w-full max-w-[700px]"}`}>
       {items.map(({ text, attribution }, i) => (
         <figure key={i} className="m-0 flex flex-col rounded-xl border border-line-soft bg-white p-[24px] md:p-[32px]">
           <QuoteMark aria-hidden="true" size={32} weight="fill" className="mb-[20px] shrink-0 text-grape" />
@@ -286,7 +286,7 @@ export function BarRows({
                 </span>
               </div>
               <div aria-hidden="true" className="mt-[10px] h-[8px] overflow-hidden rounded-full bg-grape-light/70">
-                <div className="h-full rounded-full bg-grape" style={{ width: `${share * 100}%` }} />
+                <div className="cs-bar h-full rounded-full bg-grape" style={{ width: `${share * 100}%` }} />
               </div>
             </li>
           );
@@ -324,7 +324,7 @@ export function PullQuote({
 // estimate (dashed border, so a guess never passes for data)
 const TILE = {
   plain: { box: "border border-line-soft bg-white", tag: "grey", stat: "text-heading" },
-  key: { box: "border border-transparent bg-grape-light/60", tag: "grape", stat: "text-grape" },
+  key: { box: "border border-transparent bg-grape-light/45", tag: "grape", stat: "text-grape" },
   estimate: { box: "border border-dashed border-line bg-white", tag: "grey", stat: "text-heading" },
 } as const;
 

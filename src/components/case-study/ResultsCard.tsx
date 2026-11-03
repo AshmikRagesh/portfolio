@@ -270,7 +270,7 @@ export default function ResultsCard({
   });
 
   return (
-    <div ref={ref} className="mt-[32px] rounded-lg bg-grape-light/60 p-[20px] md:p-[32px]">
+    <div ref={ref} className="mt-[32px] rounded-lg bg-grape-light/45 p-[20px] md:p-[32px]">
       <div {...rise(0)}>
         <p className="m-0 font-heading text-stat font-normal text-grape tabular-nums md:text-stat-md">
           {count}
