@@ -19,7 +19,6 @@ import {
   PullQuote,
   StatTiles,
   ResultsCard,
-  Footnote,
   ChangeList,
   PreviewLink,
   MoreDetail,
@@ -185,7 +184,7 @@ const SEARCH_STEPS = [
     when: "Jun 2026",
     title: "V1 live",
     figure: "12",
-    figureLabel: "trips for “Japan”, checked Nov 2026",
+    figureLabel: "trips for a one-country search, checked Nov 2026",
     detail:
       "Developers built V1 on Algolia. A search now returns the trips that match, and the menu links open filtered results.",
   },
@@ -195,7 +194,7 @@ const SEARCH_STEPS = [
 const FINDINGS = [
   {
     lead: "One long list, soonest date first.",
-    text: "The trips page showed 42 cards in date order, so trips to the same place were spread out. Someone looking for Africa found its trips at cards 12, 25, 38 and 39.",
+    text: "The trips page showed 42 cards in date order, so trips to the same region were scattered through the list. Trips to one region could sit as far apart as card 12 and card 39.",
   },
   {
     lead: "No way to narrow it down.",
@@ -203,7 +202,7 @@ const FINDINGS = [
   },
   {
     lead: "Cards didn’t say where a trip went.",
-    text: "TCS gives trips names like “Grand Horizons” and “Asia Unveiled”, and the old cards showed only the name and dates. Only 7 of 32 names mentioned a country. Of the trips that stopped in Japan, only one said so.",
+    text: "Trip names are written to set a mood, and the old cards showed only the name and dates. Only 7 of 32 names mentioned a country, so most travellers had to open a trip to find out where it went.",
   },
   {
     lead: "Full trips were mixed in.",
@@ -211,7 +210,7 @@ const FINDINGS = [
   },
   {
     lead: "The menu didn’t filter.",
-    text: "Clicking Africa in the Find a Trip menu just typed “Africa” into search. Results depended on which trips mentioned the word, and the choice couldn’t be combined with a month or trip type.",
+    text: "A region link in the Find a Trip menu just typed the region’s name into search. Results depended on which trips happened to mention that word, and couldn’t be combined with a month or trip type.",
   },
 ];
 
@@ -315,7 +314,7 @@ const CONTEXT_CARDS = [
   {
     icon: <MapTrifold size={28} weight="fill" className="text-grape" />,
     title: "Show where a trip goes",
-    description: "The full route on every card, like “Kyoto, Japan → Tokyo, Japan”, so no one has to open a trip to check. For names that didn’t say where.",
+    description: "The full route on every card, city by city, so no one has to open a trip to check where it goes. For names that didn’t say where.",
   },
   {
     icon: <CheckCircle size={28} weight="fill" className="text-grape" />,
@@ -325,7 +324,7 @@ const CONTEXT_CARDS = [
   {
     icon: <Compass size={28} weight="fill" className="text-grape" />,
     title: "Menu links open filters",
-    description: "Africa in the menu opens search with the Africa filter on, ready to add a month or trip type. For the menu that only typed a search.",
+    description: "A region link in the menu opens search with that region’s filter on, ready to add a month or trip type. For the menu that only typed a search.",
   },
 ];
 
@@ -436,7 +435,7 @@ const OPTIONS: OptionItem[] = [
     ],
     didntWork: [
       "Only narrows by place, one region at a time: no month, kind of trip or length",
-      "Card tags show three countries and hide the rest. Pick Africa and Around the World starts with USA, Peru and Chile",
+      "Card tags show three countries and hide the rest, so a trip’s tags can leave out the very region you picked",
     ],
   },
   {
@@ -449,7 +448,7 @@ const OPTIONS: OptionItem[] = [
     ],
     didntWork: [
       "Reordered, not shorter: all 45 trips are still there to scroll",
-      "The menu’s Africa link can only type “Africa” into search: 7 trips, against 22 that go to Africa",
+      "A region link in the menu can only type the region’s name into search, which finds about a third of the trips that go there",
     ],
   },
   {
@@ -458,7 +457,7 @@ const OPTIONS: OptionItem[] = [
     title: "A row of filters, with the full route on the card",
     shipped: true,
     worked: [
-      "Five filters fit in one row, each showing how many trips it leaves, like Africa (22)",
+      "Five filters fit in one row, each showing how many trips it leaves before you pick it",
       "Every choice shows as a chip, and Clear filters resets them all",
       "A wide card keeps room for the full route",
       "Find a Trip’s region links open search with that filter on",
@@ -502,7 +501,7 @@ const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "Filters that narrow down the search",
-    body: "Introduced five filters above the results: destination, trip type, departure, duration and availability. Each option shows how many trips it will return, such as Africa (22), and on phones the filters open from a bar fixed to the bottom of the screen.",
+    body: "Introduced five filters above the results: destination, trip type, departure, duration and availability. Each option shows how many trips it will return before you pick it, and on phones the filters open from a bar fixed to the bottom of the screen.",
   },
   {
     num: 2,
@@ -512,12 +511,12 @@ const SOLUTION_ITEMS = [
   {
     num: 3,
     title: "More context in every trip card",
-    body: "Redesigned the trip card to show the full route alongside the name and dates. Travellers can see that Grand Horizons stops in Tokyo, for example, without opening the trip.",
+    body: "Redesigned the trip card to show the full route alongside the name and dates, so travellers can see every stop without opening the trip.",
   },
   {
     num: 4,
     title: "Connecting navigation to search",
-    body: "Connected the Find a Trip region links to their matching destination filters. Selecting Africa, for example, opens search with the filter applied and 22 matching trips displayed.",
+    body: "Connected the Find a Trip region links to their matching destination filters. Choosing a region now opens search with that filter applied, showing three times as many trips as the old text search did.",
   },
   {
     num: 5,
@@ -529,7 +528,7 @@ const SOLUTION_ITEMS = [
 // The trip card, part by part: the old page (archived March 2026) against V1 (live)
 const CARD_PARTS = [
   { part: "Layout", before: "Image on top, text below", after: "A wide row: image left, details middle, button right" },
-  { part: "Where it goes", before: "Nothing", after: "The number of destinations and the full route, e.g. Miami, Florida → Cusco and Machu Picchu, Peru → …" },
+  { part: "Where it goes", before: "Nothing", after: "The number of destinations and the full route, city by city" },
   { part: "Dates and length", before: "Under the View details button", after: "One line: Nov 28 – Dec 22, 2026 · 25 days" },
   { part: "View details", before: "Between the title and the dates", after: "On its own, at the right" },
   { part: "Status, subtitle, title", before: "Status on the image", after: "Kept" },
@@ -646,19 +645,16 @@ const CLICK_THROUGH = [
 const V1_GAPS = [
   {
     title: "The count is easy to miss",
-    source: "Raised by our testers",
     today: "Frequent travellers testing V1 lost track of how many trips matched. The count is small grey text at the far right, away from the filters that change it.",
     next: "Moves the count to the top left, right beside the filters, so every choice shows its effect.",
   },
   {
     title: "The search box looks empty",
-    source: "Seen on the live page",
     today: "Its hint, “Search TCS World Travel…”, is near-white on a white field, so nothing says what you can type.",
     next: "Gives search its own dark band at the top, with a prompt you can read.",
   },
   {
     title: "Results can’t be reordered",
-    source: "Seen on the live page",
     today: "Trips always run soonest departure first. Filters can hide trips, but nothing can bring the ones you care about to the top.",
     next: "Adds a Sort menu above the results.",
   },
@@ -685,8 +681,9 @@ function Outcome() {
             {
               after: "14%",
               label: "Searches that found no trips, in October",
-              note: "About 1 in 7. Phrases that mix a place and a season find nothing.",
+              note: "Roughly 1 in 7. Phrases that mix a place and a season are the usual misses.",
               improve: true,
+              ratio: [1, 7],
             },
           ]}
           metrics={[
@@ -698,14 +695,6 @@ function Outcome() {
             },
           ]}
         />
-        <Footnote>
-          How each number is counted, by month from July to October 2026. A search
-          counts as <strong>opening a trip</strong> when the traveller opens at least one
-          trip from its results. <strong>Trips from a region link</strong> are the trips
-          shown after picking a region in the Find a Trip menu, with the old link and the
-          new one. A search <strong>finds no trips</strong> when it lands on the
-          no-results page.
-        </Footnote>
       </Copy>
       <div className="cs-sub">
         <Copy>
@@ -731,7 +720,7 @@ function Outcome() {
 const WORKED = [
   {
     lead: "Filters before sorting.",
-    text: "We explored sorting, but with 45 trips in the results, changing their order didn’t solve the bigger problem. Filters helped travellers narrow the list to what was relevant, such as Africa (22). Sorting could follow in V2.",
+    text: "We explored sorting, but with 45 trips in the results, changing their order didn’t solve the bigger problem. Filters helped travellers narrow the list to what was relevant. Sorting could follow in V2.",
   },
   {
     lead: "Ship, learn, and iterate.",
