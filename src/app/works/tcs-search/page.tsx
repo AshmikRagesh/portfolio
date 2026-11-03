@@ -19,6 +19,7 @@ import {
   PullQuote,
   StatTiles,
   ResultsCard,
+  Footnote,
   ChangeList,
   PreviewLink,
   MoreDetail,
@@ -697,6 +698,14 @@ function Outcome() {
             },
           ]}
         />
+        <Footnote>
+          How each number is counted, by month from July to October 2026. A search
+          counts as <strong>opening a trip</strong> when the traveller opens at least one
+          trip from its results. <strong>Trips from a region link</strong> are the trips
+          shown after picking a region in the Find a Trip menu, with the old link and the
+          new one. A search <strong>finds no trips</strong> when it lands on the
+          no-results page.
+        </Footnote>
       </Copy>
       <div className="cs-sub">
         <Copy>
@@ -717,31 +726,35 @@ function Outcome() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Reflection
 // ─────────────────────────────────────────────────────────────────────────────
-// What worked, and what I'd change, drawn only from V1: its explorations, what shipped and
-// its four months of results.
+// What worked, and what I'd change, drawn only from V1: its explorations, what shipped,
+// tester feedback and four months of results.
 const WORKED = [
   {
-    lead: "Narrowing beats reordering.",
-    text: "The Sort menu we explored still left all 45 trips to scroll. Filters in the order people plan cut the list to what fits, like Africa (22).",
-  },
-  {
-    lead: "A trip’s name isn’t where it goes.",
-    text: "Names like Grand Horizons sell the mood. The route on the V1 card is what tells you it stops in Tokyo.",
+    lead: "Filters first, sort later.",
+    text: "The Sort menu we explored still left all 45 trips to scroll. Filters cut the list to what fits, like Africa (22), so they came first. Sort follows in V2.",
   },
   {
     lead: "Ship the simple version first.",
     text: "V1 went live a month after the brief, and four months of real use showed what V2 needs.",
+  },
+  {
+    lead: "Frequent travellers spot what we miss.",
+    text: "Testing V1 with travellers who book with TCS often is how we learned the result count was easy to miss.",
   },
 ];
 
 const NEXT_TIME = [
   {
     lead: "I’d fix the known flaw before launch.",
-    text: "We chose the filter row knowing its result count was easy to miss. Four months later, it’s the first gap V2 has to close.",
+    text: "We chose the filter row knowing its count was easy to miss. Our testers felt it, and it’s now the first gap V2 has to close.",
   },
   {
-    lead: "I’d measure before launch.",
-    text: "Tracking started in July, so there’s no number for the old page. The 1.3× is growth since launch, not a true before and after.",
+    lead: "I’d check the live build, not just the design.",
+    text: "The search hint shipped near-white on a white field. A quick look at the live page would have caught it.",
+  },
+  {
+    lead: "I’d measure from day one.",
+    text: "Tracking started in July, so the 1.3× is growth since launch, not a true before and after. Counting searches that find nothing from the start would show if the 14% is rising or falling.",
   },
 ];
 
