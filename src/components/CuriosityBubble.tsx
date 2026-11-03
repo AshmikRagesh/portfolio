@@ -227,7 +227,8 @@ function useTypedLine(line: string | null) {
 /**
  * The tooltip itself. The pointer sits under the bell's centre; `pointerFromMd` hides
  * it on small screens for pages where the bell isn't shown there. `align="center"`
- * puts the pointer in the middle, for a tooltip centred under the bell by its parent.
+ * puts the pointer in the middle, for a tooltip centred under the bell by its parent;
+ * `align="center-md"` does that from md up only, for a bell that's on the left on phones.
  */
 export default function CuriosityBubble({
   bubble,
@@ -236,7 +237,7 @@ export default function CuriosityBubble({
 }: {
   bubble: Bubble;
   pointerFromMd?: boolean;
-  align?: "start" | "center";
+  align?: "start" | "center" | "center-md";
 }) {
   if (!bubble.message) return null;
 
@@ -245,13 +246,13 @@ export default function CuriosityBubble({
       onMouseEnter={bubble.pause}
       onMouseLeave={bubble.resume}
       onClick={bubble.dismiss}
-      className={`host-tip ${bubble.leaving ? "is-leaving" : ""} relative w-max max-w-[min(260px,calc(100vw-40px))] cursor-pointer`}
+      className={`host-tip ${bubble.leaving ? "is-leaving" : ""} relative w-max max-w-[min(260px,calc(100vw-40px))] cursor-pointer ${align === "center-md" ? "md:!origin-top" : ""}`}
       style={align === "center" ? { transformOrigin: "50% 0" } : undefined}
     >
       {/* Pointer, up to the bell */}
       <span
         aria-hidden="true"
-        className={`${pointerFromMd ? "hidden md:block" : "block"} absolute -top-[4px] ${align === "center" ? "left-1/2 -ml-[4px]" : "left-[26px]"} w-[8px] h-[8px] rotate-45 rounded-xs bg-midnight`}
+        className={`${pointerFromMd ? "hidden md:block" : "block"} absolute -top-[4px] ${align === "center" ? "left-1/2 -ml-[4px]" : align === "center-md" ? "left-[26px] md:left-1/2 md:-ml-[4px]" : "left-[26px]"} w-[8px] h-[8px] rotate-45 rounded-xs bg-midnight`}
       />
       {/* The full line sizes the box (invisibly) so it doesn't grow as it types */}
       <p className="relative grid rounded-md bg-midnight px-[12px] py-[8px] font-geist font-normal text-[14px] leading-[20px] text-white shadow-[0_8px_20px_rgba(30,5,37,0.22)]">

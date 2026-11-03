@@ -357,9 +357,10 @@ export default function Navbar() {
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
       } ${showNav ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >
-      {/* Main nav row — the bell in the middle, the links split either side and close in to it */}
-      <nav className="relative grid grid-cols-[1fr_auto_1fr] gap-x-[40px] items-center h-full nav-container">
-        <ul className="hidden md:flex items-center justify-end gap-[32px]">
+      {/* Main nav row — from md up the bell is in the middle with the links split either side;
+          on phones the bell is on the left and the menu on the right */}
+      <nav className="relative grid grid-cols-[1fr_auto_1fr] items-center h-full nav-container">
+        <ul className="hidden md:flex items-center gap-[32px]">
           {leftLinks.map((link) => (
             <li key={link.label}>
               <NavTab {...link} pathname={pathname} />
@@ -367,21 +368,21 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <div className="relative col-start-2">
+        <div className="relative col-start-1 row-start-1 md:col-start-2">
           <NavHost bubble={bubble} record={record} moment={momentHere} />
 
-          {/* Host tooltip — just under the bell, centred on it. Out of the layout and
-              above everything on the page. */}
-          <div className="absolute z-[60] top-full mt-[4px] left-1/2 -translate-x-1/2">
+          {/* Host tooltip — just under the bell, its pointer at the bell's centre (centred on
+              it from md up). Out of the layout and above everything on the page. */}
+          <div className="absolute z-[60] top-full mt-[4px] left-0 md:left-1/2 md:-translate-x-1/2">
             {momentHere ? (
-              <BellaLine key={momentHere.id} moment={momentHere} pointerLeft="calc(50% - 4px)" />
+              <BellaLine key={momentHere.id} moment={momentHere} pointerCenterMd />
             ) : (
-              <CuriosityBubble bubble={bubble} align="center" />
+              <CuriosityBubble bubble={bubble} align="center-md" />
             )}
           </div>
         </div>
 
-        <ul className="hidden md:flex items-center gap-[32px]">
+        <ul className="hidden md:flex items-center justify-end gap-[32px]">
           {rightLinks.map((link) => (
             <li key={link.label}>
               <NavTab {...link} pathname={pathname} />
@@ -390,7 +391,7 @@ export default function Navbar() {
         </ul>
 
         {/* Mobile: just the menu, on the right */}
-        <div className="md:hidden col-start-3 flex items-center justify-end">
+        <div className="md:hidden col-start-3 row-start-1 flex items-center justify-end">
           <button
             className="flex items-center justify-center size-[38px] rounded-full border-[0.5px] border-line bg-[rgba(30,5,37,0.08)] p-[4px] text-heading"
             onClick={() => setMenuOpen(!menuOpen)}

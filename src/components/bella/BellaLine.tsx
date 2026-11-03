@@ -10,7 +10,19 @@ import Link from "next/link";
 import Stamp from "@/components/bella/Stamp";
 import { skipMoment, type Moment } from "@/lib/bella/progress";
 
-export default function BellaLine({ moment, pointer = "top", pointerLeft }: { moment: Moment; pointer?: "top" | "bottom"; pointerLeft?: string }) {
+// `pointerCenterMd`: the top pointer moves to the middle from md up, for a tooltip centred
+// under a bell that's only on the left on phones
+export default function BellaLine({
+  moment,
+  pointer = "top",
+  pointerLeft,
+  pointerCenterMd = false,
+}: {
+  moment: Moment;
+  pointer?: "top" | "bottom";
+  pointerLeft?: string;
+  pointerCenterMd?: boolean;
+}) {
   const stamp = moment.kind === "stamp" ? moment.stamp : moment.kind === "celebrate" ? moment.stamp : undefined;
   const link =
     moment.kind === "welcome"
@@ -19,10 +31,10 @@ export default function BellaLine({ moment, pointer = "top", pointerLeft }: { mo
         ? { href: "/pass", text: "See your pass" }
         : null;
   return (
-    <div className="host-tip relative w-max max-w-[min(320px,calc(100vw-40px))]">
+    <div className={`host-tip relative w-max max-w-[min(320px,calc(100vw-40px))] ${pointerCenterMd ? "md:!origin-top" : ""}`}>
       <span
         aria-hidden="true"
-        className={`absolute ${pointer === "top" ? "-top-[4px] left-[26px]" : "-bottom-[4px] left-1/2 -ml-[4px]"} h-[8px] w-[8px] rotate-45 rounded-xs bg-midnight`}
+        className={`absolute ${pointer === "top" ? `-top-[4px] left-[26px] ${pointerCenterMd ? "md:left-1/2 md:-ml-[4px]" : ""}` : "-bottom-[4px] left-1/2 -ml-[4px]"} h-[8px] w-[8px] rotate-45 rounded-xs bg-midnight`}
         style={pointerLeft ? { left: pointerLeft, marginLeft: 0 } : undefined}
       />
       <div

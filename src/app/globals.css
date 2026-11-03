@@ -966,8 +966,9 @@
   to { opacity: 1; transform: none; }
 }
 
-/* Navbar tabs: the pink highlighter from the case studies (.cs-marker) sweeps behind the
-   word on hover and keyboard focus, and pulls back off when the pointer leaves. */
+/* Navbar tabs: a grape highlighter sweeps behind the word on hover and keyboard focus
+   (soft, uneven ends, like .cs-marker), the word turns white on it, and it pulls back off
+   when the pointer leaves. */
 .nav-tab {
   display: inline-flex;
   align-items: center;
@@ -976,17 +977,18 @@
   transition: color 0.2s;
 }
 .nav-tab-label {
-  background-image: linear-gradient(100deg, rgba(248, 194, 247, 0) 0, rgba(248, 194, 247, 0.8) 4%, rgba(248, 194, 247, 0.64) 50%, rgba(248, 194, 247, 0.72) 96%, rgba(248, 194, 247, 0) 100%);
+  background-image: linear-gradient(100deg, rgba(157, 19, 106, 0) 0, rgba(157, 19, 106, 0.96) 4%, rgba(157, 19, 106, 0.88) 50%, rgba(157, 19, 106, 0.92) 96%, rgba(157, 19, 106, 0) 100%);
   background-repeat: no-repeat;
-  background-position: 0 80%;
-  background-size: 0% 72%;
+  background-position: 0 60%;
+  background-size: 0% 100%;
   border-radius: 4px 8px 4px 8px;
   padding: 0 4px;
   margin: 0 -4px;
   transition: background-size 0.44s cubic-bezier(0.65, 0.05, 0.25, 1);
 }
-.nav-tab:hover, .nav-tab:focus-visible { color: #32073e; }
-.nav-tab:hover .nav-tab-label, .nav-tab:focus-visible .nav-tab-label { background-size: 100% 72%; }
+/* The word goes white as the stroke reaches it, not before, so it never vanishes on the page */
+.nav-tab:hover, .nav-tab:focus-visible { color: #ffffff; transition: color 0.2s 0.16s; }
+.nav-tab:hover .nav-tab-label, .nav-tab:focus-visible .nav-tab-label { background-size: 100% 100%; }
 @media (prefers-reduced-motion: reduce) {
   .nav-tab, .nav-tab-label { transition: none; }
 }
