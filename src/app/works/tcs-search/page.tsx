@@ -711,19 +711,31 @@ function Outcome() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Reflection
 // ─────────────────────────────────────────────────────────────────────────────
-// TODO: Ashmik to rewrite in his own words; these are placeholders from the notes
-const LESSONS = [
+// What worked, and what I'd change. Facts from the case study: filter order and counts,
+// the Grand Horizons route, May brief → June launch, tracking from July.
+const WORKED = [
   {
-    title: "A list in date order isn't a way to choose",
-    description: "Someone who knows where they want to go needs to narrow, not scroll. Filters did that.",
+    lead: "Filters follow how people plan.",
+    text: "Where, what kind of trip, when and how long, then whether there’s space. Each option shows its count before you tap, like Africa (22).",
   },
   {
-    title: "A trip's name isn't where it goes",
-    description: "Names like Grand Horizons sell the mood. The route on the card is what lets someone choose.",
+    lead: "A trip’s name isn’t where it goes.",
+    text: "Names like Grand Horizons sell the mood. The route on the card is what tells you it stops in Tokyo.",
   },
   {
-    title: "Search has to understand how people talk",
-    description: "Names and typos worked; sentences didn't. A traveller's own words are the next thing to design for.",
+    lead: "Ship the simple version first.",
+    text: "V1 went live a month after the brief, and four months of real use showed what V2 needs.",
+  },
+];
+
+const NEXT_TIME = [
+  {
+    lead: "I’d measure before launch.",
+    text: "Tracking started in July, so there’s no number for the old page. The 1.3× is growth since launch, not a true before and after.",
+  },
+  {
+    lead: "I’d test real phrases early.",
+    text: "Places and typos worked, phrases didn’t, and we only learned that once search was live.",
   },
 ];
 
@@ -731,13 +743,15 @@ function Reflection() {
   return (
     <Chapter id="reflection" num={6} title="What I learned">
       <Copy>
-        <NumberedPoints items={LESSONS} />
-        <p>
-          <strong>The empty state is a page too.</strong> The search that
-          finds nothing is where a traveller is most likely to give up, so it
-          got the same care as the results.
-        </p>
+        <h3>What worked</h3>
+        <Pointers items={WORKED} />
       </Copy>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What I&apos;d do differently</h3>
+          <Pointers items={NEXT_TIME} />
+        </Copy>
+      </div>
     </Chapter>
   );
 }
