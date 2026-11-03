@@ -19,6 +19,7 @@ import {
   PullQuote,
   StatTiles,
   ResultsCard,
+  PreviewLink,
   MoreDetail,
   NextCase,
   ProsCons,
@@ -41,6 +42,22 @@ export const metadata: Metadata = {
   description:
     "Redesigned the TCS World Travel search page with filters, a result count and trip cards that show the route, so travellers can narrow a long list to the trips that fit.",
 };
+
+// Helix, the design-system skill on Claude Code, linked to its own case study
+function HelixLink() {
+  return (
+    <PreviewLink
+      href="/works/helix"
+      preview={{
+        tag: "Coming soon",
+        title: "Helix: our design system, in code",
+        description: "How a Claude Code skill keeps every design built from the TCS components and tokens.",
+      }}
+    >
+      Helix on Claude Code
+    </PreviewLink>
+  );
+}
 
 const SECTIONS: CaseStudySection[] = [
   { id: "overview",    label: "Overview"    },
@@ -622,11 +639,54 @@ const CLICK_THROUGH = [
   { label: "Oct", value: 32 },
 ];
 
-const NEXT_STEPS = [
-  { title: "Understand sentences", description: "Teach search to read phrases like “Summer in Japan”." },
-  { title: "Fix the last menu link", description: "India & The Middle East still types its name instead of opening a filter." },
-  { title: "Keep measuring", description: "Watch which filters people skip, to shape the next version." },
+// What V1 doesn't do yet, and how V2 answers it. V1 facts checked on the live site.
+const V1_GAPS = [
+  {
+    title: "The count is easy to miss",
+    today: "The number of matching trips is small grey text at the far right, away from the filters that change it.",
+    next: "Moves the count to the top left, right beside the filters.",
+  },
+  {
+    title: "No way to reorder results",
+    today: "Trips always show soonest first. There’s no way to sort them another way, like by length.",
+    next: "Adds a Sort menu above the results.",
+  },
+  {
+    title: "Phrases find nothing",
+    today: "A place or a typo works, but a phrase that mixes a place and a season returns no trips.",
+    next: "Gives search its own band at the top, and teaches it to read phrases.",
+  },
+  {
+    title: "One menu link still searches by text",
+    today: "Most region links open a filter, but one still types its name into search.",
+    next: "Every region link opens its filter.",
+  },
 ];
+
+function GapList() {
+  return (
+    // Wrapped so the column's own list styles (bullets, indent) don't apply
+    <div className="mt-[32px]">
+      <ul className="m-0 flex list-none flex-col gap-[12px] p-0">
+        {V1_GAPS.map(({ title, today, next }) => (
+          <li key={title} className="rounded-lg border border-line-soft bg-white p-[20px] md:p-[24px]">
+            <p className="font-heading text-h4 font-medium text-heading md:text-h4-md">{title}</p>
+            <div className="mt-[12px] grid grid-cols-1 gap-[12px] md:grid-cols-2 md:gap-[24px]">
+              <div className="flex flex-col gap-[4px]">
+                <span className="font-body text-caption text-muted">In V1 today</span>
+                <p className="font-body text-body text-secondary md:text-body-md">{today}</p>
+              </div>
+              <div className="flex flex-col gap-[4px] border-t border-line-soft pt-[12px] md:border-l md:border-t-0 md:pl-[24px] md:pt-0">
+                <span className="font-body text-caption text-grape">In V2</span>
+                <p className="font-body text-body text-heading md:text-body-md">{next}</p>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 function Outcome() {
   return (
@@ -637,14 +697,14 @@ function Outcome() {
           since. Here&apos;s what four months of results show.
         </p>
       </Copy>
-      <Visual>
+      <Copy>
         <ResultsCard
           headline={{ value: 1.3, decimals: 1, suffix: "×" }}
           title="More searches that lead to a trip"
           body="The result I’m proudest of: each month, more travellers who searched went on to open a trip. Filters, clearer cards and menu links that land on the right trips made it easier to find one worth a closer look."
           stats={[
-            { stat: "24% → 32%", label: "Searches where a traveller opened a trip, July to October." },
-            { stat: "7 → 22", label: "Africa trips a traveller sees from the Find a Trip menu." },
+            { before: "24%", after: "32%", change: "+8 pts", label: "Searches where a traveller opened a trip, July to October" },
+            { before: "7", after: "22", change: "3×", label: "Trips shown from a region link in the Find a Trip menu" },
           ]}
           metrics={[
             {
@@ -655,16 +715,15 @@ function Outcome() {
             },
           ]}
         />
-      </Visual>
+      </Copy>
       <div className="cs-sub">
         <Copy>
-          <h3>What still needs work</h3>
+          <h3>What V1 doesn&apos;t do yet</h3>
           <p>
-            Places, themes and typos work: &ldquo;Antartica&rdquo; still finds
-            its 5 trips. Sentences don&apos;t. &ldquo;Summer in Japan&rdquo;
-            finds nothing, even though it&apos;s a natural way to search.
+            Four months live also showed where V1 falls short. V2 is designed
+            to close each gap, and will be built with <HelixLink />.
           </p>
-          <Timeline items={NEXT_STEPS} />
+          <GapList />
         </Copy>
       </div>
     </Chapter>
