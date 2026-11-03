@@ -232,18 +232,21 @@ export function ProblemStatement({
 }
 
 /**
- * What people said in research, as plain quotes in the reading column: a large grape quote
- * mark, the words verbatim in the heading face, and who said it underneath. For short user
- * quotes inside a section; Quotes (the notepad cards) is for a wall of feedback.
+ * What people said in research, as quote cards: a grape quote mark, the words verbatim in
+ * the heading face, and who said it at the foot of the card. Two sit side by side from
+ * tablet up and stack on phones; one sits alone at reading width. For a few user quotes;
+ * Quotes (the notepad cards) is for a wall of feedback.
  */
 export function UserQuotes({ items }: { items: { text: React.ReactNode; attribution: string }[] }) {
   return (
-    <div className="my-[32px] flex flex-col gap-[32px] md:my-[40px] md:gap-[40px]">
+    <div className={`grid grid-cols-1 gap-[16px] md:gap-[24px] ${items.length > 1 ? "md:grid-cols-2" : "mx-auto w-full max-w-[700px]"}`}>
       {items.map(({ text, attribution }, i) => (
-        <figure key={i} className="m-0">
-          <QuoteMark aria-hidden="true" size={32} weight="fill" className="mb-[12px] text-grape" />
-          <blockquote className="m-0 font-heading text-h3 text-heading md:text-h3-md">{text}</blockquote>
-          <figcaption className="mt-[12px] font-body text-body text-muted md:text-body-md">{attribution}</figcaption>
+        <figure key={i} className="m-0 flex flex-col rounded-xl border border-line-soft bg-white p-[24px] md:p-[32px]">
+          <QuoteMark aria-hidden="true" size={32} weight="fill" className="mb-[20px] shrink-0 text-grape" />
+          <blockquote className="m-0 flex-1 font-heading text-h3 text-heading md:text-h3-md">{text}</blockquote>
+          <figcaption className="mt-[24px] border-t border-line-soft pt-[16px] font-body text-body text-muted md:text-body-md">
+            {attribution}
+          </figcaption>
         </figure>
       ))}
     </div>

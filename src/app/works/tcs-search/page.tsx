@@ -83,7 +83,7 @@ function Overview() {
         <p>
           TCS&apos;s search page showed every upcoming trip in one long list,
           with no way to narrow it. I redesigned it so travellers
-          can narrow results by destination, trip type, date and length, see
+          can <Highlight>narrow results by destination, trip type, date and length</Highlight>, see
           how many trips match, and see each trip&apos;s route on its card.
           Developers built
           it, and it has been live since July 2026.
@@ -112,8 +112,8 @@ function TheProblem() {
         <p>
           Travellers often search with a destination, travel period or type of
           experience in mind. But in March 2026, TCS&apos;s search page offered
-          limited ways to narrow results. The Trips tab displayed 42 trip cards
-          in date order, with no filters, sorting or result count. Cards also
+          limited ways to narrow results. The Trips tab displayed <Highlight>42 trip cards
+          in date order, with no filters, sorting or result count</Highlight>. Cards also
           lacked country information, meaning travellers had to scan the list
           and open individual trips to understand where each journey went.
         </p>
@@ -198,11 +198,15 @@ function Context() {
             <Highlight><span className="text-heading">7 frequent TCS travellers interviewed.</span></Highlight> Two
             recurring observations stood out:
           </p>
+        </Copy>
+        <Visual>
           <UserQuotes items={TRAVELLER_QUOTES} />
+        </Visual>
+        <Copy>
           <p>
-            These conversations highlighted two important needs: better
+            These conversations highlighted two important needs: <Highlight>better
             visibility into trip itineraries and clearer feedback when
-            exploring search results.
+            exploring search results</Highlight>.
           </p>
         </Copy>
       </div>
@@ -312,7 +316,7 @@ function Exploration() {
           the card. I compared three simple page ideas, each built to answer the
           five research findings, with its own way to cut the list down and its
           own way for a card to show where a trip goes. Each is redrawn here
-          as a clickable prototype that runs on the 45 live trips.
+          as a <Highlight>clickable prototype that runs on the 45 live trips</Highlight>.
         </p>
       </Copy>
       {OPTIONS.map(({ label, title, shipped, video, worked, didntWork }) => (
@@ -429,8 +433,8 @@ function Solution() {
     <Chapter id="solution" num={4} title="How the new search works">
       <Copy>
         <p>
-          V1 kept the familiar tabs and added five changes, one for each
-          problem the research found. Together, they help travellers narrow a
+          V1 kept the familiar tabs and added <Highlight>five changes, one for each
+          problem the research found</Highlight>. Together, they help travellers narrow a
           long list down to the trips that suit them.
         </p>
       </Copy>
