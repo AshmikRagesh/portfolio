@@ -1,10 +1,13 @@
 // Project tags for the Works cards — two per card: one Type, one Discipline.
 // One shape for every tag (the Figma "Tags" component, scaled up: 24px tall, 8px side
-// padding, Geist Mono 12/16 uppercase, 2px corners). Two colours only; both clear
-// 4.5:1 at this size.
+// padding, Geist Mono 12/16 uppercase, 2px corners). Works cards use two colours; both
+// clear 4.5:1 at this size.
 //
 //   Type        grape fill (the button hover colour), white text   (7.7:1)
 //   Discipline  light grey, blackcurrant text (the brand primary)
+//
+// Case studies use the same shape in Geist, plus a warning tone for results not yet in
+// our favour.
 
 export type ProjectType = "Case study" | "Side project" | "Exploration" | "Taste note";
 export type Discipline = "Design systems" | "Product design" | "Interaction design" | "UX research" | "AI";
@@ -21,6 +24,8 @@ const FACES = {
 const TONES = {
   grape: "bg-grape text-white",
   grey: "bg-[#E5E7EB] text-primary",
+  // A number not yet in our favour, in case study results
+  warning: "bg-warning/10 text-warning",
 };
 
 /** Any label in the tag shape — case studies use it (in Geist) for iteration / option labels */
