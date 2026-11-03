@@ -5,8 +5,9 @@ import { useEffect } from "react";
 /**
  * Reveals a case study as it's read: every chapter heading, every block in the reading
  * column (paragraphs, headings, lists, cards) and every visual rises in once as it
- * scrolls into view. The class is added here, so without script nothing is hidden;
- * with reduced motion nothing moves. Blocks with their own entrance motion still run
+ * scrolls into view, fading and unblurring, with blocks that arrive together a beat
+ * apart. The class is added here, so without script nothing is hidden; with reduced
+ * motion nothing moves. Blocks with their own entrance motion still run
  * it inside the reveal.
  */
 const BLOCKS = ".cs-chapter > .cs-column > .cs-h2, .cs-copy > *, .cs-visual";
@@ -32,8 +33,13 @@ export default function RevealOnScroll() {
     const check = () => {
       raf = 0;
       const line = window.innerHeight * 0.92;
+      // Blocks arriving together are staggered a beat apart, top to bottom; anything
+      // already above the screen (skipped by a jump) shows at once
+      let beat = 0;
       pending = pending.filter((el) => {
-        if (el.getBoundingClientRect().top > line) return true;
+        const top = el.getBoundingClientRect().top;
+        if (top > line) return true;
+        el.style.setProperty("--reveal-delay", top < 0 ? "0ms" : `${Math.min(beat++, 4) * 80}ms`);
         el.classList.add("is-in");
         return false;
       });

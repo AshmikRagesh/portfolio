@@ -25,7 +25,7 @@ const TONES = {
   grape: "bg-grape text-white",
   grey: "bg-[#E5E7EB] text-primary",
   // A number not yet in our favour, in case study results
-  warning: "bg-warning/10 text-warning",
+  warning: "bg-warning text-white",
 };
 
 /** Any label in the tag shape — case studies use it (in Geist) for iteration / option labels */

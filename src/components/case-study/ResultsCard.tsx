@@ -280,11 +280,10 @@ export default function ResultsCard({
         <p className="mt-[8px] font-body text-body text-secondary md:text-body-md">{body}</p>
       </div>
 
-      {/* Supporting stats: boxes side by side, each with a tag, the label, then the number
-          at the bottom so the numbers line up. A win is white, with the old value muted, the
-          new one in grape and a rising arrow. A number still to improve gets a pale warning
-          surface and edge, a warning tag, the number in the warning colour and a note on
-          what's behind it */}
+      {/* Supporting stats: boxes side by side, each with a tag and the label, then the
+          number in a strip along the bottom so the numbers line up. A win has a grape tag,
+          the old value muted and the new one in grape. A number still to improve has a solid
+          warning tag, a stronger warning edge and a warm strip behind the number */}
       <dl
         className={`m-0 mt-[24px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${
           stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"
@@ -293,26 +292,33 @@ export default function ResultsCard({
         {stats.map((s, i) => (
           <div key={s.label} {...rise(200 + i * 150)}>
             <div
-              className={`flex h-full flex-col gap-[12px] rounded-md p-[16px] ring-1 ring-inset md:p-[20px] ${
-                s.improve ? "bg-white ring-warning/40" : "bg-white ring-primary/5"
+              className={`flex h-full flex-col overflow-hidden rounded-md bg-white ring-inset ${
+                s.improve ? "ring-2 ring-warning/50" : "ring-1 ring-primary/5"
               }`}
             >
-              <span className="self-start">
-                {s.improve ? (
-                  <Tag face="geist" tone="warning">
-                    <WarningCircle size={14} weight="bold" aria-hidden="true" />
-                    Still to improve
-                  </Tag>
-                ) : (
-                  <Tag face="geist" tone="grape">
-                    <TrendUp size={14} weight="bold" aria-hidden="true" />
-                    Improved
-                  </Tag>
-                )}
-              </span>
-              <dt className="font-body text-body text-secondary">{s.label}</dt>
-              {s.note && <dd className="m-0 font-body text-body text-muted">{s.note}</dd>}
-              <dd className="m-0 mt-auto flex items-baseline gap-[8px] pt-[8px]">
+              <div className="flex flex-1 flex-col gap-[12px] p-[16px] md:p-[20px]">
+                <span className="self-start">
+                  {s.improve ? (
+                    <Tag face="geist" tone="warning">
+                      <WarningCircle size={14} weight="bold" aria-hidden="true" />
+                      Still to improve
+                    </Tag>
+                  ) : (
+                    <Tag face="geist" tone="grape">
+                      <TrendUp size={14} weight="bold" aria-hidden="true" />
+                      Improved
+                    </Tag>
+                  )}
+                </span>
+                <dt className={`font-body text-body ${s.improve ? "text-heading" : "text-secondary"}`}>{s.label}</dt>
+                {s.note && <dd className="m-0 font-body text-body text-muted">{s.note}</dd>}
+              </div>
+              {/* The number sits in its own strip; a number still to improve gets a warm one */}
+              <dd
+                className={`m-0 flex items-baseline gap-[8px] px-[16px] pb-[16px] md:px-[20px] md:pb-[20px] ${
+                  s.improve ? "bg-warning/[0.06] pt-[12px] md:pt-[16px]" : "pt-[8px]"
+                }`}
+              >
                 {s.before && (
                   <>
                     <span className="font-heading text-h4 text-muted md:text-h4-md">{s.before}</span>
