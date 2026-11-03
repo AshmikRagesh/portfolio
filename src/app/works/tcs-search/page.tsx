@@ -91,16 +91,10 @@ function Overview() {
           it, and it has been live since June 2026.
         </p>
         <Meta
-          role={
-            <>
-              Product Designer. Owned the design end to end: the flow, the
-              filters, the trip card, and the results and no-results pages,
-              on desktop and phone, through to developer handoff.
-            </>
-          }
+          role="End-to-end Design & Developer Handoff"
           // TODO: add Travis's role once known
           team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content), TCS developers (Engineering)"
-          timeline={<>Brief in May 2026<br />Live since June 2026</>}
+          timeline={<>May – July 2026<br />Briefed in June 2026 · V1 launched in July 2026</>}
         />
       </Copy>
       <Visual>
@@ -118,19 +112,23 @@ function TheProblem() {
     <Chapter id="the-problem" num={1} title="Search made it hard for travellers to find the right trip">
       <Copy>
         <p>
-          Travellers usually search with something in mind: a place, a month
-          or a kind of trip. TCS&apos;s search page couldn&apos;t be narrowed
-          by any of them. In March 2026 its trips tab showed 42 trip cards in
-          date order, with no filters, no sort and no count, and
-          the cards didn&apos;t say which countries a trip visited. Travellers
-          had to scan the list and open trips to work out which ones fit. TCS
-          had no search data to show how often this happened.
+          Travellers often search with a destination, travel period or type of
+          experience in mind. But in March 2026, TCS&apos;s search page offered
+          limited ways to narrow results. The Trips tab displayed 42 trip cards
+          in date order, with no filters, sorting or result count. Cards also
+          lacked country information, meaning travellers had to scan the list
+          and open individual trips to understand where each journey went.
+        </p>
+        <p>
+          Search performance data wasn&apos;t available to the design team,
+          making it difficult to understand how often travellers encountered
+          these issues.
         </p>
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Even with a destination or trip in mind, travellers got one long list they couldn’t narrow, and had to work out for themselves which trips fit."
-          consequence="A trip a traveller can’t find is a trip they can’t enquire about, and TCS, which sells through enquiries, couldn’t see how many gave up."
+          situation="Travellers couldn’t easily identify trips that matched their interests. They had to work through a long list and open individual trips to determine which journeys were relevant."
+          consequence="For a business that relies on enquiries, making relevant trips harder to discover also created a potential barrier between browsing and enquiring."
         />
       </Visual>
     </Chapter>
