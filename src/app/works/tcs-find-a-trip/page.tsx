@@ -26,6 +26,7 @@ import {
   Footnote,
   VariantProvider,
   VariantFigure,
+  Highlight,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1270. Copy is a starting point to edit section by section;
@@ -76,9 +77,9 @@ function Overview() {
       <Copy>
         <p>
           TCS World Travel plans luxury trips around the world. I designed and
-          built a new step in the website&apos;s main menu: after picking a
+          built a new step in the website&apos;s main menu: <Highlight>after picking a
           continent, travellers choose to explore the destination or browse
-          trips. Both variants are built in code, ready to test against the
+          trips</Highlight>. Both variants are built in code, ready to test against the
           current menu.
         </p>
         <Meta
@@ -114,8 +115,8 @@ function TheProblem() {
         <p>
           On the TCS website, clicking a continent in the menu took you
           straight to a list of trips. That works if you already know where
-          you want to go. But luxury trips take months to plan. Many people
-          start by exploring a place, not by comparing trips.
+          you want to go. But luxury trips take months to plan. <Highlight>Many people
+          start by exploring a place, not by comparing trips.</Highlight>
         </p>
       </Copy>
       <Visual>
@@ -239,7 +240,7 @@ function Context() {
     <Chapter id="discovery" num={2} title="What we knew going in">
       <Copy>
         <p>
-          The CRO team came with a hypothesis, not data.
+          The CRO team came with <Highlight>a hypothesis, not data</Highlight>.
         </p>
         <PullQuote
           label="Hypothesis"
@@ -253,8 +254,8 @@ function Context() {
           <h3>The menu hid the pages explorers needed</h3>
           <p>
             The live menu made this easy to check. Every continent link pointed
-            to a trip search. Not one pointed to a destination page, even though
-            most continents already had one. We had no analytics on how many
+            to a trip search. <Highlight>Not one pointed to a destination page, even though
+            most continents already had one.</Highlight> We had no analytics on how many
             people left as a result, so we estimated it from travel industry
             averages.
           </p>
@@ -312,8 +313,8 @@ function Context() {
         </Visual>
         <Copy>
           <p>
-            <strong>What success looked like:</strong> more people reaching a
-            real next page after picking a continent, either a destination page
+            <strong>What success looked like:</strong> <Highlight>more people reaching a
+            real next page</Highlight> after picking a continent, either a destination page
             or a list of trips.
           </p>
         </Copy>
@@ -402,8 +403,8 @@ function Exploration() {
     <Chapter id="exploration" num={3} title="What we explored, and the three we showed the business">
       <Copy>
         <p>
-          I started with quick prototypes to test how the choice should behave,
-          not how it should look. I built them with <HelixLink />, so the
+          I started with quick prototypes to test <Highlight>how the choice should behave,
+          not how it should look</Highlight>. I built them with <HelixLink />, so the
           business could click through each one. The two paths
           open right under the continent you click, so the menu never jumps
           away. In review, Rohit asked for three changes:
@@ -437,8 +438,8 @@ function Exploration() {
         <Copy>
           <h3>Why we tested both instead of choosing</h3>
           <p>
-            Variant 1 taught us the layout rule: cards can sit side by side,
-            links stack. That left two good designs, and no reason to guess
+            Variant 1 taught us the layout rule: <Highlight>cards can sit side by side,
+            links stack</Highlight>. That left two good designs, and no reason to guess
             between them.
           </p>
           <NumberedPoints items={WHY_BOTH} />
@@ -458,22 +459,22 @@ const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "The choice opens where you clicked",
-    body: "Pick a continent and the two paths unfold right under it. The continent stays highlighted, and closing the menu or picking another continent works without a reload, so you never lose your place.",
+    body: <>Pick a continent and <Highlight>the two paths unfold right under it</Highlight>. The continent stays highlighted, and closing the menu or picking another continent works without a reload, so you never lose your place.</>,
   },
   {
     num: 2,
     title: "Two labels that start the same way",
-    body: "Renaming Find Trips to Explore Trips gave both paths the same verb, so they read as equals. Trips sits first, as agreed in review, so the old route to trips is still the first thing you see.",
+    body: <>Renaming Find Trips to Explore Trips gave both paths the same verb, so <Highlight>they read as equals</Highlight>. Trips sits first, as agreed in review, so the old route to trips is still the first thing you see.</>,
   },
   {
     num: 3,
     title: "Cards side by side, links stacked",
-    body: "Both test designs follow the rule from Variant 1 on every screen. The image cards are big enough to sit next to each other, even on a phone. The text links stack, so each one stays easy to tap.",
+    body: <>Both test designs follow the rule from Variant 1 on every screen. The image cards are big enough to sit next to each other, even on a phone. <Highlight>The text links stack, so each one stays easy to tap.</Highlight></>,
   },
   {
     num: 4,
     title: "Every continent gets its own pair",
-    body: "Each continent swaps in its own approved photos and links, so Africa looks like Africa. North America and Golf have no destination page, so they skip the choice and open their trips as before.",
+    body: <>Each continent swaps in its own approved photos and links, so Africa looks like Africa. <Highlight>North America and Golf have no destination page</Highlight>, so they skip the choice and open their trips as before.</>,
   },
 ];
 
@@ -555,8 +556,8 @@ function Output() {
       <Copy>
         <p>
           Both designs were approved on 15 July 2026, and I built them in code
-          as two variants of the menu. The test splits visitors three ways
-          against the current menu.
+          as two variants of the menu. <Highlight>The test splits visitors three ways
+          against the current menu.</Highlight>
         </p>
       </Copy>
       <Visual>
@@ -606,7 +607,7 @@ function Outcome() {
     <Chapter id="outcome" num={6} title="Where it stands">
       <Copy>
         <p>
-          Both variants are built and reviewed, so the test is ready to run.
+          Both variants are built and reviewed, so <Highlight>the test is ready to run</Highlight>.
           There are no results to share yet.
         </p>
       </Copy>
@@ -622,9 +623,9 @@ function Outcome() {
           <h3>What happens next</h3>
           <p>
             When the test reads out, we&apos;ll compare three things across the
-            control and both variants: how many people reach a page after
+            control and both variants: <Highlight>how many people reach a page after
             picking a continent, which path they choose, and the drop-off
-            rate, meaning how many leave without choosing. A journey only
+            rate</Highlight>, meaning how many leave without choosing. A journey only
             counts when the next page actually loads. Then three steps follow.
           </p>
           <Timeline items={NEXT_STEPS} />
@@ -644,17 +645,17 @@ function Reflection() {
         <p>
           <strong>Fairness is a design decision.</strong> In an A/B test the
           layout can tip the result. Settling early that both paths carry equal
-          weight meant the test measures intent, not my emphasis.
+          weight meant <Highlight>the test measures intent, not my emphasis</Highlight>.
         </p>
         <p>
           <strong>Prototype the behaviour, not pixels.</strong> Two rough
           interaction prototypes let the team compare how each choice felt in a
-          single review, and decide to test both instead of debating one.
+          single review, and <Highlight>decide to test both instead of debating one</Highlight>.
         </p>
         <p>
           <strong>Design the edge cases early.</strong> The cramped phone
           layout and the missing destination pages were solved in the
-          prototypes, so the build started with those questions answered.
+          prototypes, so <Highlight>the build started with those questions answered</Highlight>.
         </p>
       </Copy>
     </Chapter>

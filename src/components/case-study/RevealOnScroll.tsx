@@ -39,7 +39,7 @@ export default function RevealOnScroll() {
       pending = pending.filter((el) => {
         const top = el.getBoundingClientRect().top;
         if (top > line) return true;
-        el.style.setProperty("--reveal-delay", top < 0 ? "0ms" : `${Math.min(beat++, 4) * 100}ms`);
+        el.style.setProperty("--reveal-delay", top < 0 ? "0ms" : `${Math.min(beat++, 4) * 70}ms`);
         el.classList.add("is-in");
         return false;
       });

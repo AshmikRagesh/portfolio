@@ -21,6 +21,7 @@ import {
   Pointers,
   Footnote,
   NextCase,
+  Highlight,
 } from "@/components/case-study";
 
 // DRAFT — angle chosen 29 Oct 2026: "build once, not twice", with Ashmik's own path
@@ -58,7 +59,7 @@ function Overview() {
           every Travelopia brand, and it covers each step: exploring,
           brainstorming, wireframing, layouts, building screens, and keeping the
           system audited and up to date. What we build is what ships, and our
-          designs now ship in about half the time.
+          designs now <Highlight>ship in about half the time</Highlight>.
         </p>
         <Meta
           role="Product Designer. Tried designing with Claude Code before Helix, was one of the first designers on it, and moved three brands onto it"
@@ -84,11 +85,11 @@ function TheProblem() {
           Every brand&apos;s design system lived in two places: our Figma
           library and the developers&apos; coded components. Every ticket was
           handed to developers as a Figma file. Designs were well documented,
-          but small details like padding and colour values still slipped
-          between the two.
+          but <Highlight>small details like padding and colour values still slipped
+          between the two</Highlight>.
         </p>
         <p>
-          Each slip became a bug ticket that only a developer could fix.
+          Each slip became <Highlight>a bug ticket that only a developer could fix</Highlight>.
         </p>
       </Copy>
       <Visual>
@@ -132,7 +133,7 @@ function Discovery() {
           together fast, but they weren&apos;t consistent: spacing, colours and
           components drifted from the system, and every build needed
           corrections. Having the design system as a reference wasn&apos;t
-          enough. The AI had to be limited to it.
+          enough. <Highlight>The AI had to be limited to it.</Highlight>
         </p>
         <h3>What the fix needed</h3>
       </Copy>
@@ -151,25 +152,25 @@ const PAIRS = [
   {
     num: 1,
     title: "One design system per brand, in code",
-    body: "Each brand's design system lives in Helix, written as the same TypeScript components our developers use. Designers build in it directly, so there is no second copy to drift.",
+    body: <>Each brand’s design system lives in Helix, written as the same TypeScript components our developers use. Designers build in it directly, so <Highlight>there is no second copy to drift</Highlight>.</>,
     figure: "One brand's foundations in Helix: colour, type and spacing",
   },
   {
     num: 2,
     title: "Only the system's values",
-    body: "Helix can only use the brand's own tokens and components, so every value comes out exactly as the system defines it. If a component is missing, we add it to the system first instead of improvising.",
+    body: <>Helix can only use the brand’s own tokens and components, so <Highlight>every value comes out exactly as the system defines it</Highlight>. If a component is missing, we add it to the system first instead of improvising.</>,
     figure: "A component, with the token behind each value",
   },
   {
     num: 3,
     title: "One skill, every brand kept separate",
-    body: "A dozen brands share one skill, but each keeps its own system. Work on TCS only uses TCS components and tokens, and work on Quark only uses Quark's.",
+    body: <>A dozen brands share one skill, but <Highlight>each keeps its own system</Highlight>. Work on TCS only uses TCS components and tokens, and work on Quark only uses Quark’s.</>,
     figure: "The same card, built for TCS, Quark and Kalos",
   },
   {
     num: 4,
     title: "Designers fix it, developers review",
-    body: "When I spot a miss, I fix it in Helix and send a pull request. A developer reviews it and merges it, so a small fix no longer waits in the queue.",
+    body: <>When I spot a miss, I fix it in Helix and send a pull request. A developer reviews it and merges it, so <Highlight>a small fix no longer waits in the queue</Highlight>.</>,
     figure: "A pull request for a design fix, approved by a developer",
   },
 ];
@@ -302,7 +303,7 @@ function Output() {
     <Chapter id="output" num={5} title="Who keeps it right">
       <Copy>
         <p>
-          Helix keeps every brand consistent because nothing goes in unchecked.
+          Helix keeps every brand consistent because <Highlight>nothing goes in unchecked</Highlight>.
           Each new component or fix is built by a designer and sent as a pull
           request. The brand&apos;s developers review it against their codebase
           and approve it or ask for changes. Once it&apos;s merged into main,
@@ -314,8 +315,8 @@ function Output() {
         <Copy>
           <h3>In use on every brand</h3>
           <p>
-            Every Travelopia brand&apos;s design system is in Helix, and every
-            new ticket is designed in it.{" "}
+            Every Travelopia brand&apos;s design system is in Helix, and <Highlight>every
+            new ticket is designed in it</Highlight>.{" "}
             <a href="/works/tcs-find-a-trip">Find a Trip</a> for TCS was one of
             the first: both test variants were explored, built and reviewed in
             Helix, then merged.
@@ -359,8 +360,8 @@ function Outcome() {
         <Copy>
           <h3>110+ components, in code</h3>
           <p>
-            I moved the existing components for Quark and TCS into Helix in
-            about a month, alongside live tickets, and Kalos is still moving
+            I moved the existing components for Quark and TCS into Helix <Highlight>in
+            about a month, alongside live tickets</Highlight>, and Kalos is still moving
             across. When a ticket needed something new, Hriday and I built it
             in Helix too.
           </p>
@@ -375,8 +376,8 @@ function Outcome() {
         <Copy>
           <h3>Designs delivered in about half the time</h3>
           <p>
-            A ticket&apos;s designs used to take one to two weeks to deliver; now
-            they take about half that. New work also reuses what&apos;s already
+            A ticket&apos;s designs used to take <Highlight>one to two weeks to deliver; now
+            they take about half that</Highlight>. New work also reuses what&apos;s already
             there: the country and state dropdowns for the TCS forms reused the
             existing combobox component instead of a new design.
           </p>
@@ -399,26 +400,26 @@ function Outcome() {
 const WORKED = [
   {
     lead: "AI needs limits to be useful.",
-    text: "Claude Code on its own drifted from the design system. Holding it to each brand's own tokens and components is what made the output match.",
+    text: <>Claude Code on its own drifted from the design system. <Highlight>Holding it to each brand’s own tokens and components</Highlight> is what made the output match.</>,
   },
   {
     lead: "Foundations first kept work moving.",
-    text: "Getting every brand's tokens right before any components meant live tickets never had to stop for the migration.",
+    text: <>Getting every brand’s tokens right before any components meant <Highlight>live tickets never had to stop for the migration</Highlight>.</>,
   },
   {
     lead: "The fastest fix is the designer's.",
-    text: "Fixing a miss in Helix and sending it for review beats filing a bug and waiting for a developer.",
+    text: <><Highlight>Fixing a miss in Helix and sending it for review</Highlight> beats filing a bug and waiting for a developer.</>,
   },
 ];
 
 const NEXT_TIME = [
   {
     lead: "You can only use what the system has.",
-    text: "When something is missing, you add it to the design system instead of drawing around it: slower once, faster every time after.",
+    text: <>When something is missing, you add it to the design system instead of drawing around it: <Highlight>slower once, faster every time after</Highlight>.</>,
   },
   {
     lead: "I'd measure from day one.",
-    text: "\u201cAbout half the time\u201d is my honest estimate. Tracking delivery time and design bugs from the start would make it a measured number.",
+    text: <>“About half the time” is my honest estimate. <Highlight>Tracking delivery time and design bugs from the start</Highlight> would make it a measured number.</>,
   },
 ];
 

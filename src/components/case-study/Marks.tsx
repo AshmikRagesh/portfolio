@@ -1,14 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { playMarker, primeMarker } from "./markerSound";
 
 /**
  * Pen-and-paper marks for the words that matter, drawn once as they scroll into view:
  * Highlight sweeps a pink highlighter across a phrase; Circled scribbles a quick pen loop
- * round a number. With reduced motion they're simply there. Use them sparingly: one key
- * point a section, and a circle only for the one number that tells the story.
+ * round a number. A highlight draws with the faintest marker-on-paper sound (see
+ * markerSound.ts), once the visitor has clicked or tapped the page. With reduced motion
+ * they're simply there, silently. A mark the reader scrolled past without it coming
+ * into view (a jump to a later section) is drawn silently, so none is left blank.
+ * Mark the point a skimmer must not miss, in running text, never inside a card; a
+ * circle only for the one number that tells the story.
  */
-function useSeenOnce<T extends Element>() {
+function useSeenOnce<T extends Element>(onSeen?: () => void) {
   const ref = useRef<T>(null);
   const [seen, setSeen] = useState(false);
   useEffect(() => {
@@ -18,22 +23,38 @@ function useSeenOnce<T extends Element>() {
       setSeen(true);
       return;
     }
+    let done = false;
+    const finish = (sound: boolean) => {
+      if (done) return;
+      done = true;
+      setSeen(true);
+      if (sound) onSeen?.();
+      io.disconnect();
+      window.removeEventListener("scroll", onScroll);
+    };
     const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        setSeen(true);
-        io.disconnect();
-      },
+      ([entry]) => entry.isIntersecting && finish(true),
       { threshold: 0.6, rootMargin: "0px 0px -15% 0px" },
     );
+    // Scrolled past it unseen: show it, quietly
+    const onScroll = () => el.getBoundingClientRect().bottom < 0 && finish(false);
     io.observe(el);
-    return () => io.disconnect();
-  }, []);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [onSeen]);
   return [ref, seen] as const;
 }
 
+// The sound starts with the sweep, which waits a beat (see .cs-marker)
+const markerStroke = () => window.setTimeout(playMarker, 150);
+
 export function Highlight({ children }: { children: React.ReactNode }) {
-  const [ref, seen] = useSeenOnce<HTMLElement>();
+  useEffect(primeMarker, []);
+  const [ref, seen] = useSeenOnce<HTMLElement>(markerStroke);
   return (
     <mark ref={ref} data-seen={seen} className="cs-marker">
       {children}

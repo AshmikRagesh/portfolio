@@ -16,6 +16,7 @@ import {
   ExplorationCard,
   BellaStates,
   NextCase,
+  Highlight,
 } from "@/components/case-study";
 
 // DRAFT, 2 Nov 2026. Bella's own outline, set by Ashmik (not the Problem → Outcome template):
@@ -54,13 +55,13 @@ function Overview() {
       <Copy>
         <p>
           Bella is the desk bell that runs the front desk of this portfolio.
-          It sits in the navbar as the logo, keeps track of how long you
-          actually spend here, and shows it on a small sign when you hover.
+          It sits in the navbar as the logo, <Highlight>keeps track of how long you
+          actually spend here</Highlight>, and shows it on a small sign when you hover.
           When it has something to say, it rings first.
         </p>
         <p>
-          I made Bella for two reasons. I wanted to know whether people really
-          read my work, and for how long. And I wanted visitors to have a
+          I made Bella for two reasons. <Highlight>I wanted to know whether people really
+          read my work</Highlight>, and for how long. And I wanted visitors to have a
           reason to look around a little longer. A plain clock in the corner
           did neither, so the clock became a character.
         </p>
@@ -113,8 +114,8 @@ function Research() {
           and flash the time on a board when hovered. Before drawing, we looked
           at six hospitality mascots: Tripadvisor&apos;s Ollie, the Suica
           penguin, Air India&apos;s Maharaja, Kumamon, Bibendum and Grimace.
-          They share one or two colours, one basic shape and dot eyes, and get
-          their personality from pose.
+          They share one or two colours, one basic shape and dot eyes, and <Highlight>get
+          their personality from pose</Highlight>.
         </p>
         <p>
           Then we read how other teams built theirs. Five lessons changed what
@@ -158,7 +159,7 @@ function Characters() {
         <p>
           Bella went through many versions in ten days. Most rounds ended the
           same way: a version looked good on its own but didn&apos;t belong on
-          the site, so it moved back toward the design system.
+          the site, so it <Highlight>moved back toward the design system</Highlight>.
         </p>
       </Copy>
       {CHARACTERS.map(({ title, note, stage }) => (
@@ -273,8 +274,8 @@ function Finishing() {
     <Chapter id="finish" num={4} title="Finishing the bell">
       <Copy>
         <p>
-          Once picked, the bell drifted. Shaded and chromed, it stopped looking
-          like itself.
+          Once picked, the bell drifted. <Highlight>Shaded and chromed, it stopped looking
+          like itself.</Highlight>
         </p>
         <PullQuote
           label="The brief that fixed it"
@@ -319,52 +320,52 @@ const USE_CASES: {
   num: number;
   slug: string;
   title: string;
-  body: string;
+  body: React.ReactNode;
   tried?: { label: string; items: { name: string; src: string; kept?: boolean }[] };
 }[] = [
   {
     num: 1,
     slug: "greets",
     title: "It greets you",
-    body: "At 0:30, 2:00 and 5:00 Bella rings once and types one plain line in a small tooltip. Three lines a visit, never over the work.",
+    body: <>At 0:30, 2:00 and 5:00 Bella rings once and types one plain line in a small tooltip. <Highlight>Three lines a visit, never over the work.</Highlight></>,
     tried: { label: "Tooltips we tried", items: TOOLTIPS },
   },
   {
     num: 2,
     slug: "time",
     title: "It keeps your time",
-    body: "Hover, focus or tap the bell and it lowers a sign with your active time, like 4m 16s. On phones, tap again to hide it.",
+    body: <>Hover, focus or tap the bell and it <Highlight>lowers a sign with your active time</Highlight>, like 4m 16s. On phones, tap again to hide it.</>,
     tried: { label: "Signs we tried", items: SIGNS },
   },
   {
     num: 3,
     slug: "reads",
     title: "It reads and watches with you",
-    body: "Round gold reading glasses while a case study is open, and 3D glasses while a video you started plays. The clock keeps counting through both.",
+    body: <>Round gold reading glasses while a case study is open, and <Highlight>3D glasses while a video you started plays</Highlight>. The clock keeps counting through both.</>,
   },
   {
     num: 4,
     slug: "dozes",
     title: "It dozes when you leave",
-    body: "Hide the tab or stop for 30 seconds and the clock pauses and Bella falls asleep, so only real attention counts. The browser tab dozes too, and its title shows your paused time.",
+    body: <>Hide the tab or stop for 30 seconds and the clock pauses and Bella falls asleep, so <Highlight>only real attention counts</Highlight>. The browser tab dozes too, and its title shows your paused time.</>,
   },
   {
     num: 5,
     slug: "celebrates",
     title: "It celebrates what you find",
-    body: "Reading two case studies, reading all of them, downloading the resume or copying the email earns a gold bow tie for about three seconds. Five stamps are hidden around the site; when you find one, Bella looks surprised and the stamp lands on your Curiosity Pass.",
+    body: <>Reading two case studies, reading all of them, downloading the resume or copying the email earns a gold bow tie for about three seconds. <Highlight>Five stamps are hidden around the site</Highlight>; when you find one, Bella looks surprised and the stamp lands on your Curiosity Pass.</>,
   },
   {
     num: 6,
     slug: "champion",
     title: "It crowns the longest stay",
-    body: "The longest visit this month turns Bella and the sign gold. Visit counts appear nowhere.",
+    body: <>The longest visit this month turns Bella and the sign gold. <Highlight>Visit counts appear nowhere.</Highlight></>,
   },
   {
     num: 7,
     slug: "footer",
     title: "It follows you round the site",
-    body: "In the footer, a smaller Bella pops up and hops along the counter, holding my email with a Copy email button. While it's up, the navbar Bella ducks and leaves its clock behind.",
+    body: <>In the footer, a smaller Bella pops up and hops along the counter, <Highlight>holding my email with a Copy email button</Highlight>. While it’s up, the navbar Bella ducks and leaves its clock behind.</>,
   },
 ];
 
@@ -373,8 +374,8 @@ function Solution() {
     <Chapter id="solution" num={5} title="Bella on the site today">
       <Copy>
         <p>
-          The first Bella only kept time. Every addition after that came from a
-          moment in a real visit, and asked what Bella should do there. Here
+          The first Bella only kept time. <Highlight>Every addition after that came from a
+          moment in a real visit</Highlight>, and asked what Bella should do there. Here
           they are in the order a visitor meets them.
         </p>
       </Copy>
@@ -538,7 +539,7 @@ function Purpose() {
       <Copy>
         <p>
           Bella has two jobs: give visitors a reason to look around, and tell
-          me whether they did. Every feature has to do one, and most do both.
+          me whether they did. <Highlight>Every feature has to do one, and most do both.</Highlight>
         </p>
         <h3>What it solves</h3>
         <Pointers items={SOLVES} />
