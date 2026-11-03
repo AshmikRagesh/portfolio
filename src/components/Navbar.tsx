@@ -271,7 +271,7 @@ function linkHref(href: string, pathname: string) {
 // A tab: on hover, the pink highlighter from the case studies sweeps behind the word
 function NavTab({ label, href, pathname }: { label: string; href: string; pathname: string }) {
   const resume = href === "/resume";
-  const className = "nav-tab font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] whitespace-nowrap";
+  const className = "nav-tab font-brand text-lead font-normal text-text-base/85 uppercase tracking-[1px] whitespace-nowrap";
   const inner = <span className="nav-tab-label">{label}</span>;
   return resume ? (
     <Link href={href} onClick={() => celebrate("resume", "Resume downloaded.")} className={className}>
@@ -357,9 +357,9 @@ export default function Navbar() {
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
       } ${showNav ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >
-      {/* Main nav row — the bell in the middle, the links split either side of it */}
-      <nav className="relative grid grid-cols-[1fr_auto_1fr] items-center h-full nav-container">
-        <ul className="hidden md:flex items-center gap-[32px]">
+      {/* Main nav row — the bell in the middle, the links split either side and close in to it */}
+      <nav className="relative grid grid-cols-[1fr_auto_1fr] gap-x-[40px] items-center h-full nav-container">
+        <ul className="hidden md:flex items-center justify-end gap-[32px]">
           {leftLinks.map((link) => (
             <li key={link.label}>
               <NavTab {...link} pathname={pathname} />
@@ -381,7 +381,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        <ul className="hidden md:flex items-center justify-end gap-[32px]">
+        <ul className="hidden md:flex items-center gap-[32px]">
           {rightLinks.map((link) => (
             <li key={link.label}>
               <NavTab {...link} pathname={pathname} />
@@ -410,7 +410,7 @@ export default function Navbar() {
               <li key={label} className="border-b border-line-soft">
                 <a
                   href={linkHref(href, pathname)}
-                  className="flex items-center gap-3 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] px-[20px] py-5 transition-colors duration-200 hover:text-black"
+                  className="flex items-center gap-3 font-brand text-lead font-normal text-text-base/85 uppercase tracking-[1px] px-[20px] py-5 transition-colors duration-200 hover:text-black"
                   onClick={() => setMenuOpen(false)}
                 >
                   {label}
