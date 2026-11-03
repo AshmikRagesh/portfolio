@@ -7,7 +7,7 @@ import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { chimeBell, ringBell } from "@/components/host/bellSound";
 import { awardStamp, celebrate, useMoment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
-import { useWatching } from "@/lib/curiosity/watching";
+import { useVideoGlasses } from "@/lib/curiosity/watching";
 import { COPY_EMAIL_EVENT, EMAIL } from "@/lib/contact";
 import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { track } from "@/lib/curiosity/report";
@@ -98,7 +98,7 @@ function useBellHeight() {
 function FooterBell() {
   const record = useRecordHolder();
   const touch = useTouchScreen();
-  const watching = useWatching();
+  const watching = useVideoGlasses();
   const height = useBellHeight();
   const layout = hostLayout(height);
   const [hovered, setHovered] = useState(false);

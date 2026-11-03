@@ -457,6 +457,17 @@
   @media (prefers-reduced-motion: reduce) {
     .cs-fade, .cs-pop { animation: none; }
   }
+  /* Reading reveal (RevealOnScroll): a block below the fold starts low and faded, and
+     rises in once it's read. Transform clears afterwards, so nothing inside is affected */
+  .cs-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 700ms cubic-bezier(0.2, 0.7, 0.2, 1), transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .cs-reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
   .cs-copy > .cs-closing {
     @apply mt-[32px] border-t border-line-soft pt-[28px];
   }

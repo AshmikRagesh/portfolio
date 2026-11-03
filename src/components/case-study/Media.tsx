@@ -2,14 +2,15 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useReportWatching } from "@/lib/curiosity/watching";
+import { useReportOnScreen, useReportWatching } from "@/lib/curiosity/watching";
 
 /**
  * A case study screenshot or clip that opens larger when clicked — an expanded view over a
  * dimmed page, sized to the media itself, not full screen.
  *
- * Clips get a full player: play / pause in the centre, and a control bar on a soft scrim
- * along the bottom — play, time, a scrubber that shows what's loaded, speed (0.5× to 2×),
+ * Clips get a full player that works in place: clicking the clip plays or pauses it, and
+ * the scrubber moves through it without opening anything. Play / pause in the centre, and
+ * a control bar on a soft scrim along the bottom — play, time, a scrubber that shows what's loaded, speed (0.5× to 2×),
  * sound for narrated clips, and expand. The controls stay while paused and fade out two
  * seconds after the pointer stops while playing. Keyboard, once the player has focus:
  * Space or K play / pause · ← → skip 5s · < > speed · M sound · F expand.
@@ -17,6 +18,7 @@ import { useReportWatching } from "@/lib/curiosity/watching";
  * A silent clip plays itself on loop while it's on screen (never with reduced motion, and
  * never again once the reader has paused it); a `narrated` clip waits and plays with sound.
  * The expanded clip picks up where the inline one was, and hands its place back on close.
+ * While any clip plays in view, Bella wears her 3D glasses.
  */
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
 const IDLE_MS = 2000;
@@ -185,6 +187,16 @@ function Player({
   const [active, setActive] = useState(false); // pointer moved recently
   // A clip the reader started, opened or that plays with sound keeps the curiosity clock running
   useReportWatching(playing && (narrated || expanded || chose.current));
+  // Any clip playing in view puts Bella's 3D glasses on; pausing or scrolling away takes them off
+  const [inView, setInView] = useState(false);
+  useReportOnScreen(playing && (inView || !!expanded));
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.4 });
+    io.observe(video);
+    return () => io.disconnect();
+  }, []);
 
   // Silent clips play while on screen, unless the reader took over
   useEffect(() => {
@@ -231,6 +243,16 @@ function Player({
   }, [playing]);
 
   useEffect(() => () => clearTimeout(idle.current), []);
+
+  // Metadata can load before the page is interactive, so its event is missed; read it here
+  // too, or the scrubber has no length and can't move through the clip
+  useEffect(() => {
+    const video = ref.current;
+    if (!video || video.readyState < 1) return;
+    setDuration(video.duration);
+    if (video.videoWidth) onRatio?.(video.videoWidth / video.videoHeight);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const wake = useCallback(() => {
     setActive(true);
@@ -322,8 +344,8 @@ function Player({
           const v = e.currentTarget;
           if (v.buffered.length && v.duration) setLoaded(v.buffered.end(v.buffered.length - 1) / v.duration);
         }}
-        onClick={expanded ? toggle : () => onOpen?.(where())}
-        className={`block h-full w-full object-contain ${expanded ? "cursor-pointer" : "cursor-zoom-in"}`}
+        onClick={toggle}
+        className="block h-full w-full cursor-pointer object-contain"
       />
 
       {/* Centre: play while paused, pause on hover while playing, a spinner while loading */}

@@ -44,3 +44,41 @@ export function useReportWatching(on: boolean) {
 export function useWatching() {
   return useSyncExternalStore(onWatchingChange, isWatching, () => false);
 }
+
+// ── On screen ─────────────────────────────────────────────────────────────────
+// Any clip playing while it's in view, including the silent ones that play themselves.
+// It only puts Bella's 3D glasses on; it doesn't count as attention for the clock.
+const onScreen = new Set<string>();
+const screenListeners = new Set<() => void>();
+
+function setOnScreen(id: string, on: boolean) {
+  const before = onScreen.size > 0;
+  if (on) onScreen.add(id);
+  else onScreen.delete(id);
+  if (before !== onScreen.size > 0) screenListeners.forEach((l) => l());
+}
+
+const isOnScreen = () => onScreen.size > 0;
+
+function onOnScreenChange(listener: () => void) {
+  screenListeners.add(listener);
+  return () => {
+    screenListeners.delete(listener);
+  };
+}
+
+/** Report from a player: true while it plays and is in view. */
+export function useReportOnScreen(on: boolean) {
+  const id = useId();
+  useEffect(() => {
+    setOnScreen(id, on);
+    return () => setOnScreen(id, false);
+  }, [id, on]);
+}
+
+/** True while Bella should wear her 3D glasses: a video is playing in view, or one the visitor started is playing. */
+export function useVideoGlasses() {
+  const watching = useWatching();
+  const screen = useSyncExternalStore(onOnScreenChange, isOnScreen, () => false);
+  return watching || screen;
+}

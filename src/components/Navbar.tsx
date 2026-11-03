@@ -8,7 +8,7 @@ import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
 import { useCuriosity } from "@/context/CuriosityContext";
 import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/CuriosityBubble";
 import HostCharacter, { hostLayout, type HostGlasses, type HostMood } from "@/components/host/HostCharacter";
-import { useWatching } from "@/lib/curiosity/watching";
+import { useVideoGlasses } from "@/lib/curiosity/watching";
 import { track } from "@/lib/curiosity/report";
 import { awardStamp, celebrate, useMoment, type Moment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
@@ -89,7 +89,7 @@ const BOARD_SHOWN_KEY = "ash.curiosity.boardShown"; // sessionStorage
 function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; moment: QueuedMoment | null }) {
   const { activeSeconds, paused } = useCuriosity();
   const preview = usePreviewMood();
-  const watching = useWatching();
+  const watching = useVideoGlasses();
   const reading = useReading();
   const glasses: HostGlasses | null =
     preview === "video" || watching ? "video" : preview === "reading" || reading ? "reading" : null;
