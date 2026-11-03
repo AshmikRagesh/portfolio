@@ -169,10 +169,7 @@ const EXPLORATIONS: { title: string; note: string; items: { name: string; src: s
     items: [
       { name: "Dark flip clock", src: art("sign-flip-clock") },
       { name: "Brass and ivory plaque", src: art("sign-brass-ivory") },
-      { name: "Compact plaque", src: art("sign-compact-plaque") },
-      { name: "Pencil-drawn board", src: art("sign-pencil") },
       { name: "Grape wood frame", src: art("sign-grape-wood") },
-      { name: "Ivory with a grape edge", src: art("sign-ivory-grape-edge") },
       { name: "Cream plaque with flip digits", src: art("sign-neutral"), kept: true },
     ],
   },

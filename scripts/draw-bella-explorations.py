@@ -240,27 +240,11 @@ SIGNS = {
         + "".join(f'<circle cx="{x}" cy="{y}" r="3" fill="{GOLD}"/>' for x in (40, 180) for y in (38, 86))
         + f'<text x="110" y="74" text-anchor="middle" font-family="{SERIF}" font-style="italic" font-size="32" fill="{DARK}">04:16</text>'
     ),
-    "sign-compact-plaque": sign(
-        f'<rect x="56" y="38" width="108" height="48" rx="8" fill="{GOLD_SHADE}"/><rect x="61" y="43" width="98" height="38" rx="5" fill="{IVORY}"/>'
-        f'<text x="110" y="70" text-anchor="middle" font-family="{SERIF}" font-style="italic" font-size="22" fill="{DARK}">04:16</text>'
-    ),
-    "sign-pencil": sign(
-        '<g filter="url(#pencil)" stroke="#55505a" fill="none" stroke-linecap="round">'
-        '<path d="M30 26 L190 24 L192 100 L28 102 Z" stroke-width="2"/><path d="M34 30 L186 29" stroke-width="1" opacity=".5"/>'
-        '<path d="M70 24 L110 4 L150 24" stroke-width="1.5"/></g>'
-        f'<text x="110" y="76" text-anchor="middle" font-family="{SERIF}" font-style="italic" font-size="32" fill="#55505a" filter="url(#pencil)">04:16</text>',
-        defs='<filter id="pencil"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" result="n"/>'
-        '<feDisplacementMap in="SourceGraphic" in2="n" scale="2.5"/></filter>',
-    ),
     "sign-grape-wood": sign(
         f'<rect x="22" y="20" width="176" height="84" rx="8" fill="{GRAPE_SHADE}"/>'
         + "".join(f'<path d="M24 {y} Q110 {y + 4} 196 {y}" stroke="{GRAPE}" stroke-width="2" fill="none" opacity=".6"/>' for y in (26, 36, 90, 98))
         + f'<rect x="36" y="34" width="148" height="56" rx="4" fill="{IVORY}"/>'
         f'<text x="110" y="72" text-anchor="middle" font-family="{SERIF}" font-style="italic" font-size="28" fill="{DARK}">04:16</text>'
-    ),
-    "sign-ivory-grape-edge": sign(
-        f'<rect x="36" y="28" width="148" height="68" rx="8" fill="{IVORY}" stroke="{GRAPE}" stroke-width="2"/>'
-        f'<text x="110" y="72" text-anchor="middle" font-family="{SERIF}" font-style="italic" font-size="30" fill="{DARK}">04:16</text>'
     ),
     "sign-neutral": sign(
         '<rect x="20" y="22" width="180" height="80" rx="10" fill="url(#frame)"/>'
