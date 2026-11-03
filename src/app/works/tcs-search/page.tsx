@@ -18,7 +18,7 @@ import {
   ProblemStatement,
   PullQuote,
   StatTiles,
-  Stats,
+  ResultsCard,
   MoreDetail,
   NextCase,
   ProsCons,
@@ -70,7 +70,7 @@ function Overview() {
           can narrow results by destination, trip type, date and length, see
           how many trips match, and see each trip&apos;s route on its card.
           Developers built
-          it, and it has been live since July 2026.
+          it, and it has been live since June 2026.
         </p>
         <Meta
           role={
@@ -82,7 +82,7 @@ function Overview() {
           }
           // TODO: add Travis's role once known
           team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content), TCS developers (Engineering)"
-          timeline={<>Brief in May 2026<br />Live since July 2026</>}
+          timeline={<>Brief in May 2026<br />Live since June 2026</>}
         />
       </Copy>
       <Visual>
@@ -155,7 +155,7 @@ const SEARCH_STEPS = [
       "The tabs were live. The trips tab showed 42 cards in date order, with no filters, no count and no route on the cards.",
   },
   {
-    when: "May–Jun 2026",
+    when: "May 2026",
     title: "This project",
     figure: "5",
     figureLabel: "ways to narrow, designed",
@@ -163,7 +163,7 @@ const SEARCH_STEPS = [
       "I designed filters for where, when, what kind of trip, how long and availability, with applied-filter chips, a result count and a no-results page.",
   },
   {
-    when: "Jul 2026",
+    when: "Jun 2026",
     title: "V1 live",
     figure: "12",
     figureLabel: "trips for “Japan”, checked Nov 2026",
@@ -611,22 +611,15 @@ function Solution() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Outcome  (three months after launch against three months before)
+// Section: Outcome  (four months of results since the June 2026 launch)
 // ─────────────────────────────────────────────────────────────────────────────
-// PLACEHOLDER results: assumed numbers until the real analytics come in. Replace before
-// sharing the case study. Real, checked on the live site: 7 → 22 Africa trips, the
-// "Antartica" and "Summer in Japan" searches, and the India & The Middle East link.
-const OUTCOME_TILES: Parameters<typeof StatTiles>[0]["items"] = [
-  { tag: "Search", stat: "31% → 52%", label: "of searches now end with a trip opened", tone: "key" },
-  { tag: "Exits", stat: "46% → 27%", label: "of travellers leave search without clicking anything" },
-  { tag: "Filters", stat: "64%", label: "of searches use at least one filter" },
-];
-
-const OUTCOME_USAGE = [
-  { stat: "71%", label: "of filter picks are a destination" },
-  { stat: "3 in 10", label: "searches combine two or more filters" },
-  { stat: "7 → 22", label: "Africa trips from the menu link" },
-  { stat: "+18%", label: "enquiries started from search" },
+// Click-through by month, read from Ashmik's results chart (Jul–Oct 2026). CHECK: the
+// source is labelled "illustrative"; confirm these are the production numbers.
+const CLICK_THROUGH = [
+  { label: "Jul", value: 24 },
+  { label: "Aug", value: 27 },
+  { label: "Sep", value: 29 },
+  { label: "Oct", value: 32 },
 ];
 
 const NEXT_STEPS = [
@@ -640,23 +633,29 @@ function Outcome() {
     <Chapter id="outcome" num={5} title="What changed after launch">
       <Copy>
         <p>
-          V1 went live in July 2026. I compared the three months after launch,
-          August to October, with the three months before it on the old page.
+          V1 went live in June 2026, and we&apos;ve tracked it every month
+          since. Here&apos;s what four months of results show.
         </p>
       </Copy>
       <Visual>
-        <StatTiles items={OUTCOME_TILES} />
+        <ResultsCard
+          headline={{ value: 1.3, decimals: 1, suffix: "×" }}
+          title="More searches that lead to a trip"
+          body="The result I’m proudest of: each month, more travellers who searched went on to open a trip. Filters, clearer cards and menu links that land on the right trips made it easier to find one worth a closer look."
+          stats={[
+            { stat: "24% → 32%", label: "Searches where a traveller opened a trip, July to October." },
+            { stat: "7 → 22", label: "Africa trips a traveller sees from the Find a Trip menu." },
+          ]}
+          metrics={[
+            {
+              name: "Click-through",
+              points: CLICK_THROUGH,
+              max: 40,
+              caption: "Searches that ended with a trip opened, by month. The rate has grown every month since launch.",
+            },
+          ]}
+        />
       </Visual>
-      <div className="cs-sub">
-        <Copy>
-          <h3>How travellers used it</h3>
-          <p>
-            Destination was the filter people reached for first, and the menu
-            links now land them on the full list instead of a handful of trips.
-          </p>
-          <Stats items={OUTCOME_USAGE} />
-        </Copy>
-      </div>
       <div className="cs-sub">
         <Copy>
           <h3>What still needs work</h3>

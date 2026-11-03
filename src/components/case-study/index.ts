@@ -37,3 +37,4 @@ export {
 } from "./Blocks";
 export { default as BellaMoods } from "./BellaMoods";
 export { default as BellaUseCases } from "./BellaUseCases";
+export { default as ResultsCard } from "./ResultsCard";
