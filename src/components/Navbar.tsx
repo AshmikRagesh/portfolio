@@ -271,7 +271,7 @@ function linkHref(href: string, pathname: string) {
 function NavTab({ label, href, pathname }: { label: string; href: string; pathname: string }) {
   const resume = href === "/resume";
   const current = href.startsWith("/") && pathname === href;
-  const className = `nav-tab font-geist text-body font-normal uppercase tracking-[1px] whitespace-nowrap ${
+  const className = `nav-tab font-brand text-body font-normal uppercase tracking-[1px] whitespace-nowrap ${
     current ? "text-grape" : "text-text-base/70"
   }`;
   const inner = (
@@ -383,7 +383,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop + tablet: the tabs */}
-        <ul className="hidden md:flex items-center gap-[16px]">
+        <ul className="nav-tabs hidden md:flex items-center gap-[16px]">
           {navLinks.map((link) => (
             <li key={link.label}>
               <NavTab {...link} pathname={pathname} />
@@ -413,7 +413,7 @@ export default function Navbar() {
                 <a
                   href={linkHref(href, pathname)}
                   aria-current={href.startsWith("/") && pathname === href ? "page" : undefined}
-                  className={`flex items-center font-geist text-body font-normal uppercase tracking-[1px] px-[20px] py-[16px] transition-colors duration-200 hover:text-grape ${
+                  className={`flex items-center font-brand text-body font-normal uppercase tracking-[1px] px-[20px] py-[16px] transition-colors duration-200 hover:text-grape ${
                     href.startsWith("/") && pathname === href ? "text-grape" : "text-text-base/70"
                   }`}
                   onClick={() => setMenuOpen(false)}

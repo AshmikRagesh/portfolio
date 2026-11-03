@@ -975,8 +975,11 @@
   height: 40px;
   padding: 0 4px;
   outline: none;
-  transition: color 0.2s;
+  transition: color 0.2s, opacity 0.2s;
 }
+/* While one tab is hovered or focused, the rest step back so it stands out */
+.nav-tabs:has(.nav-tab:hover) .nav-tab:not(:hover),
+.nav-tabs:has(.nav-tab:focus-visible) .nav-tab:not(:focus-visible) { opacity: 0.4; }
 .nav-tab-label { position: relative; display: inline-block; }
 .nav-tab-label svg { position: absolute; left: -12px; top: -8px; width: calc(100% + 24px); height: calc(100% + 16px); overflow: visible; pointer-events: none; }
 /* Hidden outright at rest: a round line cap still paints a dot where the undrawn stroke
