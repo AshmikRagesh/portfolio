@@ -19,6 +19,7 @@ import {
   PullQuote,
   StatTiles,
   ResultsCard,
+  ChangeList,
   PreviewLink,
   MoreDetail,
   NextCase,
@@ -663,31 +664,6 @@ const V1_GAPS = [
   },
 ];
 
-function GapList() {
-  return (
-    // Wrapped so the column's own list styles (bullets, indent) don't apply
-    <div className="mt-[32px]">
-      <ul className="m-0 flex list-none flex-col gap-[12px] p-0">
-        {V1_GAPS.map(({ title, today, next }) => (
-          <li key={title} className="rounded-lg border border-line-soft bg-white p-[20px] md:p-[24px]">
-            <p className="font-heading text-h4 font-medium text-heading md:text-h4-md">{title}</p>
-            <div className="mt-[12px] grid grid-cols-1 gap-[12px] md:grid-cols-2 md:gap-[24px]">
-              <div className="flex flex-col gap-[4px]">
-                <span className="font-body text-caption text-muted">In V1 today</span>
-                <p className="font-body text-body text-secondary md:text-body-md">{today}</p>
-              </div>
-              <div className="flex flex-col gap-[4px] border-t border-line-soft pt-[12px] md:border-l md:border-t-0 md:pl-[24px] md:pt-0">
-                <span className="font-body text-caption text-grape">In V2</span>
-                <p className="font-body text-body text-heading md:text-body-md">{next}</p>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 function Outcome() {
   return (
     <Chapter id="outcome" num={5} title="What changed after launch">
@@ -723,7 +699,9 @@ function Outcome() {
             Four months live also showed where V1 falls short. V2 is designed
             to close each gap, and will be built with <HelixLink />.
           </p>
-          <GapList />
+          <div className="mt-[32px]">
+            <ChangeList items={V1_GAPS} />
+          </div>
         </Copy>
       </div>
     </Chapter>

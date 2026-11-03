@@ -5,8 +5,9 @@ import useInView from "./useInView";
 
 /**
  * A results card, sized to sit in the text column: the headline number with what it
- * means and a short paragraph, two supporting stats as before → after with the change
- * in a pill, then a line chart of one metric by month. All type comes from the DS scale.
+ * means and a short paragraph, two supporting stats in one split panel (each as
+ * before → after), then a line chart of one metric by month. All type comes from the
+ * DS scale.
  * When it scrolls into view the card rises in, the headline counts up, the stats follow,
  * and the line draws left to right with each point popping in as the line reaches it.
  * Hovering, tapping or arrowing through the months shows that month's value. With more
@@ -210,17 +211,21 @@ export default function ResultsCard({
         <p className="mt-[8px] font-body text-body text-secondary md:text-body-md">{body}</p>
       </div>
 
-      {/* Supporting stats: before, then after, with the change in a pill */}
-      <dl className="m-0 mt-[24px] grid grid-cols-1 gap-[12px] md:grid-cols-2">
+      {/* Supporting stats: one white panel split in two, the label above, then the old
+          value muted and the new one in grape */}
+      <dl className="m-0 mt-[24px] grid grid-cols-1 rounded-md bg-white ring-1 ring-inset ring-primary/5 md:grid-cols-2">
         {stats.map((s, i) => (
-          <div key={s.label} {...rise(200 + i * 150)}>
-            <div className="flex h-full flex-col gap-[12px] rounded-md bg-white p-[16px] ring-1 ring-inset ring-primary/5">
-              <dt className="order-2 font-body text-body text-secondary">{s.label}</dt>
-              <dd className="order-1 m-0 flex flex-wrap items-center gap-x-[8px] gap-y-[4px]">
-                <span className="font-heading text-h3 text-muted md:text-h3-md">{s.before}</span>
+          <div
+            key={s.label}
+            className={`p-[16px] md:p-[20px] ${i ? "border-t border-line-soft md:border-l md:border-t-0" : ""}`}
+          >
+            <div {...rise(200 + i * 150)}>
+              <dt className="font-body text-body text-secondary">{s.label}</dt>
+              <dd className="m-0 mt-[12px] flex items-baseline gap-[8px]">
+                <span className="font-heading text-h4 text-muted md:text-h4-md">{s.before}</span>
                 <span aria-hidden="true" className="font-body text-body text-muted">→</span>
-                <span className="font-heading text-h3 text-heading md:text-h3-md">{s.after}</span>
-                <span className="ml-auto rounded-full bg-grape-light px-[8px] py-[2px] font-body text-caption text-grape">{s.change}</span>
+                <span className="font-heading text-h2 text-grape md:text-h2-md">{s.after}</span>
+                <span className="sr-only">, {s.change}</span>
               </dd>
             </div>
           </div>
