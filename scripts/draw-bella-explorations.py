@@ -160,11 +160,6 @@ CHROME_GRAD = (
     '<stop offset="0" stop-color="#fbfbfc"/><stop offset=".45" stop-color="#c3c7ce"/>'
     '<stop offset=".7" stop-color="#eef0f2"/><stop offset="1" stop-color="#7d828b"/></linearGradient>'
 )
-PLUM_GRAD = (
-    '<linearGradient id="plum" x1="0" y1="0" x2="1" y2="1">'
-    f'<stop offset="0" stop-color="{GRAPE_LIT}"/><stop offset=".5" stop-color="{GRAPE}"/>'
-    f'<stop offset="1" stop-color="{DARK}"/></linearGradient>'
-)
 
 
 def shipped(dome_shade: str, dome_lit: str, face: str, extra: str = "") -> str:
@@ -204,12 +199,6 @@ SPARKLES = '<g fill="#f1bf45">' + "".join(
 
 FINISHES = {
     "finish-flat-plum": bell("fp", {"lit": GRAPE, "shade": GRAPE}, BASE_GRAPE, eyes(FX, FY)),
-    "finish-plum-metal": bell(
-        "pm", {"lit": "url(#plum)", "shade": GRAPE_SHADE, "gloss": HIGHLIGHT}, BASE_GRAPE, eyes(FX, FY), PLUM_GRAD
-    ),
-    "finish-chrome": bell(
-        "ch", {"lit": "url(#chrome)", "shade": "#8b9099", "gloss": HIGHLIGHT}, BASE_CHROME, eyes(FX, FY), CHROME_GRAD
-    ),
     "finish-chrome-charcoal": bell(
         "cc", {"lit": "url(#chrome)", "shade": "#8b9099", "gloss": HIGHLIGHT}, BASE_CHARCOAL, eyes(FX, FY), CHROME_GRAD
     ),

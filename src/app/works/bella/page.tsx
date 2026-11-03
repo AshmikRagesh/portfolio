@@ -156,8 +156,6 @@ const EXPLORATIONS: { title: string; note: string; items: { name: string; src: s
     note: "From cute and flat to full metal, and back to the design system.",
     items: [
       { name: "Flat plum", src: art("finish-flat-plum") },
-      { name: "Polished plum metal", src: art("finish-plum-metal") },
-      { name: "Full chrome", src: art("finish-chrome") },
       { name: "Chrome with charcoal", src: art("finish-chrome-charcoal") },
       { name: "Blackcurrant and grape", src: art("finish-blackcurrant"), kept: true },
       { name: "Gold, for the champion", src: art("finish-gold"), kept: true },
