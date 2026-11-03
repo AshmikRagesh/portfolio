@@ -16,7 +16,7 @@ import {
   Figure,
   CardGrid,
   ProblemStatement,
-  Quotes,
+  UserQuotes,
   ResultsCard,
   ChangeList,
   PreviewLink,
@@ -27,7 +27,6 @@ import {
   Timeline,
   OptionCard,
   Pointers,
-  StepStory,
   PracticeCheck,
   SourceList,
 } from "@/components/case-study";
@@ -147,7 +146,7 @@ const AUDIT = [
 
 function AuditTable() {
   return (
-    <table className={TABLE}>
+    <table className={`${TABLE} mt-[32px]`}>
       <thead>
         <tr className="border-b border-line">
           <th scope="col" className={TH}>What I reviewed</th>
@@ -168,52 +167,8 @@ function AuditTable() {
 
 // What frequent travellers said in the interviews
 const TRAVELLER_QUOTES = [
-  { text: "I want to know where the trip goes and which destinations it covers without having to open every trip.", attribution: "— Frequent TCS traveller" },
-  { text: "The number of matching trips is easy to miss when I’m changing filters.", attribution: "— Frequent TCS traveller" },
-];
-
-// How site search got here, step by step (from the two tickets, an archived copy of the old page and the live site)
-const SEARCH_STEPS = [
-  {
-    when: "Before Aug 2025",
-    title: "One mixed list",
-    figure: "All",
-    figureLabel: "content types in a single list",
-    detail:
-      "The search page mixed trips, destination pages and articles in one list, with type filters to switch between them.",
-  },
-  {
-    when: "Aug 2025",
-    title: "Tabs and quick links",
-    figure: "3",
-    figureLabel: "tabs to split results by type",
-    detail:
-      "An earlier ticket swapped the type filters for three tabs, Expeditions, Destinations and Guides & Resources, and added quick links to popular searches.",
-  },
-  {
-    when: "Early 2026",
-    title: "The page I started from",
-    figure: "42",
-    figureLabel: "trip cards, soonest date first",
-    detail:
-      "The tabs were live. The trips tab showed 42 cards in date order, with no filters, no count and no route on the cards.",
-  },
-  {
-    when: "Jun 2026",
-    title: "This project",
-    figure: "5",
-    figureLabel: "ways to narrow, designed",
-    detail:
-      "I designed filters for where, when, what kind of trip, how long and availability, with applied-filter chips, a result count and a no-results page.",
-  },
-  {
-    when: "Jul 2026",
-    title: "V1 live",
-    figure: "12",
-    figureLabel: "trips for a one-country search, checked Nov 2026",
-    detail:
-      "Developers built V1 on Algolia. A search now returns the trips that match, and the menu links open filtered results.",
-  },
+  { text: "I want to know where the trip goes and which destinations it covers without having to open every trip.", attribution: "Frequent TCS traveller" },
+  { text: "The number of matching trips is easy to miss when I’m changing filters.", attribution: "Frequent TCS traveller" },
 ];
 
 // The old page against published best practice. Every claim checked on its source, 2 Nov 2026.
@@ -345,16 +300,11 @@ function Context() {
       <div className="cs-sub">
         <Copy>
           <h3>What we heard from travellers</h3>
-          {/* TODO: replace [N] with the number of travellers interviewed */}
           <p>
-            <strong>[N] frequent TCS travellers interviewed</strong>
+            <strong>7 frequent TCS travellers interviewed.</strong> Two
+            recurring observations stood out:
           </p>
-          <p>Two recurring observations stood out:</p>
-        </Copy>
-        <Visual>
-          <Quotes items={TRAVELLER_QUOTES} />
-        </Visual>
-        <Copy>
+          <UserQuotes items={TRAVELLER_QUOTES} />
           <p>
             These conversations highlighted two important needs: better
             visibility into trip itineraries and clearer feedback when
@@ -370,14 +320,6 @@ function Context() {
             Destinations, and Guides &amp; Resources. Within Expeditions,
             upcoming trips appeared in one long list, ordered by departure date.
           </p>
-          <MoreDetail label="How site search got here" className="mt-[20px]">
-            <StepStory steps={SEARCH_STEPS} start={2} />
-          </MoreDetail>
-        </Copy>
-        <Visual>
-          <Figure label="The old search page, March 2026: 42 trip cards in one list" />
-        </Visual>
-        <Copy>
           <AuditTable />
           <p className="mt-[24px]">
             Travellers had limited ways to narrow the list, distinguish
@@ -401,6 +343,9 @@ function Context() {
             </div>
           </MoreDetail>
         </Copy>
+        <Visual>
+          <Figure label="The old search page, March 2026: 42 trip cards in one list" />
+        </Visual>
       </div>
       <div className="cs-sub">
         <Copy>

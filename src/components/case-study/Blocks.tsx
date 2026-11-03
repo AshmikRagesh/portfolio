@@ -230,6 +230,24 @@ export function ProblemStatement({
 }
 
 /**
+ * What people said in research, as plain quotes in the reading column: each one verbatim,
+ * set apart by a grape rule, with who said it underneath. For short user quotes inside a
+ * section; Quotes (the notepad cards) is for a wall of feedback.
+ */
+export function UserQuotes({ items }: { items: { text: React.ReactNode; attribution: string }[] }) {
+  return (
+    <div className="my-[32px] flex flex-col gap-[24px] md:my-[40px] md:gap-[32px]">
+      {items.map(({ text, attribution }, i) => (
+        <figure key={i} className="m-0 border-l-[2px] border-grape pl-[20px] md:pl-[24px]">
+          <blockquote className="m-0 font-heading text-h4 text-heading md:text-h4-md">“{text}”</blockquote>
+          <figcaption className="mt-[8px] font-body text-body text-muted md:text-body-md">{attribution}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
+/**
  * A key statement that isn't the problem — a hypothesis, a principle. A grape rule on the
  * left, a grey tag, then the line in the heading face with its key half in grape. It's
  * text, not a card, so it sits in the reading column (inside Copy) with its own spacing.

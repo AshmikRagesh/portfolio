@@ -20,6 +20,7 @@ export {
   Visual,
   Figure,
   Quotes,
+  UserQuotes,
   CardGrid,
   ProblemStatement,
   PullQuote,
