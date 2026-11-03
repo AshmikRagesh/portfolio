@@ -16,8 +16,7 @@ import {
   Figure,
   CardGrid,
   ProblemStatement,
-  PullQuote,
-  StatTiles,
+  Quotes,
   ResultsCard,
   ChangeList,
   PreviewLink,
@@ -88,7 +87,7 @@ function Overview() {
           can narrow results by destination, trip type, date and length, see
           how many trips match, and see each trip&apos;s route on its card.
           Developers built
-          it, and it has been live since June 2026.
+          it, and it has been live since July 2026.
         </p>
         <Meta
           role="End-to-end Design & Developer Handoff"
@@ -138,10 +137,39 @@ function TheProblem() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Discovery  (research / inputs)
 // ─────────────────────────────────────────────────────────────────────────────
-const OLD_SEARCH_TILES: Parameters<typeof StatTiles>[0]["items"] = [
-  { tag: "List", stat: "42", label: "trip cards in one list, soonest date first" },
-  { tag: "Control", stat: "0", label: "filters, sort options or result counts", tone: "key" },
-  { tag: "Names", stat: "7", label: "of 32 trip names said which country the trip went to" },
+// What the audit of the old search page counted
+const AUDIT = [
+  { reviewed: "Trip cards in one list", finding: "42" },
+  { reviewed: "Filters and sorting controls", finding: "0" },
+  { reviewed: "Waitlisted trips in the results", finding: "9" },
+  { reviewed: "Trip names mentioning a country", finding: "7 of 32" },
+];
+
+function AuditTable() {
+  return (
+    <table className={TABLE}>
+      <thead>
+        <tr className="border-b border-line">
+          <th scope="col" className={TH}>What I reviewed</th>
+          <th scope="col" className={`${TH} pr-0 text-right`}>Finding</th>
+        </tr>
+      </thead>
+      <tbody>
+        {AUDIT.map(({ reviewed, finding }) => (
+          <tr key={reviewed} className="border-b border-line-soft">
+            <th scope="row" className={`${TD} font-normal text-secondary`}>{reviewed}</th>
+            <td className={`${TD} pr-0 text-right font-medium text-heading`}>{finding}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+// What frequent travellers said in the interviews
+const TRAVELLER_QUOTES = [
+  { text: "I want to know where the trip goes and which destinations it covers without having to open every trip.", attribution: "— Frequent TCS traveller" },
+  { text: "The number of matching trips is easy to miss when I’m changing filters.", attribution: "— Frequent TCS traveller" },
 ];
 
 // How site search got here, step by step (from the two tickets, an archived copy of the old page and the live site)
@@ -171,7 +199,7 @@ const SEARCH_STEPS = [
       "The tabs were live. The trips tab showed 42 cards in date order, with no filters, no count and no route on the cards.",
   },
   {
-    when: "May 2026",
+    when: "Jun 2026",
     title: "This project",
     figure: "5",
     figureLabel: "ways to narrow, designed",
@@ -179,36 +207,12 @@ const SEARCH_STEPS = [
       "I designed filters for where, when, what kind of trip, how long and availability, with applied-filter chips, a result count and a no-results page.",
   },
   {
-    when: "Jun 2026",
+    when: "Jul 2026",
     title: "V1 live",
     figure: "12",
     figureLabel: "trips for a one-country search, checked Nov 2026",
     detail:
       "Developers built V1 on Algolia. A search now returns the trips that match, and the menu links open filtered results.",
-  },
-];
-
-// What the review and the research found: the problems the design had to solve
-const FINDINGS = [
-  {
-    lead: "One long list, soonest date first.",
-    text: "The trips page showed 42 cards in date order, so trips to the same region were scattered through the list. Trips to one region could sit as far apart as card 12 and card 39.",
-  },
-  {
-    lead: "No way to narrow it down.",
-    text: "There were no filters for place, month, type of trip or length, and no count of how many trips matched.",
-  },
-  {
-    lead: "Cards didn’t say where a trip went.",
-    text: "Trip names are written to set a mood, and the old cards showed only the name and dates. Only 7 of 32 names mentioned a country, so most travellers had to open a trip to find out where it went.",
-  },
-  {
-    lead: "Full trips were mixed in.",
-    text: "9 of the 42 cards were already waitlisted, with no way to hide them.",
-  },
-  {
-    lead: "The menu didn’t filter.",
-    text: "A region link in the Find a Trip menu just typed the region’s name into search. Results depended on which trips happened to mention that word, and couldn’t be combined with a month or trip type.",
   },
 ];
 
@@ -297,58 +301,74 @@ const SOURCES: Parameters<typeof SourceList>[0]["sources"] = [
   },
 ];
 
-// What the findings and the brief turned into: each card names where it came from
+// The five priorities the interviews and the audit shaped
 const CONTEXT_CARDS = [
   {
     icon: <Funnel size={28} weight="fill" className="text-grape" />,
     title: "Narrow by how people plan",
-    description: "Filters for destination, trip type, departure month and length, using TCS’s own regions and trip types. For the long list.",
+    description: "Introduce filters for destination, trip type, departure and availability.",
   },
   {
     icon: <SlidersHorizontal size={28} weight="fill" className="text-grape" />,
-    title: "Always show what’s applied",
-    description: "A count of matching trips and the chosen filters, each easy to remove. For the list with no count.",
+    title: "Make search feedback visible",
+    description: "Bring the result count closer to the filters and make applied selections easy to identify and remove.",
   },
   {
     icon: <MapTrifold size={28} weight="fill" className="text-grape" />,
-    title: "Show where a trip goes",
-    description: "The full route on every card, city by city, so no one has to open a trip to check where it goes. For names that didn’t say where.",
+    title: "Show the full trip route",
+    description: "Surface the destinations and route directly on each trip card.",
   },
   {
     icon: <CheckCircle size={28} weight="fill" className="text-grape" />,
-    title: "Hide what’s full",
-    description: "An availability filter, so travellers can see only the trips they can still book. For the waitlisted trips mixed in.",
+    title: "Make availability easier to understand",
+    description: "Allow travellers to separate bookable trips from waitlisted ones.",
   },
   {
     icon: <Compass size={28} weight="fill" className="text-grape" />,
-    title: "Menu links open filters",
-    description: "A region link in the menu opens search with that region’s filter on, ready to add a month or trip type. For the menu that only typed a search.",
+    title: "Connect navigation to search",
+    description: "Make region links open search with the corresponding destination filter applied.",
   },
 ];
 
 function Context() {
   return (
-    <Chapter id="discovery" num={2} title="One long list, no way to narrow it">
+    <Chapter id="discovery" num={2} title="Understanding the existing search experience">
       <Copy>
         <p>
-          I started with the search page as it was: what the trips tab
-          listed, what each card told you, and what you could do with the
-          results. TCS had no search data, so this review, the earlier
-          search tickets and published research were what I had to go on.
+          I started by auditing the existing search page, reviewing earlier
+          search tickets and conducting structured interviews with frequent TCS
+          travellers. With no search analytics available to the design team,
+          these helped me understand how travellers searched for trips and
+          where the experience fell short.
         </p>
-        <PullQuote
-          label="The brief"
-          text="Site search results do not offer filtering options,"
-          emphasis="making it difficult for users to narrow down relevant itineraries."
-        />
       </Copy>
       <div className="cs-sub">
         <Copy>
-          <h3>The page I started from</h3>
+          <h3>What we heard from travellers</h3>
+          {/* TODO: replace [N] with the number of travellers interviewed */}
           <p>
-            Search split results into three tabs: Expeditions, Destinations,
-            and Guides &amp; Resources, from an earlier fix in August 2025.
-            Inside the trips tab, every upcoming trip date sat in one long list.
+            <strong>[N] frequent TCS travellers interviewed</strong>
+          </p>
+          <p>Two recurring observations stood out:</p>
+        </Copy>
+        <Visual>
+          <Quotes items={TRAVELLER_QUOTES} />
+        </Visual>
+        <Copy>
+          <p>
+            These conversations highlighted two important needs: better
+            visibility into trip itineraries and clearer feedback when
+            exploring search results.
+          </p>
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What the product audit revealed</h3>
+          <p>
+            The existing search page was split across three tabs: Expeditions,
+            Destinations, and Guides &amp; Resources. Within Expeditions,
+            upcoming trips appeared in one long list, ordered by departure date.
           </p>
           <MoreDetail label="How site search got here" className="mt-[20px]">
             <StepStory steps={SEARCH_STEPS} start={2} />
@@ -356,17 +376,14 @@ function Context() {
         </Copy>
         <Visual>
           <Figure label="The old search page, March 2026: 42 trip cards in one list" />
-          <StatTiles items={OLD_SEARCH_TILES} />
         </Visual>
-      </div>
-      <div className="cs-sub">
         <Copy>
-          <h3>What the research found</h3>
-          <p>
-            Reviewing the old page and checking it against published research
-            on search and filtering turned up five problems.
+          <AuditTable />
+          <p className="mt-[24px]">
+            Travellers had limited ways to narrow the list, distinguish
+            available trips or understand where a journey went from the card
+            itself.
           </p>
-          <Pointers items={FINDINGS} />
           <MoreDetail label="The research behind these" className="mt-[32px]">
             <div className="flex flex-col gap-[40px]">
               <div>
@@ -387,20 +404,17 @@ function Context() {
       </div>
       <div className="cs-sub">
         <Copy>
-          <h3>What shaped the design</h3>
-          <p>
-            Each problem became a rule for the design, for desktop and phone,
-            as the brief asked.
-          </p>
+          <h3>Turning findings into design priorities</h3>
+          <p>The interviews and product audit shaped five priorities for the redesign:</p>
         </Copy>
         <Visual>
           <CardGrid items={CONTEXT_CARDS} />
         </Visual>
         <Copy>
           <p>
-            <strong>What success looked like:</strong> a traveller can narrow a
-            long list to the handful of trips that fit, see what&apos;s applied
-            at a glance, and tell where each trip goes without opening it.
+            <strong>What success looked like:</strong> Travellers could narrow a
+            long list to relevant trips, understand where each journey goes and
+            make sense of their results without unnecessary clicks.
           </p>
         </Copy>
       </div>
@@ -627,7 +641,7 @@ function Solution() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Outcome  (four months of results since the June 2026 launch)
+// Section: Outcome  (four months of results since the July 2026 launch)
 // ─────────────────────────────────────────────────────────────────────────────
 // Click-through by month, read from Ashmik's results chart (Jul–Oct 2026). CHECK: the
 // source is labelled "illustrative"; confirm these are the production numbers.
@@ -663,7 +677,7 @@ function Outcome() {
     <Chapter id="outcome" num={5} title="What changed after launch">
       <Copy>
         <p>
-          V1 went live in June 2026, and we&apos;ve tracked it every month
+          V1 went live in July 2026, and we&apos;ve tracked it every month
           since. Here&apos;s what four months of results show.
         </p>
       </Copy>

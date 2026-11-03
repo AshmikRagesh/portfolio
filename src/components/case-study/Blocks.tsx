@@ -130,7 +130,7 @@ export function Quotes({ items }: { items: { text: React.ReactNode; attribution:
       {items.map(({ text, attribution }, i) => {
         const [name, ...role] = attribution.replace(/^—\s*/, "").split(", ");
         return (
-          <li key={attribution} className="min-w-0">
+          <li key={`${i}-${attribution}`} className="min-w-0">
             <figure
               className={`relative m-0 flex h-full flex-col rounded-sm border border-line p-[20px] text-heading shadow-[0_4px_18px_rgba(30,5,37,0.10)] [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-4px] hover:!rotate-0 md:p-[24px] motion-reduce:!transform-none motion-reduce:transition-none ${
                 TILTS[i % TILTS.length]
