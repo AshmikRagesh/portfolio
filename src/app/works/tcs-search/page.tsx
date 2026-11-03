@@ -363,7 +363,7 @@ const SOLUTION_ITEMS = [
   {
     num: 4,
     title: "Connecting navigation to search",
-    body: "Connected the Find a Trip region links to their matching destination filters. Choosing a region now opens search with that filter applied, showing three times as many trips as the old text search did.",
+    body: "In the site’s top menu, Find a Trip lists regions like Africa and Europe. Those links used to type the region’s name into search, which only found trips that mentioned that word. Now each link opens search with that region’s filter already on, so it shows every trip in the region, three times as many as before, and you can add a month or trip type straight away.",
   },
   {
     num: 5,
