@@ -1,11 +1,13 @@
 "use client";
 
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { Tag } from "@/components/Tag";
 import useInView from "./useInView";
 
 /**
  * What changes from one version to the next, one card per item: a numbered title, then
- * how it is today in a grey box and how it will be in a grape box, with an arrow between
+ * how it is today in a grey box and how it will be in a grape box, each labelled with the
+ * shared Tag, with an arrow between
  * (pointing down when the boxes stack on phones). All type comes from the DS scale.
  * When the list scrolls into view the cards rise in one after another and each arrow
  * slides across as its card lands; with reduced motion they're simply shown.
@@ -41,8 +43,8 @@ export default function ChangeList({
           </p>
           <div className="mt-[16px] grid grid-cols-1 items-stretch gap-[8px] md:grid-cols-[minmax(0,1fr)_32px_minmax(0,1fr)]">
             <div className="flex flex-col gap-[8px] rounded-md bg-surface p-[12px] md:p-[16px]">
-              <span className="self-start rounded-full bg-white px-[8px] py-[2px] font-geist text-caption text-secondary ring-1 ring-inset ring-line-soft">
-                {from} today
+              <span className="self-start">
+                <Tag face="geist" tone="grey">{from} today</Tag>
               </span>
               <p className="font-body text-body text-secondary md:text-body-md">{today}</p>
             </div>
@@ -56,7 +58,9 @@ export default function ChangeList({
               <ArrowRight size={20} weight="bold" className="rotate-90 md:rotate-0" />
             </span>
             <div className="flex flex-col gap-[8px] rounded-md bg-grape-light/60 p-[12px] md:p-[16px]">
-              <span className="self-start rounded-full bg-grape px-[8px] py-[2px] font-geist text-caption text-white">In {to}</span>
+              <span className="self-start">
+                <Tag face="geist" tone="grape">In {to}</Tag>
+              </span>
               <p className="font-body text-body text-heading md:text-body-md">{next}</p>
             </div>
           </div>
