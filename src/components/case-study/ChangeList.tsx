@@ -5,14 +5,15 @@ import { Tag } from "@/components/Tag";
 import useInView from "./useInView";
 
 /**
- * What changes from one version to the next, one card per item: a numbered title, then
+ * What changes from one version to the next, one card per item: a numbered title and,
+ * optionally, where the point came from, then
  * how it is today in a grey box and how it will be in a grape box, each labelled with the
  * shared Tag, with an arrow between
  * (pointing down when the boxes stack on phones). All type comes from the DS scale.
  * When the list scrolls into view the cards rise in one after another and each arrow
  * slides across as its card lands; with reduced motion they're simply shown.
  */
-type Change = { title: string; today: string; next: string };
+type Change = { title: string; source?: string; today: string; next: string };
 
 const EASE = "ease-[cubic-bezier(0.2,0.7,0.2,1)]";
 
@@ -29,7 +30,7 @@ export default function ChangeList({
 
   return (
     <ol ref={ref} className="m-0 flex list-none flex-col gap-[16px] p-0">
-      {items.map(({ title, today, next }, i) => (
+      {items.map(({ title, source, today, next }, i) => (
         <li
           key={title}
           className={`rounded-lg border border-line-soft bg-white p-[16px] transition-[opacity,transform] duration-700 ${EASE} motion-reduce:transition-none md:p-[20px] ${
@@ -37,10 +38,12 @@ export default function ChangeList({
           }`}
           style={{ transitionDelay: `${i * 120}ms` }}
         >
-          <p className="flex items-baseline gap-[12px]">
+          {/* The number, then the title with where the gap came from under it */}
+          <div className="grid grid-cols-[auto_1fr] items-baseline gap-x-[12px] gap-y-[4px]">
             <span className="font-body text-body text-muted tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-            <span className="font-heading text-h4 font-medium text-heading md:text-h4-md">{title}</span>
-          </p>
+            <p className="font-heading text-h4 font-medium text-heading md:text-h4-md">{title}</p>
+            {source && <p className="col-start-2 font-body text-body text-muted">{source}</p>}
+          </div>
           <div className="mt-[16px] grid grid-cols-1 items-stretch gap-[8px] md:grid-cols-[minmax(0,1fr)_32px_minmax(0,1fr)]">
             <div className="flex flex-col gap-[8px] rounded-md bg-surface p-[12px] md:p-[16px]">
               <span className="self-start">

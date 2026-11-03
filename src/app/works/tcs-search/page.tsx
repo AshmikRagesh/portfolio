@@ -640,27 +640,26 @@ const CLICK_THROUGH = [
   { label: "Oct", value: 32 },
 ];
 
-// What V1 doesn't do yet, and how V2 answers it. V1 facts checked on the live site.
+// What V1 doesn't do yet, and how V2 answers it. Each gap says where it came from: the
+// frequent travellers who test new features with TCS, or the live page (checked 3 Nov 2026).
 const V1_GAPS = [
   {
     title: "The count is easy to miss",
-    today: "The number of matching trips is small grey text at the far right, away from the filters that change it.",
-    next: "Moves the count to the top left, right beside the filters.",
+    source: "Raised by our testers",
+    today: "Frequent travellers testing V1 lost track of how many trips matched. The count is small grey text at the far right, away from the filters that change it.",
+    next: "Moves the count to the top left, right beside the filters, so every choice shows its effect.",
   },
   {
-    title: "No way to reorder results",
-    today: "Trips always show soonest first. There’s no way to sort them another way, like by length.",
+    title: "The search box looks empty",
+    source: "Seen on the live page",
+    today: "Its hint, “Search TCS World Travel…”, is near-white on a white field, so nothing says what you can type.",
+    next: "Gives search its own dark band at the top, with a prompt you can read.",
+  },
+  {
+    title: "Results can’t be reordered",
+    source: "Seen on the live page",
+    today: "Trips always run soonest departure first. Filters can hide trips, but nothing can bring the ones you care about to the top.",
     next: "Adds a Sort menu above the results.",
-  },
-  {
-    title: "Phrases find nothing",
-    today: "A place or a typo works, but a phrase that mixes a place and a season returns no trips.",
-    next: "Gives search its own band at the top, and teaches it to read phrases.",
-  },
-  {
-    title: "One menu link still searches by text",
-    today: "Most region links open a filter, but one still types its name into search.",
-    next: "Every region link opens its filter.",
   },
 ];
 
@@ -685,7 +684,7 @@ function Outcome() {
             {
               after: "14%",
               label: "Searches that found no trips, in October",
-              note: "About 1 in 7. Phrases that mix a place and a season find nothing. V2 targets this.",
+              note: "About 1 in 7. Phrases that mix a place and a season find nothing.",
               improve: true,
             },
           ]}
