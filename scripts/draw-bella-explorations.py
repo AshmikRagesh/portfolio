@@ -2,8 +2,8 @@
 """Draws the still illustrations for the Bella case study into public/images/bella/.
 
 - sketch-*  the first three directions, as drawn on 23 Oct 2026 (flat, one colour each)
-- depth-*   the same three with depth: lit side, shade side, cheeks and a smile
-- finish-*, face-*, sign-*, tip-*  the later rounds, redrawn on the desk bell from the
+- depth-*   the same three with depth: lit side, shade side and a smile
+- finish-*, sign-*, tip-*  the later rounds, redrawn on the desk bell from the
   design notes (my-portfolio/case-studies/bella-notes.md); the code only kept the winners
 - final-bella  the bell as it ships (see components/host/HostCharacter)
 
@@ -20,7 +20,6 @@ BLACKCURRANT = "#3e0d4b"
 GRAPE, GRAPE_LIT, GRAPE_SHADE = "#9D136A", "#c22a88", "#6e0e4b"
 GOLD, GOLD_SHADE, GOLD_INK = "#f2c75c", "#c8952e", "#3a2406"
 IVORY = "#f8f1e3"
-CHEEK = "#f8c2f7"
 SERIF = "Georgia, 'Times New Roman', serif"
 SANS = "-apple-system, 'Helvetica Neue', Arial, sans-serif"
 
@@ -74,10 +73,8 @@ def eyes(fx: float, fy: float, pupil: str = MIDNIGHT) -> str:
     return out
 
 
-def cheeks_and_smile(fx: float, fy: float, ink: str = "#fff") -> str:
+def smile(fx: float, fy: float, ink: str = "#fff") -> str:
     return (
-        f'<ellipse cx="{fx - 27}" cy="{fy + 13}" rx="6" ry="3.5" fill="{CHEEK}" opacity=".55"/>'
-        f'<ellipse cx="{fx + 27}" cy="{fy + 13}" rx="6" ry="3.5" fill="{CHEEK}" opacity=".55"/>'
         f'<path d="M{fx - 6} {fy + 17} Q{fx} {fy + 22} {fx + 6} {fy + 17}" stroke="{ink}" stroke-width="3" fill="none" stroke-linecap="round"/>'
     )
 
@@ -95,7 +92,7 @@ def depth(name: str, body: str, fill: str, lit: str, shade: str, face: tuple, ex
         f'<ellipse cx="100" cy="240" rx="46" ry="6" fill="{DARK}" opacity=".14"/>'
         + (extra + shape if behind else shape + extra)
         + eyes(fx, fy)
-        + cheeks_and_smile(fx, fy),
+        + smile(fx, fy),
         clip,
     )
 
@@ -127,7 +124,7 @@ DEPTHS = {
 }
 
 
-# ── The desk bell, in each finish and face ───────────────────────────────────
+# ── The desk bell, in each finish ───────────────────────────────────
 DOME = "M48 214 Q48 140 100 140 Q152 140 152 214 Z"
 FX, FY = 100, 184
 
@@ -156,8 +153,6 @@ def bell(name: str, dome: dict, base: dict, face: str, defs: str = "") -> str:
 BASE_GRAPE = {"lit": GRAPE_LIT, "mid": GRAPE, "shade": GRAPE_SHADE}
 BASE_CHROME = {"lit": "#f4f5f7", "mid": "#c9ccd2", "shade": "#8b9099"}
 BASE_CHARCOAL = {"lit": "#5a5a62", "mid": "#3a3a40", "shade": "#222226"}
-BASE_GOLD = {"lit": "#f8dc8c", "mid": GOLD, "shade": GOLD_SHADE}
-FINAL_DOME = {"lit": BLACKCURRANT, "shade": MIDNIGHT}
 
 HIGHLIGHT = f'<ellipse cx="{FX - 24}" cy="{FY - 30}" rx="18" ry="9" fill="#fff" opacity=".5" transform="rotate(-24 {FX - 24} {FY - 30})"/>'
 CHROME_GRAD = (
@@ -171,24 +166,46 @@ PLUM_GRAD = (
     f'<stop offset="1" stop-color="{DARK}"/></linearGradient>'
 )
 
-EYES_ONLY = eyes(FX, FY)
-HAPPY = (
-    f'<g stroke="{GOLD_INK}" stroke-width="3" fill="none" stroke-linecap="round">'
-    f'<path d="M{FX - 21} {FY + 1} Q{FX - 15} {FY - 6} {FX - 9} {FY + 1}"/>'
-    f'<path d="M{FX + 9} {FY + 1} Q{FX + 15} {FY - 6} {FX + 21} {FY + 1}"/></g>'
+
+def shipped(dome_shade: str, dome_lit: str, face: str, extra: str = "") -> str:
+    """The bell as HostCharacter draws it (idle pose), so the kept finishes match the site."""
+    return svg(
+        "30 118 140 130",
+        f'<ellipse cx="100" cy="238" rx="56" ry="6" fill="{DARK}" opacity=".12"/>'
+        f'<rect x="94" y="126" width="12" height="12" rx="3" fill="{GRAPE}"/>'
+        f'<rect x="94" y="126" width="12" height="5" rx="2.5" fill="{GRAPE_LIT}"/>'
+        f'<rect x="88" y="136" width="24" height="6" rx="3" fill="{GRAPE_SHADE}"/>'
+        f'<path d="{DOME}" fill="{dome_shade}"/>'
+        f'<g clip-path="url(#dome)"><path d="{DOME}" fill="{dome_lit}" transform="translate(-6 -7)"/></g>'
+        '<path d="M66 198 Q64 168 82 152" stroke="#fff" stroke-opacity=".18" stroke-width="5" fill="none" stroke-linecap="round"/>'
+        + face
+        + f'<rect x="38" y="212" width="124" height="14" rx="7" fill="{GRAPE_SHADE}"/>'
+        f'<rect x="38" y="212" width="124" height="6" rx="3" fill="{GRAPE}"/>'
+        '<rect x="48" y="213" width="44" height="2" rx="1" fill="#fff" opacity=".2"/>'
+        + extra,
+        f'<clipPath id="dome"><path d="{DOME}"/></clipPath>',
+    )
+
+
+SHIPPED_EYES = (
+    '<ellipse cx="85" cy="176" rx="9" ry="11" fill="#fff"/><ellipse cx="115" cy="176" rx="9" ry="11" fill="#fff"/>'
+    f'<circle cx="87" cy="177" r="5.4" fill="{MIDNIGHT}"/><circle cx="117" cy="177" r="5.4" fill="{MIDNIGHT}"/>'
+    '<circle cx="88.8" cy="174.6" r="1.9" fill="#fff"/><circle cx="118.8" cy="174.6" r="1.9" fill="#fff"/>'
 )
-BROWS_AND_MOUTH = (
-    eyes(FX, FY)
-    + f'<g stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round">'
-    f'<path d="M{FX - 22} {FY - 15} Q{FX - 15} {FY - 19} {FX - 8} {FY - 15}"/>'
-    f'<path d="M{FX + 8} {FY - 15} Q{FX + 15} {FY - 19} {FX + 22} {FY - 15}"/></g>'
-    f'<path d="M{FX - 7} {FY + 16} Q{FX} {FY + 24} {FX + 7} {FY + 16} Z" fill="{MIDNIGHT}" stroke="#fff" stroke-width="2"/>'
+SHIPPED_HAPPY = (
+    f'<g stroke="{GOLD_INK}" stroke-width="4.2" stroke-linecap="round" fill="none">'
+    '<path d="M75 180 Q85 168 95 180"/><path d="M105 180 Q115 168 125 180"/></g>'
 )
+STAR = "M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6 Z"
+SPARKLES = '<g fill="#f1bf45">' + "".join(
+    f'<path d="{STAR}" transform="translate({x} {y}) scale({k})"/>'
+    for x, y, k in ((40, 152, 1), (162, 148, 0.8), (150, 124, 0.6), (52, 128, 0.7))
+) + "</g>"
 
 FINISHES = {
-    "finish-flat-plum": bell("fp", {"lit": GRAPE, "shade": GRAPE}, BASE_GRAPE, eyes(FX, FY) + cheeks_and_smile(FX, FY)),
+    "finish-flat-plum": bell("fp", {"lit": GRAPE, "shade": GRAPE}, BASE_GRAPE, eyes(FX, FY)),
     "finish-plum-metal": bell(
-        "pm", {"lit": "url(#plum)", "shade": GRAPE_SHADE, "gloss": HIGHLIGHT}, BASE_GRAPE, eyes(FX, FY) + cheeks_and_smile(FX, FY), PLUM_GRAD
+        "pm", {"lit": "url(#plum)", "shade": GRAPE_SHADE, "gloss": HIGHLIGHT}, BASE_GRAPE, eyes(FX, FY), PLUM_GRAD
     ),
     "finish-chrome": bell(
         "ch", {"lit": "url(#chrome)", "shade": "#8b9099", "gloss": HIGHLIGHT}, BASE_CHROME, eyes(FX, FY), CHROME_GRAD
@@ -196,16 +213,9 @@ FINISHES = {
     "finish-chrome-charcoal": bell(
         "cc", {"lit": "url(#chrome)", "shade": "#8b9099", "gloss": HIGHLIGHT}, BASE_CHARCOAL, eyes(FX, FY), CHROME_GRAD
     ),
-    "finish-blackcurrant": bell("bc", FINAL_DOME, BASE_GRAPE, EYES_ONLY),
-    "finish-gold": bell("gd", {"lit": GOLD, "shade": GOLD_SHADE}, BASE_GOLD, HAPPY),
+    "finish-blackcurrant": shipped(MIDNIGHT, BLACKCURRANT, SHIPPED_EYES),
+    "finish-gold": shipped(GOLD_SHADE, GOLD, SHIPPED_HAPPY, SPARKLES),
 }
-
-FACES = {
-    "face-smile-cheeks": bell("f1", FINAL_DOME, BASE_GRAPE, eyes(FX, FY) + cheeks_and_smile(FX, FY)),
-    "face-brows-mouth": bell("f2", FINAL_DOME, BASE_GRAPE, BROWS_AND_MOUTH),
-    "face-eyes-only": bell("f3", FINAL_DOME, BASE_GRAPE, EYES_ONLY),
-}
-
 
 # ── Signs: where the time shows ──────────────────────────────────────────────
 def sign(body: str, view: str = "0 0 220 120", defs: str = "") -> str:
@@ -298,12 +308,12 @@ TIPS = {
     ),
 }
 
-FINAL = {"final-bella": bell("fb", FINAL_DOME, BASE_GRAPE, EYES_ONLY)}
+FINAL = {"final-bella": shipped(MIDNIGHT, BLACKCURRANT, SHIPPED_EYES)}
 
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    for group in (SKETCHES, DEPTHS, FINISHES, FACES, SIGNS, TIPS, FINAL):
+    for group in (SKETCHES, DEPTHS, FINISHES, SIGNS, TIPS, FINAL):
         for name, markup in group.items():
             (OUT / f"{name}.svg").write_text(markup)
-    print(f"wrote {sum(map(len, (SKETCHES, DEPTHS, FINISHES, FACES, SIGNS, TIPS, FINAL)))} files to {OUT}")
+    print(f"wrote {sum(map(len, (SKETCHES, DEPTHS, FINISHES, SIGNS, TIPS, FINAL)))} files to {OUT}")

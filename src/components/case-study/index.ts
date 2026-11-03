@@ -35,7 +35,7 @@ export {
   ImpactList,
   Footnote,
 } from "./Blocks";
-export { default as BellaMoods } from "./BellaMoods";
+export { default as ExplorationCard } from "./ExplorationCard";
 export { default as BellaUseCases } from "./BellaUseCases";
 export { default as ResultsCard } from "./ResultsCard";
 export { default as ChangeList } from "./ChangeList";

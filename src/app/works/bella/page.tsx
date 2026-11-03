@@ -5,7 +5,6 @@ import {
   Hero,
   Chapter,
   Copy,
-  Meta,
   Visual,
   Figure,
   CardGrid,
@@ -14,7 +13,7 @@ import {
   ProsCons,
   Pointers,
   Timeline,
-  BellaMoods,
+  ExplorationCard,
   BellaUseCases,
   NextCase,
 } from "@/components/case-study";
@@ -65,14 +64,10 @@ function Overview() {
           reason to look around a little longer. A plain clock in the corner
           did neither, so the clock became a character.
         </p>
-        <Meta
-          role="Designer and director. Character, illustration, motion, copy and sound"
-          team="Ashmik Ragesh (Design), built with Claude Code"
-          timeline="23 Oct to 1 Nov 2026, live on the site"
-        />
       </Copy>
       <Visual>
-        <BellaMoods />
+        {/* Ashmik's narrated walkthrough goes here: video="/videos/bella/overview.mp4" with a poster */}
+        <Figure label="Walkthrough: meet Bella" narrated />
       </Visual>
     </Chapter>
   );
@@ -160,21 +155,12 @@ const EXPLORATIONS: { title: string; note: string; items: { name: string; src: s
     title: "Finish",
     note: "From cute and flat to full metal, and back to the design system.",
     items: [
-      { name: "Flat plum with cheeks", src: art("finish-flat-plum") },
+      { name: "Flat plum", src: art("finish-flat-plum") },
       { name: "Polished plum metal", src: art("finish-plum-metal") },
       { name: "Full chrome", src: art("finish-chrome") },
       { name: "Chrome with charcoal", src: art("finish-chrome-charcoal") },
       { name: "Blackcurrant and grape", src: art("finish-blackcurrant"), kept: true },
       { name: "Gold, for the champion", src: art("finish-gold"), kept: true },
-    ],
-  },
-  {
-    title: "Face",
-    note: "Each round took something away.",
-    items: [
-      { name: "Eyes, smile and cheeks", src: art("face-smile-cheeks") },
-      { name: "Brows and a mouth", src: art("face-brows-mouth") },
-      { name: "Eyes only", src: art("face-eyes-only"), kept: true },
     ],
   },
   {
@@ -219,20 +205,9 @@ function Explorations() {
             <p>{note}</p>
           </Copy>
           <Visual>
-            <ul className="m-0 grid list-none grid-cols-2 gap-[16px] p-0 md:grid-cols-3 lg:grid-cols-4">
-              {items.map(({ name, src, kept }) => (
-                <li key={name} className="flex flex-col gap-[8px]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={src}
-                    alt={name}
-                    className={`aspect-square w-full rounded-lg border border-line-soft bg-white object-contain p-[24px] ${kept ? "ring-2 ring-grape" : ""}`}
-                  />
-                  <p className="font-body text-[14px] leading-[22px] text-secondary">
-                    {name}
-                    {kept && <span className="ml-[8px] font-medium text-grape">Kept</span>}
-                  </p>
-                </li>
+            <ul className="m-0 grid list-none grid-cols-2 gap-[16px] p-0 md:grid-cols-4">
+              {items.map((item) => (
+                <ExplorationCard key={item.name} {...item} />
               ))}
             </ul>
           </Visual>
