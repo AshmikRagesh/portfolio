@@ -51,8 +51,8 @@ export const featuredWorks: FeaturedWork[] = [
     title: "From every trip at once to the few that fit: filters for TCS search",
     description:
       "Redesigned the TCS World Travel search page with filters, a result count and a no-results page that always leads somewhere. Live since July 2026.",
-    image: "/images/tcs-search/hero.webp",
-    imageAlt: "TCS World Travel search preview",
+    image: "/images/tcs-search/card.webp",
+    imageAlt: "The TCS World Travel search page before the redesign",
     href: "/works/tcs-search",
     layout: "flagship",
   },
