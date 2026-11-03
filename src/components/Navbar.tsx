@@ -3,8 +3,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutGrid, CircleUser, Ticket } from "lucide-react";
-import SparkleAiIcon from "@/components/icons/SparkleAiIcon";
+import { Menu, X } from "lucide-react";
 import { useCuriosity } from "@/context/CuriosityContext";
 import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/CuriosityBubble";
 import HostCharacter, { hostLayout, type HostGlasses, type HostMood } from "@/components/host/HostCharacter";
@@ -21,11 +20,16 @@ import { useBellStage } from "@/components/host/BellStage";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { chimeBell, primeBell, ringBell } from "@/components/host/bellSound";
 
-const navLinks = [
-  { label: "Works", href: "#works", Icon: LayoutGrid },
-  { label: "About", href: "#about", Icon: CircleUser },
-  { label: "Your pass", href: "/pass", Icon: Ticket },
+// Split either side of the bell: Work and Play on the left, Fancy paper and About on the right
+const leftLinks = [
+  { label: "Work", href: "#works" },
+  { label: "Play", href: "#play" },
 ];
+const rightLinks = [
+  { label: "Fancy paper", href: "/resume" },
+  { label: "About", href: "#about" },
+];
+const navLinks = [...leftLinks, ...rightLinks];
 
 // Host size in the navbar — the 68px row leaves a little air above and below
 const HOST_HEIGHT = 56;
@@ -259,6 +263,27 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
   );
 }
 
+// Section links work from any page: off the home page they go home first
+function linkHref(href: string, pathname: string) {
+  return href.startsWith("/") || pathname === "/" ? href : `/${href}`;
+}
+
+// A tab: on hover, the pink highlighter from the case studies sweeps behind the word
+function NavTab({ label, href, pathname }: { label: string; href: string; pathname: string }) {
+  const resume = href === "/resume";
+  const className = "nav-tab font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] whitespace-nowrap";
+  const inner = <span className="nav-tab-label">{label}</span>;
+  return resume ? (
+    <Link href={href} onClick={() => celebrate("resume", "Resume downloaded.")} className={className}>
+      {inner}
+    </Link>
+  ) : (
+    <a href={linkHref(href, pathname)} className={className}>
+      {inner}
+    </a>
+  );
+}
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isNavVisible, setIsNavVisible] = useState(true);
@@ -332,47 +357,40 @@ export default function Navbar() {
         scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
       } ${showNav ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >
-      {/* Main nav row */}
-      <nav className="relative flex items-center justify-between h-full nav-container">
-        <NavHost bubble={bubble} record={record} moment={momentHere} />
+      {/* Main nav row — the bell in the middle, the links split either side of it */}
+      <nav className="relative grid grid-cols-[1fr_auto_1fr] items-center h-full nav-container">
+        <ul className="hidden md:flex items-center gap-[32px]">
+          {leftLinks.map((link) => (
+            <li key={link.label}>
+              <NavTab {...link} pathname={pathname} />
+            </li>
+          ))}
+        </ul>
 
-        {/* Host tooltip — just under the bell, its pointer at the bell's centre. Out of
-            the layout and above everything on the page. */}
-        <div className="absolute z-[60] top-full mt-[4px] left-[20px] md:left-[80px] lg:left-[100px]">
-          {momentHere ? <BellaLine key={momentHere.id} moment={momentHere} /> : <CuriosityBubble bubble={bubble} />}
+        <div className="relative col-start-2">
+          <NavHost bubble={bubble} record={record} moment={momentHere} />
+
+          {/* Host tooltip — just under the bell, centred on it. Out of the layout and
+              above everything on the page. */}
+          <div className="absolute z-[60] top-full mt-[4px] left-1/2 -translate-x-1/2">
+            {momentHere ? (
+              <BellaLine key={momentHere.id} moment={momentHere} pointerLeft="calc(50% - 4px)" />
+            ) : (
+              <CuriosityBubble bubble={bubble} align="center" />
+            )}
+          </div>
         </div>
 
-        {/* Desktop + tablet: nav links + CTA */}
-        <div className="hidden md:flex items-center gap-[20px]">
-          <ul className="flex items-center gap-[24px]">
-            {navLinks.map(({ label, href, Icon }) => (
-              <li key={label}>
-                <a
-                  href={href.startsWith("/") || pathname === "/" ? href : `/${href}`}
-                  className="group/tab flex items-center gap-2 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] transition-colors duration-200 hover:text-grape hover:underline hover:decoration-wavy"
-                >
-                  <Icon
-                    size={18}
-                    strokeWidth={1.5}
-                    className="transition-[stroke-width] duration-200 group-hover/tab:stroke-2"
-                  />
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <Link
-            href="/resume"
-            onClick={() => celebrate("resume", "Resume downloaded.")}
-            className="flex items-center gap-2 text-white font-brand font-medium text-[14px] uppercase tracking-[1px] px-[16px] h-[42px] rounded-lg transition-colors duration-200 whitespace-nowrap bg-primary hover:bg-grape"
-          >
-            <SparkleAiIcon size={16} />
-            Fancy Paper
-          </Link>
-        </div>
+        <ul className="hidden md:flex items-center justify-end gap-[32px]">
+          {rightLinks.map((link) => (
+            <li key={link.label}>
+              <NavTab {...link} pathname={pathname} />
+            </li>
+          ))}
+        </ul>
 
-        {/* Mobile: just the menu — the CTA is desktop and tablet only */}
-        <div className="md:hidden flex items-center">
+        {/* Mobile: just the menu, on the right */}
+        <div className="md:hidden col-start-3 flex items-center justify-end">
           <button
             className="flex items-center justify-center size-[38px] rounded-full border-[0.5px] border-line bg-[rgba(30,5,37,0.08)] p-[4px] text-heading"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -388,14 +406,13 @@ export default function Navbar() {
         <div className="md:hidden bg-background border-b border-line">
           {/* Nav items — each with a bottom divider */}
           <ul>
-            {navLinks.map(({ label, href, Icon }) => (
+            {navLinks.map(({ label, href }) => (
               <li key={label} className="border-b border-line-soft">
                 <a
-                  href={href.startsWith("/") || pathname === "/" ? href : `/${href}`}
+                  href={linkHref(href, pathname)}
                   className="flex items-center gap-3 font-brand text-[14px] font-normal text-secondary uppercase tracking-[1px] px-[20px] py-5 transition-colors duration-200 hover:text-black"
                   onClick={() => setMenuOpen(false)}
                 >
-                  <Icon size={18} strokeWidth={1.5} />
                   {label}
                 </a>
               </li>
