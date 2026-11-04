@@ -62,9 +62,9 @@ function Overview() {
           designs now <Highlight>ship in about half the time</Highlight>.
         </p>
         <Meta
-          role="Product Designer. Tried designing with Claude Code before Helix, was one of the first designers on it, and moved three brands onto it"
-          team="Ashmik Ragesh and Hriday Gami (Design), Travelopia's developers (Engineering)"
-          timeline="Pilot in June 2026, rollout from July, in daily use since August"
+          role="Design System Migration & Product Design in Helix"
+          team="Ashmik Ragesh, Hriday Gami (Design), Travelopia developers (Engineering)"
+          timeline={<>June 2026 – present<br />Pilot in June · Rollout from July · In daily use since August</>}
         />
       </Copy>
       <Visual>
@@ -154,6 +154,8 @@ const PAIRS = [
     title: "One design system per brand, in code",
     body: <>Each brand’s design system lives in Helix, written as the same TypeScript components our developers use. Designers build in it directly, so <Highlight>there is no second copy to drift</Highlight>.</>,
     figure: "One brand's foundations in Helix: colour, type and spacing",
+    video: "/videos/helix/solution-1.mp4",
+    caption: "Shown here: TCS World Travel's design system in Helix.",
   },
   {
     num: 2,
@@ -183,7 +185,7 @@ function Solution() {
           Each problem from earlier has its own answer in Helix.
         </p>
       </Copy>
-      {PAIRS.map(({ num, title, body, figure }) => (
+      {PAIRS.map(({ num, title, body, figure, video, caption }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>
@@ -192,7 +194,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            <Figure name={figure} />
+            <Figure name={figure} alt={video ? `Screen recording: ${figure}` : undefined} video={video} caption={caption} />
           </Visual>
         </div>
       ))}
@@ -278,7 +280,7 @@ const THREAD: ThreadItem[] = [
     who: "designer",
     name: "Designer",
     verb: "commented",
-    text: "Built the new component in Helix, using the brand's own tokens and components. Ready for review.",
+    text: "Added the Modal component, with its sizes, close button and full-screen layout on mobile. Ready for your review.",
   },
   {
     kind: "comment",
@@ -309,7 +311,7 @@ function Output() {
           and approve it or ask for changes. Once it&apos;s merged into main,
           every designer on that brand can use it.
         </p>
-        <ReviewThread title="feat: add a new component to the design system" number={482} branch="feat/new-component" items={THREAD} steps={CHANGE_PATH} />
+        <ReviewThread title="feat(modal): add the Modal component" number={482} branch="feat/modal" items={THREAD} steps={CHANGE_PATH} />
       </Copy>
       <div className="cs-sub">
         <Copy>
