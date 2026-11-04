@@ -11,8 +11,11 @@ import {
   Figure,
   CardGrid,
   ProblemStatement,
+  StatTiles,
   ReviewThread,
   type ThreadItem,
+  TokenInspector,
+  BrandScope,
   NumberedPoints,
   MoreDetail,
   RolloutPhases,
@@ -123,6 +126,26 @@ const REQUIREMENTS = [
   },
 ];
 
+// What research outside Travelopia found (sources in the footnote; see helix-notes §18)
+const EVIDENCE = [
+  {
+    tag: "CHI 2023",
+    stat: "59%",
+    label: "of UX designers changed their own designs to match the build once the two drifted apart",
+    tone: "key" as const,
+  },
+  {
+    tag: "Telerik 2025",
+    stat: "21%",
+    label: "of designers and developers say their handoffs go smoothly, with few issues",
+  },
+  {
+    tag: "Figma 2025",
+    stat: "32%",
+    label: "of product builders say they can rely on AI's output, though 78% say it makes them faster",
+  },
+];
+
 function Discovery() {
   return (
     <Chapter id="discovery" num={2} title="Claude Code alone wasn't enough">
@@ -135,12 +158,42 @@ function Discovery() {
           corrections. Having the design system as a reference wasn&apos;t
           enough. <Highlight>The AI had to be limited to it.</Highlight>
         </p>
-        <h3>What the fix needed</h3>
       </Copy>
-      <Visual>
-        <CardGrid items={REQUIREMENTS} />
-        <Figure label="Claude Code with the Figma MCP, before Helix" />
-      </Visual>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Other teams hit the same wall</h3>
+          <p>
+            Design drifting from the build isn&apos;t only our problem. In a
+            study of UX designers, most had to change their own designs to match
+            what was built once the two drifted apart, so <Highlight>the code quietly
+            became the source of truth</Highlight>. And while most people find AI
+            faster, few can rely on what it makes.
+          </p>
+        </Copy>
+        <Visual>
+          <StatTiles items={EVIDENCE} />
+        </Visual>
+        <Copy>
+          <Footnote>
+            Sources: Feng, Li and Zhang,{" "}
+            <a href="https://arxiv.org/abs/2302.11845">Understanding Collaborative Practices and Tools of Professional UX Practitioners</a>{" "}
+            (CHI 2023, 87 of 114 UX practitioners);{" "}
+            <a href="https://www.telerik.com/blogs/workflows-age-ai-how-design-development-changed-what-comes-next">Telerik&apos;s 2025 Designer-Developer Collaboration survey</a>{" "}
+            (200+ designers and developers);{" "}
+            <a href="https://www.figma.com/blog/figma-2025-ai-report-perspectives/">Figma&apos;s 2025 AI report</a>{" "}
+            (2,500 product builders).
+          </Footnote>
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What the fix needed</h3>
+        </Copy>
+        <Visual>
+          <CardGrid items={REQUIREMENTS} />
+          <Figure label="Claude Code with the Figma MCP, before Helix" />
+        </Visual>
+      </div>
     </Chapter>
   );
 }
@@ -162,12 +215,14 @@ const PAIRS = [
     title: "Only the system's values",
     body: <>Helix can only use the brand’s own tokens and components, so <Highlight>every value comes out exactly as the system defines it</Highlight>. If a component is missing, we add it to the system first instead of improvising.</>,
     figure: "A component, with the token behind each value",
+    visual: <TokenInspector />,
   },
   {
     num: 3,
     title: "One skill, every brand kept separate",
     body: <>A dozen brands share one skill, but <Highlight>each keeps its own system</Highlight>. Work on TCS only uses TCS components and tokens, and work on Quark only uses Quark’s.</>,
-    figure: "The same card, built for TCS, Quark and Kalos",
+    figure: "Each brand's own system, loaded one at a time",
+    visual: <BrandScope />,
   },
   {
     num: 4,
@@ -185,7 +240,7 @@ function Solution() {
           Each problem from earlier has its own answer in Helix.
         </p>
       </Copy>
-      {PAIRS.map(({ num, title, body, figure, video, caption }) => (
+      {PAIRS.map(({ num, title, body, figure, video, caption, visual }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>
@@ -194,7 +249,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            <Figure name={figure} alt={video ? `Screen recording: ${figure}` : undefined} video={video} caption={caption} />
+            {visual ?? <Figure name={figure} alt={video ? `Screen recording: ${figure}` : undefined} video={video} caption={caption} />}
           </Visual>
         </div>
       ))}
