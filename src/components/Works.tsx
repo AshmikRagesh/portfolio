@@ -17,7 +17,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
   return (
     <Wrapper
       href={work.href as string}
-      className={`group relative flex h-full min-w-0 flex-col rounded-sm border border-line/40 bg-background shadow-[0_2px_0_rgba(200,204,212,0.45)] ${
+      className={`work-card group relative flex h-full min-w-0 flex-col rounded-sm border border-line/40 bg-background shadow-[0_2px_0_rgba(200,204,212,0.45)] ${
         isFlagship ? "lg:grid lg:grid-cols-[min(640px,calc(62.5%_-_136px))_minmax(0,1fr)]" : ""
       } ${
         isLink
@@ -110,8 +110,8 @@ export default function Works() {
           </p>
         </header>
 
-        {/* Cards */}
-        <div className="flex flex-col gap-8 lg:gap-10">
+        {/* Cards — while one is hovered or focused, the rest blur back (see .works-list) */}
+        <div className="works-list flex flex-col gap-8 lg:gap-10">
           {toRows(featuredWorks).map((row) =>
             row[0].layout === "flagship" ? (
               <FeaturedCard key={row[0].title} work={row[0]} room={roomFor(row[0])} />
