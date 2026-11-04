@@ -8,6 +8,7 @@ export { VariantProvider, VariantFigure } from "./VariantSwitch";
 export { Highlight, Circled } from "./Marks";
 export { default as ChatQuotes } from "./ChatQuotes";
 export { default as ModalTokens } from "./ModalTokens";
+export { default as RolloutPhases } from "./RolloutPhases";
 export { default as BeforeAfter } from "./BeforeAfter";
 export { default as ComponentCount } from "./ComponentCount";
 export { default as Pointers } from "./Pointers";

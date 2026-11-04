@@ -19,9 +19,10 @@ export function VariantProvider({ variants, children }: { variants: Variant[]; c
 }
 
 /**
- * The switch — a white pill track with a hairline border and a blackcurrant thumb that
- * slides under the picked version's short tag (brand mono, white when picked, grape on
- * hover). Tags size to their text (at least 36px), and the thumb takes each one's width.
+ * The switch — a frosted white pill with a soft ring and shadow, so it reads over any
+ * screen, and a blackcurrant thumb that slides and stretches under the picked version's
+ * tag (Geist 14 medium, white when picked, grape on hover). Tags size to their text (at
+ * least 44px), and the thumb takes each one's width.
  * The full name goes to screen readers and shows on hover.
  */
 function VariantSwitch({
@@ -50,11 +51,11 @@ function VariantSwitch({
     <div
       role="radiogroup"
       aria-label="Show version"
-      className="relative flex rounded-full border border-line bg-white p-[4px] shadow-[0_2px_8px_rgba(30,5,37,0.08)]"
+      className="relative flex rounded-full bg-white/90 p-[4px] shadow-[0_4px_16px_rgba(30,5,37,0.12)] ring-1 ring-primary/10 backdrop-blur-md"
     >
       <span
         aria-hidden="true"
-        className="absolute left-[4px] top-[4px] h-[32px] rounded-full bg-primary transition-[transform,width] duration-[300ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+        className="absolute left-[4px] top-[4px] h-[36px] rounded-full bg-primary shadow-[0_2px_6px_rgba(50,7,62,0.25)] transition-[transform,width] duration-[400ms] ease-[cubic-bezier(0.34,1.3,0.64,1)] motion-reduce:transition-none"
         style={{ transform: `translateX(${thumb.x}px)`, width: thumb.w }}
       />
       {variants.map((v, i) => {
@@ -71,8 +72,8 @@ function VariantSwitch({
             aria-label={v.label}
             title={v.label}
             onClick={() => onChange(v.id)}
-            className={`relative flex h-[32px] min-w-[36px] items-center justify-center rounded-full px-[8px] font-brand text-[12px] tracking-[0.5px] transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape ${
-              on ? "text-white" : "text-muted hover:text-grape"
+            className={`relative flex h-[36px] min-w-[44px] items-center justify-center rounded-full px-[16px] font-geist text-[14px] font-medium leading-[20px] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape ${
+              on ? "text-white" : "text-secondary hover:text-grape"
             }`}
           >
             {v.short}

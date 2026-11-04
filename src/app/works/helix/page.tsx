@@ -17,6 +17,8 @@ import {
   VariantProvider,
   VariantFigure,
   NumberedPoints,
+  MoreDetail,
+  RolloutPhases,
   BeforeAfter,
   ComponentCount,
   Pointers,
@@ -195,11 +197,11 @@ const PAIRS = [
     title: "One skill, every brand kept separate",
     body: <>A dozen brands share one skill, but <Highlight>each keeps its own system</Highlight>. Work on TCS only uses TCS components and tokens, and work on Quark only uses Quark’s.</>,
     figure: "Each brand's own design system in Helix",
-    // TODO: Ashmik's recordings go in as videos: /videos/helix/solution-3-quark.mp4, -kalos.mp4
     visual: (
       <VariantProvider variants={BRAND_TABS}>
         <VariantFigure
           names={{ quark: "Quark Expeditions' design system in Helix", kalos: "Kalos Golf's design system in Helix" }}
+          videos={{ quark: "/videos/helix/solution-3-quark.mp4", kalos: "/videos/helix/solution-3-kalos.mp4" }}
           captions={{
             quark: "Shown here: Quark Expeditions' design system in Helix.",
             kalos: "Shown here: Kalos Golf's design system in Helix.",
@@ -213,6 +215,8 @@ const PAIRS = [
     title: "Designers fix it, developers review",
     body: <>When I spot a miss, I fix it in Helix and send a pull request. A developer reviews it and merges it, so <Highlight>a small fix no longer waits in the queue</Highlight>.</>,
     figure: "A pull request for a design fix, approved by a developer",
+    src: "/images/helix/solution-4.webp",
+    caption: "Shown here: the review before a Kalos pull request, merged after approval.",
   },
 ];
 
@@ -224,7 +228,7 @@ function Solution() {
           Each problem from earlier has its own answer in Helix.
         </p>
       </Copy>
-      {PAIRS.map(({ num, title, body, figure, video, caption, visual }) => (
+      {PAIRS.map(({ num, title, body, figure, video, src, caption, visual }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>
@@ -233,7 +237,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            {visual ?? <Figure name={figure} alt={video ? `Screen recording: ${figure}` : undefined} video={video} caption={caption} />}
+            {visual ?? <Figure name={figure} alt={video ? `Screen recording: ${figure}` : src ? figure : undefined} video={video} src={src} caption={caption} />}
           </Visual>
         </div>
       ))}
@@ -269,11 +273,42 @@ const ROLLOUT = [
   },
 ];
 
+// The rollout in phases. `helix` is an illustrative count of each phase's 4 new tickets designed in Helix
+const PHASES = [
+  {
+    when: "Jun – Jul",
+    title: "Foundations first",
+    detail: "Live work kept going. Every brand's primary tokens and values went into Helix first, and the first few tickets were tried there.",
+    helix: 1,
+  },
+  {
+    when: "Jul – Aug",
+    title: "Components move across",
+    detail: "Existing components moved from Figma between tickets, and new ones were built in Helix as tickets needed them.",
+    helix: 2,
+  },
+  {
+    when: "August",
+    title: "Every ticket in Helix",
+    detail: "From August, every new ticket was designed in Helix. Nothing new was designed in Figma.",
+    helix: 3,
+  },
+  {
+    when: "Now",
+    title: "Still growing",
+    detail: "Quark and TCS took about a month; Kalos is still moving across. New components keep arriving with tickets.",
+    helix: 4,
+  },
+];
+
 function Approach() {
   return (
     <Chapter id="approach" num={4} title="How we rolled it out">
       <Copy>
         <NumberedPoints items={ROLLOUT} stacked />
+        <MoreDetail label="The rollout, month by month" className="mt-[32px]">
+          <RolloutPhases phases={PHASES} />
+        </MoreDetail>
       </Copy>
     </Chapter>
   );
@@ -321,21 +356,6 @@ function Output() {
         </p>
         <ReviewThread title="feat(modal): add the Modal component" number={482} branch="feat/modal" items={THREAD} steps={CHANGE_PATH} />
       </Copy>
-      <div className="cs-sub">
-        <Copy>
-          <h3>In use on every brand</h3>
-          <p>
-            Every Travelopia brand&apos;s design system is in Helix, and <Highlight>every
-            new ticket is designed in it</Highlight>.{" "}
-            <a href="/works/tcs-find-a-trip">Find a Trip</a> for TCS was one of
-            the first: both test variants were explored, built and reviewed in
-            Helix, then merged.
-          </p>
-        </Copy>
-      </div>
-      <Visual>
-        <Figure label="Find a Trip, explored and built in Helix" />
-      </Visual>
     </Chapter>
   );
 }
