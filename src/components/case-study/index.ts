@@ -7,7 +7,7 @@ export { default as NextCase } from "./NextCase";
 export { VariantProvider, VariantFigure } from "./VariantSwitch";
 export { Highlight, Circled } from "./Marks";
 export { default as ChatQuotes } from "./ChatQuotes";
-export { default as RolloutPhases } from "./RolloutPhases";
+export { default as RolloutTracks } from "./RolloutTracks";
 export { default as TokenInspector } from "./TokenInspector";
 export { default as BrandScope } from "./BrandScope";
 export { default as BeforeAfter } from "./BeforeAfter";

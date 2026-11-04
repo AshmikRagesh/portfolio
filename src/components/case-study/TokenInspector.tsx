@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useInView from "./useInView";
 
 /**
@@ -85,12 +85,15 @@ export default function TokenInspector() {
   const part = (p: Part, extra = "") => ({
     onMouseEnter: () => take({ part: p }),
     onMouseLeave: () => setFocus(null),
-    className: `relative outline outline-2 outline-offset-4 transition-[outline-color] duration-200 ${
-      litPart(p) ? "outline-dashed outline-grape" : "outline-transparent"
+    className: `relative outline-dashed outline-2 outline-offset-4 transition-[outline-color] duration-200 ${
+      litPart(p) ? "outline-grape" : "outline-transparent"
     } ${extra}`,
   });
+  // A tag keeps its last name while it fades out, so it never shrinks to an empty chip
+  const lastTag = useRef<Partial<Record<Part, string>>>({});
   const tagFor = (p: Part, side: "top" | "bottom" = "top") => {
     const t = tag(p);
+    if (t) lastTag.current[p] = t;
     return (
       <span
         aria-hidden="true"
@@ -98,7 +101,7 @@ export default function TokenInspector() {
           side === "top" ? "-top-[28px]" : "-bottom-[28px]"
         } ${t ? "translate-y-0 opacity-100" : "translate-y-[4px] opacity-0"}`}
       >
-        {t ?? ""}
+        {t ?? lastTag.current[p] ?? ""}
       </span>
     );
   };

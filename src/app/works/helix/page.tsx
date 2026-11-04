@@ -16,9 +16,7 @@ import {
   type ThreadItem,
   TokenInspector,
   BrandScope,
-  NumberedPoints,
-  MoreDetail,
-  RolloutPhases,
+  RolloutTracks,
   BeforeAfter,
   ComponentCount,
   Pointers,
@@ -263,53 +261,70 @@ function Solution() {
 const ROLLOUT = [
   {
     title: "Live work never stopped",
+    short: "Live work",
     description:
       "Tickets kept coming in, so we couldn't pause to migrate every component from Figma at once. Helix went in alongside the live work.",
   },
   {
     title: "Foundations first, for every brand",
+    short: "Tokens first",
     description: "Every brand's primary tokens and values went in first, exactly right, before any component.",
   },
   {
     title: "Existing components when there was time",
+    short: "Existing moved",
     description: "Components we already had moved from Figma into Helix between tickets. Quark and TCS took about a month; Kalos is still moving across.",
   },
   {
     title: "New components as tickets needed them",
+    short: "New built",
     description:
       "When a ticket needed something new, we built it on the foundations, shared it with a developer for review as a pull request, and merged it to main.",
   },
   {
     title: "Every ticket in Helix",
+    short: "Every ticket",
     description: "From August, nothing new was designed in Figma. Today every brand's design system is in good shape.",
   },
 ];
 
-// The rollout in phases. `helix` is an illustrative count of each phase's 4 new tickets designed in Helix
-const PHASES = [
+// Two tracks, month by month: three live tickets a month above, and what moved into Helix
+// under them. `flipAt` is the step a ticket turns to Helix; `below` is the block under it
+// and the step it lands on (0 tickets, 1 tokens, 2 existing moved, 3 new built, 4 every
+// ticket). Illustrative, not a count.
+const TRACKS = [
+  { label: "Jun", slots: [{}, {}, {}] },
   {
-    when: "Jun – Jul",
-    title: "Foundations first",
-    detail: "Live work kept going. Every brand's primary tokens and values went into Helix first, and the first few tickets were tried there.",
-    helix: 1,
+    label: "Jul",
+    slots: [
+      { below: { kind: "tokens" as const, at: 1, span: 2 } },
+      {},
+      { flipAt: 3, below: { kind: "new" as const, at: 3 } },
+    ],
   },
   {
-    when: "Jul – Aug",
-    title: "Components move across",
-    detail: "Existing components moved from Figma between tickets, and new ones were built in Helix as tickets needed them.",
-    helix: 2,
+    label: "Aug",
+    slots: [
+      { flipAt: 4, below: { kind: "moved" as const, at: 2 } },
+      { flipAt: 3, below: { kind: "new" as const, at: 3 } },
+      { flipAt: 4, below: { kind: "moved" as const, at: 2 } },
+    ],
   },
   {
-    when: "August",
-    title: "Every ticket in Helix",
-    detail: "From August, every new ticket was designed in Helix. Nothing new was designed in Figma.",
-    helix: 3,
+    label: "Sep",
+    slots: [
+      { flipAt: 4, below: { kind: "moved" as const, at: 2 } },
+      { flipAt: 4, below: { kind: "moved" as const, at: 2 } },
+      { flipAt: 3, below: { kind: "new" as const, at: 3 } },
+    ],
   },
   {
-    when: "Now",
-    title: "Still growing",
-    detail: "Quark and TCS took about a month; Kalos is still moving across. New components keep arriving with tickets.",
-    helix: 4,
+    label: "Oct",
+    slots: [
+      { flipAt: 4, below: { kind: "moved" as const, at: 2 } },
+      { flipAt: 3, below: { kind: "new" as const, at: 3 } },
+      { flipAt: 4 },
+    ],
   },
 ];
 
@@ -317,11 +332,15 @@ function Approach() {
   return (
     <Chapter id="approach" num={4} title="How we rolled it out">
       <Copy>
-        <NumberedPoints items={ROLLOUT} stacked />
-        <MoreDetail label="The rollout, month by month" className="mt-[32px]">
-          <RolloutPhases phases={PHASES} />
-        </MoreDetail>
+        <p>
+          We moved to Helix <Highlight>without pausing live work</Highlight>: tickets
+          kept coming on one track while each brand&apos;s system moved across on
+          another.
+        </p>
       </Copy>
+      <Visual>
+        <RolloutTracks months={TRACKS} steps={ROLLOUT} />
+      </Visual>
     </Chapter>
   );
 }
@@ -398,6 +417,13 @@ const COMPONENTS = [
   { name: "Kalos", count: 25, note: "in progress" },
 ];
 
+// Facts Helix guarantees by how it works, so they need no tracking
+const BY_DESIGN = [
+  { stat: "0", label: "new designs in Figma since August", tone: "key" as const },
+  { stat: "0", label: "values from outside a brand's own system" },
+  { stat: "1", label: "skill holding every Travelopia brand's design system" },
+];
+
 const DELIVERY = [
   { label: "Before Helix", value: "1–2 weeks", share: 1, tone: "before" as const },
   { label: "With Helix", value: "About half", share: 0.5, tone: "after" as const },
@@ -413,6 +439,19 @@ function Outcome() {
           Enchanting Travels.
         </p>
       </Copy>
+      <div className="cs-sub">
+        <Copy>
+          <h3>True by design</h3>
+          <p>
+            Some numbers hold because of how Helix works, not because anyone
+            tracked them. <Highlight>Nothing new has been drawn in Figma since August</Highlight>,
+            and nothing off-system gets in.
+          </p>
+        </Copy>
+        <Visual>
+          <StatTiles items={BY_DESIGN} />
+        </Visual>
+      </div>
       <div className="cs-sub">
         <Copy>
           <h3>110+ components, in code</h3>
