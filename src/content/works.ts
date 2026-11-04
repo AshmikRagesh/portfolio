@@ -30,8 +30,8 @@ export const featuredWorks: FeaturedWork[] = [
     title: "Shipping designs in half the time with Helix",
     description:
       "A design-system skill for Claude Code that lets designers build straight from our components and tokens, so what we design is what developers ship.",
-    image: "/images/works-cover.png",
-    imageAlt: "Helix preview",
+    image: "/images/helix/card.webp",
+    imageAlt: "A Quark expedition card in Helix, the design-system skill",
     href: "/works/helix",
     layout: "flagship",
   },
