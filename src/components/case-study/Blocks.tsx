@@ -101,7 +101,7 @@ export function Figure({
         <p className="mt-[12px] text-center font-body text-[12px] font-medium leading-[16px] text-muted">{label}</p>
       )}
       {caption && (
-        <figcaption className="mt-[14px] font-body text-[14px] leading-[22px] text-muted [text-wrap:pretty]">
+        <figcaption className="mt-[14px] text-center font-body text-[14px] leading-[22px] text-muted [text-wrap:balance]">
           {caption}
         </figcaption>
       )}
