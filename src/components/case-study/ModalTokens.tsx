@@ -270,7 +270,7 @@ export default function ModalTokens() {
           ))}
         </div>
       </div>
-      <figcaption className="mx-auto mt-[32px] max-w-[724px] font-body text-[14px] leading-[22px] text-muted">
+      <figcaption className="mx-auto mt-[32px] max-w-[724px] text-center font-body text-[14px] leading-[22px] text-muted">
         Quark&apos;s email check, rebuilt from its Helix tokens. Point at any part of it to see what it&apos;s made of.
       </figcaption>
     </figure>
