@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type PointerEvent } from "react";
-import { X } from "lucide-react";
+import { MousePointer2, X } from "lucide-react";
 import useInView from "./useInView";
 
 /**
@@ -212,6 +212,15 @@ export default function ModalTokens() {
 
         {/* The tokens */}
         <div onPointerLeave={() => setFocus(null)} className="flex flex-col gap-[20px]">
+          {/* How to use it, at the top of the tokens */}
+          <p
+            className={`m-0 flex items-center gap-[8px] px-[8px] text-[12px] leading-[16px] text-secondary transition-opacity duration-300 ${
+              shown ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <MousePointer2 size={14} aria-hidden="true" className="shrink-0 animate-[cursor-nudge_1800ms_ease-in-out_infinite] text-grape motion-reduce:animate-none" />
+            Point at the modal or a token
+          </p>
           {GROUPS.map((g) => (
             <div key={g}>
               <p className="m-0 mb-[6px] px-[8px] text-[12px] font-medium uppercase leading-[16px] tracking-[0.5px] text-muted">{g}</p>
@@ -270,9 +279,6 @@ export default function ModalTokens() {
           ))}
         </div>
       </div>
-      <figcaption className="mx-auto mt-[32px] max-w-[724px] text-center font-body text-[14px] leading-[22px] text-muted">
-        Quark&apos;s email check, rebuilt from its Helix tokens. Point at any part of it to see what it&apos;s made of.
-      </figcaption>
     </figure>
   );
 }
