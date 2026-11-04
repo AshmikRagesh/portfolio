@@ -131,10 +131,19 @@ export default function ModalTokens() {
       <div className="grid items-center gap-[48px] font-geist text-heading md:grid-cols-[minmax(0,420px)_240px] md:justify-center md:gap-[64px]">
         {/* The modal */}
         <div
-          className={`flex justify-center transition-[opacity,transform] duration-[700ms] ease-[cubic-bezier(0.34,1.3,0.64,1)] motion-reduce:transition-none ${
+          className={`flex flex-col items-center gap-[40px] transition-[opacity,transform] duration-[700ms] ease-[cubic-bezier(0.34,1.3,0.64,1)] motion-reduce:transition-none ${
             shown ? "translate-y-0 scale-100 opacity-100" : "translate-y-[16px] scale-[0.96] opacity-0"
           }`}
         >
+            {/* How to use it, above the modal (clear of the panel's own tag) */}
+            <p
+              className={`m-0 flex w-full max-w-[420px] items-center gap-[8px] text-[12px] leading-[16px] text-secondary transition-opacity duration-300 ${
+                shown ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <MousePointer2 size={14} aria-hidden="true" className="shrink-0 animate-[cursor-nudge_1800ms_ease-in-out_infinite] text-grape motion-reduce:animate-none" />
+              Point at the modal or a token
+            </p>
           <div
             onPointerOver={onPoint}
             onPointerLeave={() => setFocus(null)}
@@ -212,15 +221,6 @@ export default function ModalTokens() {
 
         {/* The tokens */}
         <div onPointerLeave={() => setFocus(null)} className="flex flex-col gap-[20px]">
-          {/* How to use it, at the top of the tokens */}
-          <p
-            className={`m-0 flex items-center gap-[8px] px-[8px] text-[12px] leading-[16px] text-secondary transition-opacity duration-300 ${
-              shown ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <MousePointer2 size={14} aria-hidden="true" className="shrink-0 animate-[cursor-nudge_1800ms_ease-in-out_infinite] text-grape motion-reduce:animate-none" />
-            Point at the modal or a token
-          </p>
           {GROUPS.map((g) => (
             <div key={g}>
               <p className="m-0 mb-[6px] px-[8px] text-[12px] font-medium uppercase leading-[16px] tracking-[0.5px] text-muted">{g}</p>
