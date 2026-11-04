@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
-import { Code, ShieldCheck, Stack } from "@phosphor-icons/react/dist/ssr";
+import { Buildings, Copy as CopyIcon, Hourglass, Robot } from "@phosphor-icons/react/dist/ssr";
 import {
   Hero,
   Chapter,
@@ -11,12 +11,12 @@ import {
   Figure,
   CardGrid,
   ProblemStatement,
-  StatTiles,
   ReviewThread,
   type ThreadItem,
-  TokenInspector,
-  BrandScope,
-  RolloutTracks,
+  ModalTokens,
+  VariantProvider,
+  VariantFigure,
+  NumberedPoints,
   BeforeAfter,
   ComponentCount,
   Pointers,
@@ -106,41 +106,27 @@ function TheProblem() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Discovery
 // ─────────────────────────────────────────────────────────────────────────────
-const REQUIREMENTS = [
+// The four problems Discovery turned up, in the order the solutions answer them
+const PROBLEMS = [
   {
-    icon: <Stack size={28} weight="fill" className="text-grape" />,
-    title: "One source",
-    description: "Each brand's design system lives once, in code.",
+    icon: <CopyIcon size={28} weight="fill" className="text-grape" />,
+    title: "Two copies of every system",
+    description: "Each design system lived in Figma and again in code. Even well-documented files lost padding, spacing and colour values on the way.",
   },
   {
-    icon: <Code size={28} weight="fill" className="text-grape" />,
-    title: "Developers' code",
-    description: "The same TypeScript components they maintain.",
+    icon: <Robot size={28} weight="fill" className="text-grape" />,
+    title: "An AI that improvised",
+    description: "With Figma as a reference, Claude Code still drifted from the system, so every build needed corrections.",
   },
   {
-    icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
-    title: "Nothing off-system",
-    description: "Only the brand's components and tokens.",
-  },
-];
-
-// What research outside Travelopia found (sources in the footnote; see helix-notes §18)
-const EVIDENCE = [
-  {
-    tag: "CHI 2023",
-    stat: "59%",
-    label: "of UX designers changed their own designs to match the build once the two drifted apart",
-    tone: "key" as const,
+    icon: <Buildings size={28} weight="fill" className="text-grape" />,
+    title: "Four brands, four systems",
+    description: "I design for TCS, Quark, Kalos and Enchanting. Each has its own system, and none of it should leak into another.",
   },
   {
-    tag: "Telerik 2025",
-    stat: "21%",
-    label: "of designers and developers say their handoffs go smoothly, with few issues",
-  },
-  {
-    tag: "Figma 2025",
-    stat: "32%",
-    label: "of product builders say they can rely on AI's output, though 78% say it makes them faster",
+    icon: <Hourglass size={28} weight="fill" className="text-grape" />,
+    title: "Fixes waited on developers",
+    description: "Every miss went back as a bug ticket and waited for a developer, even when the fix was small.",
   },
 ];
 
@@ -149,47 +135,30 @@ function Discovery() {
     <Chapter id="discovery" num={2} title="Claude Code alone wasn't enough">
       <Copy>
         <p>
-          I started on Enchanting Travels by building with Claude Code, giving
-          it our Figma components through the Figma MCP server. The screens came
-          together fast, but they weren&apos;t consistent: spacing, colours and
-          components drifted from the system, and every build needed
-          corrections. Having the design system as a reference wasn&apos;t
-          enough. <Highlight>The AI had to be limited to it.</Highlight>
+          Before Helix, I tried the obvious route on Enchanting Travels: Claude
+          Code, with our Figma components passed in through the Figma MCP
+          server. Screens came together fast, but they didn&apos;t match the
+          system. Spacing, colours and components drifted, and every build
+          needed fixing by hand.
+        </p>
+        <p>
+          Pointing the AI at the design system wasn&apos;t enough. <Highlight>It had
+          to be limited to it.</Highlight>
         </p>
       </Copy>
+      <Visual>
+        <Figure label="Claude Code with the Figma MCP, before Helix" />
+      </Visual>
       <div className="cs-sub">
         <Copy>
-          <h3>Other teams hit the same wall</h3>
+          <h3>Four problems to solve</h3>
           <p>
-            Design drifting from the build isn&apos;t only our problem. In a
-            study of UX designers, most had to change their own designs to match
-            what was built once the two drifted apart, so <Highlight>the code quietly
-            became the source of truth</Highlight>. And while most people find AI
-            faster, few can rely on what it makes.
+            Between that test and our day-to-day work, four problems stood out.
+            Each one became a part of Helix.
           </p>
         </Copy>
         <Visual>
-          <StatTiles items={EVIDENCE} />
-        </Visual>
-        <Copy>
-          <Footnote>
-            Sources: Feng, Li and Zhang,{" "}
-            <a href="https://arxiv.org/abs/2302.11845">Understanding Collaborative Practices and Tools of Professional UX Practitioners</a>{" "}
-            (CHI 2023, 87 of 114 UX practitioners);{" "}
-            <a href="https://www.telerik.com/blogs/workflows-age-ai-how-design-development-changed-what-comes-next">Telerik&apos;s 2025 Designer-Developer Collaboration survey</a>{" "}
-            (200+ designers and developers);{" "}
-            <a href="https://www.figma.com/blog/figma-2025-ai-report-perspectives/">Figma&apos;s 2025 AI report</a>{" "}
-            (2,500 product builders).
-          </Footnote>
-        </Copy>
-      </div>
-      <div className="cs-sub">
-        <Copy>
-          <h3>What the fix needed</h3>
-        </Copy>
-        <Visual>
-          <CardGrid items={REQUIREMENTS} />
-          <Figure label="Claude Code with the Figma MCP, before Helix" />
+          <CardGrid items={PROBLEMS} />
         </Visual>
       </div>
     </Chapter>
@@ -199,6 +168,12 @@ function Discovery() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Solution  (each problem raised earlier, and how Helix answers it)
 // ─────────────────────────────────────────────────────────────────────────────
+// The brands solution 3 switches between
+const BRAND_TABS = [
+  { id: "quark", label: "Quark Expeditions", short: "Quark" },
+  { id: "kalos", label: "Kalos Golf", short: "Kalos" },
+];
+
 const PAIRS = [
   {
     num: 1,
@@ -213,14 +188,25 @@ const PAIRS = [
     title: "Only the system's values",
     body: <>Helix can only use the brand’s own tokens and components, so <Highlight>every value comes out exactly as the system defines it</Highlight>. If a component is missing, we add it to the system first instead of improvising.</>,
     figure: "A component, with the token behind each value",
-    visual: <TokenInspector />,
+    visual: <ModalTokens />,
   },
   {
     num: 3,
     title: "One skill, every brand kept separate",
     body: <>A dozen brands share one skill, but <Highlight>each keeps its own system</Highlight>. Work on TCS only uses TCS components and tokens, and work on Quark only uses Quark’s.</>,
-    figure: "Each brand's own system, loaded one at a time",
-    visual: <BrandScope />,
+    figure: "Each brand's own design system in Helix",
+    // TODO: Ashmik's recordings go in as videos: /videos/helix/solution-3-quark.mp4, -kalos.mp4
+    visual: (
+      <VariantProvider variants={BRAND_TABS}>
+        <VariantFigure
+          names={{ quark: "Quark Expeditions' design system in Helix", kalos: "Kalos Golf's design system in Helix" }}
+          captions={{
+            quark: "Shown here: Quark Expeditions' design system in Helix.",
+            kalos: "Shown here: Kalos Golf's design system in Helix.",
+          }}
+        />
+      </VariantProvider>
+    ),
   },
   {
     num: 4,
@@ -261,70 +247,25 @@ function Solution() {
 const ROLLOUT = [
   {
     title: "Live work never stopped",
-    short: "Live work",
     description:
       "Tickets kept coming in, so we couldn't pause to migrate every component from Figma at once. Helix went in alongside the live work.",
   },
   {
     title: "Foundations first, for every brand",
-    short: "Tokens first",
     description: "Every brand's primary tokens and values went in first, exactly right, before any component.",
   },
   {
     title: "Existing components when there was time",
-    short: "Existing moved",
     description: "Components we already had moved from Figma into Helix between tickets. Quark and TCS took about a month; Kalos is still moving across.",
   },
   {
     title: "New components as tickets needed them",
-    short: "New built",
     description:
       "When a ticket needed something new, we built it on the foundations, shared it with a developer for review as a pull request, and merged it to main.",
   },
   {
     title: "Every ticket in Helix",
-    short: "Every ticket",
     description: "From August, nothing new was designed in Figma. Today every brand's design system is in good shape.",
-  },
-];
-
-// Two tracks, month by month: three live tickets a month above, and what moved into Helix
-// under them. `flipAt` is the step a ticket turns to Helix; `below` is the block under it
-// and the step it lands on (0 tickets, 1 tokens, 2 existing moved, 3 new built, 4 every
-// ticket). Illustrative, not a count.
-const TRACKS = [
-  { label: "Jun", slots: [{}, {}, {}] },
-  {
-    label: "Jul",
-    slots: [
-      { below: { kind: "tokens" as const, at: 1, span: 2 } },
-      {},
-      { flipAt: 3, below: { kind: "new" as const, at: 3 } },
-    ],
-  },
-  {
-    label: "Aug",
-    slots: [
-      { flipAt: 4, below: { kind: "moved" as const, at: 2 } },
-      { flipAt: 3, below: { kind: "new" as const, at: 3 } },
-      { flipAt: 4, below: { kind: "moved" as const, at: 2 } },
-    ],
-  },
-  {
-    label: "Sep",
-    slots: [
-      { flipAt: 4, below: { kind: "moved" as const, at: 2 } },
-      { flipAt: 4, below: { kind: "moved" as const, at: 2 } },
-      { flipAt: 3, below: { kind: "new" as const, at: 3 } },
-    ],
-  },
-  {
-    label: "Oct",
-    slots: [
-      { flipAt: 4, below: { kind: "moved" as const, at: 2 } },
-      { flipAt: 3, below: { kind: "new" as const, at: 3 } },
-      { flipAt: 4 },
-    ],
   },
 ];
 
@@ -332,15 +273,8 @@ function Approach() {
   return (
     <Chapter id="approach" num={4} title="How we rolled it out">
       <Copy>
-        <p>
-          We moved to Helix <Highlight>without pausing live work</Highlight>: tickets
-          kept coming on one track while each brand&apos;s system moved across on
-          another.
-        </p>
+        <NumberedPoints items={ROLLOUT} stacked />
       </Copy>
-      <Visual>
-        <RolloutTracks months={TRACKS} steps={ROLLOUT} />
-      </Visual>
     </Chapter>
   );
 }
@@ -417,13 +351,6 @@ const COMPONENTS = [
   { name: "Kalos", count: 25, note: "in progress" },
 ];
 
-// Facts Helix guarantees by how it works, so they need no tracking
-const BY_DESIGN = [
-  { stat: "0", label: "new designs in Figma since August", tone: "key" as const },
-  { stat: "0", label: "values from outside a brand's own system" },
-  { stat: "1", label: "skill holding every Travelopia brand's design system" },
-];
-
 const DELIVERY = [
   { label: "Before Helix", value: "1–2 weeks", share: 1, tone: "before" as const },
   { label: "With Helix", value: "About half", share: 0.5, tone: "after" as const },
@@ -439,19 +366,6 @@ function Outcome() {
           Enchanting Travels.
         </p>
       </Copy>
-      <div className="cs-sub">
-        <Copy>
-          <h3>True by design</h3>
-          <p>
-            Some numbers hold because of how Helix works, not because anyone
-            tracked them. <Highlight>Nothing new has been drawn in Figma since August</Highlight>,
-            and nothing off-system gets in.
-          </p>
-        </Copy>
-        <Visual>
-          <StatTiles items={BY_DESIGN} />
-        </Visual>
-      </div>
       <div className="cs-sub">
         <Copy>
           <h3>110+ components, in code</h3>
