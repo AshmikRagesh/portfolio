@@ -21,6 +21,8 @@ export interface FeaturedWork {
   layout: FeaturedLayout;
 }
 
+// Helix, search and Find a Trip as flagships, then Bella and the NDA project as the
+// smaller pair. The Artemis case studies stay live at their URLs but are off the list.
 export const featuredWorks: FeaturedWork[] = [
   {
     type: "Case study",
@@ -31,18 +33,6 @@ export const featuredWorks: FeaturedWork[] = [
     image: "/images/works-cover.png",
     imageAlt: "Helix preview",
     href: "/works/helix",
-    layout: "flagship",
-  },
-  {
-    type: "Case study",
-    discipline: "Product design",
-    title: "Letting TCS travellers explore a destination before they browse trips",
-    description:
-      "Designed and built a two-path choice in the Find a Trip menu, so travellers still exploring can learn about a place first. Both variants are built for an A/B/C test.",
-    image: "/images/tcs-find-a-trip/hero.webp",
-    imageAlt: "TCS World Travel Find a Trip menu preview",
-    imagePosition: "center 58%",
-    href: "/works/tcs-find-a-trip",
     layout: "flagship",
   },
   {
@@ -59,23 +49,25 @@ export const featuredWorks: FeaturedWork[] = [
   {
     type: "Case study",
     discipline: "Product design",
-    title: "Streamlining the reservations module in Artemis 3.0",
+    title: "Letting TCS travellers explore a destination before they browse trips",
     description:
-      "Introducing auto‑save, in‑app notifications, and categorised flights—reducing booking errors and cutting task completion time by 35%.",
-    image: "/images/works-cover.png",
-    imageAlt: "Artemis Reservations preview",
-    href: "/works/artemis-reservations",
+      "Designed and built a two-path choice in the Find a Trip menu, so travellers still exploring can learn about a place first. Both variants are built for an A/B/C test.",
+    image: "/images/tcs-find-a-trip/hero.webp",
+    imageAlt: "TCS World Travel Find a Trip menu preview",
+    imagePosition: "center 58%",
+    href: "/works/tcs-find-a-trip",
     layout: "flagship",
   },
   {
-    type: "Case study",
-    discipline: "Product design",
-    title: "Integrating travel insurance into the Artemis booking flow",
+    type: "Side project",
+    discipline: "Interaction design",
+    title: "Designing Bella, the desk bell that hosts this portfolio",
     description:
-      "Designed and shipped in 4 weeks — drove insurance adoption from 7% to 52% and generated $125K in Q1 revenue by embedding coverage directly into checkout.",
+      "A front-desk bell in the navbar that keeps track of how long you actually spend here, and rings when it has something to say.",
+    // TODO: swap in a Bella cover; the placeholder until then
     image: "/images/works-cover.png",
-    imageAlt: "Artemis insurance integration preview",
-    href: "/works/artemis-insurance",
+    imageAlt: "Bella preview",
+    href: "/works/bella",
     layout: "standard",
   },
   {
@@ -92,7 +84,31 @@ export const featuredWorks: FeaturedWork[] = [
   },
 ];
 
-// The Artemis Design System case study stays live at its URL but is off the homepage list
+// The Artemis case studies stay live at their URLs but are off the homepage list
+export const artemisReservations: FeaturedWork = {
+  type: "Case study",
+  discipline: "Product design",
+  title: "Streamlining the reservations module in Artemis 3.0",
+  description:
+    "Introducing auto‑save, in‑app notifications, and categorised flights—reducing booking errors and cutting task completion time by 35%.",
+  image: "/images/works-cover.png",
+  imageAlt: "Artemis Reservations preview",
+  href: "/works/artemis-reservations",
+  layout: "flagship",
+};
+
+export const artemisInsurance: FeaturedWork = {
+  type: "Case study",
+  discipline: "Product design",
+  title: "Integrating travel insurance into the Artemis booking flow",
+  description:
+    "Designed and shipped in 4 weeks — drove insurance adoption from 7% to 52% and generated $125K in Q1 revenue by embedding coverage directly into checkout.",
+  image: "/images/works-cover.png",
+  imageAlt: "Artemis insurance integration preview",
+  href: "/works/artemis-insurance",
+  layout: "standard",
+};
+
 export const artemisDesignSystem: FeaturedWork = {
   type: "Case study",
   discipline: "Design systems",

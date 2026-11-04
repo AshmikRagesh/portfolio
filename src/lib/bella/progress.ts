@@ -19,7 +19,7 @@
 // time, and only while the tab is visible.
 
 import { useSyncExternalStore } from "react";
-import { artemisDesignSystem, featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
+import { artemisDesignSystem, artemisInsurance, artemisReservations, featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 import { STAMPS, stampDate, type StampKey } from "./stampArt";
 import { track } from "@/lib/curiosity/report";
 import type { BellaEvent } from "@/lib/curiosity/config";
@@ -27,18 +27,23 @@ import type { BellaEvent } from "@/lib/curiosity/config";
 // ── Case studies ──
 const SHORT: Record<string, string> = {
   helix: "Helix",
+  "tcs-search": "TCS Search",
   "tcs-find-a-trip": "TCS Find a Trip",
+  bella: "Bella",
   "artemis-reservations": "Artemis Reservations",
   "artemis-insurance": "Artemis Insurance",
   "artemis-design-system": "Artemis Design System",
 };
 const room = (w: FeaturedWork, i: number) => (featuredWorks.includes(w) ? roomFor(w) : String(101 + i));
-export const CASE_STUDIES = [...featuredWorks, artemisDesignSystem]
+// The homepage works, then the Artemis case studies that stay live off the list. Only the
+// listed ones count towards reading every case study
+export const CASE_STUDIES = [...featuredWorks, artemisDesignSystem, artemisReservations, artemisInsurance]
   .filter((w) => w.href.startsWith("/works/"))
   .map((w, i) => {
     const slug = w.href.slice("/works/".length);
-    return { slug, name: SHORT[slug] ?? w.title, room: room(w, i), href: w.href };
+    return { slug, name: SHORT[slug] ?? w.title, room: room(w, i), href: w.href, listed: featuredWorks.includes(w) };
   });
+const LISTED = CASE_STUDIES.filter((c) => c.listed);
 export const caseStudy = (slug: string) => CASE_STUDIES.find((c) => c.slug === slug);
 
 // ── Storage ──
@@ -204,8 +209,8 @@ export function finishCaseStudy(slug: string) {
     } catch {}
   }
   if (thisVisit.length >= 2) celebrate("two", "Two case studies in one visit.", "two");
-  const all = CASE_STUDIES.every((c) => readProgress().keys[c.slug]);
-  if (all) celebrate("all", `All ${CASE_STUDIES.length} case studies read.`);
+  const all = LISTED.every((c) => readProgress().keys[c.slug]);
+  if (all) celebrate("all", `All ${LISTED.length} case studies read.`);
 }
 
 export function setHereAs(v: HereAs) {
