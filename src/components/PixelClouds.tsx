@@ -4,34 +4,39 @@ import { useEffect, useRef } from "react";
 
 // Pixel clouds over a work image, after the dithered sky on andreas.vision.
 //
-// The image is cut into a 16px grid. A drifting value-noise field, weighted towards the
+// The image is cut into an 8px grid. A drifting value-noise field, weighted towards the
 // edges, picks one of seven tones per cell:
-//   clear · pale dither · pale · pink dither · pink · grape dither · grape
-// where a "dither" is a 2px checkerboard of the two tones either side of it. On the first
-// frame of a hover the clouds roll in from the edges in a few chunky steps, keep drifting
+//   clear · pale dither · pale · mid dither · mid · deep dither · deep
+// where a "dither" is a 1px checkerboard of the two tones either side of it, drawn at the
+// screen's own pixel density so it stays crisp. Each card has its own colour (yellow,
+// green, blue, grape; grey for NDA). On a hover the clouds roll in from the edges in quick
+// steps, keep drifting
 // while the pointer stays, and roll back out when it leaves. They stay light and hug the
 // edges: the middle stays clear and the noise is weighted lightly, so grape (or dark grey)
 // only shows at the outer peaks and the work itself stays in view.
 //
 // Hover is read from the card (the nearest .group). Touch screens never hover, so they
 // never see it; with reduced motion the clouds appear and leave without drifting.
-// `subtle` is for small covers: finer 8px cells, a wider clear middle, and no grape tones,
-// so only a light pink fringe drifts round the edge.
-const CELL = 16;
-const DOT = 2;
-// Brand clouds for open works; greys for NDA works, to match their greyed-out image
+// `subtle` is for small covers: finer 4px cells, a wider clear middle, and no deep tones,
+// so only a light fringe drifts round the edge.
+const CELL = 8;
+const DOT = 1;
+// One set per card colour; greys for NDA works, to match their greyed-out image
 const PALETTES = {
-  brand: { pale: "#F9E4FF", mid: "#f8c2f7", deep: "#9D136A" },
+  brand: { pale: "#F9E4FF", mid: "#F2B6EC", deep: "#9D136A" },
+  yellow: { pale: "#FFF3D1", mid: "#F7CF6E", deep: "#D9940F" },
+  green: { pale: "#DDF4E6", mid: "#8FD5A9", deep: "#23845A" },
+  blue: { pale: "#DDEBFF", mid: "#93BCF5", deep: "#2A64CF" },
   grey: { pale: "#F3F4F6", mid: "#D1D5DB", deep: "#6B7280" },
 };
 // Tone thresholds on the (field − hidden) value; seven tones, so six cuts
 // The first cut sets how far the clouds reach; the later ones are close together so more
 // of the cloud turns grape (or dark grey) without the cloud growing
 const CUTS = [0.62, 0.67, 0.71, 0.75, 0.79, 0.84];
-const STEPS = 6; // the reveal moves in this many visible jumps
-const IN_MS = 420;
-const OUT_MS = 320;
-const DRIFT = 0.6; // cells per second
+const STEPS = 12; // the reveal moves in this many visible jumps
+const IN_MS = 520;
+const OUT_MS = 360;
+const DRIFT = 1.2; // cells per second
 const MAX_TONE = 6; // all seven tones; the deepest only reach the outermost peaks
 const CLEAR = 0.72; // no clouds inside this distance from the centre (0 = centre, 1 = corners)
 
@@ -93,7 +98,9 @@ export default function PixelClouds({
     if (!canvas || !card || !ctx) return;
 
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const cell = subtle ? 8 : CELL;
+    const cell = subtle ? 4 : CELL;
+    // The noise is tuned for 16px cells; scale it so the clouds keep their size
+    const k = cell / 16;
     const clear = subtle ? 0.84 : CLEAR;
     const maxTone = subtle ? 4 : MAX_TONE;
     let fills: (string | CanvasPattern)[] = [];
@@ -141,7 +148,7 @@ export default function PixelClouds({
           // The middle stays clear: clouds only gather in the outer band
           if (edge < clear) continue;
           const field =
-            0.4 * fbm((c + drift) * 0.14, r * 0.2, seed) + 0.6 * edge * edge + 0.05 * hash(c, r, seed + 3) - (1 - shown) * 0.7;
+            0.4 * fbm((c + drift) * 0.14 * k, r * 0.2 * k, seed) + 0.6 * edge * edge + 0.04 * hash(c, r, seed + 3) - (1 - shown) * 0.7;
           let tone = 0;
           while (tone < maxTone && field >= CUTS[tone]) tone++;
           if (!tone) continue;

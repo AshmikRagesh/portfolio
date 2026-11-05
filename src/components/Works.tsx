@@ -5,17 +5,17 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import KeyTag from "@/components/KeyTag";
 import NdaStamp from "@/components/NdaStamp";
-import { TypeTag, DisciplineTag } from "@/components/Tag";
+import PixelClouds from "@/components/PixelClouds";
 import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 
 // ── Featured card ─────────────────────────────────────────────────────────────
-// A soft grey card in two parts with the same padding all round: the words (tags, the
-// title in the heading serif, a line about it, and a pill "Read case study" at the foot)
+// A soft grey card in two parts with the same padding all round: the words (the title in
+// the heading serif, a line about it, and a pill "Read case study" at the foot)
 // and the work, a rounded image centred in its own half. Flagships sit side by side from
 // lg (words 0.82fr, image 1.18fr) and stack below it; the smaller pair always stack.
-// Hovering the card drops the room key onto its hook and turns the pill grape as it makes
-// room for an arrow circle (see .work-cta). NDA works show a stamp on a greyed image and
-// "Under NDA" instead of the pill.
+// Hovering the card rolls pixel clouds in round the image in the card's own colour, drops
+// the room key onto its hook, and turns the pill grape as it makes room for an arrow
+// circle (see .work-cta). NDA works show a stamp on a greyed image and a greyed-out pill.
 export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string }) {
   const isLink = work.href !== "#";
   const Wrapper = isLink ? Link : "div";
@@ -32,14 +32,10 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
       {/* Words */}
       <div className={`flex min-w-0 flex-col justify-between gap-[24px] md:gap-[32px] ${pad} ${isFlagship ? "pb-0 md:pb-0 lg:pb-[48px]" : "pb-0 md:pb-0 lg:pb-0"}`}>
         <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <TypeTag type={work.type} face="geist" />
-            <DisciplineTag discipline={work.discipline} face="geist" />
-          </div>
-          <h3 className="m-0 mt-[20px] max-w-[18ch] text-balance font-heading text-[26px] font-normal leading-[32px] tracking-[-1px] text-heading md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]">
+          <h3 className="m-0 text-balance font-heading text-[26px] font-normal leading-[32px] tracking-[-1px] text-heading md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]">
             {work.title}
           </h3>
-          <p className="m-0 mt-[16px] max-w-[42ch] text-pretty font-body text-[16px] leading-[26px] text-secondary">
+          <p className="m-0 mt-[16px] text-pretty font-body text-[16px] leading-[26px] text-secondary">
             {work.description}
           </p>
         </div>
@@ -53,7 +49,10 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
             </span>
           </span>
         ) : (
-          <span className="font-geist text-[14px] font-medium leading-[20px] text-muted">Under NDA</span>
+          // Under NDA: the same pill, greyed out and inert
+          <span aria-disabled="true" className="work-cta work-cta--off font-geist text-[16px] font-medium leading-[24px]">
+            <span className="work-cta__inner">Read case study</span>
+          </span>
         )}
       </div>
 
@@ -71,6 +70,9 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
               style={{ objectPosition: work.imagePosition ?? "center" }}
               className={`object-cover ${work.nda ? "grayscale" : ""}`}
             />
+
+            {/* Pixel clouds roll in round the image's edges on hover, in this card's colour */}
+            <PixelClouds seed={Number(room)} palette={work.nda ? "grey" : work.clouds ?? "brand"} className="z-[1]" />
 
             {/* NDA: the image stays greyed out; the stamp presses down in the centre the first
                 time the card is hovered or focused (on scroll-in for touch), then stays. */}

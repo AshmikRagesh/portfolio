@@ -71,6 +71,7 @@ export default function NextCase({ current }: { current: string }) {
                     />
                     <PixelClouds
                       seed={Number(roomFor(work))}
+                      palette={work.clouds ?? "brand"}
                       subtle
                       className="z-[1]"
                     />
