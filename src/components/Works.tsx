@@ -20,7 +20,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
   const isLink = work.href !== "#";
   const Wrapper = isLink ? Link : "div";
   const isFlagship = work.layout === "flagship";
-  const pad = "p-[24px] md:p-[40px] lg:p-[48px]";
+  const pad = "p-[24px] md:p-[32px]";
 
   return (
     <Wrapper
@@ -30,7 +30,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
       } ${isLink ? "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape" : ""}`}
     >
       {/* Words */}
-      <div className={`flex min-w-0 flex-col justify-between gap-[24px] md:gap-[32px] ${pad} ${isFlagship ? "pb-0 md:pb-0 lg:pb-[48px]" : "pb-0 md:pb-0 lg:pb-0"}`}>
+      <div className={`flex min-w-0 flex-col justify-between gap-[24px] md:gap-[32px] ${pad} ${isFlagship ? "pb-0 md:pb-0 lg:pb-[32px]" : "pb-0 md:pb-0"}`}>
         <div>
           <h3 className="m-0 text-balance font-heading text-[26px] font-normal leading-[32px] tracking-[-1px] text-heading md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]">
             {work.title}
@@ -60,7 +60,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
       <div className={`flex min-w-0 items-center ${pad}`}>
         <div className="relative w-full">
           {/* Open works: the room key drops onto its hook on hover. (NDA works: the stamp.) */}
-          {!work.nda && <KeyTag room={room} className="absolute -top-[2px] right-[14px] z-[3] md:right-[22px]" />}
+          {!work.nda && <KeyTag room={room} className="absolute -top-[2px] right-[12px] z-[3]" />}
           <div className={`relative aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder ${work.nda ? "stamp-thud" : ""}`}>
             <Image
               src={work.image}
