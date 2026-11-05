@@ -13,7 +13,7 @@ import {
   CardGrid,
   ProblemStatement,
   PullQuote,
-  FeedbackNotes,
+  ChatQuotes,
   DecisionTree,
   StatTiles,
   MoreDetail,
@@ -357,9 +357,9 @@ const ITERATIONS: IterationItem[] = [
 
 // Rohit's three asks from the design review, as he gave them (not word-for-word quotes)
 const REVIEW_FEEDBACK = [
-  { text: "Add a version with the two paths side by side, not stacked.", name: "Rohit Rayala", role: "CRO" },
-  { text: "Rename \u201cFind Trips\u201d to \u201cExplore Trips\u201d.", name: "Rohit Rayala", role: "CRO" },
-  { text: "List Explore Trips first, then Explore Destination.", name: "Rohit Rayala", role: "CRO" },
+  { text: "Add a version with the two paths side by side, not stacked.", from: "Rohit Rayala, CRO" },
+  { text: "Rename \u201cFind Trips\u201d to \u201cExplore Trips\u201d.", from: "Rohit Rayala, CRO" },
+  { text: "List Explore Trips first, then Explore Destination.", from: "Rohit Rayala, CRO" },
 ];
 
 // Numbered points, not cards, in the reading column: the takeaway after the variant cards
@@ -388,11 +388,7 @@ function Exploration() {
           open right under the continent you click, so the menu never jumps
           away. In review, Rohit asked for three changes.
         </p>
-      </Copy>
-      <Visual>
-        <FeedbackNotes items={REVIEW_FEEDBACK} />
-      </Visual>
-      <Copy>
+        <ChatQuotes label="What Rohit asked for in the design review" items={REVIEW_FEEDBACK} />
         <p>
           The side-by-side version is where the phone problem showed up. In the
           end, two designs were strong enough that we chose to test both.
@@ -577,11 +573,23 @@ const IMPACT_SO_FAR = [
   { stat: "3 weeks", label: "from the first question to two approved designs" },
 ];
 
-// Each way the test can read out, and what follows
+// Each way the test can read out, what we'd do, and why it's ready to happen
 const OUTCOMES = [
-  { result: "Variant 2 wins", action: "Ship the text links to everyone. They need no images, so every continent is ready on day one." },
-  { result: "Variant 3 wins", action: "Ship the image cards. Every continent already has its approved pair of photos." },
-  { result: "Today\u2019s menu wins", action: "Keep the menu as it is. The tracking still shows which path people pick, to guide the next idea." },
+  {
+    when: "If Variant 2 wins",
+    title: "Ship the text links",
+    detail: "They need no photos, so every continent can switch over on day one.",
+  },
+  {
+    when: "If Variant 3 wins",
+    title: "Ship the image cards",
+    detail: "Every continent's photo pair is already approved, so nothing waits on content.",
+  },
+  {
+    when: "If today\u2019s menu wins",
+    title: "Keep the menu, keep the data",
+    detail: "The 8 new tracking events still show which path people want, to shape the next idea.",
+  },
 ];
 
 function Outcome() {
@@ -613,14 +621,17 @@ function Outcome() {
         </Copy>
         <Visual>
           <DecisionTree
-            start={{ label: "When the test reads out", title: "Compare reach, path choice and drop-off across all three" }}
+            start={{
+              label: "When the test reads out",
+              title: "Same visitors, three menus, three numbers",
+              measures: ["Reached a page", "Path picked", "Drop-off"],
+            }}
             branches={OUTCOMES}
-            footer={
-              <>
-                <strong className="font-medium text-heading">Either way:</strong> if Explore
-                Destination draws clicks, offer the same choice on other pages of the site.
-              </>
-            }
+            end={{
+              label: "Either way",
+              title: "If destinations draw clicks, take the choice further",
+              detail: "Offer the same explore-or-browse choice beyond the menu, wherever people start their search.",
+            }}
           />
         </Visual>
       </div>
