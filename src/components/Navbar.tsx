@@ -377,7 +377,7 @@ export default function Navbar() {
       // it turns frosted with a soft lift
       // On phones it's a floating bar instead: inset from the edges, rounded, frosted, with
       // the menu card dropping out of it (MobileMenu.tsx)
-      className={`fixed top-[20px] right-0 left-0 h-[68px] z-50 border-b transition-[transform,box-shadow,background-color,border-color] duration-300 ease-in-out max-md:top-[28px] max-md:left-[12px] max-md:right-[12px] max-md:h-[60px] max-md:rounded-[20px] max-md:border max-md:bg-background/85 max-md:backdrop-blur-md max-md:backdrop-saturate-150 max-md:shadow-[0_10px_28px_-14px_rgba(30,5,37,0.22)] ${
+      className={`fixed top-[20px] right-0 left-0 h-[68px] z-50 border-b transition-[transform,box-shadow,background-color,border-color] duration-300 ease-in-out max-md:top-[28px] max-md:left-[12px] max-md:right-[12px] max-md:h-[60px] max-md:rounded-[16px] max-md:border max-md:bg-background/85 max-md:backdrop-blur-md max-md:backdrop-saturate-150 max-md:shadow-[0_10px_28px_-14px_rgba(30,5,37,0.22)] ${
         scrolled
           ? "bg-background/80 backdrop-blur-md backdrop-saturate-150 border-line-soft shadow-[0_8px_24px_-12px_rgba(30,5,37,0.16)]"
           : "bg-background border-line-soft"

@@ -2,9 +2,9 @@
 
 // ── The phone menu ────────────────────────────────────────────────────────────
 // On phones the navbar is a floating bar, and the menu is a floating card that drops
-// out of it. It speaks the desktop navbar's language: the same mono capitals for the
-// small labels, the same grape pen loop round the page you're on (and drawn round a
-// link as you tap it), the serif from the headings for the links themselves.
+// out of it, all set in Geist. It keeps the desktop navbar's grape pen loop round the
+// page you're on (drawn round a link as you tap it), and each link ends in a small
+// round arrow button.
 //
 // Motion: the card unrolls downwards from under the bar on a spring, settling with a
 // little give, and the links follow one by one; the page behind blurs and dims. The
@@ -13,8 +13,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { EMAIL } from "@/lib/contact";
-import { openResume, RESUME_PDF, resume } from "@/lib/resume";
+import { openResume, RESUME_PDF } from "@/lib/resume";
 import { spring } from "@/components/resume/motion";
 
 type Link = { label: string; href: string };
@@ -37,7 +36,7 @@ export function MenuToggle({ open, onToggle }: { open: boolean; onToggle: () => 
       className="mobile-toggle group flex h-[40px] items-center gap-[10px] rounded-full border border-line-soft bg-surface pl-[16px] pr-[14px] text-heading transition-[border-color,background-color] duration-300 active:scale-[0.97]"
       data-open={open || undefined}
     >
-      <span className="relative block h-[16px] overflow-hidden font-brand text-[12px] uppercase leading-[16px] tracking-[1px]">
+      <span className="relative block h-[20px] overflow-hidden font-geist text-[14px] font-medium leading-[20px] tracking-[-0.01em]">
         <span className="mobile-toggle-label block">Menu</span>
         <span className="mobile-toggle-label block" aria-hidden="true">
           Close
@@ -74,8 +73,8 @@ export function MobileMenu({ open, onClose, links, pathname }: { open: boolean; 
     }
     card.current?.animate(
       [
-        { clipPath: "inset(0 0 100% 0 round 24px)", transform: "translateY(-10px) scale(0.97)", opacity: 1 },
-        { clipPath: "inset(0 0 0% 0 round 24px)", transform: "translateY(0) scale(1)", opacity: 1 },
+        { clipPath: "inset(0 0 100% 0 round 20px)", transform: "translateY(-10px) scale(0.97)", opacity: 1 },
+        { clipPath: "inset(0 0 0% 0 round 20px)", transform: "translateY(0) scale(1)", opacity: 1 },
       ],
       { duration: DROP.duration, easing: DROP.easing, fill: "backwards" },
     );
@@ -97,8 +96,8 @@ export function MobileMenu({ open, onClose, links, pathname }: { open: boolean; 
     scrim.current?.animate([{ opacity: 1 }, { opacity: 0 }], { ...out, duration: 260 });
     const a = card.current?.animate(
       [
-        { clipPath: "inset(0 0 0% 0 round 24px)", transform: "translateY(0) scale(1)", opacity: 1 },
-        { clipPath: "inset(0 0 40% 0 round 24px)", transform: "translateY(-8px) scale(0.98)", opacity: 0 },
+        { clipPath: "inset(0 0 0% 0 round 20px)", transform: "translateY(0) scale(1)", opacity: 1 },
+        { clipPath: "inset(0 0 40% 0 round 20px)", transform: "translateY(-8px) scale(0.98)", opacity: 0 },
       ],
       out,
     );
@@ -154,11 +153,11 @@ export function MobileMenu({ open, onClose, links, pathname }: { open: boolean; 
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
-        className="fixed inset-x-[12px] z-[55] origin-top overflow-hidden rounded-[24px] border border-line-soft bg-background shadow-[0_24px_48px_-20px_rgba(30,5,37,0.28),0_2px_6px_rgba(30,5,37,0.06)]"
+        className="fixed inset-x-[12px] z-[55] origin-top overflow-hidden rounded-[20px] border border-line-soft bg-background shadow-[0_24px_48px_-20px_rgba(30,5,37,0.28),0_2px_6px_rgba(30,5,37,0.06)]"
         style={{ top: CARD_TOP }}
       >
         <nav aria-label="Main">
-          <ul className="px-[20px] pt-[8px]">
+          <ul className="px-[16px] py-[6px]">
             {links.map((link, i) => {
               const current = link.href.startsWith("/") && pathname === link.href;
               const marked = current || tapped === link.label;
@@ -175,51 +174,30 @@ export function MobileMenu({ open, onClose, links, pathname }: { open: boolean; 
                     href={to}
                     aria-current={current ? "page" : undefined}
                     onClick={(e) => go(e, link, to)}
-                    className="mobile-menu-link group flex items-center gap-[16px] py-[18px] outline-none"
+                    className="mobile-menu-link group flex items-center gap-[16px] py-[16px] pl-[4px] outline-none"
                     data-marked={marked || undefined}
+                    data-tapped={tapped === link.label || undefined}
                   >
-                    <span className="w-[24px] font-brand text-[12px] leading-none tracking-[1px] text-text-base/40">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="nav-tab-label relative font-heading text-[28px] leading-[1.1] tracking-[-0.02em] text-heading">
+                    <span className="nav-tab-label relative font-geist text-[24px] font-medium leading-[1.15] tracking-[-0.02em] text-heading">
                       {link.label}
                       <svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
                         <path pathLength={1} d="M84 6C66 0 22 1 8 12-3 22 14 37 50 37c36 0 50-10 44-23C88 3 62 1 38 4" />
                       </svg>
                     </span>
-                    <svg
-                      aria-hidden="true"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="mobile-menu-arrow ml-auto text-text-base/35"
-                    >
-                      <path d="M4 12 12 4M5.5 4H12v6.5" />
-                    </svg>
+                    {/* A round button with an arrow: on tap it fills grape, and the arrow slides out
+                        to the right as a fresh one slides in from the left */}
+                    <span aria-hidden="true" className="mobile-menu-go ml-auto">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                        <path className="mobile-menu-go-out" d="M2 7h10M8 3l4 4-4 4" />
+                        <path className="mobile-menu-go-in" d="M2 7h10M8 3l4 4-4 4" />
+                      </svg>
+                    </span>
                   </a>
                 </li>
               );
             })}
           </ul>
 
-          {/* Getting in touch, small, in the navbar's mono */}
-          <div
-            ref={(el) => {
-              items.current[links.length] = el;
-            }}
-            className="mt-[4px] flex items-center justify-between gap-[12px] border-t border-line-soft bg-surface px-[20px] py-[16px] font-brand text-[12px] uppercase tracking-[1px]"
-          >
-            <a href={`mailto:${EMAIL}`} className="text-text-base/60 transition-colors hover:text-grape">
-              Email
-            </a>
-            <a href={resume.linkedin.href} target="_blank" rel="noopener noreferrer" className="text-text-base/60 transition-colors hover:text-grape">
-              LinkedIn
-            </a>
-            <span className="text-text-base/35">© {new Date().getFullYear()}</span>
-          </div>
         </nav>
       </div>
     </div>,

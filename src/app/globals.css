@@ -1053,10 +1053,20 @@
 /* Links: the navbar's pen loop round the page you're on, and round a link as it's tapped */
 .mobile-menu-link .nav-tab-label svg { left: -14px; top: -10px; width: calc(100% + 28px); height: calc(100% + 20px); }
 .mobile-menu-link[data-marked] .nav-tab-label path { stroke-dashoffset: 0; opacity: 1; transition: stroke-dashoffset 0.56s cubic-bezier(0.45, 0.05, 0.3, 1), opacity 0s; }
-.mobile-menu-arrow { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s; }
-.mobile-menu-link[data-marked] .mobile-menu-arrow, .mobile-menu-link:focus-visible .mobile-menu-arrow { transform: translate(2px, -2px); color: #9d136a; }
+/* The arrow button: a soft ring at rest; on tap it fills grape and the arrow slides
+   out to the right while a fresh one slides in from the left */
+.mobile-menu-go { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 999px; border: 1px solid rgba(50, 7, 62, 0.12); color: rgba(50, 7, 62, 0.7); overflow: hidden; transition: background-color 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s, color 0.35s, transform 0.2s ease; }
+.mobile-menu-go svg { overflow: hidden; } /* the waiting arrow stays out of sight */
+.mobile-menu-go-out, .mobile-menu-go-in { transition: transform 0.42s cubic-bezier(0.65, 0, 0.25, 1); }
+.mobile-menu-go-in { transform: translateX(-18px); }
+.mobile-menu-link[data-marked] .mobile-menu-go, .mobile-menu-link:focus-visible .mobile-menu-go { background: #9d136a; border-color: #9d136a; color: #fff; }
+.mobile-menu-link[data-marked] .mobile-menu-go-out { transform: translateX(18px); }
+.mobile-menu-link[data-marked] .mobile-menu-go-in { transform: translateX(0); }
+.mobile-menu-link[aria-current="page"]:not([data-tapped]) .mobile-menu-go-out { transform: none; }
+.mobile-menu-link[aria-current="page"]:not([data-tapped]) .mobile-menu-go-in { transform: translateX(-18px); }
+.mobile-menu-link:active .mobile-menu-go { transform: scale(0.94); }
 .mobile-menu-link:active .nav-tab-label { transform: scale(0.98); }
 .mobile-menu-link .nav-tab-label { transition: transform 0.2s ease; }
 @media (prefers-reduced-motion: reduce) {
-  .mobile-toggle-label, .mobile-toggle-line, .mobile-menu-arrow { transition: none; }
+  .mobile-toggle-label, .mobile-toggle-line, .mobile-menu-go, .mobile-menu-go-out, .mobile-menu-go-in { transition: none; }
 }
