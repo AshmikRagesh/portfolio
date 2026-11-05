@@ -314,8 +314,8 @@ export default function TearSheet({
     };
     raf = requestAnimationFrame(frame);
 
-    // Once it has landed, the first few holes give way at the left corner
-    const starter = window.setTimeout(starterTear, 900);
+    // The starter tear comes with the sheet landing, not after it
+    const starter = window.setTimeout(starterTear, 40);
     return () => {
       cancelAnimationFrame(raf);
       window.clearTimeout(starter);

@@ -9,10 +9,13 @@
 
 import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { Grain, PAPER_STYLE, PaperBack, TOP_EDGE } from "./paper";
-import { EASE, spring } from "./motion";
+import { EASE, settledAt, spring } from "./motion";
 
 const SWING = spring(70, 13.5);
-const DELAY = 380;
+const DELAY = 220;
+// The sheet counts as flat once the swing is within half a degree of it, so what comes
+// next (pen circles, the starter tear, being able to tear) starts with no wait
+const FLAT_MS = DELAY + settledAt(70, 13.5, 0.5 / 180);
 
 export default function Unfold({ height, onDone, Sheet }: { height: number; onDone: () => void; Sheet: () => ReactNode }) {
   const lift = useRef<HTMLDivElement>(null);
@@ -35,8 +38,11 @@ export default function Unfold({ height, onDone, Sheet }: { height: number; onDo
       ),
     ];
     const turn = flap.current?.animate([{ transform: "rotateX(-180deg)" }, { transform: "rotateX(0deg)" }], swing);
-    turn?.finished.then(() => done.current()).catch(() => {});
-    return () => [...anims, turn].forEach((a) => a?.cancel());
+    const flat = window.setTimeout(() => done.current(), FLAT_MS);
+    return () => {
+      window.clearTimeout(flat);
+      [...anims, turn].forEach((a) => a?.cancel());
+    };
   }, [height, half]);
 
   const face: CSSProperties = { backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" };

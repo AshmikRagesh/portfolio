@@ -1035,7 +1035,7 @@
 /* The same loop, stroke and timing as the navbar tabs' hover circle (.nav-tab-label path),
    drawn once when the flat sheet appears. Not in the unfold's copy, nor in the tear
    strip's hidden copies, so it draws exactly once. */
-.resume-pen { fill: none; stroke: #9d136a; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; animation: resume-pen 0.56s cubic-bezier(0.45, 0.05, 0.3, 1) 0.35s forwards; }
+.resume-pen { fill: none; stroke: #9d136a; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; animation: resume-pen 0.56s cubic-bezier(0.45, 0.05, 0.3, 1) 0.04s forwards; }
 @keyframes resume-pen { 0% { opacity: 1; stroke-dashoffset: 1; } 100% { opacity: 1; stroke-dashoffset: 0; } }
 .resume-unfold .resume-pen, .resume-strip .resume-pen { animation: none; opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .resume-pen { animation: none; opacity: 1; stroke-dashoffset: 0; } }

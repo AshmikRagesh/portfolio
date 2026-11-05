@@ -50,3 +50,21 @@ export const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
 export const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 // A fold: slow to lift, quick through the middle, soft as it lands
 export const FOLD_EASE = "cubic-bezier(0.65, 0, 0.25, 1)";
+
+/**
+ * When a spring from 0 to 1 is visually done: the last moment it's further than
+ * `within` (as a fraction of the travel) from rest. Earlier than the full settle,
+ * which waits out the last invisible fraction of a pixel.
+ */
+export function settledAt(stiffness: number, damping: number, within: number, mass = 1) {
+  const dt = 1 / 480;
+  let x = 0, v = 0, t = 0, last = 0;
+  while (t < 4) {
+    const a = (-stiffness * (x - 1) - damping * v) / mass;
+    v += a * dt;
+    x += v * dt;
+    t += dt;
+    if (Math.abs(1 - x) > within) last = t;
+  }
+  return Math.round(last * 1000);
+}
