@@ -4,8 +4,7 @@
 //
 //   unfold   a sheet lifted off a pile and opened out: a soft rustle as it lifts,
 //            a few dry crackles along the crease, then the low flap of the top half
-//            landing flat. Timed to the fold (lands about 1s after it starts).
-//   refold   the same sheet folded back up, quicker, ending on a crisp crease.
+//            landing flat. Timed to the fold (lands 0.84s after it starts).
 //   whoosh   the paper plane leaving: air rushing past, rising in pitch.
 
 type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
@@ -103,28 +102,8 @@ export function unfoldSound(volume = 0.45, delayMs = 0) {
     crackles(c, out, t + 0.12, t + 0.62, 7, 0.55);
     // The top half swinging over
     burst(c, out, t + 0.34, { freq: 2400, q: 0.8, attack: 0.22, decay: 0.38, level: 0.32, sweepTo: 1100 });
-    flap(c, out, t + 0.98, 0.9);
-    crackles(c, out, t + 0.99, t + 1.12, 2, 0.25);
-  });
-}
-
-export function refoldSound(volume = 0.3, delayMs = 0) {
-  play(volume, delayMs, (c, out, t) => {
-    burst(c, out, t, { freq: 1800, q: 0.7, attack: 0.06, decay: 0.3, level: 0.45, sweepTo: 3400 });
-    crackles(c, out, t + 0.08, t + 0.42, 6, 0.6);
-    flap(c, out, t + 0.48, 0.6);
-    // The crease pressed flat
-    burst(c, out, t + 0.5, { freq: 4200, q: 3, attack: 0.002, decay: 0.05, level: 0.5 });
-  });
-}
-
-/** Quick crisp folds while the plane takes shape. */
-export function planeFoldSound(volume = 0.3, durationMs = 700) {
-  play(volume, 0, (c, out, t) => {
-    const d = durationMs / 1000;
-    crackles(c, out, t, t + d, 6, 0.55);
-    burst(c, out, t + d * 0.42, { freq: 4000, q: 3, attack: 0.002, decay: 0.05, level: 0.5 });
-    burst(c, out, t + d * 0.95, { freq: 4600, q: 3, attack: 0.002, decay: 0.05, level: 0.45 });
+    flap(c, out, t + 0.84, 0.9);
+    crackles(c, out, t + 0.85, t + 0.98, 2, 0.25);
   });
 }
 
@@ -132,5 +111,45 @@ export function whooshSound(volume = 0.22, durationMs = 800) {
   play(volume, 0, (c, out, t) => {
     const d = durationMs / 1000;
     burst(c, out, t, { freq: 500, q: 0.9, attack: d * 0.55, decay: d * 0.5, level: 0.8, sweepTo: 2600 });
+  });
+}
+
+/** A crease pressed flat: a crisp snap with a little air behind it. */
+function crease(c: AudioContext, out: AudioNode, at: number, level: number) {
+  burst(c, out, at - 0.12, { freq: 2200, q: 0.8, attack: 0.08, decay: 0.08, level: level * 0.35, sweepTo: 3600 });
+  burst(c, out, at, { freq: 4200, q: 2.6, attack: 0.002, decay: 0.045, level });
+  burst(c, out, at + 0.004, { freq: 700, q: 0.8, attack: 0.004, decay: 0.07, level: level * 0.5, type: "lowpass" });
+}
+
+/**
+ * The whole plane fold: a crease for each fold (ms from now), and a dry rustle of
+ * crackles while the wings come out ([start, duration] in ms).
+ */
+export function planeSequenceSound({ creases, wings }: { creases: number[]; wings: [number, number] }, volume = 0.32) {
+  play(volume, 0, (c, out, t) => {
+    creases.forEach((ms, i) => {
+      crackles(c, out, t + ms / 1000 - 0.36, t + ms / 1000 - 0.05, 3, 0.35);
+      crease(c, out, t + ms / 1000, i === creases.length - 1 ? 0.75 : 0.6);
+    });
+    const [from, dur] = wings.map((ms) => ms / 1000);
+    burst(c, out, t + from, { freq: 1600, q: 0.7, attack: dur * 0.3, decay: dur * 0.6, level: 0.3, sweepTo: 3000 });
+    crackles(c, out, t + from, t + from + dur, 5, 0.45);
+  });
+}
+
+/** The paperclip biting onto the sheet: a small, bright metal tick. */
+export function clipSound(volume = 0.35, delayMs = 0) {
+  play(volume, delayMs, (c, out, t) => {
+    const osc = c.createOscillator();
+    osc.frequency.setValueAtTime(3100, t);
+    osc.frequency.exponentialRampToValueAtTime(2300, t + 0.06);
+    const env = c.createGain();
+    env.gain.setValueAtTime(0.0001, t);
+    env.gain.exponentialRampToValueAtTime(0.18, t + 0.002);
+    env.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+    osc.connect(env).connect(out);
+    osc.start(t);
+    osc.stop(t + 0.1);
+    burst(c, out, t, { freq: 5200, q: 3, attack: 0.001, decay: 0.02, level: 0.5 });
   });
 }
