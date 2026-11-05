@@ -2,9 +2,9 @@
 
 // ── The phone menu ────────────────────────────────────────────────────────────
 // On phones the navbar is a floating bar, and the menu is a floating card that drops
-// out of it, all set in Geist. It keeps the desktop navbar's grape pen loop round the
-// page you're on (drawn round a link as you tap it), and each link ends in a small
-// round arrow button.
+// out of it. The links are in the headings' serif, the toggle in Geist. It keeps the
+// desktop navbar's grape pen loop round the page you're on (drawn round a link as you
+// tap it), and each link ends in a small round arrow button.
 //
 // Motion: the card unrolls downwards from under the bar on a spring, settling with a
 // little give, and the links follow one by one; the page behind blurs and dims. The
@@ -178,7 +178,7 @@ export function MobileMenu({ open, onClose, links, pathname }: { open: boolean; 
                     data-marked={marked || undefined}
                     data-tapped={tapped === link.label || undefined}
                   >
-                    <span className="nav-tab-label relative font-geist text-[24px] font-medium leading-[1.15] tracking-[-0.02em] text-heading">
+                    <span className="nav-tab-label relative font-heading text-[28px] leading-[1.1] tracking-[-0.02em] text-heading">
                       {link.label}
                       <svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
                         <path pathLength={1} d="M84 6C66 0 22 1 8 12-3 22 14 37 50 37c36 0 50-10 44-23C88 3 62 1 38 4" />
