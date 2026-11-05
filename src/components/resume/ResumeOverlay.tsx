@@ -146,7 +146,8 @@ export default function ResumeOverlay() {
   }, [open, reduced]);
 
   const close = useCallback(() => {
-    if (leaving.current) return;
+    // Not while the stub is being torn or the résumé is falling: it would cut off the download
+    if (leaving.current || tearing.current) return;
     leaving.current = true;
     backdrops().forEach((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 420, delay: 80, easing: EASE, fill: "forwards" }));
     const exit = card.current?.animate(

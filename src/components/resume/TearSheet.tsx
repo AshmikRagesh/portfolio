@@ -433,6 +433,15 @@ export default function TearSheet({
     const s = sim.current;
     s.droop = 0;
     if (!d.moved) return jiggle();
+    // Letting go after a drag makes the browser fire a click where the pointer is, often
+    // past the sheet's edge on the backdrop, which would close the résumé mid-tear. That
+    // one click is swallowed.
+    const swallow = (ev: MouseEvent) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+    };
+    window.addEventListener("click", swallow, { capture: true, once: true });
+    window.setTimeout(() => window.removeEventListener("click", swallow, { capture: true }), 0);
     if (s.mode !== "pulling") return;
     if (Math.max(s.p, s.target) > RUN_AT) return startRun();
     // Not far enough: it lies back down along the line
