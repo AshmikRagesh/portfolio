@@ -111,6 +111,9 @@
   font-display: swap;
 }
 
+/* PP Kyoto is always set at -1px letter spacing, whatever tracking a heading asks for */
+.font-heading { letter-spacing: -1px !important; }
+
 /* ── Work card reveals ───────────────────────────────────────────────────────────
    Open works: the first hover/focus drops the key onto the brass hook, where it then
    stays; later hovers just swing it on the hook. NDA works: the rubber stamp presses down the first time the card is hovered
