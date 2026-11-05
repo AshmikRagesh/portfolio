@@ -93,12 +93,12 @@ const HANG_K = 170;
 const HANG_C = 2 * 0.32 * Math.sqrt(HANG_K);
 
 // The résumé falling, in sheet px and seconds. A whole sheet is big and falls faster
-// than a scrap, but air still holds it back (terminal speed ≈ 1100 px/s).
-const GRAVITY = 2600;
-const DRAG = 2.4;
-const POP = -170; // the little jump as the tension lets go
+// than a scrap; air only takes the edge off (terminal speed ≈ 2700 px/s).
+const GRAVITY = 6200;
+const DRAG = 2.3;
+const POP = -130; // the little jump as the tension lets go
 const SWAY = 26; // sideways, px
-const SWAY_HZ = 0.8;
+const SWAY_HZ = 1.05;
 const ROCK = 5; // degrees of rocking turn
 const TUMBLE = 16; // degrees of tipping forwards and back
 const SPIN = 4; // a slow overall turn, degrees per second
