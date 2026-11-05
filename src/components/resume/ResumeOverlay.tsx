@@ -3,13 +3,13 @@
 // ── Fancy paper ───────────────────────────────────────────────────────────────
 // The résumé as a real sheet of paper. Clicking "Fancy paper" blurs the page, and a
 // sheet folded in half springs up into the middle of the screen and opens out
-// (Unfold.tsx). Two more sheets slide out into a loose pile underneath, and a sticky
-// note with a paperclip drops onto the corner: "download a copy" (Note.tsx). The
-// sheet leans gently towards the pointer.
+// (Unfold.tsx). Two more sheets slide out into a loose pile underneath. The sheet leans
+// gently towards the pointer.
 //
-// Taking a copy folds the sheet into a paper plane in front of you and flies it to the
-// downloads corner at the top right (PlaneFold.tsx), then the file downloads and the
-// next copy on the pile comes into focus where it was.
+// Along the bottom is a tear-off stub (TearSheet.tsx): pull it or tap it and it tears
+// along its perforation and drops away, the copy downloads, and a fresh stub slides in.
+// The paper is punched down the left, torn from a pad along the top, and carries pen
+// circles and margin notes in Ashmik's hand (paper.tsx).
 //
 // Sounds are synthesised (paperSound.ts). With reduced motion the sheet fades in flat
 // and the copy downloads straight away.
@@ -18,10 +18,11 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { createPortal } from "react-dom";
 import { celebrate } from "@/lib/bella/progress";
 import { RESUME_FILENAME, RESUME_OPEN_EVENT, RESUME_PDF } from "@/lib/resume";
-import { Backdrop, FOCUS_MS, Grain, NextCopy, PAPER_STYLE, Pile, SHEET_H, SHEET_W, SheetNarrow, SheetWide } from "./paper";
+import { useCuriosity } from "@/context/CuriosityContext";
+import { guestNumber } from "@/lib/bella/passArt";
+import { Backdrop, GuestNo, Pile, SHEET_H, SHEET_W, SheetNarrow, SheetWide } from "./paper";
 import Unfold from "./Unfold";
-import Note from "./Note";
-import PlaneFold, { FlightTrail } from "./PlaneFold";
+import TearSheet from "./TearSheet";
 import { EASE, lerp, spring } from "./motion";
 import { unfoldSound } from "./paperSound";
 
@@ -61,23 +62,18 @@ function download() {
   celebrate("resume", "Resume downloaded.");
 }
 
-type Phase = "idle" | "plane" | "arriving";
-
 export default function ResumeOverlay() {
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState(false); // the flat sheet is up
-  const [taking, setTaking] = useState(false);
-  const [phase, setPhase] = useState<Phase>("idle");
-  const phaseRef = useRef<Phase>("idle");
-  const [copy, setCopy] = useState(0); // bumps for each new copy on the pile
-  const [focusStart, setFocusStart] = useState<number | null>(null);
-  const [measured, setMeasured] = useState({ w: 0, h: 0 });
+  const tearing = useRef(false);
+  const [measuredH, setMeasuredH] = useState(0);
+  const [guest, setGuest] = useState<number | null>(null);
+  const { visitorId } = useCuriosity();
 
   const overlay = useRef<HTMLDivElement>(null);
   const card = useRef<HTMLDivElement>(null);
   const tilt = useRef<HTMLDivElement>(null);
-  const sheet = useRef<HTMLDivElement>(null);
-  const trail = useRef<SVGSVGElement>(null);
+  const measurer = useRef<HTMLDivElement>(null);
   const leaving = useRef(false);
   const timers = useRef<number[]>([]);
 
@@ -86,13 +82,8 @@ export default function ResumeOverlay() {
   const wide = vp.w >= 640;
   const scale = wide ? Math.min(1.05, (vp.h - 64) / SHEET_H, (vp.w - 48) / SHEET_W) : 1;
   const Sheet = wide ? SheetWide : SheetNarrow;
-  const sheetH = wide ? SHEET_H : measured.h;
-  const sheetW = wide ? SHEET_W : measured.w;
+  const sheetH = wide ? SHEET_H : measuredH;
 
-  const go = (p: Phase) => {
-    phaseRef.current = p;
-    setPhase(p);
-  };
   const later = (fn: () => void, ms: number) => timers.current.push(window.setTimeout(fn, ms));
   const backdrops = () => Array.from(overlay.current?.querySelectorAll<HTMLElement>("[data-backdrop]") ?? []);
 
@@ -103,10 +94,7 @@ export default function ResumeOverlay() {
       timers.current.forEach(window.clearTimeout);
       timers.current = [];
       setShown(reduced);
-      setTaking(false);
-      go("idle");
-      setFocusStart(null);
-      setCopy(0);
+      tearing.current = false;
       setOpen(true);
       unfoldSound(0.45);
     };
@@ -178,7 +166,7 @@ export default function ResumeOverlay() {
       target.current = { x: (e.clientX / window.innerWidth - 0.5) * 2, y: (e.clientY / window.innerHeight - 0.5) * 2 };
     };
     const tick = () => {
-      const still = phaseRef.current === "plane";
+      const still = tearing.current;
       now.x = lerp(now.x, still ? 0 : target.current.x, 0.06);
       now.y = lerp(now.y, still ? 0 : target.current.y, 0.06);
       if (tilt.current) tilt.current.style.transform = `perspective(2400px) rotateX(${(-now.y * TILT_DEG).toFixed(3)}deg) rotateY(${(now.x * TILT_DEG).toFixed(3)}deg)`;
@@ -192,71 +180,55 @@ export default function ResumeOverlay() {
     };
   }, [open, wide, reduced]);
 
-  // On a phone the sheet is as long as its content: measure it for the folds
+  // On a phone the sheet is as long as its content: measure it for the unfold
   useLayoutEffect(() => {
-    if (!open || wide || !sheet.current) return;
-    const el = sheet.current;
-    const read = () => setMeasured({ w: el.offsetWidth, h: el.offsetHeight });
+    if (!open || wide || !measurer.current) return;
+    const el = measurer.current;
+    const read = () => setMeasuredH(el.offsetHeight);
     read();
     const ro = new ResizeObserver(read);
     ro.observe(el);
     return () => ro.disconnect();
   }, [open, wide]);
 
-  const take = () => {
-    if (phaseRef.current !== "idle") return;
-    setTaking(true);
-    if (reduced) {
-      download();
-      later(() => setTaking(false), 600);
-      return;
-    }
-    setFocusStart(null);
-    setShown(false);
-    go("plane");
-  };
-
-  const onGone = () => {
-    if (phaseRef.current !== "plane") return;
-    download();
-    go("arriving");
-    setShown(true);
-    setCopy((c) => c + 1);
-    setFocusStart(performance.now());
-    later(() => {
-      if (phaseRef.current !== "arriving") return;
-      go("idle");
-      setTaking(false);
-    }, FOCUS_MS);
-  };
+  // The visitor's guest number, for the stub
+  useEffect(() => {
+    if (!open || !visitorId || guest !== null) return;
+    fetch(`/api/curiosity/desk?v=${encodeURIComponent(visitorId)}`)
+      .then((r) => r.json())
+      .then((d: { guestNo?: number }) => typeof d.guestNo === "number" && setGuest(d.guestNo))
+      .catch(() => {});
+  }, [open, visitorId, guest]);
 
   if (!open || typeof document === "undefined") return null;
 
-  const pileOn = phase !== "idle";
   const content = (
     <>
       <Pile />
-      {/* The next copy waits underneath, out of focus, until this one has gone */}
-      {pileOn && <NextCopy start={phase === "arriving" ? focusStart : null} Sheet={Sheet} />}
-      <div key={copy} className="relative" style={{ visibility: phase === "arriving" ? "hidden" : "visible" }}>
-        <div
-          ref={sheet}
-          className="relative"
-          // Keeps its place while it's folded away, so the card doesn't collapse on a phone
-          style={{ ...PAPER_STYLE, visibility: shown ? "visible" : "hidden", position: shown || taking ? "relative" : "absolute", top: 0, left: 0, right: 0 }}
-        >
-          <Grain />
-          <Sheet />
-        </div>
-        {!shown && !taking && sheetH > 0 && <Unfold height={sheetH} Sheet={Sheet} onDone={() => setShown(true)} />}
-      </div>
-      {/* A long phone sheet folds as an A4-shaped top part: that's the bit in view */}
-      {phase === "plane" && sheetW > 0 && <PlaneFold width={sheetW} height={wide ? sheetH : Math.min(sheetH, Math.round(sheetW * 1.414))} scale={scale} Sheet={Sheet} trail={trail} onGone={onGone} />}
-      <Note show={shown} taking={taking} onTake={take} style={wide ? { right: -24, top: 6 } : { right: -6, top: 6 }} />
+      {shown ? (
+        <TearSheet
+          Sheet={Sheet}
+          onTorn={download}
+          onTearing={(t) => {
+            tearing.current = t;
+          }}
+        />
+      ) : (
+        <>
+          {/* Laid out unseen on a phone, to know how long the sheet is */}
+          {!wide && (
+            <div ref={measurer} aria-hidden="true" className="invisible absolute inset-x-0 top-0">
+              <Sheet />
+            </div>
+          )}
+          {sheetH > 0 && <Unfold height={sheetH} Sheet={Sheet} onDone={() => setShown(true)} />}
+        </>
+      )}
     </>
   );
 
   return createPortal(
+    <GuestNo.Provider value={guestNumber(guest)}>
     <div ref={overlay} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Résumé" className="fixed inset-0 z-[200] outline-none">
       <Backdrop />
       <div className={`absolute inset-0 ${wide ? "overflow-hidden" : "overflow-y-auto"}`} onClick={close}>
@@ -279,8 +251,8 @@ export default function ResumeOverlay() {
           </div>
         </div>
       </div>
-      <FlightTrail svgRef={trail} />
-    </div>,
+    </div>
+    </GuestNo.Provider>,
     document.body,
   );
 }

@@ -1,7 +1,8 @@
 // ── Résumé ────────────────────────────────────────────────────────────────────
 // What the "Fancy paper" sheet shows and the file "Take a copy" downloads.
 // PLACEHOLDER copy for now: Ashmik will swap in the real résumé (and the PDF in
-// /public) later. Wrap a phrase in **double stars** to set it in the darker ink.
+// /public) later. Wrap a phrase in **double stars** to set it in the darker ink, or
+// in ((double brackets)) to circle it in pen; `note` adds a handwritten margin note.
 
 import { EMAIL } from "@/lib/contact";
 
@@ -20,7 +21,7 @@ export const resume = {
   linkedin: { label: "in/ashmikragesh", href: "https://www.linkedin.com/in/ashmikragesh" },
 };
 
-export type ResumeEntry = { org: string; role?: string; when?: string; detail: string[] };
+export type ResumeEntry = { org: string; role?: string; when?: string; detail: string[]; note?: string };
 export type ResumeSection = { label: string; entries: ResumeEntry[] };
 
 export const resumeSections: ResumeSection[] = [
@@ -33,17 +34,19 @@ export const resumeSections: ResumeSection[] = [
         when: "2024 – Now",
         detail: [
           "Led **end-to-end design of the core search experience**, from research and flows to shipped UI, working closely with engineering and product.",
-          "Built and maintained **a design system used across four product teams**, with tokens, components and documentation.",
+          "Built and maintained ((a design system used across four product teams)), with tokens, components and documentation.",
         ],
+        note: "ask me how this started",
       },
       {
         org: "Company Placeholder",
         role: "Product Designer",
         when: "2022 – 2024",
         detail: [
-          "Redesigned onboarding and account setup, **simplifying a seven-step flow into three**.",
+          "Redesigned onboarding and account setup, ((simplifying a seven-step flow into three)).",
           "Ran usability sessions every sprint and turned findings into a shared backlog of fixes.",
         ],
+        note: "my favourite project",
       },
       {
         org: "Agency Placeholder",

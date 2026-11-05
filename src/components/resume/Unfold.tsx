@@ -8,7 +8,7 @@
 // edge-on and brighten again as they lie flat.
 
 import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from "react";
-import { Grain, PAPER_STYLE, PaperBack } from "./paper";
+import { Grain, PAPER_STYLE, PaperBack, TOP_EDGE } from "./paper";
 import { EASE, spring } from "./motion";
 
 const SWING = spring(70, 13.5);
@@ -50,7 +50,7 @@ export default function Unfold({ height, onDone, Sheet }: { height: number; onDo
     />
   );
   const halfOf = (which: 0 | 1) => (
-    <div className="absolute inset-0 overflow-hidden" style={{ ...face, ...PAPER_STYLE, boxShadow: "none" }}>
+    <div className="absolute inset-0 overflow-hidden" style={{ ...face, ...PAPER_STYLE, boxShadow: "none", ...(which === 0 ? TOP_EDGE : {}) }}>
       <div className="absolute inset-x-0 top-0" style={{ height, transform: `translateY(${-which * half}px)` }}>
         <Grain />
         <Sheet />

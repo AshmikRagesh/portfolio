@@ -2,9 +2,10 @@
 
 // ── The résumé's paper ────────────────────────────────────────────────────────
 // The sheet's stock and typesetting, the blurred page behind it, the pile it sits
-// on, and the next copy that comes into focus after one is taken.
+// on, the punch holes, pen marks and tear-off stub.
 
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { createContext, useContext, type CSSProperties, type ReactNode } from "react";
+import PunchHole from "@/components/PunchHole";
 import { resume, resumeSections, type ResumeEntry } from "@/lib/resume";
 import { EASE } from "./motion";
 
@@ -17,6 +18,22 @@ export const MUTED = "#6d675c";
 export const FAINT = "#a39b8c";
 export const PAPER = "#f8f3e8";
 export const PAPER_BACK = "#efe7d8";
+const PEN = "#9D136A"; // grape, the case studies' pen colour
+const GOLD = "#a8813a";
+
+// The tear-off stub along the bottom of the sheet, below a perforated line
+export const STUB_H = 72;
+export const PERF_GAP = 8; // one perforation hole every 8px
+
+// Torn off a pad: the top edge keeps the half-holes of the perforation it came from
+export const TOP_EDGE: CSSProperties = {
+  maskImage: "radial-gradient(circle at 50% 0, transparent 2.2px, #000 2.8px) 0 0 / 8px 6px repeat-x, linear-gradient(#000, #000) 0 6px / 100% calc(100% - 6px) no-repeat",
+  WebkitMaskImage:
+    "radial-gradient(circle at 50% 0, transparent 2.2px, #000 2.8px) 0 0 / 8px 6px repeat-x, linear-gradient(#000, #000) 0 6px / 100% calc(100% - 6px) no-repeat",
+};
+
+// The visitor's guest number, printed on the stub
+export const GuestNo = createContext<string>("····");
 
 // Fine grain, multiplied over the paper
 export const GRAIN = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.32  0 0 0 0 0.26  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`;
@@ -56,20 +73,103 @@ export function PaperBack() {
 
 // ── Typesetting ───────────────────────────────────────────────────────────────
 
-// **double stars** set a phrase in the darker ink
+/** A phrase circled in pen, the loop drawing itself in once the sheet is down. */
+function Circled({ children }: { children: ReactNode }) {
+  return (
+    // A block of its own, so a phrase that runs onto two lines gets one loop round both
+    <span className="relative inline-block" style={{ color: INK }}>
+      {children}
+      <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute overflow-visible" style={{ left: -12, top: -3, width: "calc(100% + 22px)", height: "calc(100% + 7px)" }}>
+        {/* A quick oval in one stroke, starting top right and overshooting where it began */}
+        <path
+          className="resume-pen"
+          pathLength={1}
+          d="M90 22C74 2 24 0 7 24-6 44 8 90 50 96c40 5 56-22 48-52C92 18 70 6 40 8"
+          fill="none"
+          stroke={PEN}
+          strokeWidth={1.3}
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+          style={{ animationDelay: "0.55s" }}
+        />
+      </svg>
+    </span>
+  );
+}
+
+// **double stars** set a phrase in the darker ink; ((double brackets)) circle it in pen
 function Rich({ text }: { text: string }) {
   return (
     <>
-      {text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+      {text.split(/(\*\*[^*]+\*\*|\(\([^)]+\)\))/g).map((part, i) =>
         part.startsWith("**") ? (
           <span key={i} style={{ color: INK }}>
             {part.slice(2, -2)}
           </span>
+        ) : part.startsWith("((") ? (
+          <Circled key={i}>
+            {part.slice(2, -2)}
+          </Circled>
         ) : (
           <span key={i}>{part}</span>
         ),
       )}
     </>
+  );
+}
+
+/** A note in the margin in Ashmik's hand, with a little arrow up to what it's about. */
+function MarginNote({ text }: { text: string }) {
+  return (
+    <p className="resume-note relative mt-[2px] flex items-start gap-1 pl-[2px] font-handwriting text-[18px] leading-none" style={{ color: PEN, transform: "rotate(-2.5deg)", transformOrigin: "0 50%" }}>
+      <svg aria-hidden="true" width="18" height="16" viewBox="0 0 18 16" fill="none" className="mt-[-4px] shrink-0">
+        <path d="M15 14C9 13 5 10 4 3M1.5 5.5 4 2.5l2.8 2.6" stroke={PEN} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      {text}
+    </p>
+  );
+}
+
+/** Three punched holes down the left margin. */
+function Holes({ left }: { left: number }) {
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute" style={{ left, top: 0, bottom: STUB_H }}>
+      {[0.2, 0.5, 0.8].map((at, i) => (
+        <div key={i} className="absolute" style={{ top: `${at * 100}%`, transform: "translateY(-50%)" }}>
+          <PunchHole index={i + 1} fill="#e7dfcc" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** The tear-off stub: a perforated line across, and a slip below it. */
+function Stub() {
+  const guest = useContext(GuestNo);
+  return (
+    <div aria-hidden="true" className="absolute inset-x-0 bottom-0" style={{ height: STUB_H }}>
+      <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(150,112,58,0.05), rgba(150,112,58,0.02))" }} />
+      <svg className="absolute left-0 top-0 h-[4px] w-full overflow-visible">
+        <defs>
+          <pattern id="resume-perf" width={PERF_GAP} height="4" patternUnits="userSpaceOnUse">
+            <circle cx={PERF_GAP / 2} cy="0" r="1.25" fill="rgba(70,56,36,0.34)" />
+          </pattern>
+        </defs>
+        <rect x="0" y="-2" width="100%" height="4" fill="url(#resume-perf)" />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-between font-brand uppercase" style={{ padding: "0 clamp(20px, 7.2%, 46px)", fontSize: 10, letterSpacing: "0.14em", color: INK }}>
+        <span className="flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="6" cy="6" r="3" />
+            <circle cx="6" cy="18" r="3" />
+            <path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12" />
+          </svg>
+          Tear for a copy
+        </span>
+        <span className="max-[639px]:hidden" style={{ color: MUTED }}>Résumé · PDF</span>
+        <span style={{ color: GOLD }}>Guest No. {guest}</span>
+      </div>
+    </div>
   );
 }
 
@@ -91,6 +191,7 @@ function Details({ entry }: { entry: ResumeEntry }) {
           <Rich text={d} />
         </p>
       ))}
+      {entry.note && <MarginNote text={entry.note} />}
     </div>
   );
 }
@@ -109,7 +210,8 @@ const Contact = () => (
 /** The sheet on a wide screen: an A4 page in three columns. */
 export function SheetWide() {
   return (
-    <div className="relative font-geist" style={{ width: SHEET_W, height: SHEET_H, padding: "44px 46px", color: MUTED }}>
+    <div className="relative font-geist" style={{ width: SHEET_W, height: SHEET_H, padding: `44px 46px ${STUB_H + 24}px`, color: MUTED }}>
+      <Holes left={15} />
       <header className="grid grid-cols-[120px_144px_minmax(0,1fr)] gap-x-4 pb-6">
         <h2 className="whitespace-nowrap font-heading text-[17px] leading-tight tracking-[-0.03em]" style={{ color: INK }}>
           {resume.name}
@@ -135,6 +237,7 @@ export function SheetWide() {
           </div>
         </section>
       ))}
+      <Stub />
     </div>
   );
 }
@@ -142,7 +245,8 @@ export function SheetWide() {
 /** The sheet on a phone: one column, as long as it needs to be. */
 export function SheetNarrow() {
   return (
-    <div className="relative font-geist" style={{ padding: "32px 24px 40px", color: MUTED }}>
+    <div className="relative font-geist" style={{ padding: `32px 24px ${STUB_H + 32}px 40px`, color: MUTED }}>
+      <Holes left={12} />
       <header className="flex flex-col gap-3 pb-6">
         <h2 className="font-heading text-[20px] leading-tight tracking-[-0.03em]" style={{ color: INK }}>
           {resume.name}
@@ -166,6 +270,7 @@ export function SheetNarrow() {
           ))}
         </section>
       ))}
+      <Stub />
     </div>
   );
 }
@@ -215,64 +320,6 @@ export function Pile() {
           }
         >
           <Grain crease={false} />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ── The next copy coming into focus ───────────────────────────────────────────
-// Four stacked copies of the sheet, each masked to a band and blurred by a different
-// amount, so the copy sharpens from the top down.
-
-export const FOCUS_MS = 3200;
-const FOCUS_BLUR = [1.4, 2.6, 4, 5.6];
-const FOCUS_STAGGER = 0.14;
-const FOCUS_SPAN = 1 - FOCUS_STAGGER * 3;
-const BAND = 22;
-const FEATHER = 8;
-const TOP = 82;
-
-function bandMask(i: number) {
-  const lo = TOP - (i - 1) * BAND;
-  const hi = TOP - i * BAND;
-  if (i === 0) return `linear-gradient(to bottom, transparent ${TOP - FEATHER}%, black ${TOP + FEATHER}%)`;
-  if (i === FOCUS_BLUR.length - 1) return `linear-gradient(to bottom, black ${lo - FEATHER}%, transparent ${lo + FEATHER}%)`;
-  return `linear-gradient(to bottom, transparent ${hi - FEATHER}%, black ${hi + FEATHER}%, black ${lo - FEATHER}%, transparent ${lo + FEATHER}%)`;
-}
-const easeInOutQuad = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
-const blurAt = (i: number, p: number) => {
-  const o = Math.min(1, Math.max(0, (p - i * FOCUS_STAGGER) / FOCUS_SPAN));
-  return `blur(${(FOCUS_BLUR[i] * (1 - easeInOutQuad(o))).toFixed(2)}px)`;
-};
-
-export function NextCopy({ start, Sheet }: { start: number | null; Sheet: () => ReactNode }) {
-  const layers = useRef<(HTMLDivElement | null)[]>([]);
-  useEffect(() => {
-    const set = (p: number) => layers.current.forEach((el, i) => el && (el.style.filter = blurAt(i, p)));
-    if (start === null) return set(0);
-    let raf = 0;
-    const tick = () => {
-      const p = Math.min(1, (performance.now() - start) / FOCUS_MS);
-      set(p);
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    tick();
-    return () => cancelAnimationFrame(raf);
-  }, [start]);
-  return (
-    <div aria-hidden="true" className="absolute inset-0 overflow-hidden" style={PAPER_STYLE}>
-      <Grain />
-      {FOCUS_BLUR.map((_, i) => (
-        <div
-          key={i}
-          ref={(el) => {
-            layers.current[i] = el;
-          }}
-          className={i === 0 ? "relative" : "absolute inset-0"}
-          style={{ maskImage: bandMask(i), WebkitMaskImage: bandMask(i), filter: blurAt(i, 0) }}
-        >
-          <Sheet />
         </div>
       ))}
     </div>
