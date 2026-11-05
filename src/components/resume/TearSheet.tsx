@@ -258,6 +258,8 @@ export default function TearSheet({
         if (sheet.current) {
           const { w, h } = geo.current;
           sheet.current.style.willChange = "transform";
+          // In front of the stub while it falls (only then: at rest the stub must stay grabbable)
+          sheet.current.style.zIndex = "2";
           sheet.current.style.transformOrigin = `${w / 2}px ${h * 0.45}px`;
         }
         const bodyEdge = fibres.current[0]?.ownerSVGElement;
@@ -359,6 +361,7 @@ export default function TearSheet({
       el.style.transform = "";
       el.style.visibility = "visible";
       el.style.willChange = "";
+      el.style.zIndex = "";
       el.animate(
         [
           { transform: "translateY(-26px) scale(0.985)", opacity: 0 },
@@ -385,18 +388,28 @@ export default function TearSheet({
     document.documentElement.style.cursor = on ? "grabbing" : "";
     if (hit.current) hit.current.style.cursor = on ? "grabbing" : "grab";
   };
+  // The drag is followed on the window, not by capturing the pointer: a capture can be
+  // dropped by the browser mid-drag, and then the moves go to the page and select text
   const onDown = (e: React.PointerEvent) => {
     const s = sim.current;
-    if (s.mode !== "idle") return;
-    try {
-      hit.current?.setPointerCapture(e.pointerId);
-    } catch {
-      // A pointer that's already gone can't be captured; the drag still works
-    }
+    if (s.mode !== "idle" || e.button !== 0) return;
+    e.preventDefault(); // no text selection while dragging
     grabbing(true);
     drag.current = { x: e.clientX, y: e.clientY, moved: false, from: Math.max(REST, s.p), width: hit.current?.getBoundingClientRect().width || 1 };
+    const id = e.pointerId;
+    const move = (ev: PointerEvent) => ev.pointerId === id && onMove(ev);
+    const up = (ev: PointerEvent) => {
+      if (ev.pointerId !== id) return;
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+      onUp();
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
   };
-  const onMove = (e: React.PointerEvent) => {
+  const onMove = (e: PointerEvent) => {
     const d = drag.current;
     if (!d) return;
     const s = sim.current;
@@ -458,7 +471,7 @@ export default function TearSheet({
   return (
     <div className="relative">
       {/* The body: drawn once, its shadow included. This is what falls once it's torn off */}
-      <div ref={sheet} className="relative z-[1]" style={{ filter: "drop-shadow(0 1px 1.5px rgba(48,40,26,0.1)) drop-shadow(0 12px 18px rgba(48,40,26,0.15))" }}>
+      <div ref={sheet} className="relative" style={{ filter: "drop-shadow(0 1px 1.5px rgba(48,40,26,0.1)) drop-shadow(0 12px 18px rgba(48,40,26,0.15))" }}>
         <div ref={body} className="relative" style={{ ...TOP_EDGE, backgroundColor: PAPER }}>
           <Grain />
           <Sheet />
@@ -483,12 +496,9 @@ export default function TearSheet({
         ref={hit}
         type="button"
         aria-label="Tear off the stub to download the résumé (PDF)"
-        className="absolute inset-x-0 bottom-0 touch-none outline-none focus-visible:ring-2 focus-visible:ring-[#9D136A]/40"
+        className="absolute inset-x-0 bottom-0 z-[3] touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-[#9D136A]/40"
         style={{ height: STUB_H, cursor: "grab" }}
         onPointerDown={onDown}
-        onPointerMove={onMove}
-        onPointerUp={onUp}
-        onPointerCancel={onUp}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();

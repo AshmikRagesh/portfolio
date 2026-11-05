@@ -201,3 +201,22 @@ export function playUnfold(volume = 0.6, delayMs = 250) {
     clip.play().catch(() => {});
   }, delayMs);
 }
+
+// The click that opens it: a quick handling of the paper, cut from "Paper handling and
+// page turning" (lenspulse foley), supplied by Ashmik.
+const OPEN_SRC = "/sounds/fancy-paper-open.m4a";
+let openClip: HTMLAudioElement | null = null;
+
+export function preloadOpen() {
+  if (openClip || typeof Audio === "undefined") return;
+  openClip = new Audio(OPEN_SRC);
+  openClip.preload = "auto";
+}
+
+export function playOpen(volume = 0.55) {
+  preloadOpen();
+  if (!openClip) return;
+  openClip.volume = volume;
+  openClip.currentTime = 0;
+  openClip.play().catch(() => {});
+}
