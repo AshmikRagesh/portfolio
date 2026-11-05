@@ -35,7 +35,7 @@ const HOST = hostLayout(HOST_HEIGHT);
 // The board never comes closer than this to the edge of the screen
 const BOARD_EDGE = 12;
 
-// In development, `?mood=dozing|champion|holding|reading|video` pins the host in that state for review
+// In development, `?mood=dozing|champion|gold-dozing|holding|reading|video` pins the host in that state for review
 function usePreviewMood() {
   const [preview, setPreview] = useState<string | null>(null);
   useEffect(() => {
@@ -132,8 +132,8 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
       window.clearTimeout(ring);
     };
   }, [ducked]);
-  const champion = record || preview === "champion";
-  const mood: HostMood = preview === "dozing" || (paused && !holding) ? "dozing" : champion ? "champion" : "idle";
+  const champion = record || preview === "champion" || preview === "gold-dozing";
+  const mood: HostMood = preview === "dozing" || preview === "gold-dozing" || (paused && !holding) ? "dozing" : champion ? "champion" : "idle";
 
   // Count the sign being opened, once per visit, for the stats page. The first ring earns
   // the First ring stamp, given once the sign goes back up so it doesn't cut the sign short.
@@ -230,6 +230,7 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
       >
         <HostCharacter
           mood={mood}
+          gold={champion}
           holding={holding}
           ding={ding}
           glasses={glasses}

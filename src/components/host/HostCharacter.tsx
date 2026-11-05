@@ -25,6 +25,8 @@
 //   champion   this visitor has out-stayed everyone, ever: the bell turns gold, the
 //              eyes squeeze shut happily, and sparkles catch the light.
 // On top of any mood:
+//   gold       the record holder stays cast in gold whatever the mood, so a
+//              champion who goes idle dozes in gold (gold Z's, no sparkles).
 //   holding    both hands come down in front of the base to hold the timer board;
 //              eyes glance down at it. hostLayout() says where the hands end up.
 //   glasses    "reading": round gold rims while a case study is read.
@@ -94,6 +96,8 @@ export function hostLayout(height: number) {
 
 interface Props {
   mood?: HostMood;
+  /** Cast in gold whatever the mood: the record holder dozes in gold too. */
+  gold?: boolean;
   holding?: boolean;
   /** Bump to ring the bell. */
   ding?: number;
@@ -110,7 +114,7 @@ interface Props {
 // easeOutBack — a small overshoot, so the hands land with a little weight
 const settle = (t: number) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
 
-export default function HostCharacter({ mood = "idle", holding = false, ding = 0, gaze = null, glasses = null, expression = null, celebrate = 0, className = "", style }: Props) {
+export default function HostCharacter({ mood = "idle", gold = false, holding = false, ding = 0, gaze = null, glasses = null, expression = null, celebrate = 0, className = "", style }: Props) {
   const uid = useId().replace(/:/g, "");
   const clipId = `${uid}-dome`;
 
@@ -307,7 +311,8 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
 
   const asleep = mood === "dozing";
   const champion = mood === "champion";
-  const finish = champion ? FINISH.gold : FINISH.primary;
+  const golden = champion || gold;
+  const finish = golden ? FINISH.gold : FINISH.primary;
   const ink = finish.ink;
 
   const armLayer = (
@@ -339,7 +344,7 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
       viewBox={`${VIEWBOX.x} ${VIEWBOX.y} ${VIEWBOX.w} ${VIEWBOX.h}`}
       aria-hidden="true"
       style={style}
-      className={`host is-${mood} ${holding ? "is-holding" : ""} overflow-visible ${className}`}
+      className={`host is-${mood} ${golden ? "is-gold" : ""} ${holding ? "is-holding" : ""} overflow-visible ${className}`}
     >
       <defs>
         <clipPath id={clipId}>
@@ -526,7 +531,7 @@ export default function HostCharacter({ mood = "idle", holding = false, ding = 0
 
       {/* Z's while it sleeps — big enough to read at navbar size */}
       {asleep && (
-        <g className="host-zz" fill={GRAPE.mid} stroke="#fff" strokeWidth="2.4" paintOrder="stroke" style={{ fontFamily: "var(--font-brand), monospace", fontWeight: 500 }}>
+        <g className="host-zz" fill={golden ? FINISH.gold.shade : GRAPE.mid} stroke="#fff" strokeWidth="2.4" paintOrder="stroke" style={{ fontFamily: "var(--font-brand), monospace", fontWeight: 500 }}>
           <text x="140" y="146" fontSize="24">Z</text>
           <text x="156" y="128" fontSize="18">Z</text>
           <text x="167" y="114" fontSize="14">z</text>
