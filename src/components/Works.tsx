@@ -25,7 +25,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
   return (
     <Wrapper
       href={work.href as string}
-      className={`work-card group relative grid h-full min-w-0 grid-rows-[auto_1fr] rounded-xl bg-surface text-heading ${
+      className={`work-card group relative grid h-full min-w-0 grid-rows-[auto_1fr] rounded-xl bg-card text-heading ${
         isFlagship ? "lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:grid-rows-1" : ""
       } ${isLink ? "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape" : ""}`}
     >

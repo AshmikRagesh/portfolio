@@ -23,6 +23,7 @@ const config: Config = {
         // Surfaces
         background:    tokens.colors.background,
         surface:       tokens.colors.surface,
+        card:          tokens.colors.card,
         placeholder:   tokens.colors.placeholder,
         vanilla:       tokens.colors.vanilla,
         // Lines

@@ -15,6 +15,7 @@ export const tokens = {
     // ── Surfaces ──────────────────────────────────────────────────────
     background:     "#FFFFFF",  // Page background
     surface:        "#f8f9fa",  // Light cards, sidebar bg
+    card:           "#f3f3f2",  // Work cards on the home page — a warm grey that shows on white
     placeholder:    "#f0f0f0",  // Image placeholder bg
     vanilla:        "#ece5d8",  // Warm alternative surface
 
