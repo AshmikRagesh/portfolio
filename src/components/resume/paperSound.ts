@@ -179,29 +179,6 @@ export function tearVoice(): TearVoice | null {
 }
 
 // ── Recorded sounds ───────────────────────────────────────────────────────────
-// "Unfold a map" by Breviceps, freesound.org/s/447931, CC0 (public domain). Its main
-// snap comes 0.6s in, so it starts a beat after the click to land as the sheet lies flat.
-const UNFOLD_SRC = "/sounds/paper-unfold.mp3";
-let unfoldClip: HTMLAudioElement | null = null;
-
-/** Loads the unfold recording ahead of time, so the first open plays it on cue. */
-export function preloadUnfold() {
-  if (unfoldClip || typeof Audio === "undefined") return;
-  unfoldClip = new Audio(UNFOLD_SRC);
-  unfoldClip.preload = "auto";
-}
-
-export function playUnfold(volume = 0.6, delayMs = 250) {
-  preloadUnfold();
-  const clip = unfoldClip;
-  if (!clip) return;
-  window.setTimeout(() => {
-    clip.volume = volume;
-    clip.currentTime = 0;
-    clip.play().catch(() => {});
-  }, delayMs);
-}
-
 // The click that opens it: a quick handling of the paper, cut from "Paper handling and
 // page turning" (lenspulse foley), supplied by Ashmik.
 const OPEN_SRC = "/sounds/fancy-paper-open.m4a";
