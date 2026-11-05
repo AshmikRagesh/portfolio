@@ -306,14 +306,14 @@ export function PullQuote({
   text,
   emphasis,
 }: {
-  label: string;
+  label?: string;
   text: string;
   emphasis: string;
 }) {
   return (
     <div className="my-[40px] border-l-[4px] border-grape pl-[24px] md:my-[48px] md:pl-[32px]">
-      <Tag face="geist" tone="grey">{label}</Tag>
-      <p className="mt-[16px] font-heading text-[22px] leading-[32px] text-heading md:text-[26px] md:leading-[38px]">
+      {label && <Tag face="geist" tone="grey">{label}</Tag>}
+      <p className={`${label ? "mt-[16px]" : ""} font-heading text-[22px] leading-[32px] text-heading md:text-[26px] md:leading-[38px]`}>
         {text} <span className="text-grape">{emphasis}</span>
       </p>
     </div>
@@ -332,26 +332,29 @@ const TILE_COLS = { 2: "md:grid-cols-2", 3: "md:grid-cols-3" } as const;
 
 /**
  * Two or three facts as tiles side by side — an optional tag, the number at the shared stat size,
- * a line saying what it counts. Mark the point `key` and any guess `estimate`. From tablet up
+ * a line saying what it counts. Mark the point `key` and any guess `estimate`. A share (0–100)
+ * can carry a `meter`: a thin bar under the line, filled to that share, so the size reads at a glance. From tablet up
  * the tiles share their row's lines (a subgrid), so tags, numbers and lines start level
  * across tiles even when one number or line runs longer; a tile without a tag keeps the slot.
  */
 export function StatTiles({
   items,
 }: {
-  items: { tag?: string; stat: string; label: string; tone?: keyof typeof TILE }[];
+  items: { tag?: string; stat: string; label: string; tone?: keyof typeof TILE; meter?: number }[];
 }) {
+  const metered = items.some((item) => item.meter !== undefined);
   const cols = TILE_COLS[items.length as keyof typeof TILE_COLS] ?? TILE_COLS[3];
   const tagged = items.some((item) => item.tag);
   return (
     <div className={`grid grid-cols-1 gap-[16px] md:gap-[24px] ${cols}`}>
-      {items.map(({ tag, stat, label, tone = "plain" }) => {
+      {items.map(({ tag, stat, label, tone = "plain", meter }) => {
         const look = TILE[tone];
+        const rows = (tagged ? 3 : 2) + (metered ? 1 : 0);
         return (
           <div
             key={label}
             className={`flex flex-col gap-[16px] rounded-xl p-[24px] md:grid md:grid-rows-subgrid md:gap-y-[16px] ${
-              tagged ? "md:row-span-3" : "md:row-span-2"
+              { 2: "md:row-span-2", 3: "md:row-span-3", 4: "md:row-span-4" }[rows]
             } ${look.box}`}
           >
             {tagged && <div>{tag && <Tag face="geist" tone={look.tag}>{tag}</Tag>}</div>}
@@ -359,6 +362,19 @@ export function StatTiles({
               {stat}
             </span>
             <p className="font-body text-[18px] leading-[28px] text-secondary">{label}</p>
+            {metered && (
+              <div className="mt-auto w-full">
+                {meter !== undefined && (
+                  <div
+                    role="img"
+                    aria-label={`${meter} out of 100`}
+                    className="h-[8px] w-full overflow-hidden rounded-full bg-primary/[0.08]"
+                  >
+                    <div className="h-full rounded-full bg-grape" style={{ width: `${meter}%` }} />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         );
       })}
@@ -540,7 +556,7 @@ export function NumberedPoints({
               {String(i + 1).padStart(2, "0")}
             </span>
             <div className="flex flex-col gap-[8px]">
-              <h4 className="font-heading text-[20px] leading-[28px] tracking-[0px] text-heading">{title}</h4>
+              <h4 className="font-heading text-[24px] leading-[30px] tracking-[0px] text-heading">{title}</h4>
               <p className="font-body text-[18px] leading-[30px] text-secondary">{description}</p>
             </div>
           </li>
@@ -559,7 +575,7 @@ export function NumberedPoints({
           <span className="font-heading text-[40px] font-normal leading-none tracking-[-2px] text-grape">
             {String(i + 1).padStart(2, "0")}
           </span>
-          <h4 className="mt-[8px] font-heading text-[20px] leading-[28px] tracking-[0px] text-heading">{title}</h4>
+          <h4 className="mt-[8px] font-heading text-[24px] leading-[30px] tracking-[0px] text-heading">{title}</h4>
           <p className="font-body text-[18px] leading-[30px] text-secondary">{description}</p>
         </li>
       ))}
@@ -680,6 +696,107 @@ export function ImpactList({ items }: { items: string[] }) {
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/**
+ * Feedback from a review, as speech bubbles: a small grape "Feedback" label, the point in
+ * the heading face, and who said it under the bubble's tail (initials in a coloured circle).
+ * Two or three sit side by side from tablet up; one per row on phones.
+ */
+const AVATAR_TONES = ["bg-grape text-white", "bg-grape-light text-primary", "bg-primary text-white"] as const;
+
+export function FeedbackNotes({
+  items,
+}: {
+  items: { text: string; name: string; role: string }[];
+}) {
+  return (
+    <ul className={`m-0 grid list-none grid-cols-1 gap-[24px] p-0 ${items.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
+      {items.map(({ text, name, role }, i) => {
+        const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("");
+        return (
+          <li key={text} className="flex flex-col gap-[16px]">
+            <div className="relative flex flex-1 flex-col gap-[12px] rounded-xl border border-line-soft bg-white p-[24px]">
+              <span className="font-geist text-[12px] font-medium uppercase leading-[16px] tracking-[1px] text-grape">
+                Feedback
+              </span>
+              <p className="font-heading text-[20px] leading-[28px] text-heading">{text}</p>
+              {/* The bubble's tail, pointing down at who said it */}
+              <span
+                aria-hidden="true"
+                className="absolute -bottom-[8px] left-[32px] size-[16px] rotate-45 border-b border-r border-line-soft bg-white"
+              />
+            </div>
+            <div className="flex items-center gap-[12px] pl-[16px]">
+              <span
+                aria-hidden="true"
+                className={`flex size-[40px] shrink-0 items-center justify-center rounded-full font-geist text-[14px] font-medium ${
+                  AVATAR_TONES[i % AVATAR_TONES.length]
+                }`}
+              >
+                {initials}
+              </span>
+              <span className="font-body text-[16px] leading-[24px] text-secondary">
+                <span className="text-heading">{name}</span> · {role}
+              </span>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/**
+ * What a test's result leads to: one starting box (what's compared), then a branch per
+ * possible result, each with what happens next. Branches sit side by side from tablet up,
+ * joined to the start by a line; on phones they stack down a line on the left. The
+ * highlighted branch is filled light grape.
+ */
+export function DecisionTree({
+  start,
+  branches,
+  footer,
+}: {
+  start: { label: string; title: string };
+  branches: { result: string; action: string }[];
+  footer?: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col">
+      <div className="rounded-xl bg-primary p-[24px] text-white md:mx-auto md:max-w-[480px] md:text-center">
+        <span className="font-geist text-[12px] font-medium uppercase leading-[16px] tracking-[1px] text-white/70">
+          {start.label}
+        </span>
+        <p className="mt-[8px] font-heading text-[20px] leading-[28px]">{start.title}</p>
+      </div>
+      {/* Stem down from the start, then a rail across the branches (tablet up) */}
+      <span aria-hidden="true" className="ml-[23px] h-[24px] w-[2px] bg-line md:mx-auto md:h-[32px]" />
+      <ol className="relative m-0 grid list-none grid-cols-1 gap-[16px] border-l-2 border-line p-0 pl-[24px] md:grid-cols-3 md:gap-[24px] md:border-l-0 md:pl-0">
+        {branches.map(({ result, action }, i) => (
+          <li key={result} className="relative flex flex-col md:pt-[32px]">
+            {/* The rail: each branch draws its part, and a drop down to its card */}
+            <span
+              aria-hidden="true"
+              className={`absolute top-0 hidden h-[2px] bg-line md:block ${
+                i === 0 ? "left-1/2 right-[-12px]" : i === branches.length - 1 ? "left-[-12px] right-1/2" : "left-[-12px] right-[-12px]"
+              }`}
+            />
+            <span aria-hidden="true" className="absolute left-1/2 top-0 hidden h-[32px] w-[2px] -translate-x-1/2 bg-line md:block" />
+            <div className="flex flex-1 flex-col gap-[8px] rounded-xl border border-line-soft bg-white p-[24px]">
+              <h4 className="font-heading text-[24px] leading-[30px] tracking-[0px] text-heading">{result}</h4>
+              <p className="font-body text-[18px] leading-[30px] text-secondary">{action}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      {footer && (
+        <div className="mt-[24px] rounded-xl border border-dashed border-grape/40 bg-grape-light/45 p-[24px] font-body text-[18px] leading-[30px] text-secondary">
+          {footer}
+        </div>
+      )}
     </div>
   );
 }

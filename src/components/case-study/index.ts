@@ -39,6 +39,8 @@ export {
   Stats,
   ImpactList,
   Footnote,
+  FeedbackNotes,
+  DecisionTree,
 } from "./Blocks";
 export { default as ExplorationCard } from "./ExplorationCard";
 export { default as BellaStates } from "./BellaStates";

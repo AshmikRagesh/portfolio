@@ -13,12 +13,13 @@ export type ProjectType = "Case study" | "Side project" | "Exploration" | "Taste
 export type Discipline = "Design systems" | "Product design" | "Interaction design" | "UX research" | "AI";
 
 const BASE =
-  "inline-flex h-[24px] shrink-0 items-center whitespace-nowrap rounded-xs px-[8px] text-[12px] leading-[16px] tracking-[0px]";
+  "inline-flex h-[24px] shrink-0 items-center whitespace-nowrap px-[8px] text-[12px] leading-[16px]";
 
-// Taste notes keep Geist Mono capitals; work cards and case studies use plain Geist
+// Taste notes keep Geist Mono capitals in the 2px-corner shape; case studies use a pill
+// in Geist capitals (a touch of tracking so the caps don't crowd), with a little more side room
 const FACES = {
-  mono: "font-brand uppercase",
-  geist: "font-geist",
+  mono: "rounded-xs font-brand uppercase tracking-[0px]",
+  geist: "rounded-full px-[10px] font-geist font-medium uppercase tracking-[0.5px]",
 };
 
 const TONES = {

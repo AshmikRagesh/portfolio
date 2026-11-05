@@ -13,13 +13,14 @@ import {
   CardGrid,
   ProblemStatement,
   PullQuote,
+  FeedbackNotes,
+  DecisionTree,
   StatTiles,
   MoreDetail,
   PreviewLink,
   NextCase,
   ProsCons,
   NumberedPoints,
-  Timeline,
   ProcessStrip,
   Stats,
   OptionCard,
@@ -83,23 +84,14 @@ function Overview() {
           current menu.
         </p>
         <Meta
-          role={
-            <>
-              Product Designer. Owned both variants end to end, from the
-              first prototype to the front-end code.
-            </>
-          }
+          role="End-to-end Design & Front-end Build"
           team="Rohit Rayala (CRO), Sharayu Jadhav (Product Owner), Hriday Gami (Design), Sandy Tang (Content)"
-          timeline={<>4 weeks of design, Jun–Jul 2026<br />Designs approved 15 Jul 2026</>}
+          timeline={<>June – July 2026<br />Briefed in June · Designs approved 15 Jul · Built for an A/B/C test</>}
         />
       </Copy>
       <Visual>
-        <Figure
-          label="Walkthrough: the navigation problem, explained"
-          video="/videos/tcs-find-a-trip/overview.mp4"
-          poster="/images/tcs-find-a-trip/overview-poster.jpg"
-          narrated
-        />
+        {/* The finished work up front; the problem walkthrough sits in The Problem */}
+        <Figure label="The final designs: Variant 2 (text links) and Variant 3 (image cards) in the menu" />
       </Visual>
     </Chapter>
   );
@@ -122,7 +114,13 @@ function TheProblem() {
       <Visual>
         <ProblemStatement
           situation="Picking a continent sent every visitor straight to a list of trips, even people still deciding where to go."
-          consequence="We believed many of them left before finding anything to explore, and TCS lost leads at the very first step."
+          consequence="The CRO team measured that 38% left the trip list without opening a single trip, so TCS lost them at the very first step."
+        />
+        <Figure
+          label="Walkthrough: the navigation problem, explained"
+          video="/videos/tcs-find-a-trip/overview.mp4"
+          poster="/images/tcs-find-a-trip/overview-poster.jpg"
+          narrated
         />
       </Visual>
     </Chapter>
@@ -149,9 +147,9 @@ const MENU = [
 ];
 
 const MENU_TILES: Parameters<typeof StatTiles>[0]["items"] = [
-  { tag: "Trip search", stat: "11 of 11", label: "menu links send people straight to a list of trips" },
-  { tag: "Destination pages", stat: "0", label: "menu links lead to a destination page, though 9 categories had one", tone: "key" },
-  { tag: "Estimated drop-off", stat: "~40%", label: "of people leave the trip list without opening a trip", tone: "estimate" },
+  { tag: "Trip search", stat: "11 of 11", label: "menu links take you straight to a list of trips" },
+  { tag: "Destination pages", stat: "0", label: "menu links lead to a destination page, though 9 continents already have one" },
+  { tag: "Drop-off", stat: "38%", label: "of people leave the trip list without opening a trip, measured by the CRO team", tone: "key", meter: 38 },
 ];
 
 /** Each menu category, where its link goes, and whether a destination page was waiting */
@@ -240,10 +238,11 @@ function Context() {
     <Chapter id="discovery" num={2} title="What we knew going in">
       <Copy>
         <p>
-          The CRO team came with <Highlight>a hypothesis, not data</Highlight>.
+          Rohit&apos;s CRO team, who look after how many visitors go on to
+          book, brought me a hypothesis about the menu. Before designing
+          anything, <Highlight>I checked the live menu to see how big the gap really was</Highlight>.
         </p>
         <PullQuote
-          label="Hypothesis"
           text="If travellers get a clear choice after picking a continent, more of them will keep going,"
           emphasis="because explorers can learn about the place first, and planners can go straight to trips."
         />
@@ -255,11 +254,11 @@ function Context() {
           <p>
             The live menu made this easy to check. Every continent link pointed
             to a trip search. <Highlight>Not one pointed to a destination page, even though
-            most continents already had one.</Highlight> We had no analytics on how many
-            people left as a result, so we estimated it from travel industry
-            averages.
+            most continents already had one.</Highlight> The CRO team&apos;s analytics
+            showed what that cost: 38% of people left the trip list without
+            opening a single trip.
           </p>
-          <MoreDetail label="Research behind these numbers" className="mt-[20px]">
+          <MoreDetail label="See where every menu link goes" className="mt-[20px]">
             <div className="flex flex-col gap-[32px]">
               <div>
                 <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
@@ -267,31 +266,10 @@ function Context() {
                 </h4>
                 <MenuMap />
               </div>
-              <div>
-                <h4 className="mb-[12px] font-body text-[18px] font-medium leading-[28px] text-heading">
-                  How we estimated the drop-off
-                </h4>
-                <ul className="flex list-disc flex-col gap-[8px] pl-[20px] font-body text-[16px] leading-[26px] text-secondary">
-                  <li>Travel sites average a 43% bounce rate, with a usual range of 40–60%.</li>
-                  <li>We took the low end, about 40%, because people arriving from the menu are already browsing the site.</li>
-                  <li>83% of visits to travel sites come from direct and search traffic, so people who can&apos;t find a place in the menu often go back to Google.</li>
-                </ul>
-                <Footnote>
-                  Estimates, not TCS data. The test&apos;s exit tracking measures the real number. Sources:{" "}
-                  <a href="https://www.avidlyagency.com/blog/is-my-websites-bounce-rate-too-high-industry-data" target="_blank" rel="noreferrer">
-                    Contentsquare, 2021
-                  </a>
-                  ,{" "}
-                  <a href="https://plausible.io/blog/bounce-rate" target="_blank" rel="noreferrer">
-                    Plausible
-                  </a>
-                  ,{" "}
-                  <a href="https://contentsquare.com/guides/travel-hospitality-digital-experience/traffic/" target="_blank" rel="noreferrer">
-                    Contentsquare, 2026
-                  </a>
-                  . Menu links and prices from tcsworldtravel.com, October 2026.
-                </Footnote>
-              </div>
+              <Footnote>
+                Menu links and prices from tcsworldtravel.com, October 2026. The
+                38% drop-off was measured and shared by the TCS CRO team.
+              </Footnote>
             </div>
           </MoreDetail>
         </Copy>
@@ -377,10 +355,11 @@ const ITERATIONS: IterationItem[] = [
   },
 ];
 
-const REVIEW_CHANGES = [
-  "Add a version with the two paths side by side, not stacked",
-  "Rename \u201cFind Trips\u201d to \u201cExplore Trips\u201d",
-  "List Explore Trips first, then Explore Destination",
+// Rohit's three asks from the design review, as he gave them (not word-for-word quotes)
+const REVIEW_FEEDBACK = [
+  { text: "Add a version with the two paths side by side, not stacked.", name: "Rohit Rayala", role: "CRO" },
+  { text: "Rename \u201cFind Trips\u201d to \u201cExplore Trips\u201d.", name: "Rohit Rayala", role: "CRO" },
+  { text: "List Explore Trips first, then Explore Destination.", name: "Rohit Rayala", role: "CRO" },
 ];
 
 // Numbered points, not cards, in the reading column: the takeaway after the variant cards
@@ -407,13 +386,13 @@ function Exploration() {
           not how it should look</Highlight>. I built them with <HelixLink />, so the
           business could click through each one. The two paths
           open right under the continent you click, so the menu never jumps
-          away. In review, Rohit asked for three changes:
+          away. In review, Rohit asked for three changes.
         </p>
-        <ul>
-          {REVIEW_CHANGES.map((c) => (
-            <li key={c}>{c}</li>
-          ))}
-        </ul>
+      </Copy>
+      <Visual>
+        <FeedbackNotes items={REVIEW_FEEDBACK} />
+      </Visual>
+      <Copy>
         <p>
           The side-by-side version is where the phone problem showed up. In the
           end, two designs were strong enough that we chose to test both.
@@ -458,13 +437,13 @@ function Exploration() {
 const SOLUTION_ITEMS = [
   {
     num: 1,
-    title: "The choice opens where you clicked",
-    body: <>Pick a continent and <Highlight>the two paths unfold right under it</Highlight>. The continent stays highlighted, and closing the menu or picking another continent works without a reload, so you never lose your place.</>,
+    title: "A new step, but not a new page",
+    body: <>Adding a choice adds a step, and every extra step is a chance to lose someone. So <Highlight>the two paths open right under the continent you clicked, inside the menu</Highlight>. The choice costs one more tap, not another page to load, and the continent stays highlighted so you always see what you picked.</>,
   },
   {
     num: 2,
-    title: "Two labels that start the same way",
-    body: <>Renaming Find Trips to Explore Trips gave both paths the same verb, so <Highlight>they read as equals</Highlight>. Trips sits first, as agreed in review, so the old route to trips is still the first thing you see.</>,
+    title: "Two options that look equal",
+    body: <>Both labels start with &ldquo;Explore&rdquo;, so <Highlight>neither feels like the main path</Highlight>. Explore Trips comes first, so people who used the old menu still find trips where they expect them.</>,
   },
   {
     num: 3,
@@ -473,8 +452,8 @@ const SOLUTION_ITEMS = [
   },
   {
     num: 4,
-    title: "Every continent gets its own pair",
-    body: <>Each continent swaps in its own approved photos and links, so Africa looks like Africa. <Highlight>North America and Golf have no destination page</Highlight>, so they skip the choice and open their trips as before.</>,
+    title: "When a continent has no destination page",
+    body: <>Continents with a destination page get their own photos and links, so Africa looks like Africa. <Highlight>North America and Golf have no destination page, so clicking them skips the choice</Highlight> and opens their trips, exactly as before. Nobody lands on an empty option.</>,
   },
 ];
 
@@ -496,10 +475,6 @@ function Solution() {
             between Variant 2 (text links) and Variant 3 (image cards).
           </p>
         </Copy>
-        <Visual>
-          {/* One flow for both designs, so this one needs no switch */}
-          <Figure label="The flow: pick a continent, choose a path, land on the page" />
-        </Visual>
         {SOLUTION_ITEMS.map(({ num, title, body }) => (
           <div key={num} className="cs-sub">
             <Copy>
@@ -508,10 +483,17 @@ function Solution() {
             </Copy>
             <Visual>
               <VariantFigure
-                names={{
-                  links: `Solution ${num} — ${title} (text links)`,
-                  cards: `Solution ${num} — ${title} (image cards)`,
-                }}
+                names={
+                  num === 4
+                    ? {
+                        links: "Africa opens the choice; North America goes straight to its trips (text links)",
+                        cards: "Africa opens the choice; North America goes straight to its trips (image cards)",
+                      }
+                    : {
+                        links: `Solution ${num} — ${title} (text links)`,
+                        cards: `Solution ${num} — ${title} (image cards)`,
+                      }
+                }
               />
             </Visual>
           </div>
@@ -595,11 +577,11 @@ const IMPACT_SO_FAR = [
   { stat: "3 weeks", label: "from the first question to two approved designs" },
 ];
 
-// What follows once the test reads out, in order
-const NEXT_STEPS = [
-  { title: "Read the results", description: "Check those three numbers in every arm of the test." },
-  { title: "Ship the winner", description: "Roll it out to everyone, or keep today's menu." },
-  { title: "Take it further", description: "If destinations draw clicks, offer the choice elsewhere." },
+// Each way the test can read out, and what follows
+const OUTCOMES = [
+  { result: "Variant 2 wins", action: "Ship the text links to everyone. They need no images, so every continent is ready on day one." },
+  { result: "Variant 3 wins", action: "Ship the image cards. Every continent already has its approved pair of photos." },
+  { result: "Today\u2019s menu wins", action: "Keep the menu as it is. The tracking still shows which path people pick, to guide the next idea." },
 ];
 
 function Outcome() {
@@ -626,10 +608,21 @@ function Outcome() {
             control and both variants: <Highlight>how many people reach a page after
             picking a continent, which path they choose, and the drop-off
             rate</Highlight>, meaning how many leave without choosing. A journey only
-            counts when the next page actually loads. Then three steps follow.
+            counts when the next page actually loads. Each result has a plan.
           </p>
-          <Timeline items={NEXT_STEPS} />
         </Copy>
+        <Visual>
+          <DecisionTree
+            start={{ label: "When the test reads out", title: "Compare reach, path choice and drop-off across all three" }}
+            branches={OUTCOMES}
+            footer={
+              <>
+                <strong className="font-medium text-heading">Either way:</strong> if Explore
+                Destination draws clicks, offer the same choice on other pages of the site.
+              </>
+            }
+          />
+        </Visual>
       </div>
     </Chapter>
   );

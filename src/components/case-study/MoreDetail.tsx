@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 
 /**
  * Extra research tucked behind a toggle. The toggle is a left-aligned text link in the nav
- * links' style (brand mono caps) over a thin underline. On hover a grape line draws in
+ * the body face (Geist, sentence case) over a thin underline. On hover a grape line draws in
  * from the left as the text turns grape and the plus turns a quarter; while open it
  * stays grape and the plus becomes a cross. The panel
  * opens and closes by easing its height (a 0fr → 1fr grid row) while fading and settling
@@ -29,7 +29,7 @@ export default function MoreDetail({
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((o) => !o)}
-        className={`group/more flex items-center gap-[8px] whitespace-nowrap rounded-xs py-[8px] font-brand text-[14px] font-normal uppercase tracking-[1px] transition-colors duration-200 hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${
+        className={`group/more flex items-center gap-[8px] whitespace-nowrap rounded-xs py-[8px] font-body text-[16px] font-medium leading-[24px] transition-colors duration-200 hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${
           open ? "text-grape" : "text-heading"
         }`}
       >
