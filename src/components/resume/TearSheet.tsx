@@ -4,19 +4,29 @@
 // The flat résumé, with a stub along the bottom below a perforated line: "Tear to
 // download". A little is already torn at the left corner. Drag it from left to right
 // and the tear follows your hand along the perforation, the torn part hanging down from
-// the tear front. Let go early and it lies back down; drag past 60%, and the tear runs
+// the tear front. Let go early and it lies back down; drag past 60% and the tear runs
 // on by itself with your hand's momentum, catching slightly at each hole. (Enter or
-// Space tears it from the keyboard; a tap just jiggles the corner.) The stub comes free, falls off
-// the bottom of the screen with a turn, and then the download starts. A fresh stub
-// slides in afterwards.
+// Space tears it from the keyboard; a tap jiggles the torn corner as a hint.)
+//
+// Once it's free, the stub falls like real paper: a small pop as the tension lets go,
+// it levels out from hanging, then flutters down, swaying side to side and tipping
+// forwards and back, until it's gone off the bottom of the screen. Then the download
+// starts (the Mac Save dialog where the browser allows it). A fresh stub slides in.
+//
+// Physics, all stepped per frame in small substeps:
+//   tear front   a critically damped spring after your hand: no lag, no overshoot
+//   hanging part a lightly damped spring for its angle, so it sways as you speed up or
+//                stop, and hangs further the more of it is torn
+//   fall         gravity against air drag (a slow terminal speed, as paper has), a
+//                sideways sway, a rocking turn and a 3D tumble that build up as it drops
 //
 // Sound follows the tear itself: a rasp whose loudness and pitch track how fast the
 // tear front is moving, with a crackle at each perforation it passes.
 //
 // How it's drawn: the body (above the torn line) is drawn once and never repaints while
 // you tear. The stub lives in its own small strip along the bottom, as two pieces cut
-// along the same torn line: the untorn part (right of the tear front) and the torn flap
-// (left of it, hinged at the front). Only that strip repaints, once per frame.
+// along the same torn line: the untorn part (right of the tear front) and the torn part
+// (left of it, hinged at the front). Only that strip repaints, and only what changed.
 
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { Grain, PAPER, PERF_GAP, STUB_H, TOP_EDGE } from "./paper";
@@ -62,16 +72,35 @@ const polygon = (pts: Pt[]) => {
 // The strip the stub lives in starts this far above the perforation
 const PAD = 10;
 const RESTOCK = spring(220, 20);
-// Tear dynamics, in sheet-widths per second
-const FOLLOW = 0.3; // how quickly the tear catches up with your hand, per frame
-const RUN_START = 0.7;
-const RUN_ACCEL = 3.4;
-const RUN_MAX = 3.6;
-const HOLE_CATCH = 0.94; // a little speed lost at each perforation
+
 // A little is torn already at the left corner, so it's plain what to do with it
 const REST = 0.09;
 // Let go past this far across and the tear finishes by itself
 const RUN_AT = 0.6;
+
+// Tear front: a critically damped spring after the hand (stiffness, and damping for ζ = 1)
+const FRONT_K = 520;
+const FRONT_C = 2 * Math.sqrt(FRONT_K);
+// Running out: sheet-widths per second
+const RUN_START = 0.8;
+const RUN_ACCEL = 3.2;
+const RUN_MAX = 3.4;
+const HOLE_CATCH = 0.95; // a little speed lost at each perforation
+
+// The hanging part's angle: a lightly damped spring, so it sways (ζ ≈ 0.32)
+const HANG_K = 170;
+const HANG_C = 2 * 0.32 * Math.sqrt(HANG_K);
+
+// Falling, in sheet px and seconds
+const GRAVITY = 1300;
+const DRAG = 6; // terminal speed = GRAVITY / DRAG ≈ 220 px/s: paper drifts down, it doesn't plummet
+const POP = -200; // the little jump as the tension lets go
+const SWAY = 38; // sideways, px
+const SWAY_HZ = 0.95;
+const ROCK = 16; // degrees of rocking turn
+const TUMBLE = 46; // degrees of tipping forwards and back
+const SPIN = -14; // a slow overall turn, degrees per second
+const FALL_MAX = 3.2;
 
 type Mode = "idle" | "pulling" | "settling" | "running" | "falling" | "gone";
 
@@ -89,6 +118,7 @@ export default function TearSheet({
   const body = useRef<HTMLDivElement>(null);
   const strip = useRef<HTMLDivElement>(null);
   const untorn = useRef<HTMLDivElement>(null);
+  const fall = useRef<HTMLDivElement>(null);
   const flapWrap = useRef<HTMLDivElement>(null);
   const flap = useRef<HTMLDivElement>(null);
   const insides = useRef<(HTMLDivElement | null)[]>([]);
@@ -96,37 +126,49 @@ export default function TearSheet({
   const hit = useRef<HTMLButtonElement>(null);
 
   const geo = useRef({ w: 0, h: 0, top: 0, boxH: 0, line: [] as Pt[] });
-  const sim = useRef({ mode: "idle" as Mode, p: 0, target: 0, v: 0, holes: 0, drawn: -1, droop: 0, droopTo: 0, drawnDroop: 0, fallT: 0, fallX: 0, fallY: 0, spin: 0 });
+  const fresh = () => ({
+    mode: "idle" as Mode,
+    p: 0, // tear front, 0..1 across
+    pv: 0, // its speed, widths per second
+    target: 0,
+    run: 0,
+    angle: 0, // the hanging part, degrees
+    angleV: 0,
+    droop: 0, // your hand's up/down, degrees
+    holes: 0,
+    drawnP: -1,
+    drawnAngle: NaN,
+    // falling
+    t: 0,
+    y: 0,
+    vy: 0,
+  });
+  const sim = useRef(fresh());
   const voice = useRef<TearVoice | null>(null);
   const cb = useRef({ onTorn, onTearing });
   cb.current = { onTorn, onTearing };
 
-  /** Lays the stub out for a tear that has run p of the way across. */
-  const draw = (p: number) => {
+  /** Cuts the two stub pieces along the torn line for a tear p of the way across. */
+  const cut = (p: number) => {
     const { w, boxH, line } = geo.current;
-    if (!w || !untorn.current || !flap.current || !flapWrap.current) return;
+    if (!w || !untorn.current || !flap.current) return;
     const xf = p * w;
     const yf = yAt(line, xf);
     const below = boxH + 80;
-    const i0 = Math.max(0, Math.ceil(xf / 2));
-    const inner = line.slice(i0, line.length);
-    untorn.current.style.clipPath = polygon([[xf, yf], ...inner, [w + 40, yAt(line, w)], [w + 40, below], [xf, below]]);
-    if (p > 0) {
-      const torn = line.slice(0, Math.floor((xf + 1) / 2) + 1);
-      flap.current.style.clipPath = polygon([[-40, line[0][1]], ...torn, [xf + 1, yAt(line, xf + 1)], [xf + 1, below], [-40, below]]);
-    } else {
-      flap.current.style.clipPath = "polygon(0 0, 0 0, 0 0)";
-    }
-    const s = sim.current;
-    // The torn part hangs further the more is torn; your hand lifting or lowering it adds a little
-    const tilt = p > 0 ? 2 + 10 * Math.pow(p, 0.8) + s.droop : 0;
-    flapWrap.current.style.transformOrigin = `${xf}px ${yf}px`;
-    flapWrap.current.style.transform = `translate(${s.fallX}px, ${p * 3 + s.fallY}px) rotate(${-(tilt + s.spin)}deg)`;
+    untorn.current.style.clipPath = polygon([[xf, yf], ...line.slice(Math.max(0, Math.ceil(xf / 2))), [w + 40, yAt(line, w)], [w + 40, below], [xf, below]]);
+    flap.current.style.clipPath =
+      p > 0 ? polygon([[-40, line[0][1]], ...line.slice(0, Math.floor((xf + 1) / 2) + 1), [xf + 1, yAt(line, xf + 1)], [xf + 1, below], [-40, below]]) : "polygon(0 0, 0 0, 0 0)";
     const fibre = String(clamp01(p * 6));
     fibres.current.forEach((f) => f && (f.style.opacity = fibre));
     // The body's torn edge only shows where the tear has been
     const bodyEdge = fibres.current[0]?.ownerSVGElement;
     if (bodyEdge) bodyEdge.style.clipPath = `inset(0 ${Math.max(0, w - xf).toFixed(1)}px 0 -10px)`;
+    if (flapWrap.current) flapWrap.current.style.transformOrigin = `${xf.toFixed(1)}px ${yf.toFixed(1)}px`;
+  };
+
+  /** Hangs the torn part from the tear front at its current angle. */
+  const hang = (p: number, angle: number) => {
+    if (flapWrap.current) flapWrap.current.style.transform = `translateY(${(p * 3).toFixed(2)}px) rotate(${(-angle).toFixed(3)}deg)`;
   };
 
   // Measure, and cut the torn line to fit
@@ -145,10 +187,11 @@ export default function TearSheet({
         strip.current.style.top = `${top}px`;
         strip.current.style.height = `${h - top}px`;
       }
+      if (fall.current) fall.current.style.transformOrigin = `${w / 2}px ${PAD + STUB_H / 2}px`;
       insides.current.forEach((d) => d && ((d.style.top = `${-top}px`), (d.style.height = `${h}px`)));
       const d = `M${line.map(([x, y]) => `${x} ${y.toFixed(2)}`).join(" L")}`;
       fibres.current.forEach((f) => f?.setAttribute("d", d));
-      sim.current.drawn = -1;
+      sim.current.drawnP = -1;
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -156,75 +199,104 @@ export default function TearSheet({
     return () => ro.disconnect();
   }, []);
 
-  // One frame loop drives everything: following your hand, running out, falling
+  // One frame loop drives everything
   useEffect(() => {
     let raf = 0;
     let last = performance.now();
     let scroller: HTMLElement | null = null;
+    let frameNo = 0;
+
+    const step = (h: number) => {
+      const s = sim.current;
+      if (s.mode === "running") {
+        s.run = Math.min(RUN_MAX, s.run + RUN_ACCEL * h);
+        s.p = Math.min(1, s.p + s.run * h);
+        s.pv = s.run;
+      } else if (s.mode !== "falling" && s.mode !== "gone") {
+        const a = FRONT_K * (s.target - s.p) - FRONT_C * s.pv;
+        s.pv += a * h;
+        s.p += s.pv * h;
+      }
+      // The hanging part: sags with its length, trails when the tear speeds up, follows your hand
+      const hangTo =
+        s.mode === "falling" ? 0 : s.p > 0.001 ? 2 + 10 * Math.pow(s.p, 0.8) + s.droop + Math.max(-4, Math.min(7, s.pv * 2.4)) : 0;
+      const aa = HANG_K * (hangTo - s.angle) - HANG_C * s.angleV;
+      s.angleV += aa * h;
+      s.angle += s.angleV * h;
+      if (s.mode === "falling") {
+        s.t += h;
+        s.vy += (GRAVITY - DRAG * s.vy) * h;
+        s.y += s.vy * h;
+      }
+    };
+
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       const s = sim.current;
       const before = s.p;
+      const subs = 4;
+      for (let i = 0; i < subs; i++) step(dt / subs);
 
-      if (s.mode === "pulling" || s.mode === "settling" || s.mode === "idle") {
-        s.p += (s.target - s.p) * (1 - Math.pow(1 - FOLLOW, dt * 60));
-        if (Math.abs(s.target - s.p) < 0.0004) s.p = s.target;
-        if (s.mode === "settling" && s.p === s.target) {
-          s.mode = "idle";
-          voice.current?.stop();
-          voice.current = null;
-          cb.current.onTearing(false);
-        }
-        if (s.mode === "pulling" && s.p >= 0.995) startRun();
-      } else if (s.mode === "running") {
-        s.v = Math.min(RUN_MAX, s.v + RUN_ACCEL * dt);
-        s.p = Math.min(1, s.p + s.v * dt);
-        if (s.p >= 1) {
-          s.mode = "falling";
-          s.fallT = 0;
-          tearFree();
-          voice.current?.stop();
-          voice.current = null;
-          // A phone's scrolling sheet would grow to fit the falling stub: hold it still
-          scroller = hit.current?.closest<HTMLElement>(".overflow-y-auto") ?? null;
-          if (scroller) scroller.style.overflowY = "hidden";
-        }
-      } else if (s.mode === "falling") {
-        // Drops away under gravity with a slow turn, until it's below the screen
-        s.fallT += dt * 1000;
-        const t = s.fallT;
-        s.fallX = 0.05 * t;
-        s.fallY = 0.15 * t + 0.0016 * t * t;
-        s.spin = 0.02 * t + 0.00001 * t * t;
-        s.drawn = -1;
-        const top = flapWrap.current?.getBoundingClientRect().top ?? Infinity;
-        if (top > window.innerHeight + 10 || t > 1800) {
-          s.mode = "gone";
-          if (scroller) scroller.style.overflowY = "";
-          if (flapWrap.current) flapWrap.current.style.visibility = "hidden";
-          cb.current.onTorn();
-          window.setTimeout(restock, 700);
-        }
+      if (s.mode === "settling" && Math.abs(s.p - s.target) < 0.0008 && Math.abs(s.pv) < 0.02) {
+        s.mode = "idle";
+        voice.current?.stop();
+        voice.current = null;
+        cb.current.onTearing(false);
       }
-
-      s.droop += (s.droopTo - s.droop) * (1 - Math.pow(0.8, dt * 60));
-      if (Math.abs(s.droopTo - s.droop) < 0.01) s.droop = s.droopTo;
+      if (s.mode === "pulling" && s.p >= 0.995) startRun();
+      if (s.mode === "running" && s.p >= 1) {
+        // Free
+        s.mode = "falling";
+        s.t = 0;
+        s.y = 0;
+        s.vy = POP;
+        tearFree();
+        voice.current?.stop();
+        voice.current = null;
+        // A phone's scrolling sheet would grow to fit the falling stub: hold it still
+        scroller = hit.current?.closest<HTMLElement>(".overflow-y-auto") ?? null;
+        if (scroller) scroller.style.overflowY = "hidden";
+      }
 
       // Each perforation the front passes: a crackle, and a slight catch while running
       const passed = Math.floor((s.p * geo.current.w) / PERF_GAP);
       if (passed > s.holes && (s.mode === "pulling" || s.mode === "running")) {
-        const speed = Math.abs(s.p - before) / Math.max(dt, 0.001);
-        tearTick(Math.min(1, 0.35 + speed * 0.4));
-        if (s.mode === "running") s.v *= HOLE_CATCH;
+        tearTick(Math.min(1, 0.35 + Math.abs(s.pv) * 0.35));
+        if (s.mode === "running") s.run *= HOLE_CATCH;
       }
       s.holes = passed;
       voice.current?.set(Math.abs(s.p - before) / Math.max(dt, 0.001));
 
-      if (s.p !== s.drawn || s.droop !== s.drawnDroop) {
-        draw(s.p);
-        s.drawn = s.p;
-        s.drawnDroop = s.droop;
+      if (Math.abs(s.p - s.drawnP) > 0.00015) {
+        cut(s.p);
+        s.drawnP = s.p;
+      }
+      if (Math.abs(s.angle - s.drawnAngle) > 0.005 || Number.isNaN(s.drawnAngle)) {
+        hang(s.p, s.angle);
+        s.drawnAngle = s.angle;
+      }
+
+      if (s.mode === "falling" && fall.current) {
+        // Sway, rock and tumble build up as it gets going, as falling paper does
+        const t = s.t;
+        const build = 1 - Math.exp(-2.6 * t);
+        const phase = Math.PI * 2 * SWAY_HZ * t;
+        const x = SWAY * Math.sin(phase) * build;
+        const rock = ROCK * Math.sin(phase + 1.1) * build + SPIN * t;
+        const tumble = TUMBLE * Math.sin(phase * 0.8 + 0.4) * build;
+        fall.current.style.transform = `translate(${x.toFixed(2)}px, ${s.y.toFixed(2)}px) perspective(900px) rotateX(${tumble.toFixed(2)}deg) rotate(${rock.toFixed(2)}deg)`;
+        // Gone below the screen? (checked every other frame; reading layout isn't free)
+        if (++frameNo % 2 === 0) {
+          const top = fall.current.getBoundingClientRect().top;
+          if (top > window.innerHeight + 4 || t > FALL_MAX) {
+            s.mode = "gone";
+            if (scroller) scroller.style.overflowY = "";
+            fall.current.style.visibility = "hidden";
+            cb.current.onTorn();
+            window.setTimeout(restock, 600);
+          }
+        }
       }
       raf = requestAnimationFrame(frame);
     };
@@ -260,16 +332,19 @@ export default function TearSheet({
     const s = sim.current;
     if (s.mode === "running" || s.mode === "falling" || s.mode === "gone") return;
     if (s.mode === "idle") begin();
-    s.v = Math.max(RUN_START, s.v);
+    s.run = Math.max(RUN_START, s.pv);
     s.mode = "running";
   };
 
   /** A fresh stub slides in from under the sheet. */
   const restock = () => {
-    const s = sim.current;
-    Object.assign(s, { mode: "idle", p: 0, target: 0, v: 0, holes: 0, drawn: -1, droop: 0, droopTo: 0, fallT: 0, fallX: 0, fallY: 0, spin: 0 });
-    if (flapWrap.current) flapWrap.current.style.visibility = "visible";
-    draw(0);
+    sim.current = fresh();
+    if (fall.current) {
+      fall.current.style.transform = "";
+      fall.current.style.visibility = "visible";
+    }
+    cut(0);
+    hang(0, 0);
     restockSound();
     untorn.current?.animate(
       [
@@ -285,9 +360,7 @@ export default function TearSheet({
   /** A tap, not a drag: the torn corner jiggles, as a hint to drag it. */
   const jiggle = () => {
     const s = sim.current;
-    s.droopTo = 7;
-    window.setTimeout(() => (s.droopTo = -2), 140);
-    window.setTimeout(() => (s.droopTo = 0), 300);
+    if (s.mode === "idle") s.angleV += 90;
   };
 
   // ── Pointer ─────────────────────────────────────────────────────────────────
@@ -322,7 +395,7 @@ export default function TearSheet({
     if (s.mode !== "pulling") return;
     // The tear front follows your hand along the line, left to right
     s.target = Math.max(REST, Math.min(1, d.from + dx / d.width));
-    s.droopTo = Math.max(-3, Math.min(8, dy * 0.08));
+    s.droop = Math.max(-3, Math.min(8, dy * 0.08));
   };
   const onUp = () => {
     const d = drag.current;
@@ -330,14 +403,10 @@ export default function TearSheet({
     grabbing(false);
     if (!d) return;
     const s = sim.current;
-    s.droopTo = 0;
+    s.droop = 0;
     if (!d.moved) return jiggle();
     if (s.mode !== "pulling") return;
-    if (Math.max(s.p, s.target) > RUN_AT) {
-      // Carries the speed of your hand into the rest of the tear
-      s.v = Math.max(s.v, (s.target - s.p) * 6);
-      return startRun();
-    }
+    if (Math.max(s.p, s.target) > RUN_AT) return startRun();
     // Not far enough: it lies back down along the line
     s.mode = "settling";
     s.target = REST;
@@ -381,15 +450,18 @@ export default function TearSheet({
         </div>
       </div>
       {/* The stub strip: the only part that moves */}
-      <div ref={strip} className="pointer-events-none absolute inset-x-0" style={{ top: 0 }}>
+      <div ref={strip} className="resume-strip pointer-events-none absolute inset-x-0" style={{ top: 0 }}>
         {fibre(0)}
         <div ref={untorn} className="absolute inset-0 overflow-hidden" style={{ backgroundColor: PAPER }}>
           {inside(0)}
         </div>
-        <div ref={flapWrap} className="absolute inset-0" style={{ filter: "drop-shadow(0 3px 4px rgba(48,40,26,0.16))", willChange: "transform" }}>
-          <div ref={flap} className="absolute inset-0 overflow-hidden" style={{ backgroundColor: PAPER, clipPath: "polygon(0 0, 0 0, 0 0)" }}>
-            {inside(1)}
-            {fibre(1)}
+        {/* Falling: moves the torn part as a whole once it's free */}
+        <div ref={fall} className="absolute inset-0" style={{ willChange: "transform" }}>
+          <div ref={flapWrap} className="absolute inset-0" style={{ filter: "drop-shadow(0 3px 4px rgba(48,40,26,0.16))", willChange: "transform" }}>
+            <div ref={flap} className="absolute inset-0 overflow-hidden" style={{ backgroundColor: PAPER, clipPath: "polygon(0 0, 0 0, 0 0)" }}>
+              {inside(1)}
+              {fibre(1)}
+            </div>
           </div>
         </div>
       </div>

@@ -24,7 +24,7 @@ import { Backdrop, GuestNo, Pile, SHEET_H, SHEET_W, SheetNarrow, SheetWide } fro
 import Unfold from "./Unfold";
 import TearSheet from "./TearSheet";
 import { EASE, lerp, spring } from "./motion";
-import { unfoldSound } from "./paperSound";
+import { playUnfold, preloadUnfold } from "./paperSound";
 
 const RISE = spring(120, 17);
 const TILT_DEG = 2.4;
@@ -120,8 +120,9 @@ export default function ResumeOverlay() {
       setShown(reduced);
       tearing.current = false;
       setOpen(true);
-      unfoldSound(0.45);
+      playUnfold(0.6, reduced ? 0 : 250);
     };
+    preloadUnfold();
     window.addEventListener(RESUME_OPEN_EVENT, onOpen);
     return () => window.removeEventListener(RESUME_OPEN_EVENT, onOpen);
   }, [reduced]);

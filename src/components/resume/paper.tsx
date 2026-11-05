@@ -76,20 +76,11 @@ export function PaperBack() {
 /** A phrase circled in pen. The loop comes in once, as the sheet lies flat. */
 function Circled({ children }: { children: ReactNode }) {
   return (
-    // A block of its own, so a phrase that runs onto two lines gets one loop round both
+    // The navbar tabs' pen loop, the same path and proportions, drawn once as the sheet lies flat
     <span className="relative inline-block" style={{ color: INK }}>
       {children}
-      <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute overflow-visible" style={{ left: -12, top: -3, width: "calc(100% + 22px)", height: "calc(100% + 7px)" }}>
-        {/* A quick oval in one stroke, starting top right and overshooting where it began */}
-        <path
-          className="resume-pen"
-          d="M90 22C74 2 24 0 7 24-6 44 8 90 50 96c40 5 56-22 48-52C92 18 70 6 40 8"
-          fill="none"
-          stroke={PEN}
-          strokeWidth={1.3}
-          strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
-        />
+      <svg aria-hidden="true" viewBox="0 0 100 40" preserveAspectRatio="none" className="pointer-events-none absolute overflow-visible" style={{ left: -12, top: -8, width: "calc(100% + 24px)", height: "calc(100% + 16px)" }}>
+        <path className="resume-pen" pathLength={1} d="M84 6C66 0 22 1 8 12-3 22 14 37 50 37c36 0 50-10 44-23C88 3 62 1 38 4" />
       </svg>
     </span>
   );
