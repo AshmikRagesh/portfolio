@@ -141,7 +141,7 @@ function Holes({ left }: { left: number }) {
   );
 }
 
-/** The tear-off stub: a perforated line with scissors on it, and a slip below. */
+/** The tear-off stub: a perforated line, and a slip below. */
 function Stub() {
   const guest = useContext(GuestNo);
   return (
@@ -156,22 +156,16 @@ function Stub() {
         </defs>
         <rect x="0" y="-2" width="100%" height="4" fill="url(#resume-perf)" />
       </svg>
-      {/* Scissors sitting on the line, blades along it, like a coupon's "cut here" */}
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="absolute" style={{ left: 14, top: -9, background: "#f6f0e3", opacity: 0.8 }}>
-        <circle cx="6" cy="6" r="3" />
-        <circle cx="6" cy="18" r="3" />
-        <path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12" />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-between gap-4" style={{ padding: "4px clamp(20px, 7.2%, 46px) 0" }}>
+      <div className="absolute inset-0 flex items-center justify-between gap-4" style={{ padding: "4px clamp(20px, 7.2%, 46px) 0 clamp(36px, 11%, 72px)" }}>
         <div className="flex flex-col gap-[6px]">
           <span className="font-heading text-[18px] leading-none tracking-[-0.02em]" style={{ color: INK }}>
             Tear to download
           </span>
           <span className="flex items-center gap-[6px] font-brand text-[10px] uppercase leading-none tracking-[0.14em]" style={{ color: MUTED }}>
-            <svg width="8" height="10" viewBox="0 0 8 10" fill="none" stroke={MUTED} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 1v8M1 6l3 3 3-3" />
+            Drag along the line
+            <svg width="14" height="8" viewBox="0 0 14 8" fill="none" stroke={MUTED} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 4h12M10 1l3 3-3 3" />
             </svg>
-            Pull down · Résumé PDF
           </span>
         </div>
         <div className="flex items-stretch gap-4 self-stretch py-[14px]">

@@ -2,10 +2,11 @@
 
 // ── The sheet with its tear-off stub ──────────────────────────────────────────
 // The flat résumé, with a stub along the bottom below a perforated line: "Tear to
-// download". Pull the stub down and it tears along the perforation from the left, the
-// torn part bending away at the tear front, following your hand smoothly. Let go early
-// and it settles back; pull far enough, or just tap it, and the tear runs on by itself
-// with real momentum, catching slightly at each hole. The stub comes free, falls off
+// download". A little is already torn at the left corner. Drag it from left to right
+// and the tear follows your hand along the perforation, the torn part hanging down from
+// the tear front. Let go early and it lies back down; drag past 60%, and the tear runs
+// on by itself with your hand's momentum, catching slightly at each hole. (Enter or
+// Space tears it from the keyboard; a tap just jiggles the corner.) The stub comes free, falls off
 // the bottom of the screen with a turn, and then the download starts. A fresh stub
 // slides in afterwards.
 //
@@ -67,9 +68,12 @@ const RUN_START = 0.7;
 const RUN_ACCEL = 3.4;
 const RUN_MAX = 3.6;
 const HOLE_CATCH = 0.94; // a little speed lost at each perforation
-const PULL_PX = 140; // how far to pull for the whole width
+// A little is torn already at the left corner, so it's plain what to do with it
+const REST = 0.09;
+// Let go past this far across and the tear finishes by itself
+const RUN_AT = 0.6;
 
-type Mode = "idle" | "peek" | "pulling" | "settling" | "running" | "falling" | "gone";
+type Mode = "idle" | "pulling" | "settling" | "running" | "falling" | "gone";
 
 export default function TearSheet({
   Sheet,
@@ -92,7 +96,7 @@ export default function TearSheet({
   const hit = useRef<HTMLButtonElement>(null);
 
   const geo = useRef({ w: 0, h: 0, top: 0, boxH: 0, line: [] as Pt[] });
-  const sim = useRef({ mode: "idle" as Mode, p: 0, target: 0, v: 0, holes: 0, drawn: -1, fallT: 0, fallX: 0, fallY: 0, spin: 0 });
+  const sim = useRef({ mode: "idle" as Mode, p: 0, target: 0, v: 0, holes: 0, drawn: -1, droop: 0, droopTo: 0, drawnDroop: 0, fallT: 0, fallX: 0, fallY: 0, spin: 0 });
   const voice = useRef<TearVoice | null>(null);
   const cb = useRef({ onTorn, onTearing });
   cb.current = { onTorn, onTearing };
@@ -114,7 +118,8 @@ export default function TearSheet({
       flap.current.style.clipPath = "polygon(0 0, 0 0, 0 0)";
     }
     const s = sim.current;
-    const tilt = p > 0 ? 2 + 10 * Math.pow(p, 0.8) : 0;
+    // The torn part hangs further the more is torn; your hand lifting or lowering it adds a little
+    const tilt = p > 0 ? 2 + 10 * Math.pow(p, 0.8) + s.droop : 0;
     flapWrap.current.style.transformOrigin = `${xf}px ${yf}px`;
     flapWrap.current.style.transform = `translate(${s.fallX}px, ${p * 3 + s.fallY}px) rotate(${-(tilt + s.spin)}deg)`;
     const fibre = String(clamp01(p * 6));
@@ -162,10 +167,10 @@ export default function TearSheet({
       const s = sim.current;
       const before = s.p;
 
-      if (s.mode === "pulling" || s.mode === "settling" || s.mode === "peek" || s.mode === "idle") {
+      if (s.mode === "pulling" || s.mode === "settling" || s.mode === "idle") {
         s.p += (s.target - s.p) * (1 - Math.pow(1 - FOLLOW, dt * 60));
         if (Math.abs(s.target - s.p) < 0.0004) s.p = s.target;
-        if (s.mode === "settling" && s.p === 0) {
+        if (s.mode === "settling" && s.p === s.target) {
           s.mode = "idle";
           voice.current?.stop();
           voice.current = null;
@@ -194,7 +199,7 @@ export default function TearSheet({
         s.spin = 0.02 * t + 0.00001 * t * t;
         s.drawn = -1;
         const top = flapWrap.current?.getBoundingClientRect().top ?? Infinity;
-        if (top > window.innerHeight + 10 || t > 2200) {
+        if (top > window.innerHeight + 10 || t > 1800) {
           s.mode = "gone";
           if (scroller) scroller.style.overflowY = "";
           if (flapWrap.current) flapWrap.current.style.visibility = "hidden";
@@ -202,6 +207,9 @@ export default function TearSheet({
           window.setTimeout(restock, 700);
         }
       }
+
+      s.droop += (s.droopTo - s.droop) * (1 - Math.pow(0.8, dt * 60));
+      if (Math.abs(s.droopTo - s.droop) < 0.01) s.droop = s.droopTo;
 
       // Each perforation the front passes: a crackle, and a slight catch while running
       const passed = Math.floor((s.p * geo.current.w) / PERF_GAP);
@@ -213,26 +221,34 @@ export default function TearSheet({
       s.holes = passed;
       voice.current?.set(Math.abs(s.p - before) / Math.max(dt, 0.001));
 
-      if (s.p !== s.drawn) {
+      if (s.p !== s.drawn || s.droop !== s.drawnDroop) {
         draw(s.p);
         s.drawn = s.p;
+        s.drawnDroop = s.droop;
       }
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
 
-    // Once, after it lands: the corner lifts and settles, to show it can be pulled
-    const nudge = window.setTimeout(() => peek(0.06), 1100);
-    const unnudge = window.setTimeout(() => peek(0), 1600);
+    // Once it has landed, the first few holes give way at the left corner
+    const starter = window.setTimeout(starterTear, 900);
     return () => {
       cancelAnimationFrame(raf);
-      window.clearTimeout(nudge);
-      window.clearTimeout(unnudge);
+      window.clearTimeout(starter);
       voice.current?.stop();
       if (scroller) scroller.style.overflowY = "";
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /** The small tear at the left corner that shows where to start. */
+  const starterTear = () => {
+    const s = sim.current;
+    if (s.mode !== "idle") return;
+    s.target = REST;
+    tearTick(0.5);
+    window.setTimeout(() => tearTick(0.4), 90);
+  };
 
   const begin = () => {
     if (!voice.current) voice.current = tearVoice();
@@ -243,7 +259,7 @@ export default function TearSheet({
   const startRun = () => {
     const s = sim.current;
     if (s.mode === "running" || s.mode === "falling" || s.mode === "gone") return;
-    if (s.mode === "idle" || s.mode === "peek") begin();
+    if (s.mode === "idle") begin();
     s.v = Math.max(RUN_START, s.v);
     s.mode = "running";
   };
@@ -251,7 +267,7 @@ export default function TearSheet({
   /** A fresh stub slides in from under the sheet. */
   const restock = () => {
     const s = sim.current;
-    Object.assign(s, { mode: "idle", p: 0, target: 0, v: 0, holes: 0, drawn: -1, fallT: 0, fallX: 0, fallY: 0, spin: 0 });
+    Object.assign(s, { mode: "idle", p: 0, target: 0, v: 0, holes: 0, drawn: -1, droop: 0, droopTo: 0, fallT: 0, fallX: 0, fallY: 0, spin: 0 });
     if (flapWrap.current) flapWrap.current.style.visibility = "visible";
     draw(0);
     restockSound();
@@ -263,57 +279,68 @@ export default function TearSheet({
       { duration: RESTOCK.duration, easing: RESTOCK.easing, fill: "backwards" },
     );
     cb.current.onTearing(false);
+    window.setTimeout(starterTear, RESTOCK.duration);
   };
 
-  const peek = (to: number) => {
+  /** A tap, not a drag: the torn corner jiggles, as a hint to drag it. */
+  const jiggle = () => {
     const s = sim.current;
-    if (s.mode !== "idle" && s.mode !== "peek") return;
-    s.mode = to > 0 ? "peek" : "idle";
-    s.target = to;
+    s.droopTo = 7;
+    window.setTimeout(() => (s.droopTo = -2), 140);
+    window.setTimeout(() => (s.droopTo = 0), 300);
   };
 
   // ── Pointer ─────────────────────────────────────────────────────────────────
 
-  const drag = useRef<{ x: number; y: number; moved: boolean; lastP: number; lastT: number } | null>(null);
+  const drag = useRef<{ x: number; y: number; moved: boolean; from: number; width: number } | null>(null);
+  const grabbing = (on: boolean) => {
+    document.documentElement.style.cursor = on ? "grabbing" : "";
+    if (hit.current) hit.current.style.cursor = on ? "grabbing" : "grab";
+  };
   const onDown = (e: React.PointerEvent) => {
     const s = sim.current;
-    if (s.mode !== "idle" && s.mode !== "peek") return;
+    if (s.mode !== "idle") return;
     try {
       hit.current?.setPointerCapture(e.pointerId);
     } catch {
       // A pointer that's already gone can't be captured; the drag still works
     }
-    drag.current = { x: e.clientX, y: e.clientY, moved: false, lastP: s.p, lastT: performance.now() };
+    grabbing(true);
+    drag.current = { x: e.clientX, y: e.clientY, moved: false, from: Math.max(REST, s.p), width: hit.current?.getBoundingClientRect().width || 1 };
   };
   const onMove = (e: React.PointerEvent) => {
     const d = drag.current;
     if (!d) return;
     const s = sim.current;
     const dx = e.clientX - d.x, dy = e.clientY - d.y;
-    if (!d.moved && Math.hypot(dx, dy) < 4) return;
+    if (!d.moved && Math.hypot(dx, dy) < 3) return;
     if (!d.moved) {
       d.moved = true;
       s.mode = "pulling";
       begin();
     }
     if (s.mode !== "pulling") return;
-    // Pulling down tears it; pulling sideways helps a little
-    s.target = clamp01((Math.max(0, dy) + 0.35 * Math.abs(dx)) / PULL_PX);
+    // The tear front follows your hand along the line, left to right
+    s.target = Math.max(REST, Math.min(1, d.from + dx / d.width));
+    s.droopTo = Math.max(-3, Math.min(8, dy * 0.08));
   };
   const onUp = () => {
     const d = drag.current;
     drag.current = null;
+    grabbing(false);
     if (!d) return;
     const s = sim.current;
-    if (!d.moved || s.p > 0.38 || s.target > 0.38) {
-      // Carry the speed of your pull into the run
+    s.droopTo = 0;
+    if (!d.moved) return jiggle();
+    if (s.mode !== "pulling") return;
+    if (Math.max(s.p, s.target) > RUN_AT) {
+      // Carries the speed of your hand into the rest of the tear
       s.v = Math.max(s.v, (s.target - s.p) * 6);
       return startRun();
     }
-    if (s.mode === "pulling") {
-      s.mode = "settling";
-      s.target = 0;
-    }
+    // Not far enough: it lies back down along the line
+    s.mode = "settling";
+    s.target = REST;
   };
 
   const fibre = (i: number) => (
@@ -370,14 +397,12 @@ export default function TearSheet({
         ref={hit}
         type="button"
         aria-label="Tear off the stub to download the résumé (PDF)"
-        className="absolute inset-x-0 bottom-0 cursor-grab touch-none outline-none active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-[#9D136A]/40"
-        style={{ height: STUB_H }}
+        className="absolute inset-x-0 bottom-0 touch-none outline-none focus-visible:ring-2 focus-visible:ring-[#9D136A]/40"
+        style={{ height: STUB_H, cursor: "grab" }}
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerCancel={onUp}
-        onPointerEnter={() => peek(0.035)}
-        onPointerLeave={() => peek(0)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
