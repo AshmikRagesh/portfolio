@@ -1,22 +1,26 @@
 "use client";
 
 // ── The sheet with its tear-off stub ──────────────────────────────────────────
-// The flat résumé, with a stub along the bottom below a perforated line: "Tear for a
-// copy". Pull the stub down and it tears along the perforation from the left, the
-// torn part bending away at the tear front as you pull, a crackle at each hole it
-// passes. Let go early and it settles back; pull far enough, or just tap it, and the
-// tear runs on to the end by itself. The stub comes free with a snap, drops away with
-// a little spin, the copy downloads, and a fresh stub slides in.
+// The flat résumé, with a stub along the bottom below a perforated line: "Tear to
+// download". Pull the stub down and it tears along the perforation from the left, the
+// torn part bending away at the tear front, following your hand smoothly. Let go early
+// and it settles back; pull far enough, or just tap it, and the tear runs on by itself
+// with real momentum, catching slightly at each hole. The stub comes free, falls off
+// the bottom of the screen with a turn, and then the download starts. A fresh stub
+// slides in afterwards.
 //
-// How it's drawn: three copies of the sheet, clipped along one jagged torn line so
-// they fit together exactly. The body (above the line), the untorn stub (right of the
-// tear front) and the torn flap (left of it, hinged at the tear front). Torn edges
-// show a pale fibre line, as torn paper does.
+// Sound follows the tear itself: a rasp whose loudness and pitch track how fast the
+// tear front is moving, with a crackle at each perforation it passes.
+//
+// How it's drawn: the body (above the torn line) is drawn once and never repaints while
+// you tear. The stub lives in its own small strip along the bottom, as two pieces cut
+// along the same torn line: the untorn part (right of the tear front) and the torn flap
+// (left of it, hinged at the front). Only that strip repaints, once per frame.
 
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { Grain, PAPER, PERF_GAP, STUB_H, TOP_EDGE } from "./paper";
-import { clamp01, lerp, spring } from "./motion";
-import { restockSound, tearFree, tearRip, tearTick } from "./paperSound";
+import { clamp01, spring } from "./motion";
+import { restockSound, tearFree, tearTick, tearVoice, type TearVoice } from "./paperSound";
 
 type Pt = [number, number];
 
@@ -31,7 +35,7 @@ function seeded(seed: number) {
   };
 }
 
-/** The torn line: wanders a pixel either side of the perforation, dipping through each hole. */
+/** The torn line, a point every 2px: wanders a pixel either side of the perforation, dipping at each hole. */
 function tornLine(width: number, y: number): Pt[] {
   const rand = seeded(11);
   const pts: Pt[] = [];
@@ -46,13 +50,26 @@ const yAt = (pts: Pt[], x: number) => {
   if (x <= 0) return pts[0][1];
   const i = Math.min(pts.length - 2, Math.floor(x / 2));
   const t = clamp01((x - pts[i][0]) / 2);
-  return lerp(pts[i][1], pts[i + 1][1], t);
+  return pts[i][1] + (pts[i + 1][1] - pts[i][1]) * t;
 };
-const polygon = (pts: Pt[]) => `polygon(${pts.map(([x, y]) => `${x.toFixed(2)}px ${y.toFixed(2)}px`).join(", ")})`;
+const polygon = (pts: Pt[]) => {
+  let s = "polygon(";
+  for (let i = 0; i < pts.length; i++) s += `${i ? "," : ""}${pts[i][0].toFixed(1)}px ${pts[i][1].toFixed(1)}px`;
+  return s + ")";
+};
 
+// The strip the stub lives in starts this far above the perforation
+const PAD = 10;
 const RESTOCK = spring(220, 20);
-const SETTLE_MS = 260;
-const FALL_MS = 1000;
+// Tear dynamics, in sheet-widths per second
+const FOLLOW = 0.3; // how quickly the tear catches up with your hand, per frame
+const RUN_START = 0.7;
+const RUN_ACCEL = 3.4;
+const RUN_MAX = 3.6;
+const HOLE_CATCH = 0.94; // a little speed lost at each perforation
+const PULL_PX = 140; // how far to pull for the whole width
+
+type Mode = "idle" | "peek" | "pulling" | "settling" | "running" | "falling" | "gone";
 
 export default function TearSheet({
   Sheet,
@@ -60,175 +77,243 @@ export default function TearSheet({
   onTearing,
 }: {
   Sheet: () => ReactNode;
-  /** The stub came free: download now */
+  /** The stub has fallen off the screen: download now */
   onTorn: () => void;
   /** Tearing started (true) or a fresh stub is back (false) */
   onTearing: (tearing: boolean) => void;
 }) {
   const body = useRef<HTMLDivElement>(null);
+  const strip = useRef<HTMLDivElement>(null);
   const untorn = useRef<HTMLDivElement>(null);
   const flapWrap = useRef<HTMLDivElement>(null);
   const flap = useRef<HTMLDivElement>(null);
+  const insides = useRef<(HTMLDivElement | null)[]>([]);
   const fibres = useRef<(SVGPathElement | null)[]>([]);
   const hit = useRef<HTMLButtonElement>(null);
-  const geo = useRef({ w: 0, h: 0, perf: 0, line: [] as Pt[] });
-  const state = useRef<"idle" | "pulling" | "running" | "falling" | "gone">("idle");
-  const progress = useRef(0);
-  const holes = useRef(0);
-  const raf = useRef(0);
+
+  const geo = useRef({ w: 0, h: 0, top: 0, boxH: 0, line: [] as Pt[] });
+  const sim = useRef({ mode: "idle" as Mode, p: 0, target: 0, v: 0, holes: 0, drawn: -1, fallT: 0, fallX: 0, fallY: 0, spin: 0 });
+  const voice = useRef<TearVoice | null>(null);
   const cb = useRef({ onTorn, onTearing });
   cb.current = { onTorn, onTearing };
 
-  /** Lays the three pieces out for a tear that has run p of the way across. */
-  const render = (p: number, extra = { x: 0, y: 0, spin: 0 }) => {
-    const { w, h, line } = geo.current;
-    if (!w) return;
-    progress.current = p;
-    const xf = p * w; // the tear front
+  /** Lays the stub out for a tear that has run p of the way across. */
+  const draw = (p: number) => {
+    const { w, boxH, line } = geo.current;
+    if (!w || !untorn.current || !flap.current || !flapWrap.current) return;
+    const xf = p * w;
     const yf = yAt(line, xf);
-    const below = h + 60;
-    const between = (x0: number, x1: number) => line.filter(([x]) => x > x0 && x < x1);
-
-    // Untorn stub, right of the front
-    untorn.current!.style.clipPath = polygon([[xf, yAt(line, xf)], ...between(xf, w), [w + 40, yAt(line, w)], [w + 40, below], [xf, below]]);
-    // Torn flap, left of the front: hangs from the front, dropping further the more is torn
-    const flapPts: Pt[] = p > 0 ? [[-40, yAt(line, 0)], ...between(-1, xf + 1), [xf + 1, yAt(line, xf + 1)], [xf + 1, below], [-40, below]] : [[0, 0], [0, 0], [0, 0]];
-    flap.current!.style.clipPath = polygon(flapPts);
+    const below = boxH + 80;
+    const i0 = Math.max(0, Math.ceil(xf / 2));
+    const inner = line.slice(i0, line.length);
+    untorn.current.style.clipPath = polygon([[xf, yf], ...inner, [w + 40, yAt(line, w)], [w + 40, below], [xf, below]]);
+    if (p > 0) {
+      const torn = line.slice(0, Math.floor((xf + 1) / 2) + 1);
+      flap.current.style.clipPath = polygon([[-40, line[0][1]], ...torn, [xf + 1, yAt(line, xf + 1)], [xf + 1, below], [-40, below]]);
+    } else {
+      flap.current.style.clipPath = "polygon(0 0, 0 0, 0 0)";
+    }
+    const s = sim.current;
     const tilt = p > 0 ? 2 + 10 * Math.pow(p, 0.8) : 0;
-    flapWrap.current!.style.transformOrigin = `${xf}px ${yf}px`;
-    flapWrap.current!.style.transform = `translate(${extra.x}px, ${p * 3 + extra.y}px) rotate(${-(tilt + extra.spin)}deg)`;
-    fibres.current.forEach((f) => f && (f.style.opacity = String(clamp01(p * 6))));
-
-    // A crackle each time the front passes a hole
-    const passed = Math.floor(xf / PERF_GAP);
-    if (state.current === "pulling" && passed > holes.current) tearTick(0.8);
-    holes.current = passed;
+    flapWrap.current.style.transformOrigin = `${xf}px ${yf}px`;
+    flapWrap.current.style.transform = `translate(${s.fallX}px, ${p * 3 + s.fallY}px) rotate(${-(tilt + s.spin)}deg)`;
+    const fibre = String(clamp01(p * 6));
+    fibres.current.forEach((f) => f && (f.style.opacity = fibre));
+    // The body's torn edge only shows where the tear has been
+    const bodyEdge = fibres.current[0]?.ownerSVGElement;
+    if (bodyEdge) bodyEdge.style.clipPath = `inset(0 ${Math.max(0, w - xf).toFixed(1)}px 0 -10px)`;
   };
 
-  // Measure, and draw the torn line to fit
+  // Measure, and cut the torn line to fit
   useLayoutEffect(() => {
     const el = body.current;
     if (!el) return;
     const measure = () => {
       const w = el.offsetWidth, h = el.offsetHeight;
       const perf = h - STUB_H;
-      const line = tornLine(w, perf);
-      geo.current = { w, h, perf, line };
-      el.style.clipPath = polygon([[-40, -40], [w + 40, -40], [w + 40, yAt(line, w) + 0.6], ...[...line].reverse().map(([x, y]) => [x, y + 0.6] as Pt), [-40, yAt(line, 0) + 0.6]]);
+      const top = perf - PAD;
+      const full = tornLine(w, perf);
+      const line = full.map(([x, y]) => [x, y - top] as Pt);
+      geo.current = { w, h, top, boxH: h - top, line };
+      el.style.clipPath = polygon([[-40, -40], [w + 40, -40], [w + 40, yAt(full, w) + 0.6], ...[...full].reverse().map(([x, y]) => [x, y + 0.6] as Pt), [-40, full[0][1] + 0.6]]);
+      if (strip.current) {
+        strip.current.style.top = `${top}px`;
+        strip.current.style.height = `${h - top}px`;
+      }
+      insides.current.forEach((d) => d && ((d.style.top = `${-top}px`), (d.style.height = `${h}px`)));
       const d = `M${line.map(([x, y]) => `${x} ${y.toFixed(2)}`).join(" L")}`;
       fibres.current.forEach((f) => f?.setAttribute("d", d));
-      if (state.current === "idle") render(0);
+      sim.current.drawn = -1;
     };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
+  }, []);
+
+  // One frame loop drives everything: following your hand, running out, falling
+  useEffect(() => {
+    let raf = 0;
+    let last = performance.now();
+    let scroller: HTMLElement | null = null;
+    const frame = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      const s = sim.current;
+      const before = s.p;
+
+      if (s.mode === "pulling" || s.mode === "settling" || s.mode === "peek" || s.mode === "idle") {
+        s.p += (s.target - s.p) * (1 - Math.pow(1 - FOLLOW, dt * 60));
+        if (Math.abs(s.target - s.p) < 0.0004) s.p = s.target;
+        if (s.mode === "settling" && s.p === 0) {
+          s.mode = "idle";
+          voice.current?.stop();
+          voice.current = null;
+          cb.current.onTearing(false);
+        }
+        if (s.mode === "pulling" && s.p >= 0.995) startRun();
+      } else if (s.mode === "running") {
+        s.v = Math.min(RUN_MAX, s.v + RUN_ACCEL * dt);
+        s.p = Math.min(1, s.p + s.v * dt);
+        if (s.p >= 1) {
+          s.mode = "falling";
+          s.fallT = 0;
+          tearFree();
+          voice.current?.stop();
+          voice.current = null;
+          // A phone's scrolling sheet would grow to fit the falling stub: hold it still
+          scroller = hit.current?.closest<HTMLElement>(".overflow-y-auto") ?? null;
+          if (scroller) scroller.style.overflowY = "hidden";
+        }
+      } else if (s.mode === "falling") {
+        // Drops away under gravity with a slow turn, until it's below the screen
+        s.fallT += dt * 1000;
+        const t = s.fallT;
+        s.fallX = 0.05 * t;
+        s.fallY = 0.15 * t + 0.0016 * t * t;
+        s.spin = 0.02 * t + 0.00001 * t * t;
+        s.drawn = -1;
+        const top = flapWrap.current?.getBoundingClientRect().top ?? Infinity;
+        if (top > window.innerHeight + 10 || t > 2200) {
+          s.mode = "gone";
+          if (scroller) scroller.style.overflowY = "";
+          if (flapWrap.current) flapWrap.current.style.visibility = "hidden";
+          cb.current.onTorn();
+          window.setTimeout(restock, 700);
+        }
+      }
+
+      // Each perforation the front passes: a crackle, and a slight catch while running
+      const passed = Math.floor((s.p * geo.current.w) / PERF_GAP);
+      if (passed > s.holes && (s.mode === "pulling" || s.mode === "running")) {
+        const speed = Math.abs(s.p - before) / Math.max(dt, 0.001);
+        tearTick(Math.min(1, 0.35 + speed * 0.4));
+        if (s.mode === "running") s.v *= HOLE_CATCH;
+      }
+      s.holes = passed;
+      voice.current?.set(Math.abs(s.p - before) / Math.max(dt, 0.001));
+
+      if (s.p !== s.drawn) {
+        draw(s.p);
+        s.drawn = s.p;
+      }
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+
+    // Once, after it lands: the corner lifts and settles, to show it can be pulled
+    const nudge = window.setTimeout(() => peek(0.06), 1100);
+    const unnudge = window.setTimeout(() => peek(0), 1600);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(nudge);
+      window.clearTimeout(unnudge);
+      voice.current?.stop();
+      if (scroller) scroller.style.overflowY = "";
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => () => cancelAnimationFrame(raf.current), []);
-
-  const animate = (from: number, to: number, ms: number, ease: (t: number) => number, done?: () => void) => {
-    cancelAnimationFrame(raf.current);
-    const begin = performance.now();
-    const step = () => {
-      const t = clamp01((performance.now() - begin) / ms);
-      render(lerp(from, to, ease(t)));
-      if (t < 1) raf.current = requestAnimationFrame(step);
-      else done?.();
-    };
-    raf.current = requestAnimationFrame(step);
+  const begin = () => {
+    if (!voice.current) voice.current = tearVoice();
+    cb.current.onTearing(true);
   };
 
-  /** The tear runs on to the end by itself, speeding up, catching slightly at holes. */
-  const runOut = () => {
-    if (state.current === "running" || state.current === "falling" || state.current === "gone") return;
-    if (state.current === "idle") cb.current.onTearing(true);
-    state.current = "running";
-    const from = progress.current;
-    const ms = 140 + 620 * (1 - from);
-    tearRip(ms);
-    const stutter = (t: number) => Math.pow(t, 1.55) + 0.012 * Math.sin(t * 46) * (1 - t);
-    animate(from, 1, ms, stutter, fall);
-  };
-
-  /** Free: drops away with a little spin, fading as it goes. */
-  const fall = () => {
-    state.current = "falling";
-    tearFree();
-    cb.current.onTorn();
-    const begin = performance.now();
-    const step = () => {
-      const t = performance.now() - begin;
-      const k = clamp01(t / FALL_MS);
-      render(1, { x: 0.05 * t, y: 0.12 * t + 0.0011 * t * t, spin: 0.018 * t + 0.000012 * t * t });
-      flapWrap.current!.style.opacity = String(clamp01((FALL_MS - t) / 320));
-      if (k < 1) raf.current = requestAnimationFrame(step);
-      else restock();
-    };
-    raf.current = requestAnimationFrame(step);
+  /** The tear runs on to the end by itself. */
+  const startRun = () => {
+    const s = sim.current;
+    if (s.mode === "running" || s.mode === "falling" || s.mode === "gone") return;
+    if (s.mode === "idle" || s.mode === "peek") begin();
+    s.v = Math.max(RUN_START, s.v);
+    s.mode = "running";
   };
 
   /** A fresh stub slides in from under the sheet. */
   const restock = () => {
-    state.current = "gone";
-    window.setTimeout(() => {
-      flapWrap.current!.style.opacity = "1";
-      render(0);
-      restockSound();
-      untorn.current?.animate(
-        [
-          { transform: "translateY(22px)", opacity: 0 },
-          { transform: "translateY(0)", opacity: 1 },
-        ],
-        { duration: RESTOCK.duration, easing: RESTOCK.easing, fill: "backwards" },
-      );
-      state.current = "idle";
-      cb.current.onTearing(false);
-    }, 650);
+    const s = sim.current;
+    Object.assign(s, { mode: "idle", p: 0, target: 0, v: 0, holes: 0, drawn: -1, fallT: 0, fallX: 0, fallY: 0, spin: 0 });
+    if (flapWrap.current) flapWrap.current.style.visibility = "visible";
+    draw(0);
+    restockSound();
+    untorn.current?.animate(
+      [
+        { transform: "translateY(22px)", opacity: 0 },
+        { transform: "translateY(0)", opacity: 1 },
+      ],
+      { duration: RESTOCK.duration, easing: RESTOCK.easing, fill: "backwards" },
+    );
+    cb.current.onTearing(false);
+  };
+
+  const peek = (to: number) => {
+    const s = sim.current;
+    if (s.mode !== "idle" && s.mode !== "peek") return;
+    s.mode = to > 0 ? "peek" : "idle";
+    s.target = to;
   };
 
   // ── Pointer ─────────────────────────────────────────────────────────────────
 
-  const drag = useRef<{ x: number; y: number; at: number; moved: boolean } | null>(null);
+  const drag = useRef<{ x: number; y: number; moved: boolean; lastP: number; lastT: number } | null>(null);
   const onDown = (e: React.PointerEvent) => {
-    if (state.current !== "idle") return;
+    const s = sim.current;
+    if (s.mode !== "idle" && s.mode !== "peek") return;
     try {
       hit.current?.setPointerCapture(e.pointerId);
     } catch {
       // A pointer that's already gone can't be captured; the drag still works
     }
-    drag.current = { x: e.clientX, y: e.clientY, at: performance.now(), moved: false };
+    drag.current = { x: e.clientX, y: e.clientY, moved: false, lastP: s.p, lastT: performance.now() };
   };
   const onMove = (e: React.PointerEvent) => {
     const d = drag.current;
     if (!d) return;
+    const s = sim.current;
     const dx = e.clientX - d.x, dy = e.clientY - d.y;
-    if (!d.moved && Math.hypot(dx, dy) < 5) return;
+    if (!d.moved && Math.hypot(dx, dy) < 4) return;
     if (!d.moved) {
       d.moved = true;
-      cancelAnimationFrame(raf.current);
-      state.current = "pulling";
-      cb.current.onTearing(true);
+      s.mode = "pulling";
+      begin();
     }
+    if (s.mode !== "pulling") return;
     // Pulling down tears it; pulling sideways helps a little
-    render(clamp01((Math.max(0, dy) + 0.35 * Math.abs(dx)) / 140));
+    s.target = clamp01((Math.max(0, dy) + 0.35 * Math.abs(dx)) / PULL_PX);
   };
   const onUp = () => {
     const d = drag.current;
     drag.current = null;
     if (!d) return;
-    if (!d.moved || progress.current > 0.38) return runOut();
-    // Not far enough: it settles back together
-    animate(progress.current, 0, SETTLE_MS, (t) => 1 - Math.pow(1 - t, 3), () => {
-      state.current = "idle";
-      cb.current.onTearing(false);
-    });
-  };
-  // Hovering lifts the corner a touch, so it reads as something to pull
-  const peek = (on: boolean) => {
-    if (state.current !== "idle" || drag.current) return;
-    animate(progress.current, on ? 0.035 : 0, 220, (t) => 1 - Math.pow(1 - t, 3));
+    const s = sim.current;
+    if (!d.moved || s.p > 0.38 || s.target > 0.38) {
+      // Carry the speed of your pull into the run
+      s.v = Math.max(s.v, (s.target - s.p) * 6);
+      return startRun();
+    }
+    if (s.mode === "pulling") {
+      s.mode = "settling";
+      s.target = 0;
+    }
   };
 
   const fibre = (i: number) => (
@@ -246,44 +331,57 @@ export default function TearSheet({
       />
     </svg>
   );
-  const copy = (
-    <>
+  // A copy of the sheet placed so its stub shows in the strip
+  const inside = (i: number) => (
+    <div
+      ref={(el) => {
+        insides.current[i] = el;
+      }}
+      className="absolute inset-x-0"
+    >
       <Grain />
       <Sheet />
-    </>
+    </div>
   );
 
   return (
-    <div className="relative" style={{ filter: "drop-shadow(0 1px 1.5px rgba(48,40,26,0.1)) drop-shadow(0 12px 18px rgba(48,40,26,0.15))" }}>
-      <div ref={body} className="relative" style={{ ...TOP_EDGE, backgroundColor: PAPER }}>
-        {copy}
+    <div className="relative">
+      {/* The body: drawn once, its shadow included */}
+      <div style={{ filter: "drop-shadow(0 1px 1.5px rgba(48,40,26,0.1)) drop-shadow(0 12px 18px rgba(48,40,26,0.15))" }}>
+        <div ref={body} className="relative" style={{ ...TOP_EDGE, backgroundColor: PAPER }}>
+          <Grain />
+          <Sheet />
+        </div>
+      </div>
+      {/* The stub strip: the only part that moves */}
+      <div ref={strip} className="pointer-events-none absolute inset-x-0" style={{ top: 0 }}>
         {fibre(0)}
-      </div>
-      <div ref={untorn} className="absolute inset-0" style={{ backgroundColor: PAPER }}>
-        {copy}
-      </div>
-      <div ref={flapWrap} className="absolute inset-0" style={{ filter: "drop-shadow(0 3px 4px rgba(48,40,26,0.16))", willChange: "transform" }}>
-        <div ref={flap} className="absolute inset-0" style={{ backgroundColor: PAPER }}>
-          {copy}
-          {fibre(1)}
+        <div ref={untorn} className="absolute inset-0 overflow-hidden" style={{ backgroundColor: PAPER }}>
+          {inside(0)}
+        </div>
+        <div ref={flapWrap} className="absolute inset-0" style={{ filter: "drop-shadow(0 3px 4px rgba(48,40,26,0.16))", willChange: "transform" }}>
+          <div ref={flap} className="absolute inset-0 overflow-hidden" style={{ backgroundColor: PAPER, clipPath: "polygon(0 0, 0 0, 0 0)" }}>
+            {inside(1)}
+            {fibre(1)}
+          </div>
         </div>
       </div>
       <button
         ref={hit}
         type="button"
-        aria-label="Tear off a copy (downloads the résumé PDF)"
+        aria-label="Tear off the stub to download the résumé (PDF)"
         className="absolute inset-x-0 bottom-0 cursor-grab touch-none outline-none active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-[#9D136A]/40"
         style={{ height: STUB_H }}
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerCancel={onUp}
-        onPointerEnter={() => peek(true)}
-        onPointerLeave={() => peek(false)}
+        onPointerEnter={() => peek(0.035)}
+        onPointerLeave={() => peek(0)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            runOut();
+            startRun();
           }
         }}
       />

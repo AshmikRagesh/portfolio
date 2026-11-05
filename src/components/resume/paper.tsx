@@ -35,7 +35,7 @@ export const TOP_EDGE: CSSProperties = {
 // The visitor's guest number, printed on the stub
 export const GuestNo = createContext<string>("····");
 
-// Fine grain, multiplied over the paper
+// Fine grain over the paper (plain transparency, not a blend mode: much cheaper to redraw while tearing)
 export const GRAIN = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.32  0 0 0 0 0.26  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`;
 // Edges a touch warmer and darker, the way real stock ages from the outside in
 export const EDGES = [
@@ -54,7 +54,7 @@ export const PAPER_STYLE: CSSProperties = {
 export function Grain({ crease = true }: { crease?: boolean }) {
   return (
     <>
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ backgroundImage: GRAIN, opacity: 0.08, mixBlendMode: "multiply" }} />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ backgroundImage: GRAIN, opacity: 0.08 }} />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ backgroundImage: crease ? `${EDGES}, ${CREASE}` : EDGES }} />
     </>
   );
@@ -66,14 +66,14 @@ export function PaperBack() {
     <>
       <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${PAPER_BACK}, #ebe2d1)` }} />
       <div className="absolute inset-0" style={{ backgroundImage: EDGES }} />
-      <div className="absolute inset-0" style={{ backgroundImage: GRAIN, opacity: 0.08, mixBlendMode: "multiply" }} />
+      <div className="absolute inset-0" style={{ backgroundImage: GRAIN, opacity: 0.08 }} />
     </>
   );
 }
 
 // ── Typesetting ───────────────────────────────────────────────────────────────
 
-/** A phrase circled in pen, the loop drawing itself in once the sheet is down. */
+/** A phrase circled in pen. The loop comes in once, as the sheet lies flat. */
 function Circled({ children }: { children: ReactNode }) {
   return (
     // A block of its own, so a phrase that runs onto two lines gets one loop round both
@@ -83,14 +83,12 @@ function Circled({ children }: { children: ReactNode }) {
         {/* A quick oval in one stroke, starting top right and overshooting where it began */}
         <path
           className="resume-pen"
-          pathLength={1}
           d="M90 22C74 2 24 0 7 24-6 44 8 90 50 96c40 5 56-22 48-52C92 18 70 6 40 8"
           fill="none"
           stroke={PEN}
           strokeWidth={1.3}
           strokeLinecap="round"
           vectorEffect="non-scaling-stroke"
-          style={{ animationDelay: "0.55s" }}
         />
       </svg>
     </span>
@@ -143,31 +141,50 @@ function Holes({ left }: { left: number }) {
   );
 }
 
-/** The tear-off stub: a perforated line across, and a slip below it. */
+/** The tear-off stub: a perforated line with scissors on it, and a slip below. */
 function Stub() {
   const guest = useContext(GuestNo);
   return (
     <div aria-hidden="true" className="absolute inset-x-0 bottom-0" style={{ height: STUB_H }}>
-      <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(150,112,58,0.05), rgba(150,112,58,0.02))" }} />
+      <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(150,112,58,0.06), rgba(150,112,58,0.02) 60%)" }} />
+      {/* The perforation */}
       <svg className="absolute left-0 top-0 h-[4px] w-full overflow-visible">
         <defs>
           <pattern id="resume-perf" width={PERF_GAP} height="4" patternUnits="userSpaceOnUse">
-            <circle cx={PERF_GAP / 2} cy="0" r="1.25" fill="rgba(70,56,36,0.34)" />
+            <circle cx={PERF_GAP / 2} cy="0" r="1.25" fill="rgba(70,56,36,0.36)" />
           </pattern>
         </defs>
         <rect x="0" y="-2" width="100%" height="4" fill="url(#resume-perf)" />
       </svg>
-      <div className="absolute inset-0 flex items-center justify-between font-brand uppercase" style={{ padding: "0 clamp(20px, 7.2%, 46px)", fontSize: 10, letterSpacing: "0.14em", color: INK }}>
-        <span className="flex items-center gap-2">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="6" cy="6" r="3" />
-            <circle cx="6" cy="18" r="3" />
-            <path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12" />
-          </svg>
-          Tear for a copy
-        </span>
-        <span className="max-[639px]:hidden" style={{ color: MUTED }}>Résumé · PDF</span>
-        <span style={{ color: GOLD }}>Guest No. {guest}</span>
+      {/* Scissors sitting on the line, blades along it, like a coupon's "cut here" */}
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="absolute" style={{ left: 14, top: -9, background: "#f6f0e3", opacity: 0.8 }}>
+        <circle cx="6" cy="6" r="3" />
+        <circle cx="6" cy="18" r="3" />
+        <path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12" />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-between gap-4" style={{ padding: "4px clamp(20px, 7.2%, 46px) 0" }}>
+        <div className="flex flex-col gap-[6px]">
+          <span className="font-heading text-[18px] leading-none tracking-[-0.02em]" style={{ color: INK }}>
+            Tear to download
+          </span>
+          <span className="flex items-center gap-[6px] font-brand text-[10px] uppercase leading-none tracking-[0.14em]" style={{ color: MUTED }}>
+            <svg width="8" height="10" viewBox="0 0 8 10" fill="none" stroke={MUTED} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 1v8M1 6l3 3 3-3" />
+            </svg>
+            Pull down · Résumé PDF
+          </span>
+        </div>
+        <div className="flex items-stretch gap-4 self-stretch py-[14px]">
+          <span className="border-l border-dashed" style={{ borderColor: "rgba(70,56,36,0.25)" }} />
+          <div className="flex flex-col justify-center gap-[6px] text-right">
+            <span className="font-brand text-[10px] uppercase leading-none tracking-[0.14em]" style={{ color: GOLD }}>
+              Guest No.
+            </span>
+            <span className="font-heading text-[18px] leading-none tabular-nums" style={{ color: GOLD }}>
+              {guest}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

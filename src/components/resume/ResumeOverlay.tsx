@@ -52,7 +52,31 @@ function useReducedMotion() {
   return reduced;
 }
 
-function download() {
+type SavePicker = (opts: { suggestedName: string; types: { description: string; accept: Record<string, string[]> }[] }) => Promise<{
+  createWritable: () => Promise<{ write: (b: Blob) => Promise<void>; close: () => Promise<void> }>;
+}>;
+
+/**
+ * Downloads the résumé. Where the browser allows it (Chrome, Edge, Arc) this opens the
+ * Mac's own Save dialog so the visitor picks where it goes; elsewhere it's an ordinary
+ * download to the Downloads folder.
+ */
+async function download() {
+  const picker = (window as Window & { showSaveFilePicker?: SavePicker }).showSaveFilePicker;
+  if (picker) {
+    try {
+      const file = await picker({ suggestedName: RESUME_FILENAME, types: [{ description: "PDF document", accept: { "application/pdf": [".pdf"] } }] });
+      const blob = await (await fetch(RESUME_PDF)).blob();
+      const out = await file.createWritable();
+      await out.write(blob);
+      await out.close();
+      celebrate("resume", "Resume downloaded.");
+      return;
+    } catch (e) {
+      // Closed the dialog: no download, no celebration
+      if ((e as DOMException)?.name === "AbortError") return;
+    }
+  }
   const a = document.createElement("a");
   a.href = RESUME_PDF;
   a.download = RESUME_FILENAME;
@@ -155,8 +179,8 @@ export default function ResumeOverlay() {
     };
   }, [open, close]);
 
-  // The sheet leans a couple of degrees towards the pointer, easing after it. Level
-  // while it's being folded, and never on touch screens.
+  // The sheet leans a couple of degrees towards the pointer, easing after it. Never on
+  // touch screens.
   const target = useRef({ x: 0, y: 0 });
   useEffect(() => {
     if (!open || !wide || reduced || !window.matchMedia("(hover: hover)").matches) return;
@@ -166,10 +190,16 @@ export default function ResumeOverlay() {
       target.current = { x: (e.clientX / window.innerWidth - 0.5) * 2, y: (e.clientY / window.innerHeight - 0.5) * 2 };
     };
     const tick = () => {
-      const still = tearing.current;
-      now.x = lerp(now.x, still ? 0 : target.current.x, 0.06);
-      now.y = lerp(now.y, still ? 0 : target.current.y, 0.06);
-      if (tilt.current) tilt.current.style.transform = `perspective(2400px) rotateX(${(-now.y * TILT_DEG).toFixed(3)}deg) rotateY(${(now.x * TILT_DEG).toFixed(3)}deg)`;
+      // Held where it is while the stub is being torn, so nothing else moves
+      if (!tearing.current) {
+        const nx = lerp(now.x, target.current.x, 0.06);
+        const ny = lerp(now.y, target.current.y, 0.06);
+        if (Math.abs(nx - now.x) + Math.abs(ny - now.y) > 0.0004 && tilt.current) {
+          tilt.current.style.transform = `perspective(2400px) rotateX(${(-ny * TILT_DEG).toFixed(3)}deg) rotateY(${(nx * TILT_DEG).toFixed(3)}deg)`;
+        }
+        now.x = nx;
+        now.y = ny;
+      }
       raf = requestAnimationFrame(tick);
     };
     window.addEventListener("pointermove", onMove);
@@ -208,7 +238,7 @@ export default function ResumeOverlay() {
       {shown ? (
         <TearSheet
           Sheet={Sheet}
-          onTorn={download}
+          onTorn={() => void download()}
           onTearing={(t) => {
             tearing.current = t;
           }}

@@ -1031,7 +1031,8 @@
   to { opacity: 1; transform: var(--pile-to); filter: blur(0px); }
 }
 
-/* Fancy paper: pen circles drawing themselves in, margin notes fading up after */
-.resume-pen { stroke-dasharray: 1; stroke-dashoffset: 1; animation: resume-pen 0.9s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
-@keyframes resume-pen { to { stroke-dashoffset: 0; } }
-@media (prefers-reduced-motion: reduce) { .resume-pen { animation: none; stroke-dashoffset: 0; } }
+/* Fancy paper: pen circles come in once, as the flat sheet appears (hidden mid-unfold) */
+.resume-pen { animation: resume-pen-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both; transform-box: fill-box; transform-origin: center; }
+@keyframes resume-pen-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+.resume-unfold .resume-pen { animation: none; opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .resume-pen { animation: none; } }

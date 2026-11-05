@@ -117,14 +117,6 @@ export function tearTick(level = 1) {
   });
 }
 
-/** The fibre rasp under a tear, for as long as it's being pulled. */
-export function tearRip(durationMs: number, volume = 0.26) {
-  play(volume, 0, (c, out, t) => {
-    const d = durationMs / 1000;
-    burst(c, out, t, { freq: 1800, q: 0.9, attack: d * 0.4, decay: d * 0.65, level: 0.55, sweepTo: 3400 });
-    crackles(c, out, t, t + d, Math.round(d * 22), 0.5);
-  });
-}
 
 /** The stub coming free: a light snap. */
 export function tearFree(volume = 0.3) {
@@ -139,4 +131,49 @@ export function restockSound(volume = 0.2) {
   play(volume, 0, (c, out, t) => {
     burst(c, out, t, { freq: 900, q: 0.7, attack: 0.12, decay: 0.22, level: 0.45, sweepTo: 2200 });
   });
+}
+
+export type TearVoice = { set: (speed: number) => void; stop: () => void };
+
+/**
+ * The sound of a tear in progress, played live: fibres rasping, grainy, louder and
+ * brighter the faster the tear front moves (speed in sheet-widths per second), silent
+ * when it stops. Paired with tearTick() at each perforation.
+ */
+export function tearVoice(): TearVoice | null {
+  const c = audio();
+  if (!c) return null;
+  if (c.state === "suspended") c.resume().catch(() => {});
+  const src = c.createBufferSource();
+  src.buffer = noiseBuffer(c);
+  src.loop = true;
+  const high = c.createBiquadFilter();
+  high.type = "highpass";
+  high.frequency.value = 900;
+  const band = c.createBiquadFilter();
+  band.type = "bandpass";
+  band.frequency.value = 2000;
+  band.Q.value = 0.8;
+  const out = c.createGain();
+  out.gain.value = 0;
+  src.connect(high).connect(band).connect(out).connect(c.destination);
+  src.start();
+  let level = 0;
+  return {
+    set(speed) {
+      const s = Math.min(1, speed / 1.8);
+      // Paper fibres give way unevenly: the level flutters while it moves
+      level += (s - level) * 0.35;
+      const flutter = level > 0.01 ? 0.65 + Math.random() * 0.7 : 0;
+      out.gain.setTargetAtTime(0.0001 + level * 0.3 * flutter, c.currentTime, 0.012);
+      band.frequency.setTargetAtTime(1400 + level * 3000, c.currentTime, 0.03);
+      if (level > 0.15 && Math.random() < level * 0.5) {
+        burst(c, out.context.destination, c.currentTime, { freq: 3000 + Math.random() * 3000, q: 2, attack: 0.001, decay: 0.012, level: 0.12 * level });
+      }
+    },
+    stop() {
+      out.gain.setTargetAtTime(0, c.currentTime, 0.04);
+      src.stop(c.currentTime + 0.3);
+    },
+  };
 }

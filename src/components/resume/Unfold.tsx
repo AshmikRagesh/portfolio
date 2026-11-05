@@ -61,7 +61,7 @@ export default function Unfold({ height, onDone, Sheet }: { height: number; onDo
 
   return (
     // A long perspective, so the swinging half doesn't balloon out past the sheet's edges
-    <div ref={lift} aria-hidden="true" className="relative" style={{ height, perspective: 3600, perspectiveOrigin: "50% 50%", transformStyle: "preserve-3d" }}>
+    <div ref={lift} aria-hidden="true" className="resume-unfold relative" style={{ height, perspective: 3600, perspectiveOrigin: "50% 50%", transformStyle: "preserve-3d" }}>
       <div ref={shadow} className="absolute inset-x-0" style={{ ...PAPER_STYLE, backgroundColor: "transparent" }} />
       <div className="absolute inset-x-0" style={{ top: half, height: half }}>
         {halfOf(1)}
