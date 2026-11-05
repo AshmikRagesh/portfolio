@@ -8,17 +8,18 @@
 // on by itself with your hand's momentum, catching slightly at each hole. (Enter or
 // Space tears it from the keyboard; a tap jiggles the torn corner as a hint.)
 //
-// Once it's free, the stub falls like real paper: a small pop as the tension lets go,
-// it levels out from hanging, then flutters down, swaying side to side and tipping
-// forwards and back, until it's gone off the bottom of the screen. Then the download
-// starts (the Mac Save dialog where the browser allows it). A fresh stub slides in.
+// Once the tear reaches the end, the stub lies flat where it is and the résumé itself
+// (everything above the perforation) comes away: a small pop as the tension lets go,
+// then it falls, swaying and tipping as a big sheet does, off the bottom of the screen,
+// showing the pile underneath. Then the download starts (the Mac Save dialog where the
+// browser allows it), and a fresh résumé springs back into place with a new stub.
 //
 // Physics, all stepped per frame in small substeps:
 //   tear front   a critically damped spring after your hand: no lag, no overshoot
 //   hanging part a lightly damped spring for its angle, so it sways as you speed up or
 //                stop, and hangs further the more of it is torn
-//   fall         gravity against air drag (a slow terminal speed, as paper has), a
-//                sideways sway, a rocking turn and a 3D tumble that build up as it drops
+//   fall         the résumé under gravity against air drag, with a sideways sway, a
+//                rocking turn and a 3D tip that build up as it drops
 //
 // Sound follows the tear itself: a rasp whose loudness and pitch track how fast the
 // tear front is moving, with a crackle at each perforation it passes.
@@ -91,16 +92,18 @@ const HOLE_CATCH = 0.95; // a little speed lost at each perforation
 const HANG_K = 170;
 const HANG_C = 2 * 0.32 * Math.sqrt(HANG_K);
 
-// Falling, in sheet px and seconds
-const GRAVITY = 1300;
-const DRAG = 6; // terminal speed = GRAVITY / DRAG ≈ 220 px/s: paper drifts down, it doesn't plummet
-const POP = -200; // the little jump as the tension lets go
-const SWAY = 38; // sideways, px
-const SWAY_HZ = 0.95;
-const ROCK = 16; // degrees of rocking turn
-const TUMBLE = 46; // degrees of tipping forwards and back
-const SPIN = -14; // a slow overall turn, degrees per second
-const FALL_MAX = 3.2;
+// The résumé falling, in sheet px and seconds. A whole sheet is big and falls faster
+// than a scrap, but air still holds it back (terminal speed ≈ 1100 px/s).
+const GRAVITY = 2600;
+const DRAG = 2.4;
+const POP = -170; // the little jump as the tension lets go
+const SWAY = 26; // sideways, px
+const SWAY_HZ = 0.8;
+const ROCK = 5; // degrees of rocking turn
+const TUMBLE = 16; // degrees of tipping forwards and back
+const SPIN = 4; // a slow overall turn, degrees per second
+const FALL_MAX = 3;
+const BACK = spring(170, 19); // the fresh résumé settling into place
 
 type Mode = "idle" | "pulling" | "settling" | "running" | "falling" | "gone";
 
@@ -116,9 +119,9 @@ export default function TearSheet({
   onTearing: (tearing: boolean) => void;
 }) {
   const body = useRef<HTMLDivElement>(null);
+  const sheet = useRef<HTMLDivElement>(null); // the body with its shadow: what falls
   const strip = useRef<HTMLDivElement>(null);
   const untorn = useRef<HTMLDivElement>(null);
-  const fall = useRef<HTMLDivElement>(null);
   const flapWrap = useRef<HTMLDivElement>(null);
   const flap = useRef<HTMLDivElement>(null);
   const insides = useRef<(HTMLDivElement | null)[]>([]);
@@ -187,7 +190,6 @@ export default function TearSheet({
         strip.current.style.top = `${top}px`;
         strip.current.style.height = `${h - top}px`;
       }
-      if (fall.current) fall.current.style.transformOrigin = `${w / 2}px ${PAD + STUB_H / 2}px`;
       insides.current.forEach((d) => d && ((d.style.top = `${-top}px`), (d.style.height = `${h}px`)));
       const d = `M${line.map(([x, y]) => `${x} ${y.toFixed(2)}`).join(" L")}`;
       fibres.current.forEach((f) => f?.setAttribute("d", d));
@@ -219,7 +221,7 @@ export default function TearSheet({
       }
       // The hanging part: sags with its length, trails when the tear speeds up, follows your hand
       const hangTo =
-        s.mode === "falling" ? 0 : s.p > 0.001 ? 2 + 10 * Math.pow(s.p, 0.8) + s.droop + Math.max(-4, Math.min(7, s.pv * 2.4)) : 0;
+        s.mode === "falling" || s.mode === "gone" ? 0 : s.p > 0.001 ? 2 + 10 * Math.pow(s.p, 0.8) + s.droop + Math.max(-4, Math.min(7, s.pv * 2.4)) : 0;
       const aa = HANG_K * (hangTo - s.angle) - HANG_C * s.angleV;
       s.angleV += aa * h;
       s.angle += s.angleV * h;
@@ -231,11 +233,12 @@ export default function TearSheet({
     };
 
     const frame = (now: number) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
+      // Real time even on a slow frame (substeps keep the springs stable)
+      const dt = Math.min(0.1, (now - last) / 1000);
       last = now;
       const s = sim.current;
       const before = s.p;
-      const subs = 4;
+      const subs = Math.max(4, Math.ceil(dt / 0.006));
       for (let i = 0; i < subs; i++) step(dt / subs);
 
       if (s.mode === "settling" && Math.abs(s.p - s.target) < 0.0008 && Math.abs(s.pv) < 0.02) {
@@ -246,12 +249,19 @@ export default function TearSheet({
       }
       if (s.mode === "pulling" && s.p >= 0.995) startRun();
       if (s.mode === "running" && s.p >= 1) {
-        // Free
+        // Free: the stub lies flat, the résumé comes away
         s.mode = "falling";
         s.t = 0;
         s.y = 0;
         s.vy = POP;
         tearFree();
+        if (sheet.current) {
+          const { w, h } = geo.current;
+          sheet.current.style.willChange = "transform";
+          sheet.current.style.transformOrigin = `${w / 2}px ${h * 0.45}px`;
+        }
+        const bodyEdge = fibres.current[0]?.ownerSVGElement;
+        if (bodyEdge) bodyEdge.style.visibility = "hidden";
         voice.current?.stop();
         voice.current = null;
         // A phone's scrolling sheet would grow to fit the falling stub: hold it still
@@ -277,22 +287,22 @@ export default function TearSheet({
         s.drawnAngle = s.angle;
       }
 
-      if (s.mode === "falling" && fall.current) {
-        // Sway, rock and tumble build up as it gets going, as falling paper does
+      if (s.mode === "falling" && sheet.current) {
+        // Sway, rock and tip build up as it gets going, as a falling sheet's do
         const t = s.t;
         const build = 1 - Math.exp(-2.6 * t);
         const phase = Math.PI * 2 * SWAY_HZ * t;
         const x = SWAY * Math.sin(phase) * build;
         const rock = ROCK * Math.sin(phase + 1.1) * build + SPIN * t;
         const tumble = TUMBLE * Math.sin(phase * 0.8 + 0.4) * build;
-        fall.current.style.transform = `translate(${x.toFixed(2)}px, ${s.y.toFixed(2)}px) perspective(900px) rotateX(${tumble.toFixed(2)}deg) rotate(${rock.toFixed(2)}deg)`;
+        sheet.current.style.transform = `translate(${x.toFixed(2)}px, ${s.y.toFixed(2)}px) perspective(1600px) rotateX(${tumble.toFixed(2)}deg) rotate(${rock.toFixed(2)}deg)`;
         // Gone below the screen? (checked every other frame; reading layout isn't free)
         if (++frameNo % 2 === 0) {
-          const top = fall.current.getBoundingClientRect().top;
+          const top = sheet.current.getBoundingClientRect().top;
           if (top > window.innerHeight + 4 || t > FALL_MAX) {
             s.mode = "gone";
             if (scroller) scroller.style.overflowY = "";
-            fall.current.style.visibility = "hidden";
+            sheet.current.style.visibility = "hidden";
             cb.current.onTorn();
             window.setTimeout(restock, 600);
           }
@@ -336,23 +346,28 @@ export default function TearSheet({
     s.mode = "running";
   };
 
-  /** A fresh stub slides in from under the sheet. */
+  /** A fresh résumé springs back into place, whole, with a new stub. */
   const restock = () => {
     sim.current = fresh();
-    if (fall.current) {
-      fall.current.style.transform = "";
-      fall.current.style.visibility = "visible";
-    }
     cut(0);
     hang(0, 0);
+    const bodyEdge = fibres.current[0]?.ownerSVGElement;
+    if (bodyEdge) bodyEdge.style.visibility = "visible";
     restockSound();
-    untorn.current?.animate(
-      [
-        { transform: "translateY(22px)", opacity: 0 },
-        { transform: "translateY(0)", opacity: 1 },
-      ],
-      { duration: RESTOCK.duration, easing: RESTOCK.easing, fill: "backwards" },
-    );
+    const el = sheet.current;
+    if (el) {
+      el.style.transform = "";
+      el.style.visibility = "visible";
+      el.style.willChange = "";
+      el.animate(
+        [
+          { transform: "translateY(-26px) scale(0.985)", opacity: 0 },
+          { transform: "translateY(0) scale(1)", opacity: 1 },
+        ],
+        { duration: BACK.duration, easing: BACK.easing, fill: "backwards" },
+      );
+    }
+    strip.current?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: 60, easing: "ease-out", fill: "backwards" });
     cb.current.onTearing(false);
     window.setTimeout(starterTear, RESTOCK.duration);
   };
@@ -442,8 +457,8 @@ export default function TearSheet({
 
   return (
     <div className="relative">
-      {/* The body: drawn once, its shadow included */}
-      <div style={{ filter: "drop-shadow(0 1px 1.5px rgba(48,40,26,0.1)) drop-shadow(0 12px 18px rgba(48,40,26,0.15))" }}>
+      {/* The body: drawn once, its shadow included. This is what falls once it's torn off */}
+      <div ref={sheet} className="relative z-[1]" style={{ filter: "drop-shadow(0 1px 1.5px rgba(48,40,26,0.1)) drop-shadow(0 12px 18px rgba(48,40,26,0.15))" }}>
         <div ref={body} className="relative" style={{ ...TOP_EDGE, backgroundColor: PAPER }}>
           <Grain />
           <Sheet />
@@ -455,8 +470,7 @@ export default function TearSheet({
         <div ref={untorn} className="absolute inset-0 overflow-hidden" style={{ backgroundColor: PAPER }}>
           {inside(0)}
         </div>
-        {/* Falling: moves the torn part as a whole once it's free */}
-        <div ref={fall} className="absolute inset-0" style={{ willChange: "transform" }}>
+        <div>
           <div ref={flapWrap} className="absolute inset-0" style={{ filter: "drop-shadow(0 3px 4px rgba(48,40,26,0.16))", willChange: "transform" }}>
             <div ref={flap} className="absolute inset-0 overflow-hidden" style={{ backgroundColor: PAPER, clipPath: "polygon(0 0, 0 0, 0 0)" }}>
               {inside(1)}
