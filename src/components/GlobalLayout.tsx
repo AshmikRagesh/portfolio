@@ -8,6 +8,7 @@ import { CuriosityProvider } from "@/context/CuriosityContext";
 import { BellStageProvider } from "@/components/host/BellStage";
 import TabPresence from "@/components/host/TabPresence";
 import BellaDirector from "@/components/bella/BellaDirector";
+import ResumeOverlay from "@/components/resume/ResumeOverlay";
 
 export default function GlobalLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -28,6 +29,8 @@ export default function GlobalLayout({ children }: { children: ReactNode }) {
         <PixelRuler />
         {children}
       </BellStageProvider>
+      {/* Fancy paper: the résumé sheet, opened from the navbar */}
+      <ResumeOverlay />
     </CuriosityProvider>
   );
 }

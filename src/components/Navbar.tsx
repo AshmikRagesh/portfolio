@@ -9,8 +9,9 @@ import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/C
 import HostCharacter, { hostLayout, type HostGlasses, type HostMood } from "@/components/host/HostCharacter";
 import { useVideoGlasses } from "@/lib/curiosity/watching";
 import { track } from "@/lib/curiosity/report";
-import { awardStamp, celebrate, useMoment, type Moment } from "@/lib/bella/progress";
+import { awardStamp, useMoment, type Moment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
+import { openResume, RESUME_PDF } from "@/lib/resume";
 
 type QueuedMoment = Moment & { id: number };
 
@@ -26,7 +27,7 @@ const navLinks = [
   { label: "Play", href: "#play" },
   { label: "About", href: "#about" },
   { label: "Pass", href: "/pass" },
-  { label: "Fancy paper", href: "/resume" },
+  { label: "Fancy paper", href: RESUME_PDF },
 ];
 
 // Host size in the navbar — the 68px row leaves a little air above and below
@@ -270,7 +271,7 @@ function linkHref(href: string, pathname: string) {
 // A tab: on hover, a quick pen loop is drawn round the word, like the circled marks in the
 // case studies. The page you're on (Pass, Fancy paper) keeps its circle.
 function NavTab({ label, href, pathname }: { label: string; href: string; pathname: string }) {
-  const resume = href === "/resume";
+  const resume = href === RESUME_PDF;
   const current = href.startsWith("/") && pathname === href;
   const className = `nav-tab font-brand text-body font-normal uppercase tracking-[1px] whitespace-nowrap ${
     current ? "text-grape" : "text-text-base/70"
@@ -284,9 +285,17 @@ function NavTab({ label, href, pathname }: { label: string; href: string; pathna
     </span>
   );
   return resume ? (
-    <Link href={href} onClick={() => celebrate("resume", "Resume downloaded.")} aria-current={current ? "page" : undefined} className={className}>
+    // Opens the résumé sheet; the celebration plays once a copy is downloaded
+    <a
+      href={href}
+      onClick={(e) => {
+        e.preventDefault();
+        openResume();
+      }}
+      className={className}
+    >
       {inner}
-    </Link>
+    </a>
   ) : (
     <a href={linkHref(href, pathname)} aria-current={current ? "page" : undefined} className={className}>
       {inner}
@@ -417,7 +426,13 @@ export default function Navbar() {
                   className={`flex items-center font-brand text-body font-normal uppercase tracking-[1px] px-[20px] py-[16px] transition-colors duration-200 hover:text-grape ${
                     href.startsWith("/") && pathname === href ? "text-grape" : "text-text-base/70"
                   }`}
-                  onClick={() => setMenuOpen(false)}
+                  onClick={(e) => {
+                    setMenuOpen(false);
+                    if (href === RESUME_PDF) {
+                      e.preventDefault();
+                      openResume();
+                    }
+                  }}
                 >
                   {label}
                 </a>

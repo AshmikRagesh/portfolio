@@ -1018,3 +1018,9 @@
   .work-cta__inner, .work-cta__circle, .work-cta__circle > span { transition: none; }
 }
 
+
+/* Fancy paper: the sheets on the résumé pile settling into focus */
+@keyframes resume-focus-in {
+  from { opacity: 0; filter: blur(16px); }
+  to { opacity: 1; filter: blur(0px); }
+}
