@@ -380,15 +380,19 @@ export default function Navbar() {
       // A floating bar on every screen size: inset from the edges, rounded, frosted, with a
       // soft lift. On large screens it stops at 1240px wide, centred. (Desktop variation
       // being tried out; the phone menu card drops out of it on small screens.)
-      // The surface (glass, hairline ring, top highlight, layered shadow) is .floating-header
-      // in globals.css; it lifts a little further once the page scrolls under it
+      // Desktop: a full-width bar that sits flat on the page with a hairline at the top,
+      // and turns frosted with a soft lift once the page scrolls under it. Phones: a floating
+      // bar (inset, glass, hairline ring, layered shadow: .floating-header in globals.css)
+      // that the menu card drops out of.
       data-scrolled={scrolled || undefined}
-      className={`floating-header fixed top-[28px] left-[12px] right-[12px] md:left-[24px] md:right-[24px] mx-auto max-w-[1240px] h-[60px] md:h-[64px] z-50 ${
-        showNav ? "translate-y-0" : "-translate-y-[110px] pointer-events-none"
-      }`}
+      className={`floating-header fixed z-50 top-[28px] left-[12px] right-[12px] h-[60px] md:top-[20px] md:left-0 md:right-0 md:h-[68px] md:border-b md:transition-[transform,box-shadow,background-color,border-color] md:duration-300 md:ease-in-out ${
+        scrolled
+          ? "md:bg-background/80 md:backdrop-blur-md md:backdrop-saturate-150 md:border-line-soft md:shadow-[0_8px_24px_-12px_rgba(30,5,37,0.16)]"
+          : "md:bg-background md:border-line-soft"
+      } ${showNav ? "translate-y-0" : "-translate-y-[110px] pointer-events-none"}`}
     >
       {/* Main nav row — the bell on the left, the tabs on the right */}
-      <nav className="relative flex items-center justify-between h-full px-[10px] md:pl-[14px] md:pr-[20px]">
+      <nav className="relative flex items-center justify-between h-full nav-container max-md:!px-[10px]">
         <div className="relative">
           <NavHost bubble={bubble} record={record} moment={momentHere} />
 

@@ -1071,14 +1071,15 @@
   .mobile-toggle-label, .mobile-toggle-line, .mobile-menu-go, .mobile-menu-go-out, .mobile-menu-go-in { transition: none; }
 }
 
-/* ── Floating header ─────────────────────────────────────────────────────────
+/* ── Floating header (phones only; desktop keeps the full-width bar) ───────────
    Glass: mostly-white, strongly blurred and a little more saturated, so what passes
    under it reads as colour, not detail. Edge: a 1px ring in blackcurrant at low alpha
    (crisper than a grey border, and no layout shift), plus a white highlight along the
    inside top, as light catches a pane. Elevation: a tight contact shadow and a soft
    ambient one, tinted to the brand; it lifts further once the page scrolls under it. */
+@media (max-width: 767.98px) {
 .floating-header {
-  border-radius: 12px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.8);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
@@ -1103,4 +1104,5 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .floating-header { transition: none; }
+}
 }

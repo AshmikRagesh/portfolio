@@ -73,8 +73,8 @@ export function MobileMenu({ open, onClose, links, pathname }: { open: boolean; 
     }
     card.current?.animate(
       [
-        { clipPath: "inset(0 0 100% 0 round 20px)", transform: "translateY(-10px) scale(0.97)", opacity: 1 },
-        { clipPath: "inset(0 0 0% 0 round 20px)", transform: "translateY(0) scale(1)", opacity: 1 },
+        { clipPath: "inset(0 0 100% 0 round 8px)", transform: "translateY(-10px) scale(0.97)", opacity: 1 },
+        { clipPath: "inset(0 0 0% 0 round 8px)", transform: "translateY(0) scale(1)", opacity: 1 },
       ],
       { duration: DROP.duration, easing: DROP.easing, fill: "backwards" },
     );
@@ -96,8 +96,8 @@ export function MobileMenu({ open, onClose, links, pathname }: { open: boolean; 
     scrim.current?.animate([{ opacity: 1 }, { opacity: 0 }], { ...out, duration: 260 });
     const a = card.current?.animate(
       [
-        { clipPath: "inset(0 0 0% 0 round 20px)", transform: "translateY(0) scale(1)", opacity: 1 },
-        { clipPath: "inset(0 0 40% 0 round 20px)", transform: "translateY(-8px) scale(0.98)", opacity: 0 },
+        { clipPath: "inset(0 0 0% 0 round 8px)", transform: "translateY(0) scale(1)", opacity: 1 },
+        { clipPath: "inset(0 0 40% 0 round 8px)", transform: "translateY(-8px) scale(0.98)", opacity: 0 },
       ],
       out,
     );
@@ -153,7 +153,7 @@ export function MobileMenu({ open, onClose, links, pathname }: { open: boolean; 
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
-        className="fixed inset-x-[12px] z-[55] origin-top overflow-hidden rounded-[20px] border border-line-soft bg-background shadow-[0_24px_48px_-20px_rgba(30,5,37,0.28),0_2px_6px_rgba(30,5,37,0.06)]"
+        className="fixed inset-x-[12px] z-[55] origin-top overflow-hidden rounded-[8px] border border-line-soft bg-background shadow-[0_24px_48px_-20px_rgba(30,5,37,0.28),0_2px_6px_rgba(30,5,37,0.06)]"
         style={{ top: CARD_TOP }}
       >
         <nav aria-label="Main">
