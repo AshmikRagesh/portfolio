@@ -31,7 +31,7 @@ export const STAMP_INK: Record<StampKey, string> = {
   back: "#f2876a",
 };
 const SEED: Record<StampKey, number> = { ring: 3, screen: 11, desk: 13, two: 17, back: 23 };
-const SERIF = "GT Alpina Trial, Georgia, serif";
+const SERIF = "PP Kyoto, Georgia, serif";
 const MONO = "Geist Mono, ui-monospace, monospace";
 
 const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];

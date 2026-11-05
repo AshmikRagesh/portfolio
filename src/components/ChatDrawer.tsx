@@ -148,7 +148,7 @@ export default function ChatDrawer() {
       {/* ── Header ── matches ruler+nav (88px) on home, nav only (68px) on case study */}
       <div className={`shrink-0 flex items-center justify-between px-5 border-b border-line bg-surface ${isCaseStudy ? "h-[68px]" : "h-[88px]"}`}>
         <div className="flex items-center gap-2">
-          {/* GT Alpina Regular (not italic) per Figma */}
+          {/* PP Kyoto, the heading font (not italic) */}
           <span className="font-heading text-[20px] text-heading leading-[32px] tracking-[-0.2px] whitespace-nowrap">
             ASH LLM
           </span>

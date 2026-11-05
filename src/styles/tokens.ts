@@ -36,11 +36,11 @@ export const tokens = {
     brand: ["var(--font-brand)", "monospace"],
     // Geist — plain UI sans, used for the host's tooltip (loaded via next/font/google in layout.tsx)
     geist: ["var(--font-geist)", "sans-serif"],
-    // Roboto Slab — body / lead / captions, and the page default (loaded via next/font/google in layout.tsx)
-    body: ["var(--font-body)", "sans-serif"],
-    // GT Alpina Trial — display headings (loaded via @font-face in globals.css)
-    // Local font files in public/fonts/: GT-Alpina-Standard-{Regular,Medium,Regular-Italic}-Trial.otf
-    heading: ["GT Alpina Trial", "serif"],
+    // Geist — the secondary font: body / lead / captions, and the page default (next/font/google in layout.tsx)
+    body: ["var(--font-geist)", "sans-serif"],
+    // PP Kyoto — the primary font, for display headings (loaded via @font-face in globals.css)
+    // Local font files in public/fonts/: PPKyoto-{Light,LightItalic,Medium,MediumItalic,Extrabold}.otf
+    heading: ["PP Kyoto", "serif"],
     // Nanum Pen Script — handwritten decorative tags (loaded via next/font/google in layout.tsx)
     // Exposed under tailwind.config.ts as `font-handwriting`.
   },
