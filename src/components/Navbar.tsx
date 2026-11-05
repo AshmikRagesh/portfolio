@@ -377,14 +377,15 @@ export default function Navbar() {
       // it turns frosted with a soft lift
       // On phones it's a floating bar instead: inset from the edges, rounded, frosted, with
       // the menu card dropping out of it (MobileMenu.tsx)
-      className={`fixed top-[20px] right-0 left-0 h-[68px] z-50 border-b transition-[transform,box-shadow,background-color,border-color] duration-300 ease-in-out max-md:top-[28px] max-md:left-[12px] max-md:right-[12px] max-md:h-[60px] max-md:rounded-[16px] max-md:border max-md:bg-background/85 max-md:backdrop-blur-md max-md:backdrop-saturate-150 max-md:shadow-[0_10px_28px_-14px_rgba(30,5,37,0.22)] ${
-        scrolled
-          ? "bg-background/80 backdrop-blur-md backdrop-saturate-150 border-line-soft shadow-[0_8px_24px_-12px_rgba(30,5,37,0.16)]"
-          : "bg-background border-line-soft"
-      } ${showNav ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
+      // A floating bar on every screen size: inset from the edges, rounded, frosted, with a
+      // soft lift. On large screens it stops at 1240px wide, centred. (Desktop variation
+      // being tried out; the phone menu card drops out of it on small screens.)
+      className={`fixed top-[28px] left-[12px] right-[12px] md:left-[24px] md:right-[24px] mx-auto max-w-[1240px] h-[60px] md:h-[64px] z-50 rounded-[16px] border border-line-soft bg-background/85 backdrop-blur-md backdrop-saturate-150 transition-[transform,box-shadow] duration-300 ease-in-out ${
+        scrolled ? "shadow-[0_12px_30px_-14px_rgba(30,5,37,0.26)]" : "shadow-[0_10px_28px_-16px_rgba(30,5,37,0.2)]"
+      } ${showNav ? "translate-y-0" : "-translate-y-[110px] pointer-events-none"}`}
     >
       {/* Main nav row — the bell on the left, the tabs on the right */}
-      <nav className="relative flex items-center justify-between h-full nav-container max-md:!pl-[10px] max-md:!pr-[10px]">
+      <nav className="relative flex items-center justify-between h-full px-[10px] md:pl-[14px] md:pr-[20px]">
         <div className="relative">
           <NavHost bubble={bubble} record={record} moment={momentHere} />
 
