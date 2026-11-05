@@ -1001,3 +1001,16 @@
 @media (prefers-reduced-motion: reduce) {
   .work-card { transition: none; }
 }
+/* Work cards' "Read case study" pill: on card hover the pill turns grape and shrinks to make
+   room for an arrow circle that grows in at its right edge, the arrow sliding in after it */
+.work-cta { --cta-h: 48px; position: relative; display: inline-flex; align-self: flex-start; align-items: center; height: var(--cta-h); color: #fff; }
+.work-cta__inner, .work-cta__circle { display: flex; align-items: center; justify-content: center; height: var(--cta-h); border-radius: 999px; background-color: #32073e; white-space: nowrap; transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
+.work-cta__inner { position: relative; z-index: 1; width: 100%; padding-inline: 32px; }
+.work-cta__circle { position: absolute; right: 0; width: var(--cta-h); transform-origin: 0 center; scale: 0; }
+.work-cta__circle > span { display: grid; place-items: center; width: 100%; height: 100%; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) 0.1s; }
+.group:hover .work-cta__inner, .group:focus-visible .work-cta__inner { width: calc(100% - var(--cta-h) - 4px); background-color: #9d136a; }
+.group:hover .work-cta__circle, .group:focus-visible .work-cta__circle { scale: 1; background-color: #9d136a; }
+.group:hover .work-cta__circle > span, .group:focus-visible .work-cta__circle > span { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .work-cta__inner, .work-cta__circle, .work-cta__circle > span { transition: none; }
+}
