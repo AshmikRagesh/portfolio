@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { ArrowsSplit, FileX, HourglassMedium, Image as ImageIcon, Users } from "@phosphor-icons/react/dist/ssr";
+import { ArrowsSplit, ClockCounterClockwise, FileX, HourglassMedium, Image as ImageIcon, Images, ListBullets, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -14,7 +14,6 @@ import {
   ProblemStatement,
   PullQuote,
   ChatQuotes,
-  DecisionTree,
   StatTiles,
   MoreDetail,
   PreviewLink,
@@ -573,22 +572,22 @@ const IMPACT_SO_FAR = [
   { stat: "3 weeks", label: "from the first question to two approved designs" },
 ];
 
-// Each way the test can read out, what we'd do, and why it's ready to happen
+// Each way the test can read out, and what we'd do
 const OUTCOMES = [
   {
-    when: "If Variant 2 wins",
-    title: "Ship the text links",
-    detail: "They need no photos, so every continent can switch over on day one.",
+    icon: <ListBullets size={28} weight="fill" className="text-grape" />,
+    title: "If Variant 2 wins",
+    description: "Ship the text links. They need no photos, so every continent can switch over on day one.",
   },
   {
-    when: "If Variant 3 wins",
-    title: "Ship the image cards",
-    detail: "Every continent's photo pair is already approved, so nothing waits on content.",
+    icon: <Images size={28} weight="fill" className="text-grape" />,
+    title: "If Variant 3 wins",
+    description: "Ship the image cards. Every continent's photo pair is already approved, so nothing waits on content.",
   },
   {
-    when: "If today\u2019s menu wins",
-    title: "Keep the menu, keep the data",
-    detail: "The 8 new tracking events still show which path people want, to shape the next idea.",
+    icon: <ClockCounterClockwise size={28} weight="fill" className="text-grape" />,
+    title: "If today\u2019s menu wins",
+    description: "Keep the menu as it is. The 8 new tracking events still show which path people want.",
   },
 ];
 
@@ -620,20 +619,14 @@ function Outcome() {
           </p>
         </Copy>
         <Visual>
-          <DecisionTree
-            start={{
-              label: "When the test reads out",
-              title: "Same visitors, three menus, three numbers",
-              measures: ["Reached a page", "Path picked", "Drop-off"],
-            }}
-            branches={OUTCOMES}
-            end={{
-              label: "Either way",
-              title: "If destinations draw clicks, take the choice further",
-              detail: "Offer the same explore-or-browse choice beyond the menu, wherever people start their search.",
-            }}
-          />
+          <CardGrid items={OUTCOMES} />
         </Visual>
+        <Copy>
+          <p>
+            Either way, <Highlight>if Explore Destination draws clicks, the same
+            choice can be offered beyond the menu</Highlight>.
+          </p>
+        </Copy>
       </div>
     </Chapter>
   );
