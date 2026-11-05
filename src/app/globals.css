@@ -67,52 +67,31 @@
 }
 
 /*
-  PP Kyoto — the primary font, for display headings. Files live in public/fonts/.
-  Kyoto has no Regular cut, so Medium serves both the normal (400) and medium (500)
-  weights; Light is there as 300 for anything that asks for it.
+  GT Alpina Trial — display headings. Files live in public/fonts/.
 */
 @font-face {
-  font-family: "PP Kyoto";
-  src: url("/fonts/PPKyoto-Light.otf") format("opentype");
-  font-weight: 300;
+  font-family: "GT Alpina Trial";
+  src: url("/fonts/GT-Alpina-Standard-Regular-Trial.otf") format("opentype");
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "PP Kyoto";
-  src: url("/fonts/PPKyoto-LightItalic.otf") format("opentype");
-  font-weight: 300;
+  font-family: "GT Alpina Trial";
+  src: url("/fonts/GT-Alpina-Standard-Regular-Italic-Trial.otf") format("opentype");
+  font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "PP Kyoto";
-  src: url("/fonts/PPKyoto-Medium.otf") format("opentype");
-  font-weight: 400 500;
+  font-family: "GT Alpina Trial";
+  src: url("/fonts/GT-Alpina-Standard-Medium-Trial.otf") format("opentype");
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
-
-@font-face {
-  font-family: "PP Kyoto";
-  src: url("/fonts/PPKyoto-MediumItalic.otf") format("opentype");
-  font-weight: 400 500;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "PP Kyoto";
-  src: url("/fonts/PPKyoto-Extrabold.otf") format("opentype");
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* PP Kyoto is always set at -1px letter spacing, whatever tracking a heading asks for */
-.font-heading { letter-spacing: -1px !important; }
 
 /* ── Work card reveals ───────────────────────────────────────────────────────────
    Open works: the first hover/focus drops the key onto the brass hook, where it then
@@ -287,7 +266,7 @@
 .pass-stamp { width: 12cqw; height: 12cqw; }
 /* Embossed in the card's own colour: a light edge along the bottom, a dark one along the top */
 .pass-title {
-  font-family: "PP Kyoto", Georgia, serif; font-size: 12.4cqw; line-height: 1; letter-spacing: -0.3cqw;
+  font-family: "GT Alpina Trial", Georgia, serif; font-size: 12.4cqw; line-height: 1; letter-spacing: -0.3cqw;
   color: #4d165b; text-shadow: 0 -0.24cqw 0 rgba(10, 0, 14, 0.7), 0 0.24cqw 0 rgba(255, 220, 255, 0.22);
 }
 /* The visitor's own numbers, big */
@@ -295,7 +274,7 @@
 .pass-details > div { padding: 0 3.6cqw; display: grid; gap: 0.6cqw; }
 .pass-details > div + div { border-left: 1px solid rgba(227, 189, 98, 0.35); }
 .pass-details dt { font-size: 2cqw; line-height: 1.3; color: #e3bd62; }
-.pass-details dd { margin: 0; font-family: "PP Kyoto", Georgia, serif; font-size: 4.6cqw; line-height: 1; color: #f8f1e3; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pass-details dd { margin: 0; font-family: "GT Alpina Trial", Georgia, serif; font-size: 4.6cqw; line-height: 1; color: #f8f1e3; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pass-from { margin-top: 2.4cqw; font-size: 2cqw; color: rgba(248, 241, 227, 0.6); }
 .pass-details, .pass-from { opacity: 0; transform: translateY(1cqw); transition: opacity 600ms ease 150ms, transform 600ms ease 150ms; }
 .pass.is-revealed .pass-details, .pass.is-revealed .pass-from { opacity: 1; transform: none; }

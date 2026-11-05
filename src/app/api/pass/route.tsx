@@ -32,12 +32,12 @@ const dataUri = (svg: string) => `data:image/svg+xml;base64,${Buffer.from(svg).t
 export async function GET(req: Request) {
   const d = decodePass(new URL(req.url).searchParams.get("c") ?? "") ?? { n: null, f: null, a: "", s: 0, h: null, k: [] };
   const [alpina, g400, g500] = await Promise.all([
-    readFile(path.join(process.cwd(), "public/fonts/PPKyoto-Medium.otf")).catch(() => null),
+    readFile(path.join(process.cwd(), "public/fonts/GT-Alpina-Standard-Regular-Trial.otf")).catch(() => null),
     geist(400),
     geist(500),
   ]);
   const fonts = [
-    alpina && { name: "Kyoto", data: alpina, weight: 400 as const },
+    alpina && { name: "Alpina", data: alpina, weight: 400 as const },
     g400 && { name: "Geist", data: g400, weight: 400 as const },
     g500 && { name: "Geist", data: g500, weight: 500 as const },
   ].filter(Boolean) as { name: string; data: ArrayBuffer | Buffer; weight: 400 | 500 }[];
@@ -69,7 +69,7 @@ export async function GET(req: Request) {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                fontFamily: "Kyoto",
+                fontFamily: "Alpina",
                 fontSize: 108,
                 lineHeight: 0.88,
                 color: "#4d165b",

@@ -9,7 +9,7 @@
 //   last two weeks    visits per day, with the daily average; hover or arrow keys
 //                     pick a day
 //   stamps            the share of visits that found each one, in each stamp's ink
-// Numbers in PP Kyoto and count up when first seen, labels in Geist, grape for the
+// Numbers in GT Alpina and count up when first seen, labels in Geist, grape for the
 // visitor's own. Refreshes every
 // 30 seconds so "here right now" stays live.
 

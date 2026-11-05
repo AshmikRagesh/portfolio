@@ -38,9 +38,9 @@ export const tokens = {
     geist: ["var(--font-geist)", "sans-serif"],
     // Geist — the secondary font: body / lead / captions, and the page default (next/font/google in layout.tsx)
     body: ["var(--font-geist)", "sans-serif"],
-    // PP Kyoto — the primary font, for display headings (loaded via @font-face in globals.css)
-    // Local font files in public/fonts/: PPKyoto-{Light,LightItalic,Medium,MediumItalic,Extrabold}.otf
-    heading: ["PP Kyoto", "serif"],
+    // GT Alpina Trial — the primary font, for display headings (loaded via @font-face in globals.css)
+    // Local font files in public/fonts/: GT-Alpina-Standard-{Regular,Medium,Regular-Italic}-Trial.otf
+    heading: ["GT Alpina Trial", "serif"],
     // Nanum Pen Script — handwritten decorative tags (loaded via next/font/google in layout.tsx)
     // Exposed under tailwind.config.ts as `font-handwriting`.
   },
