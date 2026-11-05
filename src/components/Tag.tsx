@@ -15,7 +15,7 @@ export type Discipline = "Design systems" | "Product design" | "Interaction desi
 const BASE =
   "inline-flex h-[24px] shrink-0 items-center whitespace-nowrap rounded-xs px-[8px] text-[12px] leading-[16px] tracking-[0px]";
 
-// Works cards keep Geist Mono capitals; case studies use plain Geist in their tags
+// Taste notes keep Geist Mono capitals; work cards and case studies use plain Geist
 const FACES = {
   mono: "font-brand uppercase",
   geist: "font-geist",
@@ -41,10 +41,10 @@ export function Tag({
   return <span className={`${BASE} gap-[4px] ${FACES[face]} ${TONES[tone]}`}>{children}</span>;
 }
 
-export function TypeTag({ type }: { type: ProjectType }) {
-  return <Tag tone="grape">{type}</Tag>;
+export function TypeTag({ type, face }: { type: ProjectType; face?: keyof typeof FACES }) {
+  return <Tag tone="grape" face={face}>{type}</Tag>;
 }
 
-export function DisciplineTag({ discipline }: { discipline: Discipline }) {
-  return <Tag tone="grey">{discipline}</Tag>;
+export function DisciplineTag({ discipline, face }: { discipline: Discipline; face?: keyof typeof FACES }) {
+  return <Tag tone="grey" face={face}>{discipline}</Tag>;
 }
