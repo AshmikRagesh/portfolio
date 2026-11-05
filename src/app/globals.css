@@ -1070,3 +1070,37 @@
 @media (prefers-reduced-motion: reduce) {
   .mobile-toggle-label, .mobile-toggle-line, .mobile-menu-go, .mobile-menu-go-out, .mobile-menu-go-in { transition: none; }
 }
+
+/* ── Floating header ─────────────────────────────────────────────────────────
+   Glass: mostly-white, strongly blurred and a little more saturated, so what passes
+   under it reads as colour, not detail. Edge: a 1px ring in blackcurrant at low alpha
+   (crisper than a grey border, and no layout shift), plus a white highlight along the
+   inside top, as light catches a pane. Elevation: a tight contact shadow and a soft
+   ambient one, tinted to the brand; it lifts further once the page scrolls under it. */
+.floating-header {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 0 0 1px rgba(30, 5, 37, 0.06),
+    0 1px 2px rgba(30, 5, 37, 0.04),
+    0 6px 16px -8px rgba(30, 5, 37, 0.1);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, background-color 0.35s ease;
+}
+.floating-header[data-scrolled] {
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(30, 5, 37, 0.07),
+    0 1px 2px rgba(30, 5, 37, 0.05),
+    0 10px 24px -10px rgba(30, 5, 37, 0.16),
+    0 28px 56px -28px rgba(30, 5, 37, 0.18);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .floating-header { background: rgba(255, 255, 255, 0.96); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .floating-header { transition: none; }
+}

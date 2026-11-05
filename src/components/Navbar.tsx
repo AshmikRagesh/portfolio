@@ -380,9 +380,12 @@ export default function Navbar() {
       // A floating bar on every screen size: inset from the edges, rounded, frosted, with a
       // soft lift. On large screens it stops at 1240px wide, centred. (Desktop variation
       // being tried out; the phone menu card drops out of it on small screens.)
-      className={`fixed top-[28px] left-[12px] right-[12px] md:left-[24px] md:right-[24px] mx-auto max-w-[1240px] h-[60px] md:h-[64px] z-50 rounded-[16px] border border-line-soft bg-background/85 backdrop-blur-md backdrop-saturate-150 transition-[transform,box-shadow] duration-300 ease-in-out ${
-        scrolled ? "shadow-[0_12px_30px_-14px_rgba(30,5,37,0.26)]" : "shadow-[0_10px_28px_-16px_rgba(30,5,37,0.2)]"
-      } ${showNav ? "translate-y-0" : "-translate-y-[110px] pointer-events-none"}`}
+      // The surface (glass, hairline ring, top highlight, layered shadow) is .floating-header
+      // in globals.css; it lifts a little further once the page scrolls under it
+      data-scrolled={scrolled || undefined}
+      className={`floating-header fixed top-[28px] left-[12px] right-[12px] md:left-[24px] md:right-[24px] mx-auto max-w-[1240px] h-[60px] md:h-[64px] z-50 ${
+        showNav ? "translate-y-0" : "-translate-y-[110px] pointer-events-none"
+      }`}
     >
       {/* Main nav row — the bell on the left, the tabs on the right */}
       <nav className="relative flex items-center justify-between h-full px-[10px] md:pl-[14px] md:pr-[20px]">
