@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
 import { useCuriosity } from "@/context/CuriosityContext";
 import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/CuriosityBubble";
 import HostCharacter, { hostLayout, type HostGlasses, type HostMood } from "@/components/host/HostCharacter";
@@ -12,6 +11,7 @@ import { track } from "@/lib/curiosity/report";
 import { awardStamp, useMoment, type Moment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
 import { openResume, RESUME_PDF } from "@/lib/resume";
+import { MenuToggle, MobileMenu } from "@/components/MobileMenu";
 
 type QueuedMoment = Moment & { id: number };
 
@@ -317,7 +317,8 @@ export default function Navbar() {
   const momentHere = moment && !footerOnStage ? moment : null;
   const bubble = useMilestoneBubble(record, footerOnStage || momentHere !== null);
   const speaking = bubble.message !== null;
-  const showNav = isNavVisible || speaking || momentHere !== null;
+  const showNav = isNavVisible || speaking || momentHere !== null || menuOpen;
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -374,14 +375,16 @@ export default function Navbar() {
       onFocusCapture={() => setIsNavVisible(true)}
       // At the top it sits flat on the page with a hairline; once the page scrolls under it,
       // it turns frosted with a soft lift
-      className={`fixed top-[20px] right-0 left-0 h-[68px] z-50 border-b transition-[transform,box-shadow,background-color,border-color] duration-300 ease-in-out ${
+      // On phones it's a floating bar instead: inset from the edges, rounded, frosted, with
+      // the menu card dropping out of it (MobileMenu.tsx)
+      className={`fixed top-[20px] right-0 left-0 h-[68px] z-50 border-b transition-[transform,box-shadow,background-color,border-color] duration-300 ease-in-out max-md:top-[28px] max-md:left-[12px] max-md:right-[12px] max-md:h-[60px] max-md:rounded-[20px] max-md:border max-md:bg-background/85 max-md:backdrop-blur-md max-md:backdrop-saturate-150 max-md:shadow-[0_10px_28px_-14px_rgba(30,5,37,0.22)] ${
         scrolled
           ? "bg-background/80 backdrop-blur-md backdrop-saturate-150 border-line-soft shadow-[0_8px_24px_-12px_rgba(30,5,37,0.16)]"
           : "bg-background border-line-soft"
       } ${showNav ? "translate-y-0" : "-translate-y-[100px] pointer-events-none"}`}
     >
       {/* Main nav row — the bell on the left, the tabs on the right */}
-      <nav className="relative flex items-center justify-between h-full nav-container">
+      <nav className="relative flex items-center justify-between h-full nav-container max-md:!pl-[10px] max-md:!pr-[10px]">
         <div className="relative">
           <NavHost bubble={bubble} record={record} moment={momentHere} />
 
@@ -401,47 +404,14 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Mobile: just the menu */}
+        {/* Phones: the menu toggle */}
         <div className="md:hidden flex items-center">
-          <button
-            className="flex items-center justify-center size-[40px] rounded-full border border-line-soft bg-surface text-heading transition-colors duration-200 hover:border-line"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X size={18} strokeWidth={1.5} /> : <Menu size={18} strokeWidth={1.5} />}
-          </button>
+          <MenuToggle open={menuOpen} onToggle={() => setMenuOpen((o) => !o)} />
         </div>
       </nav>
 
-      {/* Mobile drawer */}
-      {menuOpen && (
-        <div className="md:hidden bg-background border-b border-line-soft shadow-[0_8px_24px_-12px_rgba(30,5,37,0.16)]">
-          {/* Nav items — each with a bottom divider */}
-          <ul>
-            {navLinks.map(({ label, href }) => (
-              <li key={label} className="border-b border-line-soft">
-                <a
-                  href={linkHref(href, pathname)}
-                  aria-current={href.startsWith("/") && pathname === href ? "page" : undefined}
-                  className={`flex items-center font-brand text-body font-normal uppercase tracking-[1px] px-[20px] py-[16px] transition-colors duration-200 hover:text-grape ${
-                    href.startsWith("/") && pathname === href ? "text-grape" : "text-text-base/70"
-                  }`}
-                  onClick={(e) => {
-                    setMenuOpen(false);
-                    if (href === RESUME_PDF) {
-                      e.preventDefault();
-                      openResume();
-                    }
-                  }}
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
-
-        </div>
-      )}
+      {/* Phones: the floating menu card */}
+      <MobileMenu open={menuOpen} onClose={closeMenu} links={navLinks} pathname={pathname} />
     </header>
   );
 }
