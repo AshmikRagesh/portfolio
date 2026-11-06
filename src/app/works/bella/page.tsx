@@ -358,33 +358,33 @@ const USE_CASES: {
     num: 1,
     slug: "greets",
     title: "Greets you at set moments",
-    body: <>Bella checks in three times a visit, at 0:30, 2:00 and 5:00. Each time it rings once and types a short line in a compact tooltip that <Highlight>never covers the content</Highlight>, so reading isn&apos;t interrupted.</>,
+    body: <>Bella checks in a few times during a visit. It rings once, then types a short line in a compact tooltip that <Highlight>never covers the content</Highlight>.</>,
     tried: { label: "Tooltip options explored", items: TOOLTIPS },
   },
   {
     num: 2,
     slug: "time",
     title: "Shows your time on demand",
-    body: <>Hovering, focusing or tapping the bell <Highlight>lowers a sign with your active time</Highlight>, such as 4m 16s. On phones, a second tap hides it.</>,
+    body: <>Hovering over or tapping the bell <Highlight>lowers a sign with your active time</Highlight>. On phones, tapping again hides it.</>,
     tried: { label: "Sign options explored", items: SIGNS },
   },
   {
     num: 3,
     slug: "reads",
     title: "Reacts to what you're doing",
-    body: <>While a case study is open, Bella wears round gold reading glasses, and <Highlight>while a video you started is playing, it switches to 3D glasses</Highlight>. The timer keeps running in both.</>,
+    body: <>Bella puts on reading glasses while you read a case study and <Highlight>switches to 3D glasses while you watch a video</Highlight>. The timer keeps running in both.</>,
   },
   {
     num: 4,
     slug: "dozes",
     title: "Pauses when you step away",
-    body: <>If the tab is hidden or there&apos;s no activity for 30 seconds, the timer pauses and Bella dozes off, so <Highlight>only active time is counted</Highlight>. The browser tab dozes too, with the paused time in its title.</>,
+    body: <>When you switch tabs or stop interacting, the timer pauses and Bella dozes off, so <Highlight>only active time is counted</Highlight>.</>,
   },
   {
     num: 5,
     slug: "celebrates",
     title: "Rewards exploring",
-    body: <>Reading two case studies, reading all of them, downloading the resume or copying the email earns Bella a gold bow tie for about three seconds. <Highlight>Five stamps are hidden across the site</Highlight>; finding one surprises Bella and adds the stamp to your Curiosity Pass.</>,
+    body: <>Reaching a goal on the site earns Bella a gold bow tie. <Highlight>Stamps are hidden across the site</Highlight>, and each one you find is added to your Curiosity Pass.</>,
   },
   {
     num: 6,
@@ -396,7 +396,7 @@ const USE_CASES: {
     num: 7,
     slug: "footer",
     title: "Makes it easy to get in touch",
-    body: <>In the footer, a smaller Bella appears and hops along the counter, <Highlight>holding my email with a Copy email button</Highlight>. While it&apos;s visible, the navbar Bella ducks out of view and leaves its timer behind.</>,
+    body: <>In the footer, a smaller Bella appears <Highlight>holding my email with a Copy email button</Highlight>, while the navbar Bella steps out of view.</>,
   },
 ];
 
