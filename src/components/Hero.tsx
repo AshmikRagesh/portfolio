@@ -40,17 +40,17 @@ export default function Hero() {
             Chelsea pin. Right: the GitHub card over the Superhost medal. On a phone the
             book and the GitHub card sit at the shoulders and the pin and the medal just
             under the portrait. Each can be picked up and moved (Tossed). */}
-        <Tossed rotate={-6} delay={0} className="absolute left-[-32px] top-[-8px] z-10 md:left-[-112px] md:top-[8px] lg:left-[-188px] lg:top-[8px]">
+        <Tossed rotate={-6} delay={0} className="absolute left-[-32px] top-[-8px] z-10 md:left-[-112px] md:top-[8px] lg:left-[-188px] lg:top-[8px] xl:left-[-120px] xl:top-[-24px]">
           <TripsBook className="w-[104px] md:w-[140px] lg:w-[184px]" />
         </Tossed>
-        <Tossed rotate={4} delay={110} className="absolute right-[-32px] top-[-8px] z-10 md:right-[-112px] md:top-[8px] lg:right-[-188px] lg:top-[8px]">
+        <Tossed rotate={4} delay={110} className="absolute right-[-32px] top-[-8px] z-10 md:right-[-112px] md:top-[8px] lg:right-[-188px] lg:top-[8px] xl:right-[-136px] xl:top-[-20px]">
           <GithubWidget className="w-[104px] md:w-[140px] lg:w-[184px]" />
         </Tossed>
         <div className="relative z-10 -mt-14 flex w-full items-start justify-between px-6 md:contents">
-          <Tossed rotate={-6} delay={220} className="md:absolute md:left-[-88px] md:top-[296px] lg:left-[-136px] lg:top-[300px]">
+          <Tossed rotate={-6} delay={220} className="md:absolute md:left-[-88px] md:top-[296px] lg:left-[-136px] lg:top-[300px] xl:left-[-256px] xl:top-[200px]">
             <ChelseaBadge className="w-[64px] md:w-[80px] lg:w-[104px]" />
           </Tossed>
-          <Tossed rotate={5} delay={330} className="md:absolute md:right-[-88px] md:top-[296px] lg:right-[-136px] lg:top-[300px]">
+          <Tossed rotate={5} delay={330} className="md:absolute md:right-[-88px] md:top-[296px] lg:right-[-136px] lg:top-[300px] xl:right-[-284px] xl:top-[200px]">
             <NivasaMedal className="w-[64px] md:w-[80px] lg:w-[104px]" />
           </Tossed>
         </div>
