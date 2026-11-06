@@ -43,14 +43,14 @@ export default function Hero() {
         <Tossed rotate={-6} delay={0} className="absolute left-[-32px] top-[-8px] z-10 md:left-[-112px] md:top-[8px] lg:left-[-188px] lg:top-[8px]">
           <TripsBook className="w-[104px] md:w-[140px] lg:w-[184px]" />
         </Tossed>
-        <Tossed rotate={4} delay={110} className="absolute right-[-32px] top-0 z-10 md:right-[-120px] md:top-[44px] lg:right-[-196px] lg:top-[52px]">
-          <GithubWidget className="w-[140px] md:w-[176px] lg:w-[224px]" />
+        <Tossed rotate={4} delay={110} className="absolute right-[-32px] top-[-8px] z-10 md:right-[-112px] md:top-[8px] lg:right-[-188px] lg:top-[8px]">
+          <GithubWidget className="w-[104px] md:w-[140px] lg:w-[184px]" />
         </Tossed>
         <div className="relative z-10 -mt-14 flex w-full items-start justify-between px-6 md:contents">
           <Tossed rotate={-6} delay={220} className="md:absolute md:left-[-88px] md:top-[296px] lg:left-[-136px] lg:top-[300px]">
             <ChelseaBadge className="w-[64px] md:w-[80px] lg:w-[104px]" />
           </Tossed>
-          <Tossed rotate={5} delay={330} className="md:absolute md:right-[-88px] md:top-[280px] lg:right-[-136px] lg:top-[292px]">
+          <Tossed rotate={5} delay={330} className="md:absolute md:right-[-88px] md:top-[296px] lg:right-[-136px] lg:top-[300px]">
             <NivasaMedal className="w-[64px] md:w-[80px] lg:w-[104px]" />
           </Tossed>
         </div>

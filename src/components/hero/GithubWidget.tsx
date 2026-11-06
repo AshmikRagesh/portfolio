@@ -1,8 +1,8 @@
 "use client";
 
 // ── GitHub, live ──────────────────────────────────────────────────────────────
-// A small card on the desk: the GitHub mark, a grid of
-// contribution squares that glow and fade on their own, and the total. On hover the
+// A small upright card on the desk, the same size as the book so both sides of the
+// portrait carry the same weight: the GitHub mark, a tall grid of contribution squares that glow and fade on their own, and the total. On hover the
 // squares rearrange into "ship" and a tooltip offers the last four months. Click and it
 // does what the book and the medal do: comes to the middle of the screen and turns
 // over, and on the back are two calendars, Personal and Work, one block of weeks per
@@ -21,11 +21,12 @@ const level = (n: number) => (n <= 0 ? 0 : n < 5 ? 1 : n < 15 ? 2 : n < 30 ? 3 :
 
 // ── The chip ────────────────────────────────────────────────────────────────────
 const COLS = 18;
-const ROWS = 7;
+const ROWS = 13;
 const CELL = 8;
 const GAP = 3;
 
 // "ship" in a 3×5 pixel face, placed in the middle of the grid
+const WORD_TOP = Math.floor((ROWS - 5) / 2);
 const GLYPHS: Record<string, string[]> = {
   s: ["111", "100", "111", "001", "111"],
   h: ["101", "101", "111", "101", "101"],
@@ -38,7 +39,7 @@ function wordCells(word: string) {
   const total = widths.reduce((a, b) => a + b, 0) + word.length - 1;
   let x = Math.floor((COLS - total) / 2);
   [...word].forEach((c, k) => {
-    GLYPHS[c].forEach((row, y) => [...row].forEach((b, dx) => b === "1" && on.add((y + 1) * COLS + x + dx)));
+    GLYPHS[c].forEach((row, y) => [...row].forEach((b, dx) => b === "1" && on.add((y + WORD_TOP) * COLS + x + dx)));
     x += widths[k] + 1;
   });
   return on;
@@ -242,33 +243,32 @@ function Mark({ size = 14 }: { size?: number }) {
 
 // ── The card (front) ──────────────────────────────────────────────────────────
 export const CARD_W = 224;
-export const CARD_H = 156;
+// Same proportions as the book cover (320 × 432)
+export const CARD_H = 302;
 
 function Card({ hovered }: { hovered: boolean }) {
   const c = useContrib();
   const total = c.accounts.reduce((a, x) => a + x.total, 0);
   return (
-    <div className="absolute inset-0 rounded-[10px] bg-gradient-to-b from-white to-[#fbfafc] p-[14px] shadow-[0_0_0_1px_rgba(30,5,37,0.07),0_1px_1px_rgba(30,5,37,0.05),0_4px_8px_rgba(30,5,37,0.06),0_16px_32px_rgba(30,5,37,0.10)]">
+    <div className="absolute inset-0 flex flex-col rounded-[12px] bg-gradient-to-b from-white to-[#fbfafc] p-[14px] shadow-[0_0_0_1px_rgba(30,5,37,0.07),0_1px_1px_rgba(30,5,37,0.05),0_4px_8px_rgba(30,5,37,0.06),0_16px_32px_rgba(30,5,37,0.10)]">
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(30,5,37,0.04)]" />
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-heading">
           <Mark />
           <span className="font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-secondary">Contributions</span>
         </span>
-        <span className="font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-muted">Last year</span>
-      </div>
-      <div className="mt-[10px]">
-        <Chip hovered={hovered} />
-      </div>
-      <div className="mt-[10px] flex items-baseline justify-between font-geist">
-        <span className="text-[13px] leading-none text-secondary">
-          <span className="font-semibold tabular-nums text-heading">{total}</span> in the last year
-        </span>
         <span className="flex items-center gap-[3px]" aria-hidden="true">
           {RAMP.map((c) => (
             <span key={c} className="block h-[6px] w-[6px] rounded-[1.5px]" style={{ background: c }} />
           ))}
         </span>
+      </div>
+      <div className="mt-[14px]">
+        <Chip hovered={hovered} />
+      </div>
+      <div className="mt-auto flex flex-col gap-[6px]">
+        <span className="font-heading text-stat font-normal tabular-nums text-heading">{total}</span>
+        <span className="font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-muted">In the last year</span>
       </div>
     </div>
   );

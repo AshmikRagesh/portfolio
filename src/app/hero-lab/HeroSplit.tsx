@@ -46,14 +46,14 @@ export default function HeroSplit() {
             <Tossed rotate={-6} delay={0} className="absolute left-[-44px] top-[-8px] z-10 md:left-[-128px] md:top-[8px] lg:left-[-132px] lg:top-[-24px]">
               <TripsBook className="w-[112px] md:w-[152px] lg:w-[168px]" />
             </Tossed>
-            <Tossed rotate={4} delay={110} className="absolute right-[-44px] top-0 z-10 md:right-[-136px] md:top-[40px] lg:right-[-150px] lg:top-[24px]">
-              <GithubWidget className="w-[140px] md:w-[176px] lg:w-[204px]" />
+            <Tossed rotate={4} delay={110} className="absolute right-[-44px] top-[-8px] z-10 md:right-[-128px] md:top-[8px] lg:right-[-132px] lg:top-[-24px]">
+              <GithubWidget className="w-[112px] md:w-[152px] lg:w-[168px]" />
             </Tossed>
             <div className="relative z-10 -mt-12 flex w-full items-start justify-between px-3 md:contents">
               <Tossed rotate={-6} delay={220} className="md:absolute md:left-[-100px] md:top-[300px] lg:left-[-96px] lg:top-[268px]">
                 <ChelseaBadge className="w-[64px] md:w-[80px] lg:w-[92px]" />
               </Tossed>
-              <Tossed rotate={5} delay={330} className="md:absolute md:right-[-108px] md:top-[256px] lg:right-[-124px] lg:top-[236px]">
+              <Tossed rotate={5} delay={330} className="md:absolute md:right-[-108px] md:top-[300px] lg:right-[-124px] lg:top-[268px]">
                 <NivasaMedal className="w-[76px] md:w-[96px] lg:w-[112px]" />
               </Tossed>
             </div>
