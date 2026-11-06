@@ -52,7 +52,7 @@ const Texture = memo(function Texture() {
 
 function CoverInner() {
   return (
-    <div className="absolute inset-0 overflow-hidden rounded-[3px_10px_10px_3px] bg-[#f8f6f1]">
+    <div className="absolute inset-0 overflow-hidden rounded-[3px_10px_10px_3px] bg-[#f8f6f1] text-left">
       {/* Cloth weave */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.5] mix-blend-multiply"

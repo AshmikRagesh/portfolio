@@ -1,6 +1,6 @@
 "use client";
 
-// ── GitHub, Aug–Nov ───────────────────────────────────────────────────────────
+// ── GitHub, live ──────────────────────────────────────────────────────────────
 // A small card on the desk: the GitHub mark, a grid of
 // contribution squares that glow and fade on their own, and the total. On hover the
 // squares rearrange into "ship" and a tooltip offers the last four months. Click and it
@@ -11,7 +11,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ACCOUNTS, CONTRIB_ASOF, CONTRIB_FROM, CONTRIB_TO } from "./githubData";
+import { ACCOUNTS, CONTRIB_ASOF } from "./githubData";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion } from "./FocusOverlay";
 
 // Empty, then four steps up the brand ramp
@@ -106,6 +106,37 @@ function Chip({ hovered }: { hovered: boolean }) {
   );
 }
 
+// ── Live numbers ────────────────────────────────────────────────────────────────
+// Fetched once per visit from /api/github (each account's public calendar, cached for
+// an hour). Until it answers, the last saved numbers stand in.
+
+type Account = { key: string; label: string; handle: string; total: number; days: Record<string, number> };
+type Contrib = { asOf: string; accounts: Account[] };
+
+let live: Contrib = { asOf: CONTRIB_ASOF, accounts: ACCOUNTS.map((a) => ({ ...a, days: { ...a.days } })) };
+let loading: Promise<void> | null = null;
+const subs = new Set<(c: Contrib) => void>();
+
+function useContrib() {
+  const [c, setC] = useState(live);
+  useEffect(() => {
+    subs.add(setC);
+    loading ??= fetch("/api/github")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: Contrib | null) => {
+        if (d?.accounts?.length === 2) {
+          live = d;
+          subs.forEach((f) => f(d));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      subs.delete(setC);
+    };
+  }, []);
+  return c;
+}
+
 // ── The popover ─────────────────────────────────────────────────────────────────
 type Day = { date: string; n: number; future: boolean };
 
@@ -117,14 +148,14 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
 const nice = (s: string) => parse(s).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
 /** One month as columns of weeks, Sunday on top, like GitHub */
-function monthWeeks(year: number, month: number, days: Record<string, number>) {
+function monthWeeks(year: number, month: number, days: Record<string, number>, asOf: string) {
   const first = new Date(Date.UTC(year, month, 1));
   const last = new Date(Date.UTC(year, month + 1, 0));
   const cols: (Day | null)[][] = [];
   let col: (Day | null)[] = Array(first.getUTCDay()).fill(null);
   for (let d = new Date(first); d <= last; d.setUTCDate(d.getUTCDate() + 1)) {
     const k = iso(d);
-    col.push({ date: k, n: days[k] ?? 0, future: k > CONTRIB_ASOF });
+    col.push({ date: k, n: days[k] ?? 0, future: k > asOf });
     if (col.length === 7) {
       cols.push(col);
       col = [];
@@ -135,24 +166,27 @@ function monthWeeks(year: number, month: number, days: Record<string, number>) {
 }
 
 const SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const MONTHS = (() => {
-  const out: { y: number; m: number; label: string }[] = [];
-  const from = parse(CONTRIB_FROM);
-  const to = parse(CONTRIB_TO);
-  for (let d = new Date(from); d <= to; d.setUTCMonth(d.getUTCMonth() + 1)) {
-    out.push({ y: d.getUTCFullYear(), m: d.getUTCMonth(), label: SHORT[d.getUTCMonth()] });
-  }
-  return out;
-})();
+/** The last four months, this one included */
+function monthsTo(asOf: string) {
+  const end = parse(asOf);
+  return [3, 2, 1, 0].map((back) => {
+    const d = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth() - back, 1));
+    return { y: d.getUTCFullYear(), m: d.getUTCMonth(), label: SHORT[d.getUTCMonth()] };
+  });
+}
+const rangeLabel = (asOf: string) => {
+  const ms = monthsTo(asOf);
+  return `${ms[0].label}–${ms[3].label}`;
+};
 
 const SQ = 12;
 const SQ_GAP = 4;
 
-function Calendar({ days, onTip }: { days: Record<string, number>; onTip: (t: { text: string; x: number; y: number } | null) => void }) {
+function Calendar({ days, asOf, onTip }: { days: Record<string, number>; asOf: string; onTip: (t: { text: string; x: number; y: number } | null) => void }) {
   return (
     <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:flex sm:gap-4">
-      {MONTHS.map(({ y, m, label }) => {
-        const weeks = monthWeeks(y, m, days);
+      {monthsTo(asOf).map(({ y, m, label }) => {
+        const weeks = monthWeeks(y, m, days, asOf);
         const total = weeks.flat().reduce((a, d) => a + (d?.n ?? 0), 0);
         return (
           <div key={label} className="flex flex-col gap-2">
@@ -197,8 +231,6 @@ function Calendar({ days, onTip }: { days: Record<string, number>; onTip: (t: { 
   );
 }
 
-const TOTALS = ACCOUNTS.map((a) => Object.values(a.days).reduce((x, y) => x + y, 0));
-const TOTAL = TOTALS[0] + TOTALS[1];
 
 function Mark({ size = 14 }: { size?: number }) {
   return (
@@ -213,6 +245,8 @@ export const CARD_W = 224;
 export const CARD_H = 156;
 
 function Card({ hovered }: { hovered: boolean }) {
+  const c = useContrib();
+  const total = c.accounts.reduce((a, x) => a + x.total, 0);
   return (
     <div className="absolute inset-0 rounded-[10px] bg-gradient-to-b from-white to-[#fbfafc] p-[14px] shadow-[0_0_0_1px_rgba(30,5,37,0.07),0_1px_1px_rgba(30,5,37,0.05),0_4px_8px_rgba(30,5,37,0.06),0_16px_32px_rgba(30,5,37,0.10)]">
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(30,5,37,0.04)]" />
@@ -221,14 +255,14 @@ function Card({ hovered }: { hovered: boolean }) {
           <Mark />
           <span className="font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-secondary">Contributions</span>
         </span>
-        <span className="font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-muted">Aug–Nov</span>
+        <span className="font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-muted">Last year</span>
       </div>
       <div className="mt-[10px]">
         <Chip hovered={hovered} />
       </div>
       <div className="mt-[10px] flex items-baseline justify-between font-geist">
         <span className="text-[13px] leading-none text-secondary">
-          <span className="font-semibold tabular-nums text-heading">{TOTAL}</span> this autumn
+          <span className="font-semibold tabular-nums text-heading">{total}</span> in the last year
         </span>
         <span className="flex items-center gap-[3px]" aria-hidden="true">
           {RAMP.map((c) => (
@@ -244,6 +278,8 @@ function Card({ hovered }: { hovered: boolean }) {
 type Tip = { text: string; x: number; y: number } | null;
 
 function Calendars() {
+  const c = useContrib();
+  const total = c.accounts.reduce((a, x) => a + x.total, 0);
   const [tip, setTip] = useState<Tip>(null);
   return (
     <div className="flex flex-col items-center">
@@ -251,10 +287,10 @@ function Calendars() {
         <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-3">
           <div>
             <p className="flex items-center gap-2 font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-muted">
-              <Mark size={12} /> GitHub · Aug–Nov 2026
+              <Mark size={12} /> GitHub · the last year
             </p>
             <p className="mt-3 font-heading text-h2-lg text-heading">
-              <span className="tabular-nums">{TOTAL}</span> contributions
+              <span className="tabular-nums">{total}</span> contributions
             </p>
           </div>
           <div className="flex items-center gap-2 pt-1 font-geist text-caption text-muted">
@@ -266,7 +302,7 @@ function Calendars() {
           </div>
         </div>
         <div className="mt-8 flex flex-col gap-8">
-          {ACCOUNTS.map((a, i) => (
+          {c.accounts.map((a) => (
             <div key={a.key} className="flex flex-col gap-3">
               <div className="flex items-baseline justify-between gap-4 font-geist text-body">
                 <span className="flex items-baseline gap-2">
@@ -275,13 +311,13 @@ function Calendars() {
                     @{a.handle} ↗
                   </a>
                 </span>
-                <span className="font-medium tabular-nums text-heading">{TOTALS[i]}</span>
+                <span className="font-medium tabular-nums text-heading">{a.total}</span>
               </div>
-              <Calendar days={a.days} onTip={setTip} />
+              <Calendar days={a.days} asOf={c.asOf} onTip={setTip} />
             </div>
           ))}
         </div>
-        <p className="mt-6 font-geist text-caption text-muted">Work is private repositories at Travelopia; counts as of 6 Nov 2026.</p>
+        <p className="mt-6 font-geist text-caption text-muted">Day by day for {rangeLabel(c.asOf)}. Work is private repositories at Travelopia. Live from GitHub, updated hourly.</p>
       </div>
       {tip &&
         createPortal(
@@ -318,7 +354,7 @@ export default function GithubWidget({ className = "" }: { className?: string })
         ref={btn}
         type="button"
         aria-haspopup="dialog"
-        aria-label="GitHub contributions, August to November. Open the calendars"
+        aria-label="GitHub contributions in the last year. Open the calendars"
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
         onFocus={() => setHovered(true)}
@@ -334,7 +370,7 @@ export default function GithubWidget({ className = "" }: { className?: string })
           aria-hidden="true"
           className={`pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-midnight px-2 py-1 font-geist text-caption text-background shadow-[0_4px_12px_rgba(30,5,37,0.2)] transition-all duration-200 ${hovered && !open ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"}`}
         >
-          Click to see Aug–Nov
+          Click to see the calendar
         </span>
       </button>
 
