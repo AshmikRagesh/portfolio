@@ -250,7 +250,7 @@ function Card({ hovered }: { hovered: boolean }) {
   const c = useContrib();
   const total = c.accounts.reduce((a, x) => a + x.total, 0);
   return (
-    <div className="absolute inset-0 flex flex-col rounded-[12px] bg-gradient-to-b from-white to-[#fbfafc] p-[14px] shadow-[0_0_0_1px_rgba(30,5,37,0.07),0_1px_1px_rgba(30,5,37,0.05),0_4px_8px_rgba(30,5,37,0.06),0_16px_32px_rgba(30,5,37,0.10)]">
+    <div className="absolute inset-0 flex flex-col rounded-[12px] text-left bg-gradient-to-b from-white to-[#fbfafc] p-[14px] shadow-[0_0_0_1px_rgba(30,5,37,0.07),0_1px_1px_rgba(30,5,37,0.05),0_4px_8px_rgba(30,5,37,0.06),0_16px_32px_rgba(30,5,37,0.10)]">
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(30,5,37,0.04)]" />
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-heading">
