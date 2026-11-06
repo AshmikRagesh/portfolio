@@ -3,7 +3,7 @@
 // top left, and a picture that fades up into the board from the bottom edge. Here the
 // picture is a variegated pixel texture in the brand ramp (squares that grow and shrink
 // with a slow noise field, densest at the bottom, thinning out as they rise), not a
-// photo. A grape ribbon marker hangs out of the bottom, the spine has its hinge groove,
+// photo. The spine has its hinge groove,
 // and the title is debossed into the cloth.
 
 import { memo } from "react";
@@ -89,7 +89,7 @@ function CoverInner() {
 }
 export const Cover = memo(CoverInner);
 
-/** The page block and ribbon that show round a closed book */
+/** The page block that shows round a closed book */
 export function ClosedEdges() {
   return (
     <>
@@ -102,8 +102,6 @@ export function ClosedEdges() {
         className="absolute bottom-[-5px] left-[4px] right-[-3px] h-[7px] rounded-b-[4px]"
         style={{ background: "repeating-linear-gradient(0deg, #f3efe6 0 1px, #e2dccf 1px 2px)", boxShadow: "1px 2px 3px rgba(30,5,37,0.18)" }}
       />
-      {/* Ribbon marker */}
-      <div className="absolute bottom-[-26px] left-[62%] h-[34px] w-[10px]" style={{ background: "linear-gradient(90deg, #7a0f55, #b8237f 45%, #9D136A)", clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%)" }} />
     </>
   );
 }
