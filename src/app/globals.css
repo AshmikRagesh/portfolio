@@ -207,6 +207,58 @@
 .signature[data-drawn="true"] path:nth-child(3) { transition-delay: 0.7s; }
 .signature[data-drawn="true"] path:nth-child(4) { transition-delay: 1.05s; }
 
+/* Guestbook cards — a torn-off notepad page with a second sheet under it.
+   The li holds the under-sheet (::before) and the lifted-corner shadow (::after); the
+   figure is the page itself, so its tilt and hover don't move what's underneath. */
+.gb-sheet { position: relative; isolation: isolate; }
+.gb-sheet::before,
+.gb-sheet::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
+/* The page underneath: a shade deeper, turned the other way, peeking out at the bottom */
+.gb-sheet::before {
+  inset: 6px 4px -6px 4px;
+  border-radius: 2px;
+  background: #efe8dc;
+  box-shadow: 0 2px 8px rgba(30, 5, 37, 0.22);
+  transform: rotate(var(--gb-under, 1.2deg));
+  transition: transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+/* The bottom-right corner lifts off the desk a touch, so its shadow falls longer there */
+.gb-sheet::after {
+  right: 10px;
+  bottom: 8px;
+  width: 52%;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(16, 2, 20, 0.5);
+  filter: blur(8px);
+  transform: rotate(3deg) translateY(6px);
+  transition: transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1), opacity 320ms;
+}
+.gb-sheet:hover::before { transform: rotate(calc(var(--gb-under, 1.2deg) * 2)) translateY(4px); }
+.gb-sheet:hover::after { transform: rotate(3deg) translateY(12px); opacity: 0.8; }
+
+/* The paper: cream with a fine grain, slightly warmer towards the edges */
+.gb-paper {
+  background:
+    radial-gradient(120% 90% at 50% 40%, transparent 60%, rgba(176, 140, 90, 0.1) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0 0.15 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E"),
+    #faf6ef;
+}
+/* Ruled lines sit under each line of the quote (one rule per 28px line), running the
+   full width of the page; the margin rule down the left is the pad's red line */
+.gb-ruled {
+  background:
+    linear-gradient(90deg, transparent 12px, rgba(214, 92, 104, 0.32) 12px, rgba(214, 92, 104, 0.32) 14px, transparent 14px),
+    linear-gradient(transparent 27px, rgba(50, 7, 62, 0.12) 27px) 0 0 / 100% 28px;
+}
+@media (min-width: 768px) {
+  .gb-ruled {
+    background:
+      linear-gradient(90deg, transparent 14px, rgba(214, 92, 104, 0.32) 14px, rgba(214, 92, 104, 0.32) 16px, transparent 16px),
+      linear-gradient(transparent 27px, rgba(50, 7, 62, 0.12) 27px) 0 0 / 100% 28px;
+  }
+}
+
 /* Host character — see HostCharacter.tsx for the rig and moods */
 .host-breathe { transform-box: fill-box; transform-origin: 50% 100%; animation: host-breathe 3.6s ease-in-out infinite; }
 @keyframes host-breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.015, 0.985); } }
@@ -377,6 +429,7 @@
   .group[data-stamped="true"] .shipped-stamp { animation: none; opacity: 1; transform: rotate(-12deg); }
   .group[data-stamped="true"] .stamp-thud { animation: none; }
   .signature path { transition: none; stroke-dashoffset: 0; }
+  .gb-sheet::before, .gb-sheet::after { transition: none; }
   .host-breathe, .host-blink, .host-zz text, .host-sparkles path, .host-plunger, .host-dome, .host-rings path, .host-sweep, .host-glasses, .host-flick, .bella-stamp-thud { animation: none !important; }
   .host-zz text { opacity: 1; }
   .host-tilt { transition: none; }
