@@ -207,56 +207,85 @@
 .signature[data-drawn="true"] path:nth-child(3) { transition-delay: 0.7s; }
 .signature[data-drawn="true"] path:nth-child(4) { transition-delay: 1.05s; }
 
-/* Guestbook cards — a torn-off notepad page with a second sheet under it.
-   The li holds the under-sheet (::before) and the lifted-corner shadow (::after); the
+/* Guestbook cards — a real sheet of notepad paper with a second sheet under it.
+   The li holds the under-sheet (::before) and the long contact shadow (::after); the
    figure is the page itself, so its tilt and hover don't move what's underneath. */
 .gb-sheet { position: relative; isolation: isolate; }
 .gb-sheet::before,
-.gb-sheet::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
-/* The page underneath: a shade deeper, turned the other way, peeking out at the bottom */
+.gb-sheet::after { content: ""; position: absolute; pointer-events: none; }
+/* The sheet underneath: the same paper, a touch greyer because less light reaches it */
 .gb-sheet::before {
-  inset: 6px 4px -6px 4px;
+  z-index: -1;
+  inset: 4px 2px -4px 2px;
   border-radius: 2px;
-  background: #efe8dc;
-  box-shadow: 0 2px 8px rgba(30, 5, 37, 0.22);
-  transform: rotate(var(--gb-under, 1.2deg));
-  transition: transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  background:
+    linear-gradient(170deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.1)),
+    var(--gb-grain),
+    #ece6da;
+  box-shadow:
+    0 1px 1px rgba(10, 0, 14, 0.3),
+    0 6px 14px -4px rgba(10, 0, 14, 0.45);
+  transform: rotate(var(--gb-under, 0.8deg));
+  transition: transform 360ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-/* The bottom-right corner lifts off the desk a touch, so its shadow falls longer there */
+/* Ambient occlusion where the stack sits on the desk: dark and tight at the bottom edge */
 .gb-sheet::after {
-  right: 10px;
-  bottom: 8px;
-  width: 52%;
-  height: 24px;
+  z-index: -2;
+  inset: auto 6% -6px 6%;
+  height: 20px;
   border-radius: 50%;
-  background: rgba(16, 2, 20, 0.5);
-  filter: blur(8px);
-  transform: rotate(3deg) translateY(6px);
-  transition: transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1), opacity 320ms;
+  background: rgba(8, 0, 12, 0.55);
+  filter: blur(10px);
+  transition: opacity 360ms, transform 360ms;
 }
-.gb-sheet:hover::before { transform: rotate(calc(var(--gb-under, 1.2deg) * 2)) translateY(4px); }
-.gb-sheet:hover::after { transform: rotate(3deg) translateY(12px); opacity: 0.8; }
+.gb-sheet:hover::before { transform: rotate(calc(var(--gb-under, 0.8deg) * 1.8)) translateY(2px); }
+.gb-sheet:hover::after { opacity: 0.7; transform: scaleX(0.96) translateY(4px); }
 
-/* The paper: cream with a fine grain, slightly warmer towards the edges */
+:root {
+  /* Paper grain: two layers of fine noise, warm-tinted, very low contrast */
+  --gb-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.26 0 0 0 0 0.18 0 0 0 0.11 0'/%3E%3C/filter%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.18' numOctaves='2' seed='8' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.33 0 0 0 0 0.24 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3Crect width='240' height='240' filter='url(%23f)'/%3E%3C/svg%3E");
+}
+
+/* The page: off-white stock lit from the top left, with fine grain and fibres, a slight
+   fall-off towards the bottom right where the sheet bows away from the light, and a hint
+   of lift at that corner. Layered shadows: a crisp contact line, a short soft one and a
+   long ambient one. */
 .gb-paper {
   background:
-    radial-gradient(120% 90% at 50% 40%, transparent 60%, rgba(176, 140, 90, 0.1) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0 0.15 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E"),
-    #faf6ef;
+    linear-gradient(155deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 38%),
+    radial-gradient(140% 100% at 100% 100%, rgba(90, 70, 40, 0.09) 0%, rgba(90, 70, 40, 0) 45%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 70%, rgba(60, 40, 20, 0.04) 100%),
+    var(--gb-grain),
+    #f6f2e9;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(120, 100, 70, 0.12),
+    0 1px 1px rgba(10, 0, 14, 0.28),
+    0 4px 8px -2px rgba(10, 0, 14, 0.3),
+    0 18px 32px -12px rgba(10, 0, 14, 0.55);
+  transition: transform 360ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 360ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-/* Ruled lines sit under each line of the quote (one rule per 28px line), running the
-   full width of the page; the margin rule down the left is the pad's red line */
-.gb-ruled {
-  background:
-    linear-gradient(90deg, transparent 12px, rgba(214, 92, 104, 0.32) 12px, rgba(214, 92, 104, 0.32) 14px, transparent 14px),
-    linear-gradient(transparent 27px, rgba(50, 7, 62, 0.12) 27px) 0 0 / 100% 28px;
+/* Picked up: the shadows spread and soften as the page leaves the stack */
+.gb-paper:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(120, 100, 70, 0.12),
+    0 2px 2px rgba(10, 0, 14, 0.2),
+    0 10px 18px -4px rgba(10, 0, 14, 0.32),
+    0 30px 48px -16px rgba(10, 0, 14, 0.6);
 }
-@media (min-width: 768px) {
-  .gb-ruled {
-    background:
-      linear-gradient(90deg, transparent 14px, rgba(214, 92, 104, 0.32) 14px, rgba(214, 92, 104, 0.32) 16px, transparent 16px),
-      linear-gradient(transparent 27px, rgba(50, 7, 62, 0.12) 27px) 0 0 / 100% 28px;
-  }
+
+/* Ruled lines in the printer's pale blue, one under each 28px line of the quote, faintly
+   uneven like printed rules, and fading at the page edges */
+.gb-ruled { position: relative; }
+.gb-ruled::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(transparent 27px, rgba(92, 132, 182, 0.26) 27px) 0 0 / 100% 28px;
+  -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0.5), #000 8%, #000 92%, rgba(0,0,0,0.5));
+          mask-image: linear-gradient(90deg, rgba(0,0,0,0.5), #000 8%, #000 92%, rgba(0,0,0,0.5));
 }
 
 /* Host character — see HostCharacter.tsx for the rig and moods */

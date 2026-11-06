@@ -1,6 +1,6 @@
 // ── Testimonials ──────────────────────────────────────────────────────────────
 // "The guestbook": dark panel of cream "notepad" cards (two columns, three from 1280px) — grained
-// paper on a second sheet, ruled lines under each line of the quote with a red margin rule,
+// paper lit from the top left, on a second sheet, ruled lines under each line of the quote,
 // a punched hole in the top-right corner, a slight tilt that straightens on hover,
 // and the guest's signature in ink at the bottom right.
 // Uses the shared page container (1240px at desktop). All values are multiples of 2/4px.
@@ -60,7 +60,7 @@ const testimonials: Testimonial[] = [
 
 // Cards tilt alternately, like loose pages; the sheet underneath turns the other way
 const TILTS = ["-rotate-[0.35deg]", "rotate-[0.4deg]", "rotate-[0.3deg]", "-rotate-[0.4deg]"];
-const UNDER = ["1.2deg", "-1deg", "-1.2deg", "1deg"];
+const UNDER = ["0.8deg", "-0.7deg", "-0.8deg", "0.7deg"];
 
 function ArrowUpRight({ size }: { size: number }) {
   return (
@@ -96,9 +96,11 @@ export default function Testimonials() {
             {/* Cards */}
             <ol className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2 md:gap-6 xl:grid-cols-3">
               {testimonials.map((t, i) => (
-                <li key={i} style={{ "--gb-under": UNDER[i % UNDER.length] } as React.CSSProperties} className="gb-sheet min-w-0 md:last:odd:col-span-2 md:last:odd:mx-auto md:last:odd:w-[calc(50%_-_12px)] xl:last:odd:col-span-1 xl:last:odd:w-auto">
+                <li
+                  key={i}
+                  style={{ "--gb-under": UNDER[i % UNDER.length] } as React.CSSProperties} className="gb-sheet min-w-0 md:last:odd:col-span-2 md:last:odd:mx-auto md:last:odd:w-[calc(50%_-_12px)] xl:last:odd:col-span-1 xl:last:odd:w-auto">
                   <figure
-                    className={`relative m-0 flex h-full flex-col rounded-sm gb-paper p-5 text-heading shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_2px_4px_rgba(30,5,37,0.18)] transition-transform duration-[320ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-6px] hover:!rotate-0 md:p-6 motion-reduce:!transform-none motion-reduce:transition-none ${
+                    className={`relative m-0 flex h-full flex-col rounded-[2px] gb-paper p-5 text-heading hover:!translate-y-[-6px] hover:!rotate-0 md:p-6 motion-reduce:!transform-none motion-reduce:transition-none ${
                       TILTS[i % TILTS.length]
                     }`}
                   >
@@ -109,14 +111,10 @@ export default function Testimonials() {
                       <PunchHole index={i} />
                     </div>
 
-                    {/* Quote — written on the ruled part of the page: the rules and red margin run
-                        edge to edge (negative margin out to the paper's edge), one rule per line */}
+                    {/* Quote — written on the ruled part of the page: the rules run edge to edge
+                        (negative margin out to the paper's edge), one rule per line */}
                     <blockquote className="gb-ruled relative -mx-5 m-0 flex-1 px-5 pb-[28px] font-heading text-[20px] font-normal not-italic leading-[28px] tracking-[0px] text-heading md:-mx-6 md:px-6 lg:text-[22px]">
-                      {/* A big opening mark in faint grape, in the gap above the first line, lined up with the text */}
-                      <span aria-hidden="true" className="pointer-events-none absolute -top-[24px] left-[32px] select-none font-heading text-[48px] leading-[48px] text-grape/30 md:left-[34px]">
-                        &ldquo;
-                      </span>
-                      <p className="relative m-0 pl-[14px] md:pl-[12px]">{t.quote}</p>
+                      <p className="relative m-0">{t.quote}</p>
                     </blockquote>
 
                     {/* Signature — its own element on the right, above the footer. The bottom
