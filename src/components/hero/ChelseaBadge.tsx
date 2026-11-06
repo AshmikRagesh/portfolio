@@ -13,11 +13,12 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { LION_BODY, LION_EYE, LION_RING, LION_STAFF, LION_TRANSFORM, LION_VIEWBOX } from "./lionPath";
 import { clink, useCursorLight } from "./light";
+import { Tag } from "@/components/Tag";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 
 const W = 200;
 const H = 300;
-const LION_SCALE = Math.min(W / LION_VIEWBOX.w, 256 / LION_VIEWBOX.h);
+const LION_SCALE = Math.min(W / LION_VIEWBOX.w, 240 / LION_VIEWBOX.h);
 const LION_X = (W - LION_VIEWBOX.w * LION_SCALE) / 2;
 const PLACE = `translate(${LION_X} 0) scale(${LION_SCALE}) translate(${-LION_VIEWBOX.x} ${-LION_VIEWBOX.y})`;
 
@@ -102,12 +103,12 @@ export function LionArt({ id, svgRef }: { id: string; svgRef?: React.Ref<SVGSVGE
         {/* Gold body */}
         <g filter={`url(#${f("goldLit")})`}>
           <Lion fill={`url(#${f("gold")})`} />
-          <rect x="44" y="266" width="112" height="28" rx="6" fill={`url(#${f("gold")})`} />
+          <rect x="28" y="250" width="144" height="46" rx="10" fill={`url(#${f("gold")})`} />
         </g>
         {/* Enamel inlay */}
         <g filter={`url(#${f("enamelFx")})`}>
           <Lion fill={`url(#${f("enamel")})`} />
-          <rect x="44" y="266" width="112" height="28" rx="6" fill={`url(#${f("enamel")})`} />
+          <rect x="28" y="250" width="144" height="46" rx="10" fill={`url(#${f("enamel")})`} />
         </g>
         {/* Gold eye and staff ring, raised through the enamel */}
         <g filter={`url(#${f("goldLit")})`}>
@@ -119,12 +120,12 @@ export function LionArt({ id, svgRef }: { id: string; svgRef?: React.Ref<SVGSVGE
           </g>
         </g>
         {/* A sweep of reflection over the pin */}
-        <rect x="0" y="0" width={W} height="260" fill={`url(#${f("gloss")})`} clipPath={`url(#${f("clip")})`} />
+        <rect x="0" y="0" width={W} height="244" fill={`url(#${f("gloss")})`} clipPath={`url(#${f("clip")})`} />
         {/* Gold letters standing up out of the bar's enamel */}
-        <text x="100" y="285" textAnchor="middle" fontFamily="var(--font-brand), monospace" fontSize="13" fontWeight="700" letterSpacing="3" fill="#1e0525" opacity="0.45" dy="0.9">
+        <text x="100" y="281" textAnchor="middle" fontFamily="var(--font-geist), sans-serif" fontSize="22" fontWeight="700" letterSpacing="2" fill="#1e0525" opacity="0.45" dy="1.2">
           CFC · LDN
         </text>
-        <text x="100" y="285" textAnchor="middle" fontFamily="var(--font-brand), monospace" fontSize="13" fontWeight="700" letterSpacing="3" fill={`url(#${f("gold")})`}>
+        <text x="100" y="281" textAnchor="middle" fontFamily="var(--font-geist), sans-serif" fontSize="22" fontWeight="700" letterSpacing="2" fill={`url(#${f("gold")})`}>
           CFC · LDN
         </text>
       </g>
@@ -167,12 +168,14 @@ const day = (d: Date) => d.toLocaleDateString(undefined, { weekday: "short", day
 const time = (d: Date) => d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 const zone = (d: Date) => d.toLocaleTimeString(undefined, { timeZoneName: "short" }).split(" ").pop();
 
-function Crest({ side, size = 56 }: { side: Side; size?: number }) {
+function Crest({ side }: { side: Side }) {
   return (
-    <div className="flex w-[96px] flex-col items-center gap-2 text-center">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={side.logo} alt="" width={size} height={size} className="object-contain drop-shadow-[0_2px_4px_rgba(30,5,37,0.15)]" style={{ width: size, height: size }} />
-      <span className={`font-geist text-body font-medium leading-tight ${side.isChelsea ? "text-heading" : "text-secondary"}`}>{side.name}</span>
+    <div className="flex w-[100px] flex-col items-center gap-2.5 text-center">
+      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-background shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_6px_16px_rgba(0,0,0,0.25)]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={side.logo} alt="" width={40} height={40} className="h-10 w-10 object-contain" />
+      </span>
+      <span className={`font-geist text-body font-medium leading-tight ${side.isChelsea ? "text-background" : "text-background/75"}`}>{side.name}</span>
     </div>
   );
 }
@@ -180,24 +183,30 @@ function Crest({ side, size = 56 }: { side: Side; size?: number }) {
 function Countdown({ to, now }: { to: number; now: number }) {
   const left = Math.max(0, to - now);
   const parts = [
-    [Math.floor(left / 864e5), "days"],
-    [Math.floor(left / 36e5) % 24, "hrs"],
-    [Math.floor(left / 6e4) % 60, "min"],
-    [Math.floor(left / 1e3) % 60, "sec"],
+    [Math.floor(left / 864e5), "Days"],
+    [Math.floor(left / 36e5) % 24, "Hours"],
+    [Math.floor(left / 6e4) % 60, "Mins"],
+    [Math.floor(left / 1e3) % 60, "Secs"],
   ] as const;
-  if (left === 0) return <p className="font-geist text-body font-medium text-grape">Kicking off now</p>;
+  if (left === 0) return <p className="py-3 text-center font-geist text-body font-medium text-grape">Kicking off now</p>;
   return (
-    <div className="flex items-start justify-center gap-2" role="timer" aria-label="Time to kick-off">
+    <div className="grid grid-cols-4 gap-2" role="timer" aria-label="Time to kick-off">
       {parts.map(([v, l], i) => (
-        <div key={l} className="flex items-start gap-2">
-          {i > 0 && <span className="pt-1 font-heading text-[24px] leading-none text-line">:</span>}
-          <div className="flex w-[52px] flex-col items-center gap-1">
-            <span className="font-heading text-[32px] leading-none tracking-[-1px] tabular-nums text-heading">{String(v).padStart(2, "0")}</span>
-            <span className="font-geist text-caption text-muted">{l}</span>
-          </div>
+        <div key={l} className={`flex flex-col items-center gap-1 rounded-xl py-3 ${i === 3 ? "bg-grape-light" : "bg-surface"}`}>
+          <span className={`font-heading text-[28px] leading-none tracking-[-0.8px] tabular-nums ${i === 3 ? "text-grape" : "text-heading"}`}>{String(v).padStart(2, "0")}</span>
+          <span className="font-geist text-caption text-muted">{l}</span>
         </div>
       ))}
     </div>
+  );
+}
+
+function Pin() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+      <path d="M6 11s4-3.6 4-6.4A4 4 0 0 0 2 4.6C2 7.4 6 11 6 11Z" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="6" cy="4.8" r="1.4" fill="currentColor" />
+    </svg>
   );
 }
 
@@ -207,65 +216,93 @@ function FixtureCard({ open }: { open: boolean }) {
   const shell = "w-[calc(100vw-24px)] max-w-[420px] overflow-hidden rounded-[20px] bg-background shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]";
   if (data === null)
     return (
-      <div className={`${shell} flex h-[360px] items-center justify-center`}>
+      <div className={`${shell} flex h-[420px] items-center justify-center`}>
         <span className="h-5 w-5 animate-spin rounded-full border-2 border-line border-t-grape" aria-label="Loading fixtures" />
       </div>
     );
   if (data === "error")
     return (
       <div className={`${shell} p-7`}>
-        <p className="font-heading text-[24px] text-heading">Blue, always.</p>
-        <p className="mt-2 font-geist text-body text-secondary">The fixture list isn’t loading right now. Try again in a bit.</p>
+        <p className="font-heading text-[24px] text-heading">No fixtures right now</p>
+        <p className="mt-2 font-geist text-body text-secondary">The fixture list isn’t loading. Try again in a bit.</p>
       </div>
     );
   const [m, ...later] = data;
   const at = new Date(m.date);
+  const home = m.home.isChelsea;
   return (
     <div className={shell}>
-      <div className="relative overflow-hidden px-6 pb-6 pt-5 sm:px-7" style={{ background: "linear-gradient(180deg, #fbf7fc 0%, #ffffff 100%)" }}>
-        <div className="flex items-center justify-between gap-4">
-          <span className="font-geist text-caption font-medium text-grape">Next match</span>
-          <span className="truncate font-geist text-caption text-muted">{comp(m.competition)}</span>
-        </div>
-        <div className="mt-6 flex items-start justify-between">
-          <Crest side={m.home} />
-          <div className="flex flex-col items-center gap-1 pt-3">
-            <span className="font-heading text-[28px] leading-none tracking-[-0.8px] text-heading">{time(at)}</span>
-            <span className="font-geist text-caption text-muted">
-              {day(at)} · {zone(at)}
+      {/* The match: the same blackcurrant band as the host card */}
+      <div className="relative overflow-hidden px-5 pb-6 pt-5 text-background sm:px-6" style={{ background: "linear-gradient(150deg, #32073e 0%, #4a0a3f 50%, #6e0d4b 100%)" }}>
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-grape/40 blur-3xl" aria-hidden="true" />
+        <div className="relative flex items-center justify-between gap-3">
+          <span className="flex items-center gap-2 font-geist text-caption font-medium text-background/90">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-pink opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-pink" />
             </span>
+            Next match
+          </span>
+          <span className="truncate rounded-full bg-background/10 px-2.5 py-1 font-geist text-caption text-background/80 ring-1 ring-background/15">{comp(m.competition)}</span>
+        </div>
+        <div className="relative mt-6 flex items-start justify-between">
+          <Crest side={m.home} />
+          <div className="flex flex-col items-center gap-1.5 pt-3">
+            <span className="font-heading text-[34px] leading-none tracking-[-1px] text-background">{time(at)}</span>
+            <span className="font-geist text-caption text-background/70">{day(at)}</span>
+            <span className="font-geist text-[10px] uppercase tracking-[1px] text-background/50">{zone(at)}</span>
           </div>
           <Crest side={m.away} />
         </div>
-        <p className="mt-4 text-center font-geist text-caption text-muted">{m.venue}</p>
-        <div className="mt-6 rounded-xl bg-surface py-4">
+      </div>
+
+      <div className="px-5 pb-5 pt-5 sm:px-6">
+        <div className="flex items-center justify-between gap-3">
+          <span className="flex min-w-0 items-center gap-1.5 font-geist text-body text-secondary">
+            <Pin />
+            <span className="truncate">{m.venue}</span>
+          </span>
+          <Tag tone={home ? "grape" : "grey"} face="geist">
+            {home ? "Home" : "Away"}
+          </Tag>
+        </div>
+        <div className="mt-4">
           <Countdown to={at.getTime()} now={now} />
         </div>
+
+        {later.length > 0 && (
+          <div className="mt-6">
+            <p className="font-geist text-caption font-medium text-muted">Coming up</p>
+            <ul className="mt-2 flex flex-col">
+              {later.map((x) => {
+                const d = new Date(x.date);
+                const atHome = x.home.isChelsea;
+                const opp = atHome ? x.away : x.home;
+                return (
+                  <li key={x.date} className="flex items-center gap-3 border-t border-line-soft py-3 first:border-t-0">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={opp.logo} alt="" width={20} height={20} className="h-5 w-5 object-contain" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-geist text-body font-medium text-heading">{opp.name}</span>
+                      <span className="block font-geist text-caption text-muted">
+                        {atHome ? "Home" : "Away"} · {comp(x.competition)}
+                      </span>
+                    </span>
+                    <span className="text-right font-geist text-caption tabular-nums text-secondary">
+                      {day(d)}
+                      <br />
+                      <span className="text-muted">{time(d)}</span>
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+        <p className="mt-4 font-geist text-caption text-muted">Times in your time zone · from ESPN</p>
       </div>
-      {later.length > 0 && (
-        <div className="border-t border-line-soft px-6 py-4 sm:px-7">
-          <p className="font-geist text-caption font-medium text-muted">After that</p>
-          <ul className="mt-2 flex flex-col">
-            {later.map((x) => {
-              const d = new Date(x.date);
-              const home = x.home.isChelsea;
-              const opp = home ? x.away : x.home;
-              return (
-                <li key={x.date} className="flex items-center gap-3 border-t border-line-soft py-3 first:border-t-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={opp.logo} alt="" width={24} height={24} className="h-6 w-6 object-contain" />
-                  <span className="flex-1 font-geist text-body text-heading">
-                    {home ? "vs" : "at"} {opp.name}
-                  </span>
-                  <span className="font-geist text-caption tabular-nums text-muted">
-                    {day(d)}, {time(d)}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
     </div>
   );
 }

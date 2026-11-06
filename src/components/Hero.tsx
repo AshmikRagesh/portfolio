@@ -5,7 +5,7 @@ import GithubWidget from "./hero/GithubWidget";
 import ChelseaBadge from "./hero/ChelseaBadge";
 import Tossed from "./hero/Tossed";
 
-const PORTRAIT_SRC = "/images/portrait-sketch.png";
+const PORTRAIT_SRC = "/images/portrait-sketch-glasses.webp";
 
 export default function Hero() {
   return (
@@ -30,9 +30,10 @@ export default function Hero() {
           <Image
             src={PORTRAIT_SRC}
             alt="Portrait of Ashmik Ragesh"
-            width={2048}
-            height={2076}
-            className="absolute left-[-4%] top-[-2.71%] w-[108%] max-w-none"
+            width={1908}
+            height={2000}
+            priority
+            className="absolute inset-0 h-full w-full object-contain object-bottom mix-blend-multiply [filter:brightness(1.025)_contrast(1.02)]"
           />
         </div>
         {/* The desk objects, always beside the portrait. Left: the trips book over the

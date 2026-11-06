@@ -17,7 +17,7 @@
 // Arrow keys and the buttons drive the same spring.
 
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import FocusOverlay, { NavPill, RoundButton, useReducedMotion, type FocusPhase } from "../FocusOverlay";
+import FocusOverlay, { RoundButton, useReducedMotion, type FocusPhase } from "../FocusOverlay";
 import { Cover, ClosedEdges, PH, PW } from "./Cover";
 import TripMap from "./TripMap";
 import { TRIPS, type Trip } from "./trip";
@@ -174,6 +174,7 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
   const castR = useRef<HTMLDivElement>(null);
   const castL = useRef<HTMLDivElement>(null);
   const board = useRef<HTMLDivElement>(null);
+  const tableShadow = useRef<HTMLDivElement>(null);
   const sim = useRef<Sim>({ a: Array(LEAVES).fill(0), v: Array(LEAVES).fill(0), target: Array(LEAVES).fill(0), startAt: Array(LEAVES).fill(0) });
   const dragging = useRef<{ leaf: number; r: number; lastA: number; lastT: number; w: number } | null>(null);
   const gesture = useRef<{ x: number; y: number; id: number; started: boolean; side: "l" | "r" } | null>(null);
@@ -198,7 +199,11 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
         lead = i;
       }
       el.style.transform = `rotateY(${(-th).toFixed(3)}deg)`;
-      el.style.zIndex = String(d === i || lift > 0.02 ? 40 + i : th > 90 ? 10 + i : 10 + LEAVES - i);
+      // Stacking: on the left the later page lies on top, on the right the earlier one does.
+      // A page in the air is lifted above the resting pages but keeps that same order, so
+      // two pages moving at once (closing) never pass through each other.
+      const side = th > 90 ? 10 + i : 10 + LEAVES - i;
+      el.style.zIndex = String(side + (d === i ? 40 : lift > 0.02 ? 25 : 0));
       const [front, back] = [shadeEls.current[i * 2], shadeEls.current[i * 2 + 1]];
       // Shading across the lifting page: darker towards the spine, a soft highlight along the curve
       const sh = (0.28 * lift).toFixed(3);
@@ -224,6 +229,7 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
     const open = (1 - Math.cos((a[0] * Math.PI) / 180)) / 2;
     if (root.current) root.current.style.transform = `translateX(${(open * PW * 0.5).toFixed(2)}px)`;
     if (board.current) board.current.style.left = `${((1 - open) * PW - 4).toFixed(2)}px`;
+    if (tableShadow.current) tableShadow.current.style.left = `${((1 - open) * PW + 16).toFixed(2)}px`;
   }, []);
 
   // ── The spring ──
@@ -264,6 +270,11 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
         }
       }
       draw();
+      // Closing: fly home as soon as every page is visibly flat, without waiting out the
+      // last invisible fraction of the bounce
+      if (waiters.current.length && s.a.every((a, i) => Math.abs(a - s.target[i]) < 1.5 && Math.abs(s.v[i]) < 30) && !s.startAt.some((t) => now < t)) {
+        waiters.current.splice(0).forEach((f) => f());
+      }
       if (moving) raf.current = requestAnimationFrame(step);
       else {
         closing.current = false;
@@ -430,10 +441,11 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
         }
       }}
     >
-      {/* Shadow on the table */}
-      <div className="pointer-events-none absolute -bottom-5 left-[4%] right-[4%] h-8 rounded-[50%] bg-midnight/30 blur-xl" aria-hidden="true" />
+      {/* A soft contact shadow under the book; it covers only the cover while closed and
+          widens with the spread as it opens */}
+      <div ref={tableShadow} className="pointer-events-none absolute -bottom-3 h-6 rounded-[50%] bg-midnight/15 blur-lg" style={{ left: PW + 16, right: 16 }} aria-hidden="true" />
       {/* Back board and page block, under everything */}
-      <div ref={board} className="absolute -bottom-1 -top-1 right-[-4px] rounded-[4px_10px_10px_4px] bg-[#e9e3d6] shadow-[0_2px_4px_rgba(30,5,37,0.12),0_18px_40px_rgba(30,5,37,0.18)]" style={{ left: PW - 4 }} aria-hidden="true" />
+      <div ref={board} className="absolute -bottom-1 -top-1 right-[-4px] rounded-[4px_10px_10px_4px] bg-[#e9e3d6] shadow-[0_1px_2px_rgba(30,5,37,0.10),0_10px_24px_rgba(30,5,37,0.10)]" style={{ left: PW - 4 }} aria-hidden="true" />
       <div className="pointer-events-none absolute top-0" style={{ left: PW, width: PW, height: PH }} aria-hidden="true">
         <ClosedEdges />
       </div>
@@ -566,27 +578,49 @@ export default function TripsBook({ className = "" }: { className?: string }) {
 }
 
 function BookStage({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turned: number; setTurned: (n: number) => void; uid: string; api: React.MutableRefObject<BookApi | null> }) {
-  const label = turned === 0 ? "Itinerary" : TRIPS[turned - 1].title;
+  const open = phase === "open";
   return (
     <>
       <Book phase={phase} turned={turned} setTurned={setTurned} uid={uid} api={api} />
-      {/* One line: back, where you are, forward */}
-      <div className="absolute left-1/2 top-full mt-8 -translate-x-1/2 whitespace-nowrap">
-        <NavPill visible={phase === "open"}>
-          <RoundButton onClick={() => setTurned(Math.max(0, turned - 1))} disabled={turned === 0} aria-label="Previous page">
-            <Chevron left />
-          </RoundButton>
-          <span className="flex min-w-[148px] items-baseline justify-center gap-2 px-2" aria-live="polite">
-            <span key={label} className="animate-[bookLabel_360ms_cubic-bezier(0.22,1,0.36,1)] font-geist text-body font-medium text-heading">
-              {label}
-            </span>
-            <span className="font-geist text-caption tabular-nums text-muted">{turned === 0 ? "Cover" : `${turned} of ${TRIPS.length}`}</span>
-          </span>
-          <RoundButton onClick={() => setTurned(Math.min(MAX_TURN, turned + 1))} disabled={turned === MAX_TURN} aria-label={turned === 0 ? "Open the book" : "Next page"}>
-            <Chevron />
-          </RoundButton>
-        </NavPill>
-      </div>
+      {/* Page control: back · one dot per trip · forward. The current trip's dot stretches
+          into a pill; every dot is a button, named for its trip, with the name as a tooltip */}
+      <nav
+        aria-label="Pages"
+        className={`absolute left-1/2 top-full mt-8 flex -translate-x-1/2 items-center gap-1 rounded-full bg-background/85 p-1 shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_1px_2px_rgba(30,5,37,0.05),0_6px_20px_rgba(30,5,37,0.08)] backdrop-blur-md transition-[opacity,transform] duration-300 ease-out ${
+          open ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0"
+        }`}
+      >
+        <RoundButton onClick={() => setTurned(Math.max(0, turned - 1))} disabled={turned === 0} aria-label="Previous page">
+          <Chevron left />
+        </RoundButton>
+        <div className="flex h-9 items-center gap-1.5 px-2">
+          {TRIPS.map((t, i) => {
+            const on = turned === i + 1;
+            return (
+              <button
+                key={t.key}
+                type="button"
+                onClick={() => setTurned(i + 1)}
+                aria-label={`${t.title}, trip ${i + 1} of ${TRIPS.length}`}
+                aria-current={on ? "page" : undefined}
+                className="group/dot relative flex h-6 items-center justify-center px-0.5"
+              >
+                <span
+                  className={`block h-1.5 rounded-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    on ? "w-5 bg-grape" : "w-1.5 bg-line group-hover/dot:bg-muted"
+                  }`}
+                />
+                <span className="pointer-events-none absolute bottom-full mb-2 whitespace-nowrap rounded-md bg-midnight px-2 py-1 font-geist text-caption text-background opacity-0 shadow-[0_4px_12px_rgba(30,5,37,0.2)] transition-[opacity,transform] duration-200 group-hover/dot:-translate-y-0.5 group-hover/dot:opacity-100">
+                  {t.title}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <RoundButton onClick={() => setTurned(Math.min(MAX_TURN, turned + 1))} disabled={turned === MAX_TURN} aria-label={turned === 0 ? "Open the book" : "Next page"}>
+          <Chevron />
+        </RoundButton>
+      </nav>
     </>
   );
 }
