@@ -8,8 +8,7 @@ import {
   Visual,
   Figure,
   CardGrid,
-  OptionCard,
-  ProsCons,
+  PullQuote,
   Pointers,
   Timeline,
   ExplorationCard,
@@ -24,8 +23,8 @@ import {
 // Bella on the live site, one use case at a time (recordings), with the sign and tooltip
 // rounds under their use case → what it solves and what it can be → working only in Claude
 // Code. No results section. Bella was made start to end in Claude Code, so each section
-// opens with the session it came from (SessionLog): Ashmik's lines are quoted from the
-// sessions in bella-notes.md, Claude's are plain summaries of what it made.
+// shows Ashmik's own words from the sessions (bella-notes.md). The terminal-style SessionLog
+// is used once, in Research, for the first prompt; elsewhere quotes use PullQuote.
 // Stills are in public/images/bella (scripts/draw-bella-explorations.py). Facts from
 // my-portfolio/case-studies/bella-notes.md; quotes are Ashmik's, the joining copy is a
 // placeholder for him to rewrite. Not on the homepage list yet, so it doesn't change the
@@ -41,7 +40,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "overview",     label: "Overview"       },
   { id: "research",     label: "Research"       },
   { id: "characters",   label: "Characters"     },
-  { id: "choosing",     label: "The final two"  },
+  { id: "choosing",     label: "Why the bell"   },
   { id: "finish",       label: "Finishing"      },
   { id: "solution",     label: "On the site"    },
   { id: "purpose",      label: "What it can be" },
@@ -71,18 +70,8 @@ function Overview() {
         </p>
         <p>
           I didn&apos;t draw any of it by hand. <Highlight>Bella was made from start
-          to end in Claude Code</Highlight>: I described what I wanted, Claude Code
-          built it in code, and I reacted to what it put on screen. Every drawing
-          on this page, the character in the navbar, its sign and its ding are
-          code it wrote from my words.
+          to end in Claude Code</Highlight>: I described what I wanted.
         </p>
-        <SessionLog
-          when="23 Oct, 04:18"
-          lines={[
-            { from: "me", text: "This data is actually really useful for me." },
-            { from: "claude", text: "Built an active-time clock that pauses when you leave and reports each visit (af319cb, 07:35)." },
-          ]}
-        />
       </Copy>
       <Visual>
         {/* Ashmik's narrated walkthrough goes here: video="/videos/bella/overview.mp4" with a poster */}
@@ -119,6 +108,58 @@ const TRAITS = [
   },
 ];
 
+// Every reference looked at, and why. Names only: no outside findings or numbers.
+const REFERENCES = [
+  { why: "Hospitality mascots, 23 Oct", items: [
+    { name: "Ollie", from: "Tripadvisor" },
+    { name: "The Suica penguin", from: "JR East's Suica card" },
+    { name: "The Maharaja", from: "Air India" },
+    { name: "Kumamon", from: "Kumamoto Prefecture" },
+    { name: "Bibendum", from: "Michelin" },
+    { name: "Grimace", from: "McDonald's" },
+  ] },
+  { why: "Depth and shading, 23 Oct", items: [
+    { name: "Grok, Codex and Muse characters", from: "AI tools I pointed Claude Code to" },
+  ] },
+  { why: "How other teams built theirs, 31 Oct", items: [
+    { name: "Duo", from: "Duolingo" },
+    { name: "The hedgehog", from: "PostHog" },
+    { name: "Freddie", from: "Mailchimp" },
+    { name: "Clippy", from: "Microsoft Office" },
+    { name: "Ollie, 2025 redesign", from: "Tripadvisor" },
+  ] },
+];
+
+const TH = "pb-[12px] pr-[16px] font-brand text-[12px] font-normal uppercase leading-[16px] text-muted";
+const TD = "py-[14px] pr-[16px] align-top";
+
+function ReferenceTable() {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[480px] border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
+        <thead>
+          <tr className="border-b border-line-soft">
+            <th scope="col" className={TH}>Reference</th>
+            <th scope="col" className={TH}>From</th>
+            <th scope="col" className={`${TH} pr-0`}>Looked at for</th>
+          </tr>
+        </thead>
+        <tbody>
+          {REFERENCES.flatMap(({ why, items }) =>
+            items.map(({ name, from }) => (
+              <tr key={name} className="border-b border-line-soft">
+                <th scope="row" className={`${TD} font-medium text-heading`}>{name}</th>
+                <td className={`${TD} text-secondary`}>{from}</td>
+                <td className={`${TD} pr-0 text-secondary`}>{why}</td>
+              </tr>
+            )),
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function Research() {
   return (
     <Chapter id="research" num={1} title="Six references in two minutes">
@@ -144,6 +185,14 @@ function Research() {
       <Visual>
         <CardGrid items={TRAITS} />
       </Visual>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Every reference we looked at</h3>
+        </Copy>
+        <Visual>
+          <ReferenceTable />
+        </Visual>
+      </div>
     </Chapter>
   );
 }
@@ -182,14 +231,10 @@ function Characters() {
           looked good on its own but didn&apos;t belong on the site, so it <Highlight>moved
           back toward the design system</Highlight>.
         </p>
-        <SessionLog
-          when="23 Oct, 09:21 – 09:45"
-          lines={[
-            { from: "me", text: "Even though it is flat, it doesn't have depth or character to it." },
-            { from: "claude", text: "Added a lit side and a shade side, a ground shadow, overlapping layers, blinking and breathing." },
-            { from: "me", text: "Right now it looks really cute, and the realistic version looks a little off." },
-            { from: "claude", text: "Took out the pink cheeks and drew a realistic flip clock." },
-          ]}
+        <PullQuote
+          label="What started the depth round"
+          text="Even though it is flat,"
+          emphasis="it doesn't have depth or character to it."
         />
       </Copy>
       {CHARACTERS.map(({ title, note, stage }) => (
@@ -199,7 +244,7 @@ function Characters() {
             <p>{note}</p>
           </Copy>
           <Visual>
-            <CardRow items={CHARACTER_NAMES.map(({ name, file }) => ({ name, src: art(`${stage}-${file}`) }))} />
+            <Lineup items={CHARACTER_NAMES.map(({ name, file }) => ({ name, src: art(`${stage}-${file}`) }))} />
           </Visual>
         </div>
       ))}
@@ -207,8 +252,23 @@ function Characters() {
   );
 }
 
+/** Characters side by side on one white panel, names below: two across on phones, four from tablet up */
+function Lineup({ items }: { items: { name: string; src: string }[] }) {
+  return (
+    <ul className="m-0 grid list-none grid-cols-2 gap-y-[32px] rounded-lg border border-line-soft bg-white p-[32px] md:grid-cols-4">
+      {items.map(({ name, src }) => (
+        <li key={name} className="flex flex-col items-center gap-[16px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={src} alt={name} className="h-[104px] w-full object-contain" />
+          <p className="font-body text-[16px] font-medium leading-[24px] text-heading">{name}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /** A row of exploration cards: two across on phones, four from tablet up */
-function CardRow({ items }: { items: { name: string; src: string; kept?: boolean }[] }) {
+function CardRow({ items }: { items: { name: string; src: string; kept?: boolean; tag?: string }[] }) {
   return (
     <ul className="m-0 grid list-none grid-cols-2 gap-[16px] p-0 md:grid-cols-4">
       {items.map((item) => (
@@ -219,68 +279,37 @@ function CardRow({ items }: { items: { name: string; src: string; kept?: boolean
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Choosing the character  (the final two: key tag and desk bell)
+// Section: Why the desk bell  (what we picked, and why)
 // ─────────────────────────────────────────────────────────────────────────────
-const FINAL_TWO = [
-  {
-    label: "Option 1",
-    title: "Key tag",
-    src: art("depth-key-tag"),
-    chosen: false,
-    pros: ["Ties straight to the guesthouse theme", "Could hold the time like a room number"],
-    cons: ["At navbar size the details went missing", "Read as an object, not a character"],
-  },
-  {
-    label: "Option 2",
-    title: "Desk bell",
-    src: art("depth-desk-bell"),
-    chosen: true,
-    pros: [
-      "The silhouette reads at 40px",
-      "An object that already makes a sound and calls for attention",
-      "Belongs at a front desk, like the rest of the site",
-    ],
-    cons: [],
-  },
-];
-
-const NOT_TAKEN = [
-  { lead: "Bellhop.", text: "Not taken past the first two rounds." },
-  { lead: "Door hanger.", text: "Drawn later, for this write-up, so it never competed." },
+const WHY_BELL = [
+  { lead: "It reads at 40px.", text: "The dome-on-a-base silhouette holds up at logo size in the navbar." },
+  { lead: "It already makes a sound.", text: "A desk bell calls for attention, so ringing before every line feels natural." },
+  { lead: "It belongs at a front desk.", text: "Like the rest of the site's guesthouse theme." },
 ];
 
 function Choosing() {
   return (
-    <Chapter id="choosing" num={3} title="The final two">
+    <Chapter id="choosing" num={3} title="Why the desk bell">
       <Copy>
         <p>
-          Two characters went head to head: the key tag and the desk bell.
-          Claude Code put them in the real navbar, and <Highlight>seeing them at
-          logo size decided it</Highlight>.
+          The key tag went furthest before it lost. Claude Code put it in the
+          real navbar, and <Highlight>seeing it at logo size decided it</Highlight>.
         </p>
-        <SessionLog
-          when="23 Oct, 10:26"
-          lines={[
-            { from: "me", text: "In the header the key tag looks really small and the details go missing." },
-            { from: "claude", text: "Dropped the key tag for the desk bell, with one hand lifting the board." },
+        <PullQuote
+          label="Why the key tag lost"
+          text="In the header the key tag looks really small and"
+          emphasis="the details go missing."
+        />
+        <Pointers items={WHY_BELL} />
+      </Copy>
+      <Visual>
+        <CardRow
+          items={[
+            { name: "Key tag", src: art("depth-key-tag") },
+            { name: "Desk bell", src: art("depth-desk-bell"), kept: true, tag: "Selected" },
           ]}
         />
-      </Copy>
-      {FINAL_TWO.map(({ label, title, src, chosen, pros, cons }) => (
-        <div key={label} className="cs-sub">
-          <Visual>
-            <OptionCard label={label} title={title} shipped={chosen} stamp="Selected" image={title} src={src}>
-              <ProsCons pros={pros} cons={cons} />
-            </OptionCard>
-          </Visual>
-        </div>
-      ))}
-      <div className="cs-sub">
-        <Copy>
-          <h3>The other two</h3>
-          <Pointers items={NOT_TAKEN} />
-        </Copy>
-      </div>
+      </Visual>
     </Chapter>
   );
 }
@@ -311,14 +340,10 @@ function Finishing() {
           Claude Code added more finish, and <Highlight>shaded and chromed, it stopped
           looking like itself</Highlight>. Twice I pulled it back to the design system.
         </p>
-        <SessionLog
-          when="23 Oct, 10:54 – 11:31"
-          lines={[
-            { from: "me", text: "It doesn't feel like a bell anymore. Make sure it feels like a bell, and maybe acts like a bell as well." },
-            { from: "claude", text: "Chromed the dome, added a ding animation, and made the champion gold." },
-            { from: "me", text: "The silver colour with our colour is not working at all. The shadows near the face are what destroy it." },
-            { from: "claude", text: "Went back to the design system: a blackcurrant dome, a grape base and a synthesised ding." },
-          ]}
+        <PullQuote
+          label="The brief that fixed it"
+          text="It doesn't feel like a bell anymore."
+          emphasis="Make sure it feels like a bell, and maybe acts like a bell as well."
         />
       </Copy>
       <Visual>
@@ -417,15 +442,6 @@ function Solution() {
           one started as a sentence to Claude Code and shipped as a commit. Here
           they are in the order a visitor meets them.
         </p>
-        <SessionLog
-          when="23 – 24 Oct"
-          lines={[
-            { from: "me", text: "For a user who would hover over it a lot of times this would be very heavy." },
-            { from: "claude", text: "Made the sign lighter and smaller, and added units: 4m 16s." },
-            { from: "me", text: "Let's stop making changes to the movement of the character." },
-            { from: "claude", text: "Dropped Bella travelling between sections. One Bella stays in the navbar, one in the footer." },
-          ]}
-        />
       </Copy>
       {USE_CASES.map(({ num, slug, title, body, tried }) => (
         <div key={num} className="cs-sub">
@@ -522,9 +538,6 @@ const FEATURES = [
     me: "Getting in touch is the easiest last step on the page.",
   },
 ];
-
-const TH = "pb-[12px] pr-[16px] font-brand text-[12px] font-normal uppercase leading-[16px] text-muted";
-const TD = "py-[14px] pr-[16px] align-top";
 
 function FeatureTable() {
   return (
@@ -665,7 +678,6 @@ export default function BellaPage() {
       <Hero
         title="Bella, the desk bell that hosts this portfolio, designed entirely in Claude Code"
         date="October 2026"
-        badge="Made in Claude Code"
         image="/images/bella/hero.svg"
       />
       <Overview />

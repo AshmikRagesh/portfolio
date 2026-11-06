@@ -7,7 +7,7 @@
 - finish-*, sign-*, tip-*  the later rounds, redrawn on the desk bell from the
   design notes (my-portfolio/case-studies/bella-notes.md); the code only kept the winners
 - final-bella  the bell as it ships (see components/host/HostCharacter)
-- hero  the case study's hero: the first prompt in a Claude Code window, and Bella beside it
+- hero  the case study's hero: the first prompt, in a Claude Code window
 
 Run: python3 scripts/draw-bella-explorations.py
 """
@@ -313,7 +313,7 @@ TIPS = {
 FINAL = {"final-bella": shipped(MIDNIGHT, BLACKCURRANT, SHIPPED_EYES)}
 
 
-# ── The case study's hero: the first prompt in Claude Code, and the Bella it led to ──────
+# ── The case study's hero: the first prompt, in a Claude Code window ─────────────────────
 MONO = "'SF Mono', Menlo, Consolas, monospace"
 PROMPT = [
     "A small very minimal character for this",
@@ -324,8 +324,8 @@ REPLY = ["6 hospitality references and 3 directions:", "key tag, bellhop, desk b
 
 
 def hero() -> str:
-    # Kept near the middle and in the top 230px, so a narrow crop and the title fade both leave it whole
-    tx, ty, tw, th = 380, 24, 500, 204  # the terminal window
+    # Centred and in the top 230px, so a narrow crop and the title fade both leave it whole
+    tx, ty, tw, th = 470, 24, 500, 204  # the terminal window
     line = lambda x, y, text, fill, size=16: (  # noqa: E731
         f'<text x="{x}" y="{y}" font-family="{MONO}" font-size="{size}" fill="{fill}">{text}</text>'
     )
@@ -333,30 +333,18 @@ def hero() -> str:
     body += line(tx + 26, ty + 76, "&gt;", "#f8c2f7")
     body += f'<circle cx="{tx + 31}" cy="{ty + 155}" r="5" fill="#d9b8e3"/>'
     body += "".join(line(tx + 48, ty + 160 + i * 24, t, "#cbb6d3") for i, t in enumerate(REPLY))
-    rings = (
-        f'<g stroke="{GRAPE}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".8">'
-        '<path d="M80 128 Q72 120 74 110"/><path d="M70 134 Q58 122 62 106"/>'
-        '<path d="M120 128 Q128 120 126 110"/><path d="M130 134 Q142 122 138 106"/></g>'
-    )
-    bella = shipped_body(MIDNIGHT, BLACKCURRANT, SHIPPED_EYES, rings, clip="herodome")
     return svg(
         "0 0 1440 520",
         '<rect width="1440" height="520" fill="url(#herobg)"/>'
-        '<ellipse cx="990" cy="140" rx="220" ry="150" fill="url(#heroglow)"/>'
         # the terminal
         f'<rect x="{tx}" y="{ty + 6}" width="{tw}" height="{th}" rx="16" fill="{MIDNIGHT}" opacity=".18"/>'
         f'<rect x="{tx}" y="{ty}" width="{tw}" height="{th}" rx="16" fill="{MIDNIGHT}"/>'
         f'<path d="M{tx} {ty + 40} H{tx + tw}" stroke="#fff" stroke-opacity=".1"/>'
         + "".join(f'<circle cx="{tx + 22 + i * 18}" cy="{ty + 20}" r="5.5" fill="#fff" opacity=".22"/>' for i in range(3))
         + line(tx + 88, ty + 25, "claude  ·  ~/portfolio  ·  23 Oct, 09:10", "#fff", 13).replace('fill="#fff"', 'fill="#fff" fill-opacity=".55"')
-        + body
-        # Bella, ringing, beside it
-        + f'<g transform="translate(900 41) scale(1.3) translate(-30 -100)">{bella}</g>',
+        + body,
         '<linearGradient id="herobg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6ecf8"/>'
-        '<stop offset="1" stop-color="#e6d3ec"/></linearGradient>'
-        '<radialGradient id="heroglow"><stop offset="0" stop-color="#fff" stop-opacity=".9"/>'
-        '<stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>'
-        f'<clipPath id="herodome"><path d="{DOME}"/></clipPath>',
+        '<stop offset="1" stop-color="#e6d3ec"/></linearGradient>',
     )
 
 
