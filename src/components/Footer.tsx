@@ -47,6 +47,12 @@ const HOP_REACH = 0.7;
 const CONTACT_MS = 60;
 // Hovered mid-hop, it comes straight down where it is over this long
 const LAND_MS = 180;
+// A click: one jump on the spot, this high (share of the bell's height) and this long
+const JUMP_UP = 0.45;
+const JUMP_MS = 420;
+// A double-click: a backflip, higher and slower so the full turn reads
+const FLIP_UP = 0.9;
+const FLIP_MS = 720;
 // The pointer can slip off this long before the bell counts it as gone
 const HOVER_GRACE_MS = 240;
 // The bell is up while the band's top edge is above ON_LINE of the screen, and ducks
@@ -85,9 +91,9 @@ function useBellHeight() {
 // pause, a hop on the spot or a look around in between. Its eyes face the way it's going,
 // and it stretches on the way up and squashes on each landing.
 //   pointer   hover (or keyboard focus) rings it and brings it straight down where it is, so it
-//             can be clicked; a click rings it and makes it hop.
-//   touch     a tap rings it and makes it hop.
-// It's also the front desk: a click (or the Copy email button beside the social icons)
+//             can be clicked; a click rings it and makes it jump, a double-click a backflip.
+//   touch     a tap rings it and makes it jump, a double-tap a backflip.
+// It's also the front desk: the mail icon beside the social icons (and only that)
 // copies Ashmik's email: the bell rings and says so in a line underneath, the same way
 // the navbar bell talks. If the clipboard is blocked the line holds the address so it can
 // be selected by hand. Lines and the hover hint hang below the bell, over the band, so
@@ -112,6 +118,10 @@ function FooterBell() {
   const railRef = useRef<HTMLDivElement>(null);
   const moverRef = useRef<HTMLDivElement>(null);
   const liftRef = useRef<HTMLDivElement>(null);
+  // Click and double-click, set by the pottering effect below while the bell is up
+  const tricks = useRef<{ jump: () => void; flip: () => void } | null>(null);
+  // Mid-jump or mid-flip: the hover hint hides so it doesn't fly about with the bell
+  const [acting, setActing] = useState(false);
 
   // Bella's moments play here while this bell is up (lib/bella/progress)
   const moment = useMoment();
@@ -226,15 +236,20 @@ function FooterBell() {
     let visible = true;
     let trip: Trip | null = null;
     let lifted = 0;
+    // The way it last travelled, so a backflip turns backwards from where it's facing
+    let facing = 1;
 
     const span = () => Math.max(0, rail.clientWidth - s.width);
     const setX = (x: number) => {
       s.x = x;
       mover.style.transform = `translate3d(${x}px, 0, 0)`;
     };
-    const setLift = (up: number, sx = 1, sy = 1) => {
+    // Turns spin about the middle of the bell; the squash stays at its feet
+    const setLift = (up: number, sx = 1, sy = 1, turn = 0) => {
       lifted = up;
-      lift.style.transform = `translate3d(0, ${-up}px, 0) scale(${sx}, ${sy})`;
+      const mid = turn ? lift.offsetHeight / 2 - Number.parseFloat(getComputedStyle(lift).transformOrigin.split(" ")[1]) : 0;
+      const spin = turn ? ` translate(0, ${mid}px) rotate(${turn}deg) translate(0, ${-mid}px)` : "";
+      lift.style.transform = `translate3d(0, ${-up}px, 0)${spin} scale(${sx}, ${sy})`;
     };
 
     const schedule = (lo = 1400, hi = 3800) => {
@@ -298,7 +313,10 @@ function FooterBell() {
     const go = (to: number, hops: { h: number; ms: number }[]) => {
       const from = s.x ?? 0;
       trip = { from, to, hops: [...hops, { h: 4, ms: 140 }], travelling: hops.length, start: performance.now() };
-      if (to !== from) setGaze({ x: Math.sign(to - from), y: 0.2 });
+      if (to !== from) {
+        facing = Math.sign(to - from);
+        setGaze({ x: facing, y: 0.2 });
+      }
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(tick);
     };
@@ -337,6 +355,46 @@ function FooterBell() {
       go(to, Array.from({ length: count }, () => ({ h: Math.round(random(10, 16)), ms: HOP_MS })));
     }
 
+    // A trick on the spot, even while hovered: drops whatever it was doing, rises from
+    // wherever it is (so a double-click's flip takes over the first click's jump), squashes
+    // on take-off and landing, and stretches in the air
+    const leap = (rise: number, ms: number, turns: number) => {
+      trip = null;
+      window.clearTimeout(timer);
+      looks.forEach(window.clearTimeout);
+      looks = [];
+      setGaze(turns ? null : { x: 0, y: -0.5 });
+      setActing(true);
+      cancelAnimationFrame(frame);
+      const from = lifted;
+      const h = rise * lift.offsetHeight;
+      const start = performance.now();
+      const step = (now: number) => {
+        const p = Math.min(1, (now - start) / ms);
+        const up = h * 4 * p * (1 - p) + from * (1 - p);
+        const fromContact = Math.min(p, 1 - p) * ms;
+        const k = fromContact < CONTACT_MS ? (1 - fromContact / CONTACT_MS) * 0.12 : 0;
+        const air = Math.sin(p * Math.PI) * 0.05;
+        // The turn eases in and out, done just before touch-down
+        const q = Math.min(1, p / 0.9);
+        const turn = turns * 360 * (q * q * (3 - 2 * q));
+        setLift(up, 1 + k * 0.7 - air * 0.6, 1 - k + air, turn % 360 === 0 ? 0 : turn);
+        if (p < 1) frame = requestAnimationFrame(step);
+        else {
+          setLift(0);
+          setGaze(null);
+          setActing(false);
+          schedule();
+        }
+      };
+      frame = requestAnimationFrame(step);
+    };
+    tricks.current = {
+      jump: () => leap(JUMP_UP, JUMP_MS, 0),
+      // Backwards from the way it faces: facing right, the top goes left
+      flip: () => leap(FLIP_UP, FLIP_MS, -facing),
+    };
+
     const io = new IntersectionObserver(([entry]) => (visible = entry.isIntersecting));
     io.observe(rail);
     schedule(800, 1600);
@@ -346,6 +404,8 @@ function FooterBell() {
       window.clearTimeout(timer);
       looks.forEach(window.clearTimeout);
       io.disconnect();
+      tricks.current = null;
+      setActing(false);
       setLift(0);
     };
   }, [onStage]);
@@ -360,9 +420,9 @@ function FooterBell() {
 
   // Copy the email and hold the card up for a few seconds
   const cardTimer = useRef(0);
-  const copyEmail = useRef((from: "bella" | "button") => void from);
-  copyEmail.current = (from) => {
-    track(from === "button" ? "email_copy_button" : "email_copy_bella");
+  const copyEmail = useRef(() => {});
+  copyEmail.current = () => {
+    track("email_copy_button");
     ringBell();
     setDing((d) => d + 1);
     const align = alignOnCounter();
@@ -380,7 +440,7 @@ function FooterBell() {
     }
   };
   useEffect(() => {
-    const onCopy = () => copyEmail.current("button");
+    const onCopy = () => copyEmail.current();
     window.addEventListener(COPY_EMAIL_EVENT, onCopy);
     return () => {
       window.removeEventListener(COPY_EMAIL_EVENT, onCopy);
@@ -425,11 +485,17 @@ function FooterBell() {
           <div ref={liftRef} style={{ transformOrigin: `50% ${layout.base}px` }}>
             <button
               type="button"
-              aria-label="Copy Ashmik's email address"
-              onClick={() => copyEmail.current("bella")}
+              aria-label="Bella, the desk bell: click to jump, double-click to backflip"
+              onClick={(e) => {
+                ringBell();
+                setDing((d) => d + 1);
+                // The second click of a double-click turns the jump into a backflip
+                if (e.detail === 2) tricks.current?.flip();
+                else if (e.detail < 2) tricks.current?.jump();
+              }}
               onFocus={() => !touch && setHovered(true)}
               onBlur={() => setHovered(false)}
-              className="relative z-10 block cursor-pointer select-none rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
+              className="relative z-10 block cursor-pointer select-none touch-manipulation rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
             >
               <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} holding={card !== null} expression={momentHere?.kind === "stamp" ? "surprised" : null} celebrate={celebrateCount} className="block" style={{ width: layout.width, height }} />
             </button>
@@ -451,11 +517,12 @@ function FooterBell() {
               </div>
             ) : (
               hovered &&
-              !touch && (
+              !touch &&
+              !acting && (
                 <div className="pointer-events-none absolute left-1/2 top-full mt-[12px] -translate-x-1/2">
                   <p className="host-tip relative whitespace-nowrap rounded-md bg-midnight px-[12px] py-[8px] font-geist font-normal text-[14px] leading-[20px] text-white shadow-[0_8px_20px_rgba(30,5,37,0.22)]">
                     <span aria-hidden="true" className="absolute -top-[4px] left-1/2 -ml-[4px] h-[8px] w-[8px] rotate-45 rounded-xs bg-midnight" />
-                    Click to copy my email
+                    Click me, or double-click
                   </p>
                 </div>
               )
