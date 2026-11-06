@@ -40,7 +40,7 @@ export default function Hero() {
             Chelsea pin. Right: the GitHub card over the Superhost medal. On a phone the
             book and the GitHub card sit at the shoulders and the pin and the medal just
             under the portrait. Each can be picked up and moved (Tossed). */}
-        <Tossed rotate={-6} delay={0} className="absolute left-[-32px] top-[-8px] z-10 md:left-[-112px] md:top-[8px] lg:left-[-188px] lg:top-[8px] xl:left-[-120px] xl:top-[-24px]">
+        <Tossed rotate={-4} delay={0} className="absolute left-[-32px] top-[-8px] z-10 md:left-[-112px] md:top-[8px] lg:left-[-188px] lg:top-[8px] xl:left-[-120px] xl:top-[-20px]">
           <TripsBook className="w-[104px] md:w-[140px] lg:w-[184px]" />
         </Tossed>
         <Tossed rotate={4} delay={110} className="absolute right-[-32px] top-[-8px] z-10 md:right-[-112px] md:top-[8px] lg:right-[-188px] lg:top-[8px] xl:right-[-136px] xl:top-[-20px]">
