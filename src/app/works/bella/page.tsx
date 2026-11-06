@@ -327,7 +327,7 @@ function Finishing() {
 // Section: Solution  (Bella on the live site, one use case at a time)
 // ─────────────────────────────────────────────────────────────────────────────
 // Each use case gets Ashmik's screen recording of the live site:
-// video="/videos/bella/<slug>.mp4" with a poster. Placeholders until then. The sign and
+// video="/videos/bella/<slug>.mp4" with a poster (greets, time, reads, celebrates, champion). Placeholders until then. The sign and
 // tooltip explorations sit under the use case they belong to.
 const SIGNS = [
   { name: "Brass and ivory plaque", src: art("sign-brass-ivory") },
@@ -372,27 +372,15 @@ const USE_CASES: {
   },
   {
     num: 4,
-    slug: "dozes",
-    title: "Pauses when you step away",
-    body: <>When you switch tabs or stop interacting, the timer pauses and Bella dozes off, so <Highlight>only active time is counted</Highlight>.</>,
-  },
-  {
-    num: 5,
     slug: "celebrates",
     title: "Rewards exploring",
     body: <>Reaching a goal on the site earns Bella a gold bow tie. <Highlight>Stamps are hidden across the site</Highlight>, and each one you find is added to your Curiosity Pass.</>,
   },
   {
-    num: 6,
+    num: 5,
     slug: "champion",
     title: "Celebrates the longest visit",
     body: <>The longest visit of the month turns Bella and its sign gold. <Highlight>Visit counts are never shown.</Highlight></>,
-  },
-  {
-    num: 7,
-    slug: "footer",
-    title: "Makes it easy to get in touch",
-    body: <>In the footer, a smaller Bella appears <Highlight>holding my email with a Copy email button</Highlight>, while the navbar Bella steps out of view.</>,
   },
 ];
 
