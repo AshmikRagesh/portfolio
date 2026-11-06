@@ -1106,3 +1106,20 @@
   .floating-header { transition: none; }
 }
 }
+
+/* ── Hero desk objects ─────────────────────────────────────────────────────── */
+@keyframes bookPhotoIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes bookPhotoImg {
+  from { transform: scale(1.06); }
+  to { transform: none; }
+}
+@keyframes bookLabel {
+  from { opacity: 0; transform: translateY(4px); filter: blur(2px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[book"] { animation: none !important; }
+}

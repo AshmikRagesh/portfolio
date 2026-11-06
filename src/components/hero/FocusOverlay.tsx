@@ -76,7 +76,7 @@ export default function FocusOverlay({ source, open, onClosed, label, width, hei
     const dx = s.left + s.width / 2 - (t.left + t.width / 2);
     const dy = s.top + s.height / 2 - (t.top + t.height / 2);
     // The resting object sits at an angle; carry it, so it straightens on the way up
-    const rot = Number(source.dataset.rest ?? 0);
+    const rot = Number(source.closest<HTMLElement>("[data-rest]")?.dataset.rest ?? 0);
     return `translate(${dx}px, ${dy}px) scale(${k}) rotate(${rot}deg)`;
   }, [source]);
 
@@ -160,18 +160,80 @@ export default function FocusOverlay({ source, open, onClosed, label, width, hei
   );
 }
 
-/** The round close button that sits under an opened object */
-export function CloseChip({ onClick, children = "Close" }: { onClick: () => void; children?: ReactNode }) {
+// ── Shared controls ───────────────────────────────────────────────────────────
+// One quiet glass pill under every opened object: optional page controls, then Close.
+
+const pill =
+  "inline-flex h-10 items-center gap-1 rounded-full bg-background/75 p-1 shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_1px_2px_rgba(30,5,37,0.06),0_8px_24px_rgba(30,5,37,0.10)] backdrop-blur-md";
+const round =
+  "flex h-8 w-8 items-center justify-center rounded-full text-secondary transition-[background-color,color,transform] duration-200 hover:bg-card hover:text-heading active:scale-95 disabled:pointer-events-none disabled:opacity-30";
+
+export function ControlBar({ children, onClose, visible = true }: { children?: ReactNode; onClose: () => void; visible?: boolean }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="inline-flex h-8 items-center gap-2 rounded-md px-3 font-geist text-caption-lg text-secondary transition-colors hover:bg-card hover:text-heading"
+    <div
+      className={`${pill} transition-[opacity,transform] duration-300 ease-out ${visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0"}`}
     >
-      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
-        <path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
       {children}
-    </button>
+      {children && <span className="mx-1 h-4 w-px bg-line-soft" aria-hidden="true" />}
+      <button type="button" onClick={onClose} className={`${round} w-auto gap-2 px-3 font-geist text-caption-lg`}>
+        <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+          <path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+        </svg>
+        Close
+      </button>
+    </div>
+  );
+}
+
+export function RoundButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button type="button" {...props} className={`${round} ${props.className ?? ""}`} />;
+}
+
+/** The close pill on its own */
+export function CloseChip({ onClick }: { onClick: () => void }) {
+  return <ControlBar onClose={onClick} />;
+}
+
+// ── Turn over ─────────────────────────────────────────────────────────────────
+// Once an object has landed in the middle it turns over, like a card in the hand: the
+// front swings away to edge-on, and the back (the content) swings in from the other
+// side, a touch bigger. Closing turns it back before it flies home. Shared by the
+// Superhost medal and the GitHub card.
+
+export const TURN_MS = 560;
+const TURN_EASE_OUT = "cubic-bezier(0.55, 0, 0.75, 0.4)"; // gathering speed to edge-on
+const TURN_EASE_IN = "cubic-bezier(0.2, 0.7, 0.3, 1.12)"; // and settling, with a little give
+
+export function FlipStage({ phase, front, back }: { phase: FocusPhase; front: ReactNode; back: ReactNode }) {
+  const turned = phase === "open";
+  const half = TURN_MS / 2;
+  return (
+    <div className="absolute inset-0 flex items-center justify-center" style={{ perspective: 1600 }}>
+      <div
+        className="absolute inset-0"
+        style={{
+          transform: turned ? "rotateY(90deg) scale(1.04)" : "none",
+          opacity: turned ? 0 : 1,
+          transition: turned
+            ? `transform ${half}ms ${TURN_EASE_OUT}, opacity 1ms linear ${half}ms`
+            : `transform ${half}ms ${TURN_EASE_IN} ${half}ms, opacity 1ms linear ${half}ms`,
+        }}
+      >
+        {front}
+      </div>
+      <div
+        className="relative"
+        style={{
+          transform: turned ? "none" : "rotateY(-90deg) scale(0.96)",
+          opacity: turned ? 1 : 0,
+          pointerEvents: turned ? "auto" : "none",
+          transition: turned
+            ? `transform ${half}ms ${TURN_EASE_IN} ${half}ms, opacity 1ms linear ${half}ms`
+            : `transform ${half}ms ${TURN_EASE_OUT}, opacity 1ms linear ${half}ms`,
+        }}
+      >
+        {back}
+      </div>
+    </div>
   );
 }

@@ -3,6 +3,7 @@ import TripsBook from "./hero/book/TripsBook";
 import NivasaMedal from "./hero/NivasaMedal";
 import GithubWidget from "./hero/GithubWidget";
 import ChelseaBadge from "./hero/ChelseaBadge";
+import Tossed from "./hero/Tossed";
 
 const PORTRAIT_SRC = "/images/portrait-sketch.png";
 
@@ -21,10 +22,11 @@ export default function Hero() {
       </div>
 
       {/* Portrait, with the desk objects around it: beside it on a wide screen, in a
-          row underneath on smaller ones */}
-      <div className="relative flex w-full flex-col items-center lg:w-auto">
+          row underneath on smaller ones. The wrapper is the portrait's own width, so the
+          objects are placed against the portrait itself */}
+      <div className="relative flex w-[80%] flex-col items-center md:w-auto">
         {/* Portrait */}
-        <div className="relative overflow-hidden w-[80%] aspect-[502/514] md:w-[502px] md:h-[514px] md:aspect-auto lg:w-[502px] lg:h-[514px]">
+        <div className="relative overflow-hidden w-full aspect-[502/514] md:w-[502px] md:h-[514px] md:aspect-auto lg:w-[502px] lg:h-[514px]">
           <Image
             src={PORTRAIT_SRC}
             alt="Portrait of Ashmik Ragesh"
@@ -33,19 +35,23 @@ export default function Hero() {
             className="absolute left-[-4%] top-[-2.71%] w-[108%] max-w-none"
           />
         </div>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-8 lg:contents">
-          <div className="lg:absolute lg:left-[-232px] lg:top-[24px]">
-            <TripsBook width={152} />
-          </div>
-          <div className="lg:absolute lg:left-[-268px] lg:top-[312px]">
-            <GithubWidget />
-          </div>
-          <div className="lg:absolute lg:right-[-196px] lg:top-[8px]">
-            <NivasaMedal className="w-[112px]" />
-          </div>
-          <div className="lg:absolute lg:right-[-204px] lg:top-[296px]">
-            <ChelseaBadge className="w-[92px]" />
-          </div>
+        {/* The desk objects. Always beside the portrait: on tablet and up all four sit
+            round it, two each side; on a phone the book and the medal sit at its
+            shoulders and the GitHub card and the lion just under it. Sizes step down
+            with the screen so they never crowd the face. */}
+        <Tossed rotate={-7} delay={0} className="absolute left-[-40px] top-[2%] z-10 md:left-[-104px] md:top-[24px] lg:left-[-232px] lg:top-[36px]">
+          <TripsBook className="w-[76px] md:w-[104px] lg:w-[156px]" />
+        </Tossed>
+        <Tossed rotate={5} delay={110} className="absolute right-[-34px] top-[4%] z-10 md:right-[-104px] md:top-[20px] lg:right-[-184px] lg:top-[24px]">
+          <NivasaMedal className="w-[54px] md:w-[84px] lg:w-[112px]" />
+        </Tossed>
+        <div className="relative z-10 -mt-6 flex w-full items-start justify-between px-2 md:contents">
+          <Tossed rotate={4} delay={220} className="md:absolute md:left-[-104px] md:top-[296px] lg:left-[-252px] lg:top-[336px]">
+            <GithubWidget className="w-[148px] md:w-[136px] lg:w-[200px]" />
+          </Tossed>
+          <Tossed rotate={-6} delay={330} className="mr-4 md:absolute md:right-[-96px] md:top-[296px] md:mr-0 lg:right-[-176px] lg:top-[318px]">
+            <ChelseaBadge className="w-[52px] md:w-[64px] lg:w-[88px]" />
+          </Tossed>
         </div>
       </div>
     </section>

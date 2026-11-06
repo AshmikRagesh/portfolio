@@ -1,16 +1,18 @@
 "use client";
 
 // ── GitHub, Aug–Nov ───────────────────────────────────────────────────────────
-// A small card of contribution squares sitting by the portrait. At rest a few squares
-// glow and fade on their own. On hover the squares rearrange into "ship" and a tooltip
-// offers the last four months; click opens a popover with two calendars, Personal and
-// Work, one block of weeks per month, every day a square you can hover for its count.
+// A small card on the desk, taped down at one corner: the GitHub mark, a grid of
+// contribution squares that glow and fade on their own, and the total. On hover the
+// squares rearrange into "ship" and a tooltip offers the last four months. Click and it
+// does what the book and the medal do: comes to the middle of the screen and turns
+// over, and on the back are two calendars, Personal and Work, one block of weeks per
+// month, every day a square you can hover for its count.
 // Colours are the brand ramp (pale lilac → blackcurrant), not GitHub green.
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ACCOUNTS, CONTRIB_ASOF, CONTRIB_FROM, CONTRIB_TO } from "./githubData";
-import { useReducedMotion } from "./FocusOverlay";
+import FocusOverlay, { ControlBar, FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 
 // Empty, then four steps up the brand ramp
 const RAMP = ["#f3f3f2", "#F9E4FF", "#F2B6EC", "#9D136A", "#32073e"];
@@ -20,8 +22,8 @@ const level = (n: number) => (n <= 0 ? 0 : n < 5 ? 1 : n < 15 ? 2 : n < 30 ? 3 :
 // ── The chip ────────────────────────────────────────────────────────────────────
 const COLS = 18;
 const ROWS = 7;
-const CELL = 6;
-const GAP = 2;
+const CELL = 8;
+const GAP = 3;
 
 // "ship" in a 3×5 pixel face, placed in the middle of the grid
 const GLYPHS: Record<string, string[]> = {
@@ -94,7 +96,7 @@ function Chip({ hovered }: { hovered: boolean }) {
             y={y}
             width={CELL}
             height={CELL}
-            rx={1.5}
+            rx={2}
             fill={fill}
             style={{ transition: reduced ? "none" : `fill 220ms ease ${delay}ms` }}
           />
@@ -195,146 +197,161 @@ function Calendar({ days, onTip }: { days: Record<string, number>; onTip: (t: { 
   );
 }
 
-function Popover({ anchor, onClose }: { anchor: HTMLElement; onClose: () => void }) {
-  const box = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
-  const [tip, setTip] = useState<{ text: string; x: number; y: number } | null>(null);
-  const reduced = useReducedMotion();
-  const totals = ACCOUNTS.map((a) => Object.values(a.days).reduce((x, y) => x + y, 0));
+const TOTALS = ACCOUNTS.map((a) => Object.values(a.days).reduce((x, y) => x + y, 0));
+const TOTAL = TOTALS[0] + TOTALS[1];
 
-  // Under the chip, kept on screen
-  useLayoutEffect(() => {
-    const place = () => {
-      const a = anchor.getBoundingClientRect();
-      const w = box.current?.offsetWidth ?? 0;
-      const h = box.current?.offsetHeight ?? 0;
-      const left = Math.max(16, Math.min(window.innerWidth - w - 16, a.left + a.width / 2 - w / 2));
-      const below = a.bottom + 12;
-      const top = below + h > window.innerHeight - 16 ? Math.max(16, a.top - h - 12) : below;
-      setPos({ left, top });
-    };
-    place();
-    window.addEventListener("resize", place);
-    window.addEventListener("scroll", place, { passive: true });
-    return () => {
-      window.removeEventListener("resize", place);
-      window.removeEventListener("scroll", place);
-    };
-  }, [anchor]);
+function Mark({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+    </svg>
+  );
+}
 
-  useEffect(() => {
-    if (!pos || reduced) return;
-    box.current?.animate(
-      [
-        { opacity: 0, transform: "translateY(-6px) scale(0.98)" },
-        { opacity: 1, transform: "none" },
-      ],
-      { duration: 240, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
-    );
-  }, [pos !== null, reduced]); // eslint-disable-line react-hooks/exhaustive-deps
+// ── The card (front) ──────────────────────────────────────────────────────────
+export const CARD_W = 224;
+export const CARD_H = 156;
 
-  // Escape or a click anywhere else closes it
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    const onDown = (e: PointerEvent) => {
-      const t = e.target as Node;
-      if (!box.current?.contains(t) && !anchor.contains(t)) onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    window.addEventListener("pointerdown", onDown);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      window.removeEventListener("pointerdown", onDown);
-    };
-  }, [anchor, onClose]);
+function Card({ hovered }: { hovered: boolean }) {
+  return (
+    <div className="absolute inset-0 rounded-[10px] bg-gradient-to-b from-white to-[#fbfafc] p-[14px] shadow-[0_0_0_1px_rgba(30,5,37,0.07),0_1px_1px_rgba(30,5,37,0.05),0_4px_8px_rgba(30,5,37,0.06),0_16px_32px_rgba(30,5,37,0.10)]">
+      <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(30,5,37,0.04)]" />
+      <div className="flex items-center justify-between">
+        <span className="flex items-center gap-1.5 text-heading">
+          <Mark />
+          <span className="font-brand text-[10px] uppercase tracking-[1.6px] text-secondary">Contributions</span>
+        </span>
+        <span className="font-brand text-[10px] uppercase tracking-[1.6px] text-muted">Aug–Nov</span>
+      </div>
+      <div className="mt-[10px]">
+        <Chip hovered={hovered} />
+      </div>
+      <div className="mt-[10px] flex items-baseline justify-between font-geist">
+        <span className="text-[13px] leading-none text-secondary">
+          <span className="font-semibold tabular-nums text-heading">{TOTAL}</span> this autumn
+        </span>
+        <span className="flex items-center gap-[3px]" aria-hidden="true">
+          {RAMP.map((c) => (
+            <span key={c} className="block h-[6px] w-[6px] rounded-[1.5px]" style={{ background: c }} />
+          ))}
+        </span>
+      </div>
+      {/* A strip of tape holding it to the desk */}
+      <span
+        className="absolute -left-3 -top-2 block h-[18px] w-[64px] -rotate-[14deg] opacity-90"
+        style={{
+          background: "linear-gradient(180deg, rgba(249,228,255,0.92), rgba(242,182,236,0.78))",
+          clipPath: "polygon(3% 0, 97% 4%, 100% 30%, 96% 55%, 100% 82%, 97% 100%, 2% 96%, 0 70%, 4% 45%, 0 18%)",
+          boxShadow: "0 1px 2px rgba(30,5,37,0.12)",
+        }}
+        aria-hidden="true"
+      />
+    </div>
+  );
+}
 
-  return createPortal(
-    <>
-      <div
-        ref={box}
-        role="dialog"
-        aria-label="GitHub contributions, August to November 2026"
-        className="fixed z-[150] max-w-[calc(100vw-32px)] overflow-x-auto rounded-xl border border-line-soft bg-background p-6 shadow-[0_2px_4px_rgba(30,5,37,0.04),0_12px_32px_rgba(30,5,37,0.10)]"
-        style={{ left: pos?.left ?? -9999, top: pos?.top ?? 0 }}
-      >
-        <p className="font-geist text-body text-secondary">
-          <span className="font-medium text-heading tabular-nums">{totals[0] + totals[1]}</span> contributions, Aug–Nov 2026
-        </p>
-        <div className="mt-6 flex flex-col gap-6">
+// ── The calendars (back) ──────────────────────────────────────────────────────
+type Tip = { text: string; x: number; y: number } | null;
+
+function Calendars({ close, phase }: { close: () => void; phase: FocusPhase }) {
+  const [tip, setTip] = useState<Tip>(null);
+  return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="w-max max-w-[calc(100vw-32px)] overflow-x-auto rounded-2xl bg-background p-8 shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]">
+        <div className="flex items-start justify-between gap-8">
+          <div>
+            <p className="flex items-center gap-2 font-brand text-[10px] uppercase tracking-[2px] text-muted">
+              <Mark size={12} /> GitHub · Aug–Nov 2026
+            </p>
+            <p className="mt-3 font-heading text-h2-lg text-heading">
+              <span className="tabular-nums">{TOTAL}</span> contributions
+            </p>
+          </div>
+          <div className="flex items-center gap-2 pt-1 font-geist text-caption text-muted">
+            Less
+            {RAMP.map((c) => (
+              <span key={c} className="block rounded-xs" style={{ width: 10, height: 10, background: c }} />
+            ))}
+            More
+          </div>
+        </div>
+        <div className="mt-8 flex flex-col gap-8">
           {ACCOUNTS.map((a, i) => (
             <div key={a.key} className="flex flex-col gap-3">
               <div className="flex items-baseline justify-between gap-4 font-geist text-body">
                 <span className="flex items-baseline gap-2">
                   <span className="font-medium text-heading">{a.label}</span>
-                  <a
-                    href={`https://github.com/${a.handle}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-muted underline-offset-2 hover:text-grape hover:underline"
-                  >
+                  <a href={`https://github.com/${a.handle}`} target="_blank" rel="noreferrer" className="text-muted underline-offset-2 transition-colors hover:text-grape hover:underline">
                     @{a.handle} ↗
                   </a>
                 </span>
-                <span className="tabular-nums text-secondary">{totals[i]}</span>
+                <span className="font-medium tabular-nums text-heading">{TOTALS[i]}</span>
               </div>
               <Calendar days={a.days} onTip={setTip} />
             </div>
           ))}
         </div>
-        <div className="mt-6 flex items-center justify-end gap-2 font-geist text-caption text-muted">
-          Less
-          {RAMP.map((c) => (
-            <span key={c} className="block rounded-xs" style={{ width: 10, height: 10, background: c }} />
-          ))}
-          More
-        </div>
+        <p className="mt-6 font-geist text-caption text-muted">Work is private repositories at Travelopia; counts as of 6 Nov 2026.</p>
       </div>
-      {tip && (
-        <div
-          role="tooltip"
-          className="pointer-events-none fixed z-[160] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md bg-midnight px-2 py-1 font-geist text-caption text-background"
-          style={{ left: tip.x, top: tip.y - 6 }}
-        >
-          {tip.text}
-        </div>
-      )}
-    </>,
-    document.body,
+      <ControlBar onClose={close} visible={phase === "open"} />
+      {tip &&
+        createPortal(
+          <div role="tooltip" className="pointer-events-none fixed z-[260] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md bg-midnight px-2 py-1 font-geist text-caption text-background shadow-[0_4px_12px_rgba(30,5,37,0.2)]" style={{ left: tip.x, top: tip.y - 6 }}>
+            {tip.text}
+          </div>,
+          document.body,
+        )}
+    </div>
   );
 }
 
+// ── In the hero ───────────────────────────────────────────────────────────────
 export default function GithubWidget({ className = "" }: { className?: string }) {
   const [hovered, setHovered] = useState(false);
   const [open, setOpen] = useState(false);
   const btn = useRef<HTMLButtonElement>(null);
-  const close = useCallback(() => setOpen(false), []);
+  const reduced = useReducedMotion();
+  const onClosed = useCallback(() => setOpen(false), []);
+
+  useLayoutEffect(() => {
+    const el = btn.current;
+    if (!el) return;
+    const read = () => el.style.setProperty("--card-k", String(el.offsetWidth / CARD_W));
+    read();
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   return (
-    <div className={`relative ${className}`}>
+    <>
       <button
         ref={btn}
         type="button"
-        aria-expanded={open}
-        aria-label="GitHub contributions, August to November. Open the calendar"
+        aria-haspopup="dialog"
+        aria-label="GitHub contributions, August to November. Open the calendars"
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
         onFocus={() => setHovered(true)}
         onBlur={() => setHovered(false)}
-        onClick={() => setOpen((o) => !o)}
-        className="group relative block rotate-[-2deg] rounded-lg border border-line-soft bg-background p-3 shadow-[0_1px_2px_rgba(30,5,37,0.06),0_6px_16px_rgba(30,5,37,0.08)] transition-transform duration-300 ease-out hover:-translate-y-0.5 hover:rotate-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
+        onClick={() => setOpen(true)}
+        className={`group relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
+        style={{ aspectRatio: `${CARD_W} / ${CARD_H}` }}
       >
-        <Chip hovered={hovered || open} />
-        {/* Tooltip: what a click does */}
+        <span className="absolute left-0 top-0 block origin-top-left" style={{ width: CARD_W, height: CARD_H, transform: "scale(var(--card-k, 0.7))" }}>
+          <Card hovered={hovered && !open} />
+        </span>
         <span
           aria-hidden="true"
-          className={`pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-midnight px-2 py-1 font-geist text-caption text-background transition-all duration-200 ${
-            hovered && !open ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"
-          }`}
+          className={`pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-midnight px-2 py-1 font-geist text-caption text-background shadow-[0_4px_12px_rgba(30,5,37,0.2)] transition-all duration-200 ${hovered && !open ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"}`}
         >
           Click to see Aug–Nov
         </span>
       </button>
-      {open && btn.current && <Popover anchor={btn.current} onClose={close} />}
-    </div>
+
+      <FocusOverlay source={btn.current} open={open} onClosed={onClosed} label="GitHub contributions" width={CARD_W} height={CARD_H} fitWidth={760} fitHeight={640} closeMs={reduced ? 0 : TURN_MS}>
+        {(phase, close) => <FlipStage phase={phase} front={<Card hovered={false} />} back={<Calendars close={close} phase={phase} />} />}
+      </FocusOverlay>
+    </>
   );
 }

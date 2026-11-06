@@ -2,152 +2,112 @@
 
 // ── The trips book ────────────────────────────────────────────────────────────
 // A small hardback by the portrait. Click it and it comes to the middle of the screen
-// (FocusOverlay, the same motion as the Superhost medal); drag the cover, or tap it, and
-// it opens out into a spread.
+// (FocusOverlay, the same motion as the medal and the GitHub card). Drag the cover, tap
+// it, or use the arrows, and it opens: one spread per trip, the stops listed on the left
+// (one open at a time, the list scrolls) and the route on the right.
 //
-//   Overview  list of stops on the left (one open at a time) · route map on the right
-//   Each stop photos on the left · notes and a close-up map on the right
-//
-// Pages turn by dragging: grab a page and pull it across, it follows the pointer, bends
-// its shading as it goes, and turns if you let go past a third of the way (or flick it),
-// otherwise it falls back. Arrow keys and the ‹ › buttons turn pages too. A photo opens
-// over the right-hand page, as in the reference; the map and the list stay in step.
+// Pages turn with real physics, not a canned animation:
+//   · the point you grab follows the pointer: a page held at distance r from the spine
+//     is turned to the angle where r·cos θ lands under the pointer
+//   · let go and a damped spring carries it the rest of the way, starting at the speed
+//     you flicked it; past halfway (or flicked) it turns, otherwise it falls back
+//   · it lands with a little bounce, the way paper settles on paper
+//   · as it lifts it shades, catches a highlight along the curve, and casts a shadow
+//     on the page underneath that shrinks as it comes over
+// Arrow keys and the buttons drive the same spring.
 
-import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
-import FocusOverlay, { CloseChip, useReducedMotion, type FocusPhase } from "../FocusOverlay";
-import PixelScene from "./PixelScene";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import FocusOverlay, { ControlBar, RoundButton, useReducedMotion, type FocusPhase } from "../FocusOverlay";
+import { Cover, ClosedEdges, PH, PW } from "./Cover";
 import TripMap from "./TripMap";
-import { TRIP, type Photo } from "./trip";
+import { TRIPS, type Trip } from "./trip";
 
-const PW = 320; // one page
-const PH = 432;
-const LEAVES = 5; // cover + overview map + one per stop
-const MAX_TURN = LEAVES - 1;
-const TURN_MS = 620;
+const LEAVES = TRIPS.length + 1; // the cover, then one leaf per trip
+const MAX_TURN = TRIPS.length;
+const STIFF = 170;
+const DAMP = 23;
+const FLICK = 320; // degrees per second that count as a flick
 
 // ── Pages ─────────────────────────────────────────────────────────────────────
-function Paper({ children, side, className = "" }: { children?: ReactNode; side: "left" | "right"; className?: string }) {
+function Paper({ children, side }: { children?: ReactNode; side: "left" | "right" }) {
   return (
-    <div
-      className={`absolute inset-0 overflow-hidden bg-background ${side === "left" ? "rounded-l-md" : "rounded-r-md"} ${className}`}
-      style={{
-        // The gutter: a soft shadow where the page curves into the spine
-        backgroundImage:
-          side === "left"
-            ? "linear-gradient(to left, rgba(30,5,37,0.10), rgba(30,5,37,0) 14%)"
-            : "linear-gradient(to right, rgba(30,5,37,0.10), rgba(30,5,37,0) 14%)",
-      }}
-    >
+    <div className={`absolute inset-0 overflow-hidden bg-[#fdfcfa] ${side === "left" ? "rounded-l-[6px]" : "rounded-r-[6px]"}`}>
+      {/* Fine paper tooth */}
+      <div className="pointer-events-none absolute inset-0 opacity-60 mix-blend-multiply" style={{ backgroundImage: "repeating-linear-gradient(0deg, rgba(30,5,37,0.018) 0 1px, transparent 1px 2px)" }} />
       {children}
+      {/* The gutter: the page curving down into the spine */}
+      <div
+        className="pointer-events-none absolute inset-y-0 w-10"
+        style={side === "left" ? { right: 0, background: "linear-gradient(to left, rgba(30,5,37,0.14), rgba(30,5,37,0.04) 40%, transparent)" } : { left: 0, background: "linear-gradient(to right, rgba(30,5,37,0.14), rgba(30,5,37,0.04) 40%, transparent)" }}
+      />
     </div>
   );
 }
 
-function Cover() {
+function Thumbs({ stop, onOpen }: { stop: Trip["stops"][number]; onOpen: (p: number) => void }) {
   return (
-    <div className="absolute inset-0 overflow-hidden rounded-r-md rounded-l-sm bg-vanilla p-6" style={{ boxShadow: "inset 6px 0 8px -6px rgba(30,5,37,0.35), inset 0 0 0 1px rgba(30,5,37,0.06)" }}>
-      <p className="font-heading text-h1-lg text-grape">{TRIP.title}</p>
-      <p className="mt-1 font-brand text-caption uppercase tracking-[2px] text-grape/80">{TRIP.meta}</p>
-      <div className="absolute inset-x-0 bottom-0 h-[232px]">
-        <PixelScene scene="boat" palette="brand" cols={64} rows={46} className="h-full w-full" />
-      </div>
-      {/* Cloth grain over everything */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.07] mix-blend-multiply" style={{ backgroundImage: "repeating-linear-gradient(0deg, #1e0525 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, #1e0525 0 1px, transparent 1px 3px)" }} />
-    </div>
-  );
-}
-
-function Thumbs({ photos, onOpen, label }: { photos: Photo[]; onOpen: (i: number) => void; label: string }) {
-  return (
-    <div className="flex">
-      {photos.map((p, i) => (
+    <div className="flex pl-1">
+      {stop.photos.map((ph, i) => (
         <button
-          key={i}
+          key={ph.src}
           type="button"
-          data-nodrag=""
           onClick={() => onOpen(i)}
-          aria-label={`${label}: open photo ${i + 1} of ${photos.length}`}
-          className="-ml-2 h-10 w-10 overflow-hidden rounded-full border-2 border-background shadow-[0_1px_3px_rgba(30,5,37,0.25)] transition-transform first:ml-0 hover:z-10 hover:-translate-y-0.5 hover:scale-110"
+          aria-label={`${stop.name}: open photo ${i + 1} of ${stop.photos.length}, ${ph.caption}`}
+          className="relative -ml-2 h-11 w-11 overflow-hidden rounded-full bg-card ring-2 ring-[#fdfcfa] shadow-[0_1px_3px_rgba(30,5,37,0.25)] transition-transform duration-300 ease-out first:ml-0 hover:z-10 hover:-translate-y-1 hover:scale-110"
         >
-          <PixelScene scene={p.scene} palette={p.palette} cols={20} rows={20} className="h-full w-full" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={ph.src} alt="" loading="lazy" draggable={false} className="h-full w-full object-cover" />
         </button>
       ))}
     </div>
   );
 }
 
-function Overview({ active, setActive, openPhoto }: { active: number | null; setActive: (i: number | null) => void; openPhoto: (s: number, p: number) => void }) {
+function Itinerary({ trip, index, active, setActive, openPhoto }: { trip: Trip; index: number; active: number | null; setActive: (i: number | null) => void; openPhoto: (s: number, p: number) => void }) {
   return (
-    <div className="flex h-full flex-col overflow-y-auto px-6 py-6" data-nodrag="">
-      {TRIP.stops.map((s, i) => {
-        const on = active === i;
-        return (
-          <div key={s.name} className="border-b border-line-soft py-3 last:border-b-0">
-            <button type="button" aria-expanded={on} onClick={() => setActive(on ? null : i)} className="flex w-full flex-col items-start gap-1 text-left">
-              <span className="flex items-center gap-2 font-geist text-caption text-muted">
-                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-grape text-[10px] font-semibold leading-none text-background">{i + 1}</span>
-                {s.days}
-                {s.leg ? ` · ${s.leg}` : ""}
-              </span>
-              <span className="flex items-center gap-1 font-geist text-body-lg font-medium text-heading">
-                {s.name}
-                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" className="transition-transform duration-300" style={{ transform: on ? "rotate(180deg)" : "none" }}>
-                  <path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-            </button>
-            {/* Opens to its own height */}
-            <div className="grid transition-[grid-template-rows] duration-300 ease-out" style={{ gridTemplateRows: on ? "1fr" : "0fr" }}>
-              <div className="overflow-hidden">
-                <p className="pt-2 font-geist text-body text-secondary">{s.line}</p>
-                <div className="pb-1 pt-3">
-                  <Thumbs photos={s.photos} label={s.name} onOpen={(p) => openPhoto(i, p)} />
+    <div className="flex h-full flex-col pl-7 pr-9 pt-7">
+      <p className="font-brand text-[10px] uppercase leading-none tracking-[2px] text-muted">
+        Trip {index + 1} of {TRIPS.length}
+      </p>
+      <p className="mt-2 font-heading text-[30px] leading-none tracking-[-1px] text-heading">{trip.title}</p>
+      <p className="mt-2 font-geist text-caption text-secondary">{trip.when}</p>
+      {/* The list scrolls; it fades out under the bottom edge */}
+      <div
+        className="-mr-4 mt-4 flex-1 overflow-y-auto overscroll-contain pb-8 pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{ maskImage: "linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 40px), transparent)", WebkitMaskImage: "linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 40px), transparent)" }}
+      >
+        {trip.stops.map((s, i) => {
+          const on = active === i;
+          return (
+            <div key={s.name} className="relative border-t border-line-soft first:border-t-0">
+              <button type="button" aria-expanded={on} onClick={() => setActive(on ? null : i)} className="group flex w-full items-start gap-3 py-3 text-left">
+                <span className={`mt-[1px] flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-geist text-[10px] font-semibold leading-none transition-colors duration-300 ${on ? "bg-primary text-background" : "bg-grape-light text-grape group-hover:bg-pink"}`}>{i + 1}</span>
+                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <span className="truncate font-geist text-caption text-muted">
+                    {s.days}
+                    {s.leg ? ` · ${s.leg}` : ""}
+                  </span>
+                  <span className="flex items-center gap-1.5 font-geist text-body-lg font-medium text-heading">
+                    {s.name}
+                    <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" className="text-muted transition-transform duration-300" style={{ transform: on ? "rotate(180deg)" : "none" }}>
+                      <path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </span>
+              </button>
+              <div className="grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ gridTemplateRows: on ? "1fr" : "0fr" }}>
+                <div className="overflow-hidden">
+                  <div className={`pb-4 pl-8 transition-[opacity,transform] duration-500 ${on ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"}`}>
+                    <p className="font-geist text-body text-secondary">{s.line}</p>
+                    <div className="mt-3">
+                      <Thumbs stop={s} onOpen={(p) => openPhoto(i, p)} />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function StopPhotos({ stop, openPhoto }: { stop: number; openPhoto: (s: number, p: number) => void }) {
-  const s = TRIP.stops[stop];
-  const [a, b, c] = s.photos;
-  const Tile = ({ p, i, className }: { p: Photo; i: number; className: string }) => (
-    <button type="button" data-nodrag="" onClick={() => openPhoto(stop, i)} aria-label={`${s.name}: open photo ${i + 1}, ${p.caption}`} className={`group relative overflow-hidden rounded-md ${className}`}>
-      <PixelScene scene={p.scene} palette={p.palette} cols={48} rows={36} className="h-full w-full transition-transform duration-500 group-hover:scale-[1.04]" />
-    </button>
-  );
-  return (
-    <div className="flex h-full flex-col gap-3 p-6">
-      <Tile p={a} i={0} className="h-[208px] w-full -rotate-1 shadow-[0_2px_6px_rgba(30,5,37,0.15)]" />
-      <div className="flex flex-1 gap-3">
-        <Tile p={b} i={1} className="h-full flex-1 rotate-1 shadow-[0_2px_6px_rgba(30,5,37,0.15)]" />
-        <Tile p={c} i={2} className="h-full flex-1 -rotate-[0.5deg] shadow-[0_2px_6px_rgba(30,5,37,0.15)]" />
-      </div>
-      <p className="font-handwriting text-[22px] leading-none text-grape">{s.name}</p>
-    </div>
-  );
-}
-
-function StopNotes({ stop, mapId }: { stop: number; mapId: string }) {
-  const s = TRIP.stops[stop];
-  return (
-    <div className="flex h-full flex-col p-6">
-      <span className="flex items-center gap-2 font-geist text-caption text-muted">
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-grape text-[10px] font-semibold leading-none text-background">{stop + 1}</span>
-        {s.days}
-      </span>
-      <p className="mt-1 font-heading text-h3-lg text-heading">{s.name}</p>
-      <div className="mt-3 flex flex-col gap-2 font-geist text-body text-secondary">
-        {s.notes.map((n) => (
-          <p key={n}>{n}</p>
-        ))}
-      </div>
-      <div className="mt-auto h-[120px] overflow-hidden rounded-md border border-line-soft">
-        <TripMap active={null} fixed={stop} id={`${mapId}-s${stop}`} />
+          );
+        })}
       </div>
     </div>
   );
@@ -155,28 +115,191 @@ function StopNotes({ stop, mapId }: { stop: number; mapId: string }) {
 
 function EndPaper() {
   return (
-    <div className="flex h-full items-center justify-center">
-      <p className="font-handwriting text-[28px] text-grape/70">until the next one</p>
+    <div className="flex h-full flex-col items-center justify-center gap-2">
+      <p className="font-handwriting text-[30px] leading-none text-grape/70">until the next one</p>
+      <p className="font-brand text-[10px] uppercase tracking-[2px] text-muted">— A.R.</p>
     </div>
   );
 }
 
+function PhotoViewer({ trip, at, onMove, onClose }: { trip: Trip; at: { s: number; p: number }; onMove: (d: number) => void; onClose: () => void }) {
+  const stop = trip.stops[at.s];
+  const ph = stop.photos[at.p];
+  const many = stop.photos.length > 1;
+  return (
+    <div className="absolute inset-0 animate-[bookPhotoIn_420ms_cubic-bezier(0.22,1,0.36,1)] overflow-hidden rounded-r-[6px] bg-midnight">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img key={ph.src} src={ph.src} alt={`${stop.name}: ${ph.caption}`} draggable={false} className="absolute inset-0 h-full w-full animate-[bookPhotoImg_600ms_ease-out] object-cover" />
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-midnight/85 via-midnight/40 to-transparent px-5 pb-5 pt-16">
+        <p className="font-brand text-[10px] uppercase tracking-[2px] text-background/70">
+          {stop.name} · {at.p + 1} / {stop.photos.length}
+        </p>
+        <p className="mt-1 font-geist text-body-lg text-background">{ph.caption}</p>
+      </div>
+      <div className="absolute right-3 top-3 flex gap-1">
+        {many && (
+          <>
+            <ViewerButton label="Previous photo" onClick={() => onMove(-1)}>‹</ViewerButton>
+            <ViewerButton label="Next photo" onClick={() => onMove(1)}>›</ViewerButton>
+          </>
+        )}
+        <ViewerButton label="Close photo" onClick={onClose}>
+          <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+            <path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          </svg>
+        </ViewerButton>
+      </div>
+    </div>
+  );
+}
+function ViewerButton({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+  return (
+    <button type="button" aria-label={label} onClick={onClick} className="flex h-8 w-8 items-center justify-center rounded-full bg-midnight/45 text-[16px] leading-none text-background backdrop-blur-md transition-colors hover:bg-midnight/70">
+      {children}
+    </button>
+  );
+}
+
 // ── The book ──────────────────────────────────────────────────────────────────
-type Drag = { leaf: number; p: number; forward: boolean };
+type Sim = { a: number[]; v: number[]; target: number[]; startAt: number[] };
 
-function Book({ phase, turned, setTurned, mapId }: { phase: FocusPhase; turned: number; setTurned: (n: number) => void; mapId: string }) {
-  const [active, setActive] = useState<number | null>(null);
-  const [photo, setPhoto] = useState<{ s: number; p: number } | null>(null);
-  const [drag, setDrag] = useState<Drag | null>(null);
+function Book({ phase, turned, setTurned, uid }: { phase: FocusPhase; turned: number; setTurned: (n: number) => void; uid: string }) {
+  const [active, setActive] = useState<(number | null)[]>(() => TRIPS.map(() => null));
+  const [photo, setPhoto] = useState<{ t: number; s: number; p: number } | null>(null);
   const reduced = useReducedMotion();
-  const gesture = useRef<{ x: number; y: number; t: number; started: boolean; id: number } | null>(null);
-  const swallowClick = useRef(false);
-  const root = useRef<HTMLDivElement>(null);
 
-  const go = useCallback((n: number) => {
-    setPhoto(null);
-    setTurned(Math.max(0, Math.min(MAX_TURN, n)));
-  }, [setTurned]);
+  const root = useRef<HTMLDivElement>(null);
+  const leafEls = useRef<(HTMLDivElement | null)[]>([]);
+  const shadeEls = useRef<(HTMLDivElement | null)[]>([]);
+  const castR = useRef<HTMLDivElement>(null);
+  const castL = useRef<HTMLDivElement>(null);
+  const board = useRef<HTMLDivElement>(null);
+  const sim = useRef<Sim>({ a: Array(LEAVES).fill(0), v: Array(LEAVES).fill(0), target: Array(LEAVES).fill(0), startAt: Array(LEAVES).fill(0) });
+  const dragging = useRef<{ leaf: number; r: number; lastA: number; lastT: number; w: number } | null>(null);
+  const gesture = useRef<{ x: number; y: number; id: number; started: boolean; side: "l" | "r" } | null>(null);
+  const swallow = useRef(false);
+  const raf = useRef(0);
+
+  // ── Drawing one frame ──
+  const draw = useCallback(() => {
+    const { a } = sim.current;
+    const d = dragging.current?.leaf;
+    let lead = -1;
+    let leadLift = 0;
+    for (let i = 0; i < LEAVES; i++) {
+      const el = leafEls.current[i];
+      if (!el) continue;
+      const th = a[i];
+      const lift = Math.sin((th * Math.PI) / 180);
+      if (lift > leadLift) {
+        leadLift = lift;
+        lead = i;
+      }
+      el.style.transform = `rotateY(${(-th).toFixed(3)}deg)`;
+      el.style.zIndex = String(d === i || lift > 0.02 ? 40 + i : th > 90 ? 10 + i : 10 + LEAVES - i);
+      const [front, back] = [shadeEls.current[i * 2], shadeEls.current[i * 2 + 1]];
+      // Shading across the lifting page: darker towards the spine, a soft highlight along the curve
+      const sh = (0.28 * lift).toFixed(3);
+      const hi = (0.22 * lift).toFixed(3);
+      if (front) front.style.background = `linear-gradient(to left, rgba(255,255,255,${hi}) 0%, rgba(255,255,255,0) 22%, rgba(30,5,37,0) 55%, rgba(30,5,37,${sh}) 100%)`;
+      if (back) back.style.background = `linear-gradient(to right, rgba(255,255,255,${hi}) 0%, rgba(255,255,255,0) 22%, rgba(30,5,37,0) 55%, rgba(30,5,37,${sh}) 100%)`;
+    }
+    // The lifted page's shadow on whichever page it's over
+    const th = lead >= 0 ? a[lead] : 0;
+    const proj = Math.cos((th * Math.PI) / 180); // where its edge is, -1 left … 1 right
+    const strength = (0.32 * leadLift).toFixed(3);
+    if (castR.current) {
+      const on = lead >= 0 && proj > 0;
+      castR.current.style.opacity = on ? "1" : "0";
+      if (on) castR.current.style.background = `linear-gradient(to right, rgba(30,5,37,${strength}) 0%, rgba(30,5,37,${(0.6 * Number(strength)).toFixed(3)}) ${(proj * 100).toFixed(1)}%, rgba(30,5,37,0) ${Math.min(100, proj * 100 + 18).toFixed(1)}%)`;
+    }
+    if (castL.current) {
+      const on = lead >= 0 && proj < 0;
+      castL.current.style.opacity = on ? "1" : "0";
+      if (on) castL.current.style.background = `linear-gradient(to left, rgba(30,5,37,${strength}) 0%, rgba(30,5,37,${(0.6 * Number(strength)).toFixed(3)}) ${(-proj * 100).toFixed(1)}%, rgba(30,5,37,0) ${Math.min(100, -proj * 100 + 18).toFixed(1)}%)`;
+    }
+    // Closed, the cover sits in the middle; as it opens the whole book slides over so the spread is centred
+    const open = (1 - Math.cos((a[0] * Math.PI) / 180)) / 2;
+    if (root.current) root.current.style.transform = `translateX(${(open * PW * 0.5).toFixed(2)}px)`;
+    if (board.current) board.current.style.left = `${((1 - open) * PW - 4).toFixed(2)}px`;
+  }, []);
+
+  // ── The spring ──
+  const run = useCallback(() => {
+    cancelAnimationFrame(raf.current);
+    let last = performance.now();
+    const step = (now: number) => {
+      const dt = Math.min(0.032, (now - last) / 1000);
+      last = now;
+      const s = sim.current;
+      let moving = false;
+      for (let i = 0; i < LEAVES; i++) {
+        if (dragging.current?.leaf === i) {
+          moving = true;
+          continue;
+        }
+        if (now < s.startAt[i]) {
+          moving = true;
+          continue;
+        }
+        const acc = -STIFF * (s.a[i] - s.target[i]) - DAMP * s.v[i];
+        s.v[i] += acc * dt;
+        s.a[i] += s.v[i] * dt;
+        // Paper landing on paper: it can't go through, it settles with a small bounce
+        if (s.a[i] > 180) {
+          s.a[i] = 180;
+          s.v[i] = -s.v[i] * 0.22;
+        } else if (s.a[i] < 0) {
+          s.a[i] = 0;
+          s.v[i] = -s.v[i] * 0.22;
+        }
+        if (Math.abs(s.a[i] - s.target[i]) > 0.05 || Math.abs(s.v[i]) > 0.5) moving = true;
+        else {
+          s.a[i] = s.target[i];
+          s.v[i] = 0;
+        }
+      }
+      draw();
+      if (moving) raf.current = requestAnimationFrame(step);
+    };
+    raf.current = requestAnimationFrame(step);
+  }, [draw]);
+
+  // Whenever the page changes, every leaf heads for its side; several at once fan out
+  const prevTurned = useRef(turned);
+  useLayoutEffect(() => {
+    const s = sim.current;
+    const now = performance.now();
+    const from = prevTurned.current;
+    prevTurned.current = turned;
+    let order = 0;
+    const leaves = turned > from ? [...Array(LEAVES).keys()] : [...Array(LEAVES).keys()].reverse();
+    for (const i of leaves) {
+      const t = i < turned ? 180 : 0;
+      if (s.target[i] !== t) {
+        s.target[i] = t;
+        s.startAt[i] = now + order * 70;
+        order++;
+      }
+    }
+    if (reduced) {
+      s.a = s.target.slice();
+      s.v.fill(0);
+      draw();
+      return;
+    }
+    run();
+  }, [turned, reduced, run, draw]);
+
+  useEffect(() => () => cancelAnimationFrame(raf.current), []);
+
+  const go = useCallback(
+    (n: number) => {
+      setPhoto(null);
+      setTurned(Math.max(0, Math.min(MAX_TURN, n)));
+    },
+    [setTurned],
+  );
 
   // Arrow keys turn pages
   useEffect(() => {
@@ -189,159 +312,192 @@ function Book({ phase, turned, setTurned, mapId }: { phase: FocusPhase; turned: 
     return () => window.removeEventListener("keydown", onKey);
   }, [phase, turned, go]);
 
-  // ── Dragging a page ──
+  // ── Dragging ──
+  const geometry = () => {
+    const r = root.current!.getBoundingClientRect();
+    return { spine: r.left + r.width / 2, w: r.width / 2 };
+  };
   const onPointerDown = (e: React.PointerEvent) => {
-    if (phase !== "open" || e.button !== 0) return;
-    gesture.current = { x: e.clientX, y: e.clientY, t: performance.now(), started: false, id: e.pointerId };
+    if (phase !== "open" || e.button !== 0 || reduced) return;
+    const { spine } = geometry();
+    gesture.current = { x: e.clientX, y: e.clientY, id: e.pointerId, started: false, side: e.clientX >= spine ? "r" : "l" };
   };
   const onPointerMove = (e: React.PointerEvent) => {
     const g = gesture.current;
     if (!g || g.id !== e.pointerId) return;
-    const dx = e.clientX - g.x;
-    const dy = e.clientY - g.y;
+    const { spine, w } = geometry();
     if (!g.started) {
-      if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)) return;
-      const forward = dx < 0;
+      const dx = e.clientX - g.x;
+      if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(e.clientY - g.y)) return;
+      const forward = g.side === "r";
       if (forward ? turned >= MAX_TURN : turned <= 0) return;
       g.started = true;
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
       setPhoto(null);
-      setDrag({ leaf: forward ? turned : turned - 1, p: 0, forward });
+      const leaf = forward ? turned : turned - 1;
+      // Where along the page it was grabbed (never right at the spine, or it would spin)
+      const r = Math.max(0.35, Math.min(1, Math.abs(g.x - spine) / w));
+      dragging.current = { leaf, r, lastA: sim.current.a[leaf], lastT: performance.now(), w };
+      sim.current.v[leaf] = 0;
+      run();
     }
-    // Scaled with the book, so measure the page as drawn
-    const pageW = (root.current?.getBoundingClientRect().width ?? PW * 2) / 2;
-    setDrag((d) => (d ? { ...d, p: Math.max(0, Math.min(1, (d.forward ? -dx : dx) / (pageW * 1.6))) } : d));
+    const dr = dragging.current;
+    if (!dr) return;
+    const u = (e.clientX - spine) / dr.w;
+    const th = (Math.acos(Math.max(-1, Math.min(1, u / dr.r))) * 180) / Math.PI;
+    const now = performance.now();
+    const dt = Math.max(1, now - dr.lastT) / 1000;
+    // Smoothed angular speed, for the flick
+    sim.current.v[dr.leaf] = sim.current.v[dr.leaf] * 0.6 + ((th - dr.lastA) / dt) * 0.4;
+    dr.lastA = th;
+    dr.lastT = now;
+    sim.current.a[dr.leaf] = th;
   };
-  const onPointerUp = (e: React.PointerEvent) => {
+  const onPointerUp = () => {
     const g = gesture.current;
     gesture.current = null;
-    if (!g?.started || !drag) return;
-    swallowClick.current = true;
-    const v = Math.abs(e.clientX - g.x) / Math.max(1, performance.now() - g.t); // px per ms
-    const commit = drag.p > 0.33 || (v > 0.6 && drag.p > 0.08);
-    setDrag(null);
-    if (commit) go(drag.forward ? turned + 1 : turned - 1);
+    const dr = dragging.current;
+    if (!g?.started || !dr) return;
+    // Swallow the click this release would fire, and only that one
+    swallow.current = true;
+    window.setTimeout(() => (swallow.current = false), 0);
+    dragging.current = null;
+    const s = sim.current;
+    const th = s.a[dr.leaf];
+    const w = s.v[dr.leaf];
+    const over = Math.abs(w) > FLICK ? w > 0 : th > 90;
+    const next = over ? dr.leaf + 1 : dr.leaf;
+    s.target[dr.leaf] = over ? 180 : 0;
+    s.startAt[dr.leaf] = 0;
+    prevTurned.current = next;
+    if (next !== turned) go(next);
+    run();
   };
 
-  const angleOf = (i: number) => {
-    if (drag && drag.leaf === i) return drag.forward ? drag.p * 180 : 180 - drag.p * 180;
-    return i < turned ? 180 : 0;
-  };
-
-  const leaves: { front: ReactNode; back: ReactNode }[] = [
-    { front: <Cover />, back: <Overview active={active} setActive={setActive} openPhoto={(s, p) => setPhoto({ s, p })} /> },
-    { front: <TripMap active={active} onPick={(i) => setActive(i < 0 ? null : i)} id={`${mapId}-o`} />, back: <StopPhotos stop={0} openPhoto={(s, p) => setPhoto({ s, p })} /> },
-    { front: <StopNotes stop={0} mapId={mapId} />, back: <StopPhotos stop={1} openPhoto={(s, p) => setPhoto({ s, p })} /> },
-    { front: <StopNotes stop={1} mapId={mapId} />, back: <StopPhotos stop={2} openPhoto={(s, p) => setPhoto({ s, p })} /> },
-    { front: <StopNotes stop={2} mapId={mapId} />, back: <EndPaper /> },
-  ];
-
-  const isOpen = turned > 0 || (drag?.leaf === 0 && drag.p > 0);
-  const shot = photo ? TRIP.stops[photo.s].photos[photo.p] : null;
+  const openPhoto = (t: number) => (s: number, p: number) => setPhoto({ t, s, p });
+  const faces: { front: ReactNode; back: ReactNode }[] = [];
+  for (let i = 0; i < LEAVES; i++) {
+    const front = i === 0 ? <Cover /> : <Paper side="right"><TripMap trip={TRIPS[i - 1]} active={active[i - 1]} onPick={(s) => setActive((a) => a.map((x, k) => (k === i - 1 ? s : x)))} id={`${uid}-m${i}`} /></Paper>;
+    const back =
+      i < TRIPS.length ? (
+        <Paper side="left">
+          <Itinerary trip={TRIPS[i]} index={i} active={active[i]} setActive={(s) => setActive((a) => a.map((x, k) => (k === i ? s : x)))} openPhoto={openPhoto(i)} />
+        </Paper>
+      ) : (
+        <Paper side="left"><EndPaper /></Paper>
+      );
+    faces.push({ front, back });
+  }
+  const viewing = photo && turned === photo.t + 1 ? photo : null;
 
   return (
     <div
       ref={root}
       className="absolute top-0 select-none"
-      style={{
-        left: -PW,
-        width: PW * 2,
-        height: PH,
-        perspective: 2200,
-        // Closed, the cover sits in the middle; open, the spread does
-        transform: isOpen ? `translateX(${PW / 2}px)` : "none",
-        transition: reduced ? "none" : `transform ${TURN_MS}ms cubic-bezier(0.65, 0, 0.25, 1)`,
-        touchAction: "pan-y",
-      }}
+      style={{ left: -PW, width: PW * 2, height: PH, perspective: 2400, touchAction: "pan-y" }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
       onClickCapture={(e) => {
-        if (swallowClick.current) {
-          swallowClick.current = false;
+        if (swallow.current) {
+          swallow.current = false;
           e.stopPropagation();
           e.preventDefault();
         }
       }}
     >
-      {/* The book's shadow on the table */}
-      <div
-        className="absolute bottom-[-12px] h-6 rounded-[50%] bg-midnight/25 blur-md transition-all"
-        style={{ left: isOpen ? 16 : PW + 12, right: 16, transitionDuration: `${TURN_MS}ms` }}
-        aria-hidden="true"
-      />
-      {/* Back cover board, under everything */}
-      <div className="absolute top-[-4px] h-[calc(100%+8px)] rounded-md bg-vanilla shadow-[0_2px_6px_rgba(30,5,37,0.18)]" style={{ left: isOpen ? -4 : PW, right: -4, transition: `left ${TURN_MS}ms` }} aria-hidden="true" />
+      {/* Shadow on the table */}
+      <div className="pointer-events-none absolute -bottom-5 left-[4%] right-[4%] h-8 rounded-[50%] bg-midnight/30 blur-xl" aria-hidden="true" />
+      {/* Back board and page block, under everything */}
+      <div ref={board} className="absolute -bottom-1 -top-1 right-[-4px] rounded-[4px_10px_10px_4px] bg-[#e9e3d6] shadow-[0_2px_4px_rgba(30,5,37,0.12),0_18px_40px_rgba(30,5,37,0.18)]" style={{ left: PW - 4 }} aria-hidden="true" />
+      <div className="pointer-events-none absolute top-0" style={{ left: PW, width: PW, height: PH }} aria-hidden="true">
+        <ClosedEdges />
+      </div>
 
-      {leaves.map((leaf, i) => {
-        const a = angleOf(i);
-        const moving = drag?.leaf === i;
-        // Turned leaves stack the other way round
-        const z = moving ? 50 : a > 90 ? 10 + i : 10 + LEAVES - i;
-        const bend = Math.sin((a * Math.PI) / 180); // 0 flat, 1 standing up
+      {faces.map((f, i) => {
+        const isTurned = i < turned;
         return (
           <div
             key={i}
-            className="absolute top-0"
-            style={{
-              left: PW,
-              width: PW,
-              height: PH,
-              zIndex: z,
-              transformOrigin: "0 50%",
-              transformStyle: "preserve-3d",
-              transform: `rotateY(${-a}deg)`,
-              transition: moving || reduced ? "none" : `transform ${TURN_MS}ms cubic-bezier(0.45, 0.05, 0.25, 1)`,
+            ref={(el) => {
+              leafEls.current[i] = el;
             }}
+            className="absolute top-0 will-change-transform"
+            style={{ left: PW, width: PW, height: PH, transformOrigin: "0 50%", transformStyle: "preserve-3d", zIndex: 10 + LEAVES - i }}
           >
-            {/* Front (right-hand page) */}
-            <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }} aria-hidden={a > 90} inert={a > 90 ? true : undefined}>
-              {i === 0 ? leaf.front : <Paper side="right">{leaf.front}</Paper>}
-              <div className="pointer-events-none absolute inset-0 rounded-r-md" style={{ background: `linear-gradient(to left, rgba(30,5,37,${(0.22 * bend).toFixed(3)}), rgba(30,5,37,0) 70%)` }} />
+            <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }} inert={isTurned ? true : undefined}>
+              {f.front}
+              <div ref={(el) => { shadeEls.current[i * 2] = el; }} className={`pointer-events-none absolute inset-0 ${i === 0 ? "rounded-[3px_10px_10px_3px]" : "rounded-r-[6px]"}`} />
             </div>
-            {/* Back (left-hand page once turned) */}
-            <div className="absolute inset-0" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }} aria-hidden={a <= 90} inert={a <= 90 ? true : undefined}>
-              <Paper side="left">{leaf.back}</Paper>
-              <div className="pointer-events-none absolute inset-0 rounded-l-md" style={{ background: `linear-gradient(to right, rgba(30,5,37,${(0.22 * bend).toFixed(3)}), rgba(30,5,37,0) 70%)` }} />
+            <div className="absolute inset-0" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }} inert={!isTurned ? true : undefined}>
+              {f.back}
+              <div ref={(el) => { shadeEls.current[i * 2 + 1] = el; }} className="pointer-events-none absolute inset-0 rounded-l-[6px]" />
             </div>
           </div>
         );
       })}
 
+      {/* Shadows the turning page casts on the pages under it */}
+      <div ref={castR} className="pointer-events-none absolute top-0 z-[35] rounded-r-[6px] opacity-0" style={{ left: PW, width: PW, height: PH }} aria-hidden="true" />
+      <div ref={castL} className="pointer-events-none absolute top-0 z-[35] rounded-l-[6px] opacity-0" style={{ left: 0, width: PW, height: PH }} aria-hidden="true" />
+
       {/* A photo, open over the right-hand page */}
-      {shot && turned > 0 && (
-        <div className="absolute top-0 z-[60] overflow-hidden rounded-r-md bg-midnight" style={{ left: PW, width: PW, height: PH }} data-nodrag="">
-          <PixelScene scene={shot.scene} palette={shot.palette} cols={64} rows={86} className="h-full w-full" title={shot.caption} />
-          <p className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-midnight/80 to-transparent px-4 pb-4 pt-12 font-geist text-body text-background">{shot.caption}</p>
-          <button type="button" onClick={() => setPhoto(null)} aria-label="Close photo" className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-midnight/60 text-background backdrop-blur hover:bg-midnight/80">
-            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
-              <path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-            </svg>
-          </button>
+      {viewing && (
+        <div className="absolute top-0 z-[80]" style={{ left: PW, width: PW, height: PH }}>
+          <PhotoViewer
+            trip={TRIPS[viewing.t]}
+            at={viewing}
+            onClose={() => setPhoto(null)}
+            onMove={(d) => setPhoto((p) => (p ? { ...p, p: (p.p + d + TRIPS[p.t].stops[p.s].photos.length) % TRIPS[p.t].stops[p.s].photos.length } : p))}
+          />
         </div>
       )}
 
       {/* Closed: tap the cover to open it */}
-      {!isOpen && phase === "open" && (
-        <button type="button" onClick={() => go(1)} className="absolute top-0 z-[55] cursor-pointer" style={{ left: PW, width: PW, height: PH }} aria-label="Open the book" />
+      {turned === 0 && phase === "open" && (
+        <button type="button" onClick={() => go(1)} className="absolute top-0 z-[70] cursor-pointer rounded-[3px_10px_10px_3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape" style={{ left: PW, width: PW, height: PH }} aria-label="Open the book" />
+      )}
+      {/* The page corner lifts under the pointer: a hint that it turns */}
+      {turned > 0 && turned < MAX_TURN && phase === "open" && !viewing && (
+        <button
+          type="button"
+          onClick={() => go(turned + 1)}
+          aria-label="Turn the page"
+          className="group absolute bottom-0 z-[70] h-12 w-12"
+          style={{ left: PW * 2 - 48 }}
+        >
+          <span
+            className="absolute bottom-0 right-0 block h-4 w-4 rounded-tl-[3px] transition-all duration-300 ease-out group-hover:h-9 group-hover:w-9"
+            style={{ background: "linear-gradient(135deg, #e9e3d6 0%, #fdfcfa 48%, transparent 50%)", boxShadow: "-2px -2px 6px rgba(30,5,37,0.12)" }}
+          />
+        </button>
       )}
     </div>
   );
 }
 
 // ── In the hero ───────────────────────────────────────────────────────────────
-const LABELS = ["Cover", "Overview", ...TRIP.stops.map((s) => s.name)];
-
-export default function TripsBook({ width = 152, className = "" }: { width?: number; className?: string }) {
+export default function TripsBook({ className = "" }: { className?: string }) {
   const btn = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [turned, setTurned] = useState(0);
-  const mapId = useId().replace(/:/g, "");
+  const uid = useId().replace(/:/g, "");
   const reduced = useReducedMotion();
   const onClosed = useCallback(() => {
     setOpen(false);
     setTurned(0);
+  }, []);
+
+  // The cover is drawn at full size and scaled to whatever width the hero gives it
+  useLayoutEffect(() => {
+    const el = btn.current;
+    if (!el) return;
+    const read = () => el.style.setProperty("--book-k", String(el.offsetWidth / PW));
+    read();
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
   return (
@@ -349,17 +505,17 @@ export default function TripsBook({ width = 152, className = "" }: { width?: num
       <button
         ref={btn}
         type="button"
-        data-rest="-6"
         onClick={() => setOpen(true)}
         aria-label="Trips book. Open the itinerary"
         aria-haspopup="dialog"
-        className={`relative block rotate-[-6deg] transition-transform duration-300 hover:-translate-y-1 hover:rotate-[-4deg] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
-        style={{ width, height: (width * PH) / PW, ["--book-k" as string]: width / PW }}
+        className={`group relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
+        style={{ aspectRatio: `${PW} / ${PH}` }}
       >
-        {/* The closed book at hero size: the cover, scaled down, on a board edge */}
-        <span className="absolute inset-0 translate-x-[3px] translate-y-[3px] rounded-md bg-[#d9cfbd]" aria-hidden="true" />
-        <span className="absolute inset-0 overflow-hidden rounded-md shadow-[0_2px_4px_rgba(30,5,37,0.12),0_12px_24px_rgba(30,5,37,0.14)]">
-          <span className="absolute left-0 top-0 block origin-top-left" style={{ width: PW, height: PH, transform: "scale(var(--book-k))" }}>
+        <span className="absolute left-0 top-0 block origin-top-left" style={{ width: PW, height: PH, transform: "scale(var(--book-k, 0.5))" }}>
+          <span className="absolute -bottom-1 -top-1 left-[-4px] right-[-4px] rounded-[4px_10px_10px_4px] bg-[#e9e3d6] shadow-[0_2px_4px_rgba(30,5,37,0.14),0_16px_32px_rgba(30,5,37,0.18)] transition-shadow duration-300 group-hover:shadow-[0_4px_8px_rgba(30,5,37,0.14),0_28px_48px_rgba(30,5,37,0.22)]" />
+          <ClosedEdges />
+          {/* The cover opens a crack on hover */}
+          <span className="absolute inset-0 block origin-left transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [transform-style:preserve-3d] group-hover:[transform:perspective(900px)_rotateY(-14deg)]">
             <Cover />
           </span>
         </span>
@@ -372,43 +528,60 @@ export default function TripsBook({ width = 152, className = "" }: { width?: num
         label="Trips book"
         width={PW}
         height={PH}
-        fitWidth={PW * 2 + 32}
-        fitHeight={PH + 96}
-        closeMs={reduced || turned === 0 ? 0 : TURN_MS + 80}
+        fitWidth={PW * 2 + 48}
+        fitHeight={PH + 140}
+        closeMs={reduced || turned === 0 ? 0 : 760 + turned * 70}
       >
-        {(phase, close) => (
-          <BookStage phase={phase} close={close} turned={turned} setTurned={setTurned} mapId={mapId} />
-        )}
+        {(phase, close) => <BookStage phase={phase} close={close} turned={turned} setTurned={setTurned} uid={uid} />}
       </FocusOverlay>
     </>
   );
 }
 
-function BookStage({ phase, close, turned, setTurned, mapId }: { phase: FocusPhase; close: () => void; turned: number; setTurned: (n: number) => void; mapId: string }) {
+function BookStage({ phase, close, turned, setTurned, uid }: { phase: FocusPhase; close: () => void; turned: number; setTurned: (n: number) => void; uid: string }) {
   // Closing: shut the book first, then FocusOverlay flies it home
   useEffect(() => {
     if (phase === "closing") setTurned(0);
   }, [phase, setTurned]);
+  const [hinted, setHinted] = useState(false);
+  useEffect(() => {
+    if (turned > 1) setHinted(true);
+  }, [turned]);
 
-  const show = phase === "open";
   return (
     <>
-      <Book phase={phase} turned={turned} setTurned={setTurned} mapId={mapId} />
-      <div
-        className={`absolute left-1/2 top-full mt-6 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap transition-opacity duration-300 ${show ? "opacity-100" : "pointer-events-none opacity-0"}`}
-      >
-        <button type="button" onClick={() => setTurned(Math.max(0, turned - 1))} disabled={turned === 0} aria-label="Previous page" className="flex h-8 w-8 items-center justify-center rounded-md text-secondary hover:bg-card hover:text-heading disabled:opacity-30">
-          ‹
-        </button>
-        <span className="min-w-[88px] text-center font-geist text-caption-lg text-muted" aria-live="polite">
-          {turned === 0 ? "Drag or tap to open" : LABELS[turned]}
-        </span>
-        <button type="button" onClick={() => setTurned(Math.min(MAX_TURN, turned + 1))} disabled={turned === MAX_TURN} aria-label="Next page" className="flex h-8 w-8 items-center justify-center rounded-md text-secondary hover:bg-card hover:text-heading disabled:opacity-30">
-          ›
-        </button>
-        <span className="mx-2 h-4 w-px bg-line" aria-hidden="true" />
-        <CloseChip onClick={close} />
+      <Book phase={phase} turned={turned} setTurned={setTurned} uid={uid} />
+      <div className="absolute left-1/2 top-full mt-10 flex -translate-x-1/2 flex-col items-center gap-3 whitespace-nowrap">
+        <ControlBar onClose={close} visible={phase === "open"}>
+          <RoundButton onClick={() => setTurned(Math.max(0, turned - 1))} disabled={turned === 0} aria-label="Previous page">
+            <Chevron left />
+          </RoundButton>
+          <div className="flex min-w-[132px] flex-col items-center gap-1 px-2" aria-live="polite">
+            <span key={turned} className="animate-[bookLabel_360ms_cubic-bezier(0.22,1,0.36,1)] font-geist text-caption-lg leading-none text-heading">
+              {turned === 0 ? "Itinerary" : TRIPS[turned - 1].title}
+            </span>
+            <span className="flex items-center gap-1" aria-hidden="true">
+              {TRIPS.map((t, i) => (
+                <span key={t.key} className={`block h-1 rounded-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${turned === i + 1 ? "w-4 bg-grape" : "w-1 bg-line"}`} />
+              ))}
+            </span>
+          </div>
+          <RoundButton onClick={() => setTurned(Math.min(MAX_TURN, turned + 1))} disabled={turned === MAX_TURN} aria-label="Next page">
+            <Chevron />
+          </RoundButton>
+        </ControlBar>
+        <p className={`font-geist text-caption text-muted transition-opacity duration-500 ${phase === "open" && !hinted ? "opacity-100" : "opacity-0"}`}>
+          {turned === 0 ? "Tap the cover, or drag it open" : "Drag a page to turn it"}
+        </p>
       </div>
     </>
+  );
+}
+
+function Chevron({ left = false }: { left?: boolean }) {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style={{ transform: left ? "scaleX(-1)" : undefined }}>
+      <path d="M4.5 2.5 8 6l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
