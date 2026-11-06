@@ -4,19 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import KeyTag from "@/components/KeyTag";
-import { TypeTag, DisciplineTag } from "@/components/Tag";
 import NdaStamp from "@/components/NdaStamp";
 import PixelClouds from "@/components/PixelClouds";
 import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 
 // ── Featured card ─────────────────────────────────────────────────────────────
 // A soft grey card in two parts with the same padding all round: the words and the work.
-// The words read in one order on every card: the two tags (type, discipline), the title in
-// the heading serif, a line about it (lead, 18/28 from md), and a pill "Read case study"
+// The words read in one order on every card: the title in the heading serif, a line about it (lead, 18/28 from md), and a pill "Read case study"
 // pinned to the foot. Flagships sit side by side from lg (words 0.82fr, image 1.18fr) and
 // the image fills its half's full height there; below lg they stack with the image at its
 // own aspect; the smaller pair always stack.
-// Hovering the card rolls pink pixel clouds in round the image, drops
+// Hovering the card rolls pink pixel clouds (grey for NDA works) in round the image, drops
 // the room key onto its hook, and turns the pill grape as it makes room for an arrow
 // circle (see .work-cta). NDA works show a stamp on a greyed image and a greyed-out pill.
 export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string }) {
@@ -35,11 +33,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
       {/* Words */}
       <div className={`flex min-w-0 flex-col justify-between gap-[32px] md:gap-[40px] ${pad} ${isFlagship ? "pb-0 md:pb-0 lg:pb-[32px]" : "pb-0 md:pb-0"}`}>
         <div className="flex flex-col">
-          <div className="flex flex-wrap gap-[8px]">
-            <TypeTag type={work.type} face="geist" />
-            <DisciplineTag discipline={work.discipline} face="geist" />
-          </div>
-          <h3 className="m-0 mt-[16px] max-w-[560px] text-balance font-heading text-[26px] font-normal leading-[32px] tracking-[-1px] text-heading md:mt-[20px] md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]">
+          <h3 className="m-0 max-w-[560px] text-balance font-heading text-[26px] font-normal leading-[32px] tracking-[-1px] text-heading md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]">
             {work.title}
           </h3>
           <p className="m-0 mt-[12px] max-w-[560px] text-pretty font-body text-lead-md text-secondary md:mt-[16px]">
@@ -83,8 +77,8 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
               className={`object-cover ${work.nda ? "grayscale" : ""}`}
             />
 
-            {/* Pink pixel clouds roll in round the image's edges on hover */}
-            <PixelClouds seed={Number(room)} className="z-[1]" />
+            {/* Pixel clouds roll in round the image's edges on hover: pink, or grey for NDA */}
+            <PixelClouds seed={Number(room)} palette={work.nda ? "grey" : "brand"} className="z-[1]" />
 
             {/* NDA: the image stays greyed out; the stamp presses down in the centre the first
                 time the card is hovered or focused (on scroll-in for touch), then stays. */}

@@ -8,7 +8,8 @@ import { useEffect, useRef } from "react";
 // edges, picks one of seven tones per cell:
 //   clear · pale dither · pale · mid dither · mid · deep dither · deep
 // where a "dither" is a 1px checkerboard of the two tones either side of it, drawn at the
-// screen's own pixel density so it stays crisp. Every card uses the one brand pink. On a
+// screen's own pixel density so it stays crisp. Every card uses brand pink (grey for NDA
+// works, to match their greyed-out image). On a
 // hover the clouds puff in from the edges in quick steps (overshooting a touch, then
 // settling), keep drifting on two axes and breathing while the pointer stays, swell towards
 // the pointer when it comes near the image, and throw off the odd twinkling pixel along
@@ -21,8 +22,11 @@ import { useEffect, useRef } from "react";
 // so only a light fringe drifts round the edge.
 const CELL = 8;
 const DOT = 1;
-// The one palette: brand pink, from pale blush to grape
-const COLORS = { pale: "#F9E4FF", mid: "#F2B6EC", deep: "#9D136A" };
+// Brand pink, from pale blush to grape; greys for NDA works
+const PALETTES = {
+  brand: { pale: "#F9E4FF", mid: "#F2B6EC", deep: "#9D136A" },
+  grey: { pale: "#F3F4F6", mid: "#D1D5DB", deep: "#6B7280" },
+};
 const SPARK = "#FFFFFF"; // twinkling pixels on the fringe
 // Tone thresholds on the (field − hidden) value; seven tones, so six cuts
 // The first cut sets how far the clouds reach; the later ones are close together so more
@@ -31,11 +35,11 @@ const CUTS = [0.62, 0.67, 0.71, 0.75, 0.79, 0.84];
 const STEPS = 16; // the reveal moves in this many visible jumps
 const IN_MS = 640;
 const OUT_MS = 380;
-const DRIFT = 1.6; // cells per second, sideways
-const BOB = 0.6; // cells of slow up-and-down sway
-const BREATHE = 0.025; // how much the clouds swell and shrink while hovered
-const PULL = 0.16; // how far the clouds swell towards a nearby pointer
-const TWINKLE = 0.035; // share of fringe cells sparkling at any moment
+const DRIFT = 1.3; // cells per second, sideways
+const BOB = 0.4; // cells of slow up-and-down sway
+const BREATHE = 0.015; // how much the clouds swell and shrink while hovered
+const PULL = 0.1; // how far the clouds swell towards a nearby pointer
+const TWINKLE = 0.018; // share of fringe cells sparkling at any moment
 const MAX_TONE = 6; // all seven tones; the deepest only reach the outermost peaks
 const CLEAR = 0.72; // no clouds inside this distance from the centre (0 = centre, 1 = corners)
 
@@ -78,14 +82,16 @@ function checker(ctx: CanvasRenderingContext2D, a: string | null, b: string, px:
 }
 
 // Puffs past 1 then settles back, so the clouds billow in rather than slide
-const easeOutBack = (t: number) => 1 + 2.2 * (t - 1) ** 3 + 1.2 * (t - 1) ** 2;
+const easeOutBack = (t: number) => 1 + 2.1 * (t - 1) ** 3 + 1.1 * (t - 1) ** 2;
 
 export default function PixelClouds({
   seed = 1,
+  palette = "brand",
   subtle = false,
   className = "",
 }: {
   seed?: number;
+  palette?: keyof typeof PALETTES;
   subtle?: boolean;
   className?: string;
 }) {
@@ -115,6 +121,7 @@ export default function PixelClouds({
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       const px = Math.max(1, Math.round(DOT * dpr));
+      const COLORS = PALETTES[palette];
       fills = [
         "",
         checker(ctx, null, COLORS.pale, px),
@@ -249,7 +256,7 @@ export default function PixelClouds({
       card.removeEventListener("pointerleave", onLeave);
       card.removeEventListener("pointermove", onMove);
     };
-  }, [seed, subtle]);
+  }, [seed, palette, subtle]);
 
   return <canvas ref={ref} aria-hidden="true" className={`pointer-events-none absolute inset-0 h-full w-full ${className}`} />;
 }
