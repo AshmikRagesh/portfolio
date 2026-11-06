@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
-import { Palette, Shapes, Eye, Sparkle, PencilSlash, Timer, ChatText, Compass, BookOpen, GitCommit } from "@phosphor-icons/react/dist/ssr";
+import { Palette, Shapes, Eye, Sparkle } from "@phosphor-icons/react/dist/ssr";
 import {
   Hero,
   Chapter,
@@ -10,8 +10,6 @@ import {
   CardGrid,
   PullQuote,
   Pointers,
-  Timeline,
-  Stats,
   ExplorationCard,
   BellaStates,
   BellaSolves,
@@ -23,7 +21,7 @@ import {
 } from "@/components/case-study";
 
 // DRAFT, 2 Nov 2026. Bella's own outline, set by Ashmik (not the Problem → Outcome template):
-// what Bella is and why → research → four characters → the pick (bell vs key tag) → finishing →
+// what Bella is and why → research → explorations → the pick (bell vs key tag) → finishing →
 // Bella on the live site, one use case at a time (recordings), with the sign and tooltip
 // rounds under their use case → what it solves and what it can be → working only in Claude
 // Code. No results section. Bella was made start to end in Claude Code, so each section
@@ -43,12 +41,11 @@ export const metadata: Metadata = {
 const SECTIONS: CaseStudySection[] = [
   { id: "overview",     label: "Overview"       },
   { id: "research",     label: "Research"       },
-  { id: "characters",   label: "Characters"     },
+  { id: "explorations", label: "Explorations"   },
   { id: "choosing",     label: "The pick"       },
   { id: "finish",       label: "Finishing"      },
   { id: "solution",     label: "On the site"    },
   { id: "purpose",      label: "What it solves" },
-  { id: "claude-code",  label: "Claude Code"    },
 ];
 
 const art = (name: string) => `/images/bella/${name}.svg`;
@@ -88,29 +85,29 @@ function Overview() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Research  (what other mascot teams learned, and what we took)
 // ─────────────────────────────────────────────────────────────────────────────
-// What the six references share, and what Bella took from each trait (bella-notes.md, 09:12)
+// What the six references share: findings only, Bella comes after (bella-notes.md, 09:12)
 const TRAITS = [
   {
     icon: <Palette size={28} weight="fill" className="text-grape" />,
     title: "One or two colours",
-    description: "Bella is blackcurrant and grape, from the design system. Gold is kept for the champion.",
+    description: "None of the six uses a full palette. Kumamon, for example, is a black bear with red cheeks.",
   },
   {
     icon: <Shapes size={28} weight="fill" className="text-grape" />,
     title: "One basic shape",
-    description: "A dome on a base, so Bella still reads at 40px in the navbar.",
+    description: "Each body is one simple form you could draw from memory, like Bibendum's stack of white tyres.",
   },
   {
     icon: <Eye size={28} weight="fill" className="text-grape" />,
     title: "Dot eyes",
-    description: "Eyes only. No mouth, no cheeks.",
+    description: "Faces stay simple. Small round eyes do most of the work.",
   },
   {
     icon: <Sparkle size={28} weight="fill" className="text-grape" />,
     title: "Personality from pose",
-    description: "Bella dozes, rings and puts on glasses instead of pulling faces.",
+    description: "They show mood through how they stand and move, not through detailed expressions.",
   },
-];
+]
 
 // Four of the six hospitality references, pictures only, loose on one card to drag around.
 // x and y are where each starts, as a share of the free space.
@@ -180,7 +177,7 @@ const CHARACTER_NAMES = [
 
 function Characters() {
   return (
-    <Chapter id="characters" num={2} title="Four ideas for the character">
+    <Chapter id="explorations" num={2} title="Exploring four characters for the logo">
       <Copy>
         <p>
           Claude Code drew every character as code, in the browser, from my
@@ -190,7 +187,6 @@ function Characters() {
           back toward the design system</Highlight>.
         </p>
         <PullQuote
-          label="What started the depth round"
           text="Even though it is flat,"
           emphasis="it doesn't have depth or character to it."
         />
@@ -254,7 +250,7 @@ const FINALISTS = [
   },
   {
     name: "Desk bell",
-    src: art("depth-desk-bell"),
+    src: art("final-bella"),
     picked: true,
     answers: [
       { yes: true, text: "A dome on a base still reads at 40px." },
@@ -273,7 +269,6 @@ function Choosing() {
           real navbar, and <Highlight>seeing it at logo size decided it</Highlight>.
         </p>
         <PullQuote
-          label="Why the key tag lost"
           text="In the header the key tag looks really small and"
           emphasis="the details go missing."
         />
@@ -312,7 +307,6 @@ function Finishing() {
           looking like itself</Highlight>. Twice I pulled it back to the design system.
         </p>
         <PullQuote
-          label="The brief that fixed it"
           text="It doesn't feel like a bell anymore."
           emphasis="Make sure it feels like a bell, and maybe acts like a bell as well."
         />
@@ -476,24 +470,9 @@ const SOLVES: Parameters<typeof BellaSolves>[0]["items"] = [
   },
 ];
 
-const NEXT = [
-  {
-    title: "A curiosity score",
-    description: "Count more than time: which case studies you opened, how far you scrolled, what you came back to.",
-  },
-  {
-    title: "A guestbook and a Hall of Curiosity",
-    description: "Leave your name on the way out, and see the most curious guests, moderated by me.",
-  },
-  {
-    title: "Bella pointing to your pass",
-    description: "A link in the 5:00 line that opens your Curiosity Pass.",
-  },
-];
-
 function Purpose() {
   return (
-    <Chapter id="purpose" num={6} title="What Bella solves, and what comes next">
+    <Chapter id="purpose" num={6} title="What Bella solves">
       <Copy>
         <p>
           Bella has two jobs: give visitors a reason to look around, and tell
@@ -502,76 +481,6 @@ function Purpose() {
       </Copy>
       <Visual>
         <BellaSolves items={SOLVES} />
-      </Visual>
-      <div className="cs-sub">
-        <Copy>
-          <h3>What comes next</h3>
-          <Timeline items={NEXT} />
-        </Copy>
-      </div>
-    </Chapter>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Working only in Claude Code  (what it was like, from the sessions and git)
-// ─────────────────────────────────────────────────────────────────────────────
-// Facts from bella-notes.md and git (49 commits to Bella's code, 23 Oct – 1 Nov 2026).
-// Draft wording, for Ashmik to rewrite.
-const WORKING_STATS = [
-  { stat: "0", label: "design files behind Bella" },
-  { stat: "2 min", label: "from my first message to six references and three characters" },
-  { stat: "10", label: "days of work, from 23 Oct to 1 Nov" },
-  { stat: "49", label: "commits, so any version can be brought back" },
-];
-
-const icon = (I: typeof Timer) => <I size={28} weight="fill" className="text-grape" />;
-
-const WORKING = [
-  {
-    icon: icon(PencilSlash),
-    title: "Nothing drawn by hand",
-    description: "Bella, its sign, its moods and its ding are all code Claude Code wrote from my descriptions.",
-  },
-  {
-    icon: icon(Timer),
-    title: "Rounds took minutes",
-    description: "I asked for references and characters at 09:10. They were on screen at 09:12.",
-  },
-  {
-    icon: icon(ChatText),
-    title: "Feedback was a sentence",
-    description: "I said what felt wrong, like “it doesn't feel like a bell anymore”, and the next version was on screen.",
-  },
-  {
-    icon: icon(Compass),
-    title: "Direction stayed with me",
-    description: "Claude Code kept adding chrome, shading and gloss. Twice I pulled it back to the design system.",
-  },
-  {
-    icon: icon(BookOpen),
-    title: "It documented itself",
-    description: "Claude Code built a reference page for Bella: anatomy, palette, moods, motion, copy, sound, and do's and don'ts.",
-  },
-  {
-    icon: icon(GitCommit),
-    title: "Every decision is a commit",
-    description: "Each change shipped as its own commit, so I could go back to any earlier Bella.",
-  },
-];
-
-function WorkingInClaudeCode() {
-  return (
-    <Chapter id="claude-code" num={7} title="Designing without a design tool">
-      <Copy>
-        <p>
-          Bella is the first thing I designed without a design tool. <Highlight>The
-          conversation was the design file.</Highlight>
-        </p>
-        <Stats items={WORKING_STATS} />
-      </Copy>
-      <Visual>
-        <CardGrid items={WORKING} />
       </Visual>
     </Chapter>
   );
@@ -595,7 +504,6 @@ export default function BellaPage() {
       <Finishing />
       <Solution />
       <Purpose />
-      <WorkingInClaudeCode />
       <NextCase current="/works/bella" />
     </CaseStudyLayout>
   );
