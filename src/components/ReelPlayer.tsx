@@ -149,10 +149,13 @@ export default function ReelPlayer({
   reels,
   browse = false,
   pill = false,
+  startAt,
 }: {
   reels: Reel[];
   browse?: boolean;
   pill?: boolean;
+  /** A selector: the reel stays out of sight until this section scrolls into view */
+  startAt?: string;
 }) {
   const [viewport, setViewport] = useState<{ w: number; h: number } | null>(null);
   const [savedDock, setSavedDock] = useState<Dock>("right-bottom");
@@ -161,6 +164,7 @@ export default function ReelPlayer({
   const [dragging, setDragging] = useState(false);
   const [target, setTarget] = useState<Dock | null>(null);
   const [footerUp, setFooterUp] = useState(false);
+  const [early, setEarly] = useState(!!startAt);
   const [view, setView] = useState<"closed" | "open" | "closing">("closed");
   // An opened reel plays with sound: the visitor chose to watch, so the clock keeps running
   useReportWatching(view === "open");
@@ -190,13 +194,19 @@ export default function ReelPlayer({
     return () => window.removeEventListener("resize", measure);
   }, []);
 
-  // Step aside once the footer comes up, like the chapter pill
+  // Step aside once the footer comes up, like the chapter pill. With `startAt`, also
+  // wait until that section is a third of the way up the screen (on the home page: the
+  // work, so the reel never sits over the hero).
   useEffect(() => {
     let frame: number | null = null;
     const update = () => {
       frame = null;
       const main = document.querySelector<HTMLElement>("[data-cs-main], [data-reel-bounds]");
       setFooterUp(main ? main.getBoundingClientRect().bottom < window.innerHeight : false);
+      if (startAt) {
+        const start = document.querySelector<HTMLElement>(startAt);
+        setEarly(start ? start.getBoundingClientRect().top > window.innerHeight * 0.66 : false);
+      }
     };
     const onScroll = () => {
       if (frame === null) frame = window.requestAnimationFrame(update);
@@ -209,7 +219,7 @@ export default function ReelPlayer({
       window.removeEventListener("resize", onScroll);
       if (frame !== null) window.cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [startAt]);
 
   // Sit on the dock. The position is written straight to the element so a drag never
   // waits on a render.
@@ -425,7 +435,7 @@ export default function ReelPlayer({
         data-fixed={geo.small}
         data-ready={ready}
         data-dragging={dragging}
-        data-hidden={!ready || footerUp}
+        data-hidden={!ready || footerUp || early}
         data-away={view !== "closed"}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}

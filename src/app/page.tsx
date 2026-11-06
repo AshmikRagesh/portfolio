@@ -17,7 +17,7 @@ export default function Home() {
         <TasteNotes />
       </div>
       <Footer />
-      <ReelPlayer reels={reelOrder} browse />
+      <ReelPlayer reels={reelOrder} browse startAt="#works" />
     </>
   );
 }
