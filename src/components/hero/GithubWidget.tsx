@@ -12,6 +12,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ACCOUNTS, CONTRIB_ASOF } from "./githubData";
+import HoverTip from "./HoverTip";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion } from "./FocusOverlay";
 
 // Empty, then four steps up the brand ramp
@@ -360,18 +361,13 @@ export default function GithubWidget({ className = "" }: { className?: string })
         onFocus={() => setHovered(true)}
         onBlur={() => setHovered(false)}
         onClick={() => setOpen(true)}
-        className={`group relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
+        className={`group/tip relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
         style={{ aspectRatio: `${CARD_W} / ${CARD_H}` }}
       >
         <span className="absolute left-0 top-0 block origin-top-left" style={{ width: CARD_W, height: CARD_H, transform: "scale(var(--card-k, 0.7))" }}>
           <Card hovered={hovered && !open} />
         </span>
-        <span
-          aria-hidden="true"
-          className={`pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-midnight px-2 py-1 font-geist text-caption text-background shadow-[0_4px_12px_rgba(30,5,37,0.2)] transition-all duration-200 ${hovered && !open ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"}`}
-        >
-          Click to see the calendar
-        </span>
+        <HoverTip>Click to see the calendar</HoverTip>
       </button>
 
       <FocusOverlay source={btn.current} open={open} onClosed={onClosed} label="GitHub contributions" width={CARD_W} height={CARD_H} fitWidth={CARD_W} fitHeight={CARD_H} closeMs={reduced ? 0 : TURN_MS}>

@@ -17,6 +17,7 @@
 // Arrow keys and the buttons drive the same spring.
 
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import HoverTip from "../HoverTip";
 import FocusOverlay, { RoundButton, useReducedMotion, type FocusPhase } from "../FocusOverlay";
 import { Cover, ClosedEdges, PH, PW } from "./Cover";
 import TripMap from "./TripMap";
@@ -547,7 +548,7 @@ export default function TripsBook({ className = "" }: { className?: string }) {
         onClick={() => setOpen(true)}
         aria-label="Trips book. Open the itinerary"
         aria-haspopup="dialog"
-        className={`group relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
+        className={`group group/tip relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
         style={{ aspectRatio: `${PW} / ${PH}` }}
       >
         <span className="absolute left-0 top-0 block origin-top-left" style={{ width: PW, height: PH, transform: "scale(var(--book-k, 0.5))" }}>
@@ -558,6 +559,7 @@ export default function TripsBook({ className = "" }: { className?: string }) {
             <Cover />
           </span>
         </span>
+        <HoverTip>Click to flip through my trips</HoverTip>
       </button>
 
       <FocusOverlay

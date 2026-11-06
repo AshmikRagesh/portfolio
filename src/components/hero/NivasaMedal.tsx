@@ -11,6 +11,7 @@
 // card (the same motion as the book and the GitHub card).
 
 import { useCallback, useId, useRef, useState } from "react";
+import HoverTip from "./HoverTip";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 import { useCursorLight } from "./light";
 
@@ -276,12 +277,13 @@ export default function NivasaMedal({ className = "" }: { className?: string }) 
         onClick={() => setOpen(true)}
         aria-label="Nivasa, Airbnb Superhost. Open the host card"
         aria-haspopup="dialog"
-        className={`block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
+        className={`group/tip relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
         style={{ aspectRatio: `${MEDAL_W} / ${MEDAL_H}` }}
       >
         <div ref={tilt} className="h-full w-full" style={{ transformStyle: "preserve-3d" }}>
           <MedalArt id={id} svgRef={svg} />
         </div>
+        <HoverTip>Click to meet the hosts</HoverTip>
       </button>
 
       <FocusOverlay source={btn.current} open={open} onClosed={onClosed} label="Nivasa host card" width={MEDAL_W} height={MEDAL_H} fitWidth={MEDAL_W} fitHeight={MEDAL_H} closeMs={reduced ? 0 : TURN_MS}>

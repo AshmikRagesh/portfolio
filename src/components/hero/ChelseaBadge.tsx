@@ -14,6 +14,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { LION_BODY, LION_EYE, LION_RING, LION_STAFF, LION_TRANSFORM, LION_VIEWBOX } from "./lionPath";
 import { clink, useCursorLight } from "./light";
 import { Tag } from "@/components/Tag";
+import HoverTip from "./HoverTip";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 
 const W = 200;
@@ -329,12 +330,13 @@ export default function ChelseaBadge({ className = "" }: { className?: string })
         }}
         aria-label="Chelsea lion pin. See the next match"
         aria-haspopup="dialog"
-        className={`group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
+        className={`group group/tip relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
         style={{ aspectRatio: `${W} / ${H}` }}
       >
         <div ref={tilt} className="h-full w-full" style={{ transformStyle: "preserve-3d" }}>
           <LionArt id={id} svgRef={svg} />
         </div>
+        <HoverTip>Click for the next match</HoverTip>
       </button>
 
       <FocusOverlay source={btn.current} open={open} onClosed={onClosed} label="Chelsea's next match" width={W} height={H} fitWidth={W} fitHeight={H} closeMs={reduced ? 0 : TURN_MS}>
