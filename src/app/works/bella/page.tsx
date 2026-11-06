@@ -188,8 +188,8 @@ function Characters() {
           design system.
         </p>
         <PullQuote
-          text="Even though it is flat,"
-          emphasis="it doesn't have depth or character to it."
+          text="It's clean, but it's flat."
+          emphasis="It has no depth and no character."
         />
       </Copy>
       {CHARACTERS.map(({ title, note, stage }) => (
