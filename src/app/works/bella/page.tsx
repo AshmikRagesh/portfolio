@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
-import { Bell, Shapes, ChatText, Cursor, Sparkle } from "@phosphor-icons/react/dist/ssr";
+import { Palette, Shapes, Eye, Sparkle } from "@phosphor-icons/react/dist/ssr";
 import {
   Hero,
   Chapter,
@@ -8,7 +8,6 @@ import {
   Visual,
   Figure,
   CardGrid,
-  PullQuote,
   OptionCard,
   ProsCons,
   Pointers,
@@ -17,12 +16,16 @@ import {
   BellaStates,
   NextCase,
   Highlight,
+  SessionLog,
 } from "@/components/case-study";
 
 // DRAFT, 2 Nov 2026. Bella's own outline, set by Ashmik (not the Problem → Outcome template):
 // what Bella is and why → research → four characters → the final two → finishing the bell →
 // Bella on the live site, one use case at a time (recordings), with the sign and tooltip
-// rounds under their use case → what it solves and what it can be. No results section.
+// rounds under their use case → what it solves and what it can be → working only in Claude
+// Code. No results section. Bella was made start to end in Claude Code, so each section
+// opens with the session it came from (SessionLog): Ashmik's lines are quoted from the
+// sessions in bella-notes.md, Claude's are plain summaries of what it made.
 // Stills are in public/images/bella (scripts/draw-bella-explorations.py). Facts from
 // my-portfolio/case-studies/bella-notes.md; quotes are Ashmik's, the joining copy is a
 // placeholder for him to rewrite. Not on the homepage list yet, so it doesn't change the
@@ -31,7 +34,7 @@ import {
 export const metadata: Metadata = {
   title: "Bella · Ashmik Ragesh",
   description:
-    "Designing Bella, a front-desk bell that hosts the portfolio and measures how long each visitor actually stays.",
+    "Bella, the desk bell that hosts this portfolio and measures how long each visitor stays, designed from first sketch to live site entirely in Claude Code.",
 };
 
 const SECTIONS: CaseStudySection[] = [
@@ -42,6 +45,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "finish",       label: "Finishing"      },
   { id: "solution",     label: "On the site"    },
   { id: "purpose",      label: "What it can be" },
+  { id: "claude-code",  label: "Claude Code"    },
 ];
 
 const art = (name: string) => `/images/bella/${name}.svg`;
@@ -65,6 +69,20 @@ function Overview() {
           reason to look around a little longer. A plain clock in the corner
           did neither, so the clock became a character.
         </p>
+        <p>
+          I didn&apos;t draw any of it by hand. <Highlight>Bella was made from start
+          to end in Claude Code</Highlight>: I described what I wanted, Claude Code
+          built it in code, and I reacted to what it put on screen. Every drawing
+          on this page, the character in the navbar, its sign and its ding are
+          code it wrote from my words.
+        </p>
+        <SessionLog
+          when="23 Oct, 04:18"
+          lines={[
+            { from: "me", text: "This data is actually really useful for me." },
+            { from: "claude", text: "Built an active-time clock that pauses when you leave and reports each visit (af319cb, 07:35)." },
+          ]}
+        />
       </Copy>
       <Visual>
         {/* Ashmik's narrated walkthrough goes here: video="/videos/bella/overview.mp4" with a poster */}
@@ -77,53 +95,54 @@ function Overview() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Research  (what other mascot teams learned, and what we took)
 // ─────────────────────────────────────────────────────────────────────────────
-const LESSONS = [
+// What the six references share, and what Bella took from each trait (bella-notes.md, 09:12)
+const TRAITS = [
+  {
+    icon: <Palette size={28} weight="fill" className="text-grape" />,
+    title: "One or two colours",
+    description: "Bella is blackcurrant and grape, from the design system. Gold is kept for the champion.",
+  },
   {
     icon: <Shapes size={28} weight="fill" className="text-grape" />,
-    title: "Silhouette first",
-    description: "Duolingo reshaped Duo's outline before any detail. Bella has to read at 40px in a navbar.",
+    title: "One basic shape",
+    description: "A dome on a base, so Bella still reads at 40px in the navbar.",
+  },
+  {
+    icon: <Eye size={28} weight="fill" className="text-grape" />,
+    title: "Dot eyes",
+    description: "Eyes only. No mouth, no cheeks.",
   },
   {
     icon: <Sparkle size={28} weight="fill" className="text-grape" />,
-    title: "Draw the ones you'll dislike",
-    description: "PostHog went through about 18 hedgehogs, including styles they expected to reject.",
-  },
-  {
-    icon: <ChatText size={28} weight="fill" className="text-grape" />,
-    title: "Don't make it talk too much",
-    description: "Mailchimp never writes copy in Freddie's voice. Bella's lines stay plain and factual.",
-  },
-  {
-    icon: <Bell size={28} weight="fill" className="text-grape" />,
-    title: "Interrupting has a cost",
-    description: "Clippy is the warning. Bella speaks three times a visit, and never covers the work.",
-  },
-  {
-    icon: <Cursor size={28} weight="fill" className="text-grape" />,
-    title: "Look at what matters",
-    description: "Tripadvisor's Ollie lets its eyes follow content. Bella's eyes follow the cursor.",
+    title: "Personality from pose",
+    description: "Bella dozes, rings and puts on glasses instead of pulling faces.",
   },
 ];
 
 function Research() {
   return (
-    <Chapter id="research" num={1} title="What other mascots taught">
+    <Chapter id="research" num={1} title="Six references in two minutes">
       <Copy>
         <p>
-          I asked for a small, very minimal character that could be the logo
-          and flash the time on a board when hovered. Before drawing, we looked
-          at six hospitality mascots: Tripadvisor&apos;s Ollie, the Suica
-          penguin, Air India&apos;s Maharaja, Kumamon, Bibendum and Grimace.
-          They share one or two colours, one basic shape and dot eyes, and <Highlight>get
-          their personality from pose</Highlight>.
+          The research started as one message. I asked Claude Code for a small,
+          very minimal character that could be the logo and flash the time on a
+          board when hovered, and for at least five hospitality mascots to learn
+          from first.
         </p>
+        <SessionLog
+          when="23 Oct, 09:10"
+          lines={[
+            { from: "me", text: "A small very minimal character for this website ... as the logo, which would flash time in a board when hovered." },
+            { from: "claude", text: "Six references (Tripadvisor's Ollie, the Suica penguin, Air India's Maharaja, Kumamon, Bibendum and Grimace) and three directions from the site's guesthouse theme: key tag, bellhop, desk bell. Two minutes later, at 09:12." },
+          ]}
+        />
         <p>
-          Then we read how other teams built theirs. Five lessons changed what
-          we made.
+          The six share one or two colours, one basic shape and dot eyes, and <Highlight>get
+          their personality from pose</Highlight>. Those four traits became Bella&apos;s rules.
         </p>
       </Copy>
       <Visual>
-        <CardGrid items={LESSONS} />
+        <CardGrid items={TRAITS} />
       </Visual>
     </Chapter>
   );
@@ -140,7 +159,7 @@ const CHARACTERS = [
   },
   {
     title: "With depth",
-    note: "“Even though it is flat, it doesn't have depth or character to it.” So each got a lit side, a shade side and a shadow.",
+    note: "I pointed Claude Code at the Grok, Codex and Muse characters. Each got a lit side, a shade side and a shadow.",
     stage: "depth",
   },
 ];
@@ -157,10 +176,21 @@ function Characters() {
     <Chapter id="characters" num={2} title="Four characters">
       <Copy>
         <p>
-          Bella went through many versions in ten days. Most rounds ended the
-          same way: a version looked good on its own but didn&apos;t belong on
-          the site, so it <Highlight>moved back toward the design system</Highlight>.
+          Claude Code drew every character as code, in the browser, from my
+          descriptions. I never opened a drawing tool: I looked at what it drew
+          and told it what felt wrong. Most rounds ended the same way: a version
+          looked good on its own but didn&apos;t belong on the site, so it <Highlight>moved
+          back toward the design system</Highlight>.
         </p>
+        <SessionLog
+          when="23 Oct, 09:21 – 09:45"
+          lines={[
+            { from: "me", text: "Even though it is flat, it doesn't have depth or character to it." },
+            { from: "claude", text: "Added a lit side and a shade side, a ground shadow, overlapping layers, blinking and breathing." },
+            { from: "me", text: "Right now it looks really cute, and the realistic version looks a little off." },
+            { from: "claude", text: "Took out the pink cheeks and drew a realistic flip clock." },
+          ]}
+        />
       </Copy>
       {CHARACTERS.map(({ title, note, stage }) => (
         <div key={title} className="cs-sub">
@@ -224,13 +254,16 @@ function Choosing() {
     <Chapter id="choosing" num={3} title="The final two">
       <Copy>
         <p>
-          Two characters went head to head: the key tag and the desk bell. The
-          key tag went furthest before it lost.
+          Two characters went head to head: the key tag and the desk bell.
+          Claude Code put them in the real navbar, and <Highlight>seeing them at
+          logo size decided it</Highlight>.
         </p>
-        <PullQuote
-          label="Why the key tag lost"
-          text="In the header the key tag looks really small and"
-          emphasis="the details go missing."
+        <SessionLog
+          when="23 Oct, 10:26"
+          lines={[
+            { from: "me", text: "In the header the key tag looks really small and the details go missing." },
+            { from: "claude", text: "Dropped the key tag for the desk bell, with one hand lifting the board." },
+          ]}
         />
       </Copy>
       {FINAL_TWO.map(({ label, title, src, chosen, pros, cons }) => (
@@ -274,13 +307,18 @@ function Finishing() {
     <Chapter id="finish" num={4} title="Finishing the bell">
       <Copy>
         <p>
-          Once picked, the bell drifted. <Highlight>Shaded and chromed, it stopped looking
-          like itself.</Highlight>
+          Once picked, the bell drifted. Each time I asked for more character,
+          Claude Code added more finish, and <Highlight>shaded and chromed, it stopped
+          looking like itself</Highlight>. Twice I pulled it back to the design system.
         </p>
-        <PullQuote
-          label="The brief that fixed it"
-          text="It doesn't feel like a bell anymore."
-          emphasis="Make sure it feels like a bell, and maybe acts like a bell as well."
+        <SessionLog
+          when="23 Oct, 10:54 – 11:31"
+          lines={[
+            { from: "me", text: "It doesn't feel like a bell anymore. Make sure it feels like a bell, and maybe acts like a bell as well." },
+            { from: "claude", text: "Chromed the dome, added a ding animation, and made the champion gold." },
+            { from: "me", text: "The silver colour with our colour is not working at all. The shadows near the face are what destroy it." },
+            { from: "claude", text: "Went back to the design system: a blackcurrant dome, a grape base and a synthesised ding." },
+          ]}
         />
       </Copy>
       <Visual>
@@ -375,9 +413,19 @@ function Solution() {
       <Copy>
         <p>
           The first Bella only kept time. <Highlight>Every addition after that came from a
-          moment in a real visit</Highlight>, and asked what Bella should do there. Here
+          moment in a real visit</Highlight>, and asked what Bella should do there. Each
+          one started as a sentence to Claude Code and shipped as a commit. Here
           they are in the order a visitor meets them.
         </p>
+        <SessionLog
+          when="23 – 24 Oct"
+          lines={[
+            { from: "me", text: "For a user who would hover over it a lot of times this would be very heavy." },
+            { from: "claude", text: "Made the sign lighter and smaller, and added units: 4m 16s." },
+            { from: "me", text: "Let's stop making changes to the movement of the character." },
+            { from: "claude", text: "Dropped Bella travelling between sections. One Bella stays in the navbar, one in the footer." },
+          ]}
+        />
       </Copy>
       {USE_CASES.map(({ num, slug, title, body, tried }) => (
         <div key={num} className="cs-sub">
@@ -563,12 +611,63 @@ function Purpose() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Section: Working only in Claude Code  (what it was like, from the sessions and git)
+// ─────────────────────────────────────────────────────────────────────────────
+// Facts from bella-notes.md and git (49 commits to Bella's code, 23 Oct – 1 Nov 2026).
+// Draft wording, for Ashmik to rewrite.
+const WORKING = [
+  {
+    lead: "Nothing was drawn by hand.",
+    text: "Bella, its sign, its moods and its ding are all code Claude Code wrote from my descriptions. There is no design file behind this page.",
+  },
+  {
+    lead: "Rounds took minutes.",
+    text: "Six references and three characters came back two minutes after I asked for them.",
+  },
+  {
+    lead: "Feedback was a sentence.",
+    text: "I said what felt wrong, like “it doesn't feel like a bell anymore”, and the next version was on screen.",
+  },
+  {
+    lead: "Direction stayed with me.",
+    text: "Claude Code kept adding finish: chrome, shading, gloss. Twice I pulled it back to the design system.",
+  },
+  {
+    lead: "It documented itself.",
+    text: "Claude Code built a reference page for Bella: anatomy, palette, moods, motion, copy, sound, and do's and don'ts.",
+  },
+  {
+    lead: "Every decision is a commit.",
+    text: "49 commits between 23 Oct and 1 Nov, so any version of Bella can be brought back.",
+  },
+];
+
+function WorkingInClaudeCode() {
+  return (
+    <Chapter id="claude-code" num={7} title="Working only in Claude Code">
+      <Copy>
+        <p>
+          Bella is the first thing I designed without a design tool. <Highlight>The
+          conversation was the design file.</Highlight>
+        </p>
+        <Pointers items={WORKING} />
+      </Copy>
+    </Chapter>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────────────────────────────────────
 export default function BellaPage() {
   return (
     <CaseStudyLayout sections={SECTIONS}>
-      <Hero title="Designing Bella, a front-desk bell that measures curiosity" date="2026" />
+      <Hero
+        title="Bella, the desk bell that hosts this portfolio, designed entirely in Claude Code"
+        date="October 2026"
+        badge="Made in Claude Code"
+        image="/images/bella/hero.svg"
+      />
       <Overview />
       <Research />
       <Characters />
@@ -576,6 +675,7 @@ export default function BellaPage() {
       <Finishing />
       <Solution />
       <Purpose />
+      <WorkingInClaudeCode />
       <NextCase current="/works/bella" />
     </CaseStudyLayout>
   );

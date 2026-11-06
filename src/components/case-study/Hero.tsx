@@ -1,21 +1,23 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, SquareTerminal } from "lucide-react";
 
 /**
  * Case study hero — the case study's image (`image`, cropped to fill; `imagePosition` picks
- * the part to keep) or a grey stand-in until one exists, with the date and optional live
- * link over the title, set left in the reading column over a midnight fade rising from the
+ * the part to keep) or a grey stand-in until one exists, with the date, an optional `badge`
+ * (how it was made, e.g. "Made in Claude Code") and an optional live link over the title, set left in the reading column over a midnight fade rising from the
  * bottom.
  */
 export default function Hero({
   title,
   date,
   link,
+  badge,
   image,
   imagePosition = "center",
 }: {
   title: string;
   date: string;
   link?: { href: string; label: string };
+  badge?: string;
   image?: string;
   imagePosition?: string;
 }) {
@@ -60,6 +62,12 @@ export default function Hero({
           <span className="whitespace-nowrap rounded-full bg-white px-[18px] py-[10px] font-body text-[16px] leading-[20px] text-heading">
             {date}
           </span>
+          {badge && (
+            <span className="inline-flex items-center gap-[8px] whitespace-nowrap rounded-full bg-primary px-[18px] py-[10px] font-body text-[16px] leading-[20px] text-white">
+              <SquareTerminal size={16} strokeWidth={2} aria-hidden="true" />
+              {badge}
+            </span>
+          )}
           {link && (
             <a
               href={link.href}

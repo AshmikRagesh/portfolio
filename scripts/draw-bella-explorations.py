@@ -7,6 +7,7 @@
 - finish-*, sign-*, tip-*  the later rounds, redrawn on the desk bell from the
   design notes (my-portfolio/case-studies/bella-notes.md); the code only kept the winners
 - final-bella  the bell as it ships (see components/host/HostCharacter)
+- hero  the case study's hero: the first prompt in a Claude Code window, and Bella beside it
 
 Run: python3 scripts/draw-bella-explorations.py
 """
@@ -187,24 +188,27 @@ CHROME_GRAD = (
 )
 
 
-def shipped(dome_shade: str, dome_lit: str, face: str, extra: str = "") -> str:
-    """The bell as HostCharacter draws it (idle pose), so the kept finishes match the site."""
-    return svg(
-        "30 118 140 130",
+def shipped_body(dome_shade: str, dome_lit: str, face: str, extra: str = "", clip: str = "dome") -> str:
+    """The bell as HostCharacter draws it (idle pose), so the kept finishes match the site.
+    Bare markup in the bell's own coordinates (about 30 118 140 130); needs `clip` defined."""
+    return (
         f'<ellipse cx="100" cy="238" rx="56" ry="6" fill="{DARK}" opacity=".12"/>'
         f'<rect x="94" y="126" width="12" height="12" rx="3" fill="{GRAPE}"/>'
         f'<rect x="94" y="126" width="12" height="5" rx="2.5" fill="{GRAPE_LIT}"/>'
         f'<rect x="88" y="136" width="24" height="6" rx="3" fill="{GRAPE_SHADE}"/>'
         f'<path d="{DOME}" fill="{dome_shade}"/>'
-        f'<g clip-path="url(#dome)"><path d="{DOME}" fill="{dome_lit}" transform="translate(-6 -7)"/></g>'
+        f'<g clip-path="url(#{clip})"><path d="{DOME}" fill="{dome_lit}" transform="translate(-6 -7)"/></g>'
         '<path d="M66 198 Q64 168 82 152" stroke="#fff" stroke-opacity=".18" stroke-width="5" fill="none" stroke-linecap="round"/>'
         + face
         + f'<rect x="38" y="212" width="124" height="14" rx="7" fill="{GRAPE_SHADE}"/>'
         f'<rect x="38" y="212" width="124" height="6" rx="3" fill="{GRAPE}"/>'
         '<rect x="48" y="213" width="44" height="2" rx="1" fill="#fff" opacity=".2"/>'
-        + extra,
-        f'<clipPath id="dome"><path d="{DOME}"/></clipPath>',
+        + extra
     )
+
+
+def shipped(dome_shade: str, dome_lit: str, face: str, extra: str = "") -> str:
+    return svg("30 118 140 130", shipped_body(dome_shade, dome_lit, face, extra), f'<clipPath id="dome"><path d="{DOME}"/></clipPath>')
 
 
 SHIPPED_EYES = (
@@ -309,9 +313,59 @@ TIPS = {
 FINAL = {"final-bella": shipped(MIDNIGHT, BLACKCURRANT, SHIPPED_EYES)}
 
 
+# ── The case study's hero: the first prompt in Claude Code, and the Bella it led to ──────
+MONO = "'SF Mono', Menlo, Consolas, monospace"
+PROMPT = [
+    "A small very minimal character for this",
+    "website ... as the logo, which would",
+    "flash time in a board when hovered.",
+]
+REPLY = ["6 hospitality references and 3 directions:", "key tag, bellhop, desk bell"]
+
+
+def hero() -> str:
+    # Kept near the middle and in the top 230px, so a narrow crop and the title fade both leave it whole
+    tx, ty, tw, th = 380, 24, 500, 204  # the terminal window
+    line = lambda x, y, text, fill, size=16: (  # noqa: E731
+        f'<text x="{x}" y="{y}" font-family="{MONO}" font-size="{size}" fill="{fill}">{text}</text>'
+    )
+    body = "".join(line(tx + 48, ty + 76 + i * 24, t, "#fff") for i, t in enumerate(PROMPT))
+    body += line(tx + 26, ty + 76, "&gt;", "#f8c2f7")
+    body += f'<circle cx="{tx + 31}" cy="{ty + 155}" r="5" fill="#d9b8e3"/>'
+    body += "".join(line(tx + 48, ty + 160 + i * 24, t, "#cbb6d3") for i, t in enumerate(REPLY))
+    rings = (
+        f'<g stroke="{GRAPE}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".8">'
+        '<path d="M80 128 Q72 120 74 110"/><path d="M70 134 Q58 122 62 106"/>'
+        '<path d="M120 128 Q128 120 126 110"/><path d="M130 134 Q142 122 138 106"/></g>'
+    )
+    bella = shipped_body(MIDNIGHT, BLACKCURRANT, SHIPPED_EYES, rings, clip="herodome")
+    return svg(
+        "0 0 1440 520",
+        '<rect width="1440" height="520" fill="url(#herobg)"/>'
+        '<ellipse cx="990" cy="140" rx="220" ry="150" fill="url(#heroglow)"/>'
+        # the terminal
+        f'<rect x="{tx}" y="{ty + 6}" width="{tw}" height="{th}" rx="16" fill="{MIDNIGHT}" opacity=".18"/>'
+        f'<rect x="{tx}" y="{ty}" width="{tw}" height="{th}" rx="16" fill="{MIDNIGHT}"/>'
+        f'<path d="M{tx} {ty + 40} H{tx + tw}" stroke="#fff" stroke-opacity=".1"/>'
+        + "".join(f'<circle cx="{tx + 22 + i * 18}" cy="{ty + 20}" r="5.5" fill="#fff" opacity=".22"/>' for i in range(3))
+        + line(tx + 88, ty + 25, "claude  ·  ~/portfolio  ·  23 Oct, 09:10", "#fff", 13).replace('fill="#fff"', 'fill="#fff" fill-opacity=".55"')
+        + body
+        # Bella, ringing, beside it
+        + f'<g transform="translate(900 41) scale(1.3) translate(-30 -100)">{bella}</g>',
+        '<linearGradient id="herobg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6ecf8"/>'
+        '<stop offset="1" stop-color="#e6d3ec"/></linearGradient>'
+        '<radialGradient id="heroglow"><stop offset="0" stop-color="#fff" stop-opacity=".9"/>'
+        '<stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>'
+        f'<clipPath id="herodome"><path d="{DOME}"/></clipPath>',
+    )
+
+
+HERO = {"hero": hero()}
+
+
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    for group in (SKETCHES, DEPTHS, FINISHES, SIGNS, TIPS, FINAL):
+    for group in (SKETCHES, DEPTHS, FINISHES, SIGNS, TIPS, FINAL, HERO):
         for name, markup in group.items():
             (OUT / f"{name}.svg").write_text(markup)
-    print(f"wrote {sum(map(len, (SKETCHES, DEPTHS, FINISHES, SIGNS, TIPS, FINAL)))} files to {OUT}")
+    print(f"wrote {sum(map(len, (SKETCHES, DEPTHS, FINISHES, SIGNS, TIPS, FINAL, HERO)))} files to {OUT}")
