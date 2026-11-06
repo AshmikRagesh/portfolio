@@ -58,20 +58,21 @@ function Overview() {
     <Chapter id="overview" num={0} title="What Bella is, and why I made it">
       <Copy>
         <p>
-          Bella is the desk bell that runs the front desk of this portfolio.
-          It sits in the navbar as the logo, <Highlight>keeps track of how long you
-          actually spend here</Highlight>, and shows it on a small sign when you hover.
+          Bella is the host of this portfolio: a desk bell that sits in the
+          navbar as the logo. It <Highlight>tracks how long each visitor actively
+          spends on the site</Highlight> and shows that time on a small sign on hover.
           When it has something to say, it rings first.
         </p>
         <p>
-          I made Bella for two reasons. <Highlight>I wanted to know whether people really
-          read my work</Highlight>, and for how long. And I wanted visitors to have a
-          reason to look around a little longer. A plain clock in the corner
-          did neither, so the clock became a character.
+          I built it to answer two questions. <Highlight>Do people actually read my
+          work, and for how long?</Highlight> And can the site give them a reason to
+          stay a little longer? A plain timer could answer the first but not the
+          second, so the timer became a character.
         </p>
         <p>
-          I didn&apos;t draw any of it by hand. <Highlight>Bella was made from start
-          to end in Claude Code</Highlight>: I described what I wanted.
+          From the first sketch to the live site, <Highlight>Bella was designed and
+          built entirely in Claude Code</Highlight>. I directed it in plain language
+          and didn&apos;t draw anything by hand.
         </p>
       </Copy>
       <Visual>
@@ -90,22 +91,22 @@ const TRAITS = [
   {
     icon: <Palette size={28} weight="fill" className="text-grape" />,
     title: "One or two colours",
-    description: "None of the six uses a full palette. Kumamon, for example, is a black bear with red cheeks.",
+    description: "None of the six relies on a full palette. Kumamon, for example, is a black bear with red cheeks.",
   },
   {
     icon: <Shapes size={28} weight="fill" className="text-grape" />,
     title: "One basic shape",
-    description: "Each body is one simple form you could draw from memory, like Bibendum's stack of white tyres.",
+    description: "Each body is a single, easy-to-recall form, like Bibendum's stack of white tyres.",
   },
   {
     icon: <Eye size={28} weight="fill" className="text-grape" />,
     title: "Dot eyes",
-    description: "Faces stay simple. Small round eyes do most of the work.",
+    description: "Faces stay minimal. Small round eyes carry most of the expression.",
   },
   {
     icon: <Sparkle size={28} weight="fill" className="text-grape" />,
     title: "Personality from pose",
-    description: "They show mood through how they stand and move, not through detailed expressions.",
+    description: "Mood comes from posture and movement rather than detailed facial expressions.",
   },
 ]
 
@@ -123,10 +124,9 @@ function Research() {
     <Chapter id="research" num={1} title="What I learned from other mascots">
       <Copy>
         <p>
-          The research started as one message. I asked Claude Code for a small,
-          very minimal character that could be the logo and flash the time on a
-          board when hovered, and for at least five hospitality mascots to learn
-          from first.
+          I started by asking Claude Code for a minimal character that could work
+          as the logo and show the time on a board when hovered, and for at least
+          five hospitality mascots to study first.
         </p>
         <SessionLog
           when="23 Oct, 09:10"
@@ -141,8 +141,9 @@ function Research() {
       </Visual>
       <Copy>
         <p>
-          The six share one or two colours, one basic shape and dot eyes, and <Highlight>get
-          their personality from pose</Highlight>. Those four traits became Bella&apos;s rules.
+          The same four patterns appeared across all six references. <Highlight>Simple
+          characters get their personality from pose, not detail.</Highlight> These
+          patterns became the rules for designing Bella.
         </p>
       </Copy>
       <Visual>
@@ -158,12 +159,12 @@ function Research() {
 const CHARACTERS = [
   {
     title: "First sketches, in one colour",
-    note: "Three directions from the site's guesthouse theme, each in one colour. The door hanger came later, drawn for this write-up.",
+    note: "Three directions from the site's guesthouse theme, each in a single colour. The door hanger was added later, for this case study.",
     stage: "sketch",
   },
   {
     title: "The same four, with light and shadow",
-    note: "I pointed Claude Code at the Grok, Codex and Muse characters. Each got a lit side, a shade side and a shadow.",
+    note: "To add depth, I pointed Claude Code to the Grok, Codex and Muse characters. Each character gained a lit side, a shaded side and a shadow.",
     stage: "depth",
   },
 ];
@@ -180,11 +181,11 @@ function Characters() {
     <Chapter id="explorations" num={2} title="Exploring four characters for the logo">
       <Copy>
         <p>
-          Claude Code drew every character as code, in the browser, from my
-          descriptions. I never opened a drawing tool: I looked at what it drew
-          and told it what felt wrong. Most rounds ended the same way: a version
-          looked good on its own but didn&apos;t belong on the site, so it <Highlight>moved
-          back toward the design system</Highlight>.
+          Claude Code drew each character as code, in the browser, from my
+          descriptions. I reviewed every round and said what wasn&apos;t working.
+          A pattern emerged: <Highlight>versions that looked good on their own often
+          didn&apos;t fit the site</Highlight>, so each round moved back toward the
+          design system.
         </p>
         <PullQuote
           text="Even though it is flat,"
@@ -245,7 +246,7 @@ const FINALISTS = [
     answers: [
       { yes: false, text: "In the 40px navbar it looked tiny and its details disappeared." },
       { yes: false, text: "A key tag makes no sound, so a ding before each line wouldn't fit." },
-      { yes: true, text: "Guests get one at check-in." },
+      { yes: true, text: "Guests receive one at check-in." },
     ],
   },
   {
@@ -265,8 +266,9 @@ function Choosing() {
     <Chapter id="choosing" num={3} title="We picked the desk bell over the key tag">
       <Copy>
         <p>
-          The key tag went furthest before it lost. Claude Code put it in the
-          real navbar, and <Highlight>seeing it at logo size decided it</Highlight>.
+          The key tag was the strongest alternative until we tested it in
+          context. Claude Code placed it in the live navbar, and <Highlight>at logo
+          size its details disappeared</Highlight>.
         </p>
         <PullQuote
           text="In the header the key tag looks really small and"
@@ -291,10 +293,10 @@ const FINISHES = [
 ];
 
 const FINAL_CHOICES = [
-  { lead: "Finish.", text: "Blackcurrant dome and grape base, from the design system. Gold only for the champion." },
-  { lead: "Face.", text: "Eyes only. No mouth, no cheeks." },
-  { lead: "Hands.", text: "Tucked behind the bell, and only come round to hold something." },
-  { lead: "Sound.", text: "A short synthesised double ding before every line." },
+  { lead: "Finish.", text: "A blackcurrant dome and grape base from the design system. Gold is reserved for the champion." },
+  { lead: "Face.", text: "Eyes only, with no mouth or cheeks." },
+  { lead: "Hands.", text: "Hidden behind the bell, appearing only to hold something." },
+  { lead: "Sound.", text: "A short synthesised double ding before every message." },
 ];
 
 function Finishing() {
@@ -302,9 +304,10 @@ function Finishing() {
     <Chapter id="finish" num={4} title="Settling Bella's colours, face and sound">
       <Copy>
         <p>
-          Once picked, the bell drifted. Each time I asked for more character,
-          Claude Code added more finish, and <Highlight>shaded and chromed, it stopped
-          looking like itself</Highlight>. Twice I pulled it back to the design system.
+          Once the desk bell was chosen, its look started to drift. Each request
+          for more character added more finish, and <Highlight>with shading and chrome
+          it no longer read as a bell</Highlight>. I brought it back to the design
+          system twice.
         </p>
         <PullQuote
           text="It doesn't feel like a bell anymore."
@@ -316,7 +319,7 @@ function Finishing() {
       </Visual>
       <div className="cs-sub">
         <Copy>
-          <h3>The look we kept</h3>
+          <h3>The final look</h3>
           <Pointers items={FINAL_CHOICES} />
         </Copy>
       </div>
@@ -354,46 +357,46 @@ const USE_CASES: {
   {
     num: 1,
     slug: "greets",
-    title: "It greets you",
-    body: <>At 0:30, 2:00 and 5:00 Bella rings once and types one plain line in a small tooltip. <Highlight>Three lines a visit, never over the work.</Highlight></>,
-    tried: { label: "Tooltips we tried", items: TOOLTIPS },
+    title: "Greets you at set moments",
+    body: <>Bella checks in three times a visit, at 0:30, 2:00 and 5:00. Each time it rings once and types a short line in a compact tooltip that <Highlight>never covers the content</Highlight>, so reading isn&apos;t interrupted.</>,
+    tried: { label: "Tooltip options explored", items: TOOLTIPS },
   },
   {
     num: 2,
     slug: "time",
-    title: "It keeps your time",
-    body: <>Hover, focus or tap the bell and it <Highlight>lowers a sign with your active time</Highlight>, like 4m 16s. On phones, tap again to hide it.</>,
-    tried: { label: "Signs we tried", items: SIGNS },
+    title: "Shows your time on demand",
+    body: <>Hovering, focusing or tapping the bell <Highlight>lowers a sign with your active time</Highlight>, such as 4m 16s. On phones, a second tap hides it.</>,
+    tried: { label: "Sign options explored", items: SIGNS },
   },
   {
     num: 3,
     slug: "reads",
-    title: "It reads and watches with you",
-    body: <>Round gold reading glasses while a case study is open, and <Highlight>3D glasses while a video you started plays</Highlight>. The clock keeps counting through both.</>,
+    title: "Reacts to what you're doing",
+    body: <>While a case study is open, Bella wears round gold reading glasses, and <Highlight>while a video you started is playing, it switches to 3D glasses</Highlight>. The timer keeps running in both.</>,
   },
   {
     num: 4,
     slug: "dozes",
-    title: "It dozes when you leave",
-    body: <>Hide the tab or stop for 30 seconds and the clock pauses and Bella falls asleep, so <Highlight>only real attention counts</Highlight>. The browser tab dozes too, and its title shows your paused time.</>,
+    title: "Pauses when you step away",
+    body: <>If the tab is hidden or there&apos;s no activity for 30 seconds, the timer pauses and Bella dozes off, so <Highlight>only active time is counted</Highlight>. The browser tab dozes too, with the paused time in its title.</>,
   },
   {
     num: 5,
     slug: "celebrates",
-    title: "It celebrates what you find",
-    body: <>Reading two case studies, reading all of them, downloading the resume or copying the email earns a gold bow tie for about three seconds. <Highlight>Five stamps are hidden around the site</Highlight>; when you find one, Bella looks surprised and the stamp lands on your Curiosity Pass.</>,
+    title: "Rewards exploring",
+    body: <>Reading two case studies, reading all of them, downloading the resume or copying the email earns Bella a gold bow tie for about three seconds. <Highlight>Five stamps are hidden across the site</Highlight>; finding one surprises Bella and adds the stamp to your Curiosity Pass.</>,
   },
   {
     num: 6,
     slug: "champion",
-    title: "It crowns the longest stay",
-    body: <>The longest visit this month turns Bella and the sign gold. <Highlight>Visit counts appear nowhere.</Highlight></>,
+    title: "Celebrates the longest visit",
+    body: <>The longest visit of the month turns Bella and its sign gold. <Highlight>Visit counts are never shown.</Highlight></>,
   },
   {
     num: 7,
     slug: "footer",
-    title: "It follows you round the site",
-    body: <>In the footer, a smaller Bella pops up and hops along the counter, <Highlight>holding my email with a Copy email button</Highlight>. While it’s up, the navbar Bella ducks and leaves its clock behind.</>,
+    title: "Makes it easy to get in touch",
+    body: <>In the footer, a smaller Bella appears and hops along the counter, <Highlight>holding my email with a Copy email button</Highlight>. While it&apos;s visible, the navbar Bella ducks out of view and leaves its timer behind.</>,
   },
 ];
 
@@ -402,10 +405,10 @@ function Solution() {
     <Chapter id="solution" num={5} title="What Bella does on the site">
       <Copy>
         <p>
-          The first Bella only kept time. <Highlight>Every addition after that came from a
-          moment in a real visit</Highlight>, and asked what Bella should do there. Each
-          one started as a sentence to Claude Code and shipped as a commit. Here
-          they are in the order a visitor meets them.
+          The first version of Bella only kept time. <Highlight>Each feature after that
+          was designed around a specific moment in a visit</Highlight>, asking what a
+          good host would do there. They&apos;re shown below in the order a visitor
+          meets them.
         </p>
       </Copy>
       {USE_CASES.map(({ num, slug, title, body, tried }) => (
@@ -431,7 +434,7 @@ function Solution() {
       ))}
       <div className="cs-sub">
         <Copy>
-          <h3>All of Bella&apos;s moods</h3>
+          <h3>Every state at a glance</h3>
         </Copy>
         <Visual>
           <BellaStates />
@@ -448,23 +451,23 @@ function Solution() {
 const SOLVES: Parameters<typeof BellaSolves>[0]["items"] = [
   {
     lead: "I can see what holds attention",
-    text: "Active time per visit and per case study tells me which work people actually read.",
+    text: "Active time per visit and per case study shows which work people actually read.",
     pose: { glasses: "reading" },
   },
   {
     lead: "Visitors get a reason to stay",
-    text: "Lines, stamps and goals invite a second case study without getting in the way of the first.",
+    text: "Messages, stamps and goals encourage a second case study without interrupting the first.",
     pose: {},
     loop: "celebrate",
   },
   {
     lead: "Only real time counts",
-    text: "The clock pauses when you hide the tab or stop for 30 seconds, so a tab left open all day adds nothing.",
+    text: "The timer pauses when the tab is hidden or idle for 30 seconds, so a tab left open all day adds nothing.",
     pose: { mood: "dozing" },
   },
   {
     lead: "The site has a host",
-    text: "A portfolio that greets you and notices you feels less like a folder of files.",
+    text: "Greeting and responding to visitors makes the portfolio feel hosted, not just browsed.",
     pose: {},
     loop: "ding",
   },
@@ -475,8 +478,9 @@ function Purpose() {
     <Chapter id="purpose" num={6} title="What Bella solves">
       <Copy>
         <p>
-          Bella has two jobs: give visitors a reason to look around, and tell
-          me whether they did. <Highlight>Every feature has to do one, and most do both.</Highlight>
+          Bella was designed with two goals: give visitors a reason to explore,
+          and show me whether they did. <Highlight>Every feature supports at least one
+          of them, and most support both.</Highlight>
         </p>
       </Copy>
       <Visual>
