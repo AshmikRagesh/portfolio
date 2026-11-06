@@ -10,8 +10,8 @@ import { useEffect, useRef } from "react";
 // where a "dither" is a 1px checkerboard of the two tones either side of it, drawn at the
 // screen's own pixel density so it stays crisp. Every card uses brand pink (grey for NDA
 // works, to match their greyed-out image). On a
-// hover the clouds puff in from the edges in quick steps (overshooting a touch, then
-// settling), keep drifting on two axes and breathing while the pointer stays, swell towards
+// hover the clouds puff in from the edges in quick steps (easing to a stop, never
+// past where they rest), keep drifting on two axes and breathing while the pointer stays, swell towards
 // the pointer when it comes near the image, and throw off the odd twinkling pixel along
 // their fringe. They roll back out when it leaves. They stay light and hug the edges: the
 // middle stays clear, so grape only shows at the outer peaks and the work stays in view.
@@ -31,7 +31,7 @@ const SPARK = "#FFFFFF"; // twinkling pixels on the fringe
 // Tone thresholds on the (field − hidden) value; seven tones, so six cuts
 // The first cut sets how far the clouds reach; the later ones are close together so more
 // of the cloud turns grape (or dark grey) without the cloud growing
-const CUTS = [0.62, 0.67, 0.71, 0.75, 0.79, 0.84];
+const CUTS = [0.64, 0.68, 0.71, 0.75, 0.79, 0.84];
 const STEPS = 16; // the reveal moves in this many visible jumps
 const IN_MS = 640;
 const OUT_MS = 380;
@@ -41,7 +41,7 @@ const BREATHE = 0.015; // how much the clouds swell and shrink while hovered
 const PULL = 0.1; // how far the clouds swell towards a nearby pointer
 const TWINKLE = 0.018; // share of fringe cells sparkling at any moment
 const MAX_TONE = 6; // all seven tones; the deepest only reach the outermost peaks
-const CLEAR = 0.72; // no clouds inside this distance from the centre (0 = centre, 1 = corners)
+const CLEAR = 0.74; // no clouds inside this distance from the centre (0 = centre, 1 = corners)
 
 function hash(x: number, y: number, seed: number) {
   let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 982451653)) | 0;
@@ -81,8 +81,9 @@ function checker(ctx: CanvasRenderingContext2D, a: string | null, b: string, px:
   return ctx.createPattern(tile, "repeat")!;
 }
 
-// Puffs past 1 then settles back, so the clouds billow in rather than slide
-const easeOutBack = (t: number) => 1 + 2.1 * (t - 1) ** 3 + 1.1 * (t - 1) ** 2;
+// Fast at first, easing to a stop at full, with no overshoot (so the clouds never swell
+// past their resting size and shrink back)
+const easeOut = (t: number) => 1 - (1 - t) ** 3;
 
 export default function PixelClouds({
   seed = 1,
@@ -148,8 +149,8 @@ export default function PixelClouds({
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // Rolling in: billow past full, then settle. Rolling out: straight back.
-      const eased = target > 0 && !still ? easeOutBack(cover) : cover;
+      // Rolling in: ease to a stop. Rolling out: straight back.
+      const eased = target > 0 && !still ? easeOut(cover) : cover;
       const shown = Math.ceil(eased * STEPS) / STEPS;
       if (shown <= 0) return;
       const cols = Math.ceil(w / cell);
