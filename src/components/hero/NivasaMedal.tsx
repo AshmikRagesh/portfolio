@@ -283,7 +283,7 @@ export default function NivasaMedal({ className = "" }: { className?: string }) 
         <div ref={tilt} className="h-full w-full" style={{ transformStyle: "preserve-3d" }}>
           <MedalArt id={id} svgRef={svg} />
         </div>
-        <HoverTip>Click to meet the hosts</HoverTip>
+        <HoverTip>Our Airbnb in Bengaluru</HoverTip>
       </button>
 
       <FocusOverlay source={btn.current} open={open} onClosed={onClosed} label="Nivasa host card" width={MEDAL_W} height={MEDAL_H} fitWidth={MEDAL_W} fitHeight={MEDAL_H} closeMs={reduced ? 0 : TURN_MS}>

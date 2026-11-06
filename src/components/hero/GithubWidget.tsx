@@ -367,7 +367,7 @@ export default function GithubWidget({ className = "" }: { className?: string })
         <span className="absolute left-0 top-0 block origin-top-left" style={{ width: CARD_W, height: CARD_H, transform: "scale(var(--card-k, 0.7))" }}>
           <Card hovered={hovered && !open} />
         </span>
-        <HoverTip>Click to see the calendar</HoverTip>
+        <HoverTip>A year of commits, day by day</HoverTip>
       </button>
 
       <FocusOverlay source={btn.current} open={open} onClosed={onClosed} label="GitHub contributions" width={CARD_W} height={CARD_H} fitWidth={CARD_W} fitHeight={CARD_H} closeMs={reduced ? 0 : TURN_MS}>

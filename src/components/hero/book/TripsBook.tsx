@@ -559,7 +559,7 @@ export default function TripsBook({ className = "" }: { className?: string }) {
             <Cover />
           </span>
         </span>
-        <HoverTip>Click to flip through my trips</HoverTip>
+        <HoverTip>Flip through four trips</HoverTip>
       </button>
 
       <FocusOverlay

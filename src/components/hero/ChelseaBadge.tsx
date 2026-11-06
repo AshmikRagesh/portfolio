@@ -336,7 +336,7 @@ export default function ChelseaBadge({ className = "" }: { className?: string })
         <div ref={tilt} className="h-full w-full" style={{ transformStyle: "preserve-3d" }}>
           <LionArt id={id} svgRef={svg} />
         </div>
-        <HoverTip>Click for the next match</HoverTip>
+        <HoverTip>When Chelsea play next</HoverTip>
       </button>
 
       <FocusOverlay source={btn.current} open={open} onClosed={onClosed} label="Chelsea's next match" width={W} height={H} fitWidth={W} fitHeight={H} closeMs={reduced ? 0 : TURN_MS}>
