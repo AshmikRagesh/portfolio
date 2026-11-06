@@ -1,4 +1,8 @@
 import Image from "next/image";
+import TripsBook from "./hero/book/TripsBook";
+import NivasaMedal from "./hero/NivasaMedal";
+import GithubWidget from "./hero/GithubWidget";
+import ChelseaBadge from "./hero/ChelseaBadge";
 
 const PORTRAIT_SRC = "/images/portrait-sketch.png";
 
@@ -16,15 +20,33 @@ export default function Hero() {
         </p>
       </div>
 
-      {/* Portrait */}
-      <div className="relative overflow-hidden w-[80%] aspect-[502/514] md:w-[502px] md:h-[514px] md:aspect-auto lg:w-[502px] lg:h-[514px]">
-        <Image
-          src={PORTRAIT_SRC}
-          alt="Portrait of Ashmik Ragesh"
-          width={2048}
-          height={2076}
-          className="absolute left-[-4%] top-[-2.71%] w-[108%] max-w-none"
-        />
+      {/* Portrait, with the desk objects around it: beside it on a wide screen, in a
+          row underneath on smaller ones */}
+      <div className="relative flex w-full flex-col items-center lg:w-auto">
+        {/* Portrait */}
+        <div className="relative overflow-hidden w-[80%] aspect-[502/514] md:w-[502px] md:h-[514px] md:aspect-auto lg:w-[502px] lg:h-[514px]">
+          <Image
+            src={PORTRAIT_SRC}
+            alt="Portrait of Ashmik Ragesh"
+            width={2048}
+            height={2076}
+            className="absolute left-[-4%] top-[-2.71%] w-[108%] max-w-none"
+          />
+        </div>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-8 lg:contents">
+          <div className="lg:absolute lg:left-[-232px] lg:top-[24px]">
+            <TripsBook width={152} />
+          </div>
+          <div className="lg:absolute lg:left-[-268px] lg:top-[312px]">
+            <GithubWidget />
+          </div>
+          <div className="lg:absolute lg:right-[-196px] lg:top-[8px]">
+            <NivasaMedal className="w-[112px]" />
+          </div>
+          <div className="lg:absolute lg:right-[-204px] lg:top-[296px]">
+            <ChelseaBadge className="w-[92px]" />
+          </div>
+        </div>
       </div>
     </section>
   );
