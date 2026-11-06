@@ -1,7 +1,7 @@
 "use client";
 
 // ── GitHub, Aug–Nov ───────────────────────────────────────────────────────────
-// A small card on the desk, taped down at one corner: the GitHub mark, a grid of
+// A small card on the desk: the GitHub mark, a grid of
 // contribution squares that glow and fade on their own, and the total. On hover the
 // squares rearrange into "ship" and a tooltip offers the last four months. Click and it
 // does what the book and the medal do: comes to the middle of the screen and turns
@@ -12,7 +12,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ACCOUNTS, CONTRIB_ASOF, CONTRIB_FROM, CONTRIB_TO } from "./githubData";
-import FocusOverlay, { ControlBar, FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
+import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion } from "./FocusOverlay";
 
 // Empty, then four steps up the brand ramp
 const RAMP = ["#f3f3f2", "#F9E4FF", "#F2B6EC", "#9D136A", "#32073e"];
@@ -150,7 +150,7 @@ const SQ_GAP = 4;
 
 function Calendar({ days, onTip }: { days: Record<string, number>; onTip: (t: { text: string; x: number; y: number } | null) => void }) {
   return (
-    <div className="flex gap-4">
+    <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:flex sm:gap-4">
       {MONTHS.map(({ y, m, label }) => {
         const weeks = monthWeeks(y, m, days);
         const total = weeks.flat().reduce((a, d) => a + (d?.n ?? 0), 0);
@@ -219,9 +219,9 @@ function Card({ hovered }: { hovered: boolean }) {
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-heading">
           <Mark />
-          <span className="font-brand text-[10px] uppercase tracking-[1.6px] text-secondary">Contributions</span>
+          <span className="font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-secondary">Contributions</span>
         </span>
-        <span className="font-brand text-[10px] uppercase tracking-[1.6px] text-muted">Aug–Nov</span>
+        <span className="font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-muted">Aug–Nov</span>
       </div>
       <div className="mt-[10px]">
         <Chip hovered={hovered} />
@@ -236,16 +236,6 @@ function Card({ hovered }: { hovered: boolean }) {
           ))}
         </span>
       </div>
-      {/* A strip of tape holding it to the desk */}
-      <span
-        className="absolute -left-3 -top-2 block h-[18px] w-[64px] -rotate-[14deg] opacity-90"
-        style={{
-          background: "linear-gradient(180deg, rgba(249,228,255,0.92), rgba(242,182,236,0.78))",
-          clipPath: "polygon(3% 0, 97% 4%, 100% 30%, 96% 55%, 100% 82%, 97% 100%, 2% 96%, 0 70%, 4% 45%, 0 18%)",
-          boxShadow: "0 1px 2px rgba(30,5,37,0.12)",
-        }}
-        aria-hidden="true"
-      />
     </div>
   );
 }
@@ -253,14 +243,14 @@ function Card({ hovered }: { hovered: boolean }) {
 // ── The calendars (back) ──────────────────────────────────────────────────────
 type Tip = { text: string; x: number; y: number } | null;
 
-function Calendars({ close, phase }: { close: () => void; phase: FocusPhase }) {
+function Calendars() {
   const [tip, setTip] = useState<Tip>(null);
   return (
-    <div className="flex flex-col items-center gap-6">
-      <div className="w-max max-w-[calc(100vw-32px)] overflow-x-auto rounded-2xl bg-background p-8 shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]">
-        <div className="flex items-start justify-between gap-8">
+    <div className="flex flex-col items-center">
+      <div className="max-h-[calc(100dvh-152px)] sm:max-h-[calc(100dvh-112px)] w-[calc(100vw-24px)] max-w-[560px] overflow-y-auto overscroll-contain rounded-2xl bg-background p-5 sm:w-max sm:p-8 shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]">
+        <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-3">
           <div>
-            <p className="flex items-center gap-2 font-brand text-[10px] uppercase tracking-[2px] text-muted">
+            <p className="flex items-center gap-2 font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-muted">
               <Mark size={12} /> GitHub · Aug–Nov 2026
             </p>
             <p className="mt-3 font-heading text-h2-lg text-heading">
@@ -293,7 +283,6 @@ function Calendars({ close, phase }: { close: () => void; phase: FocusPhase }) {
         </div>
         <p className="mt-6 font-geist text-caption text-muted">Work is private repositories at Travelopia; counts as of 6 Nov 2026.</p>
       </div>
-      <ControlBar onClose={close} visible={phase === "open"} />
       {tip &&
         createPortal(
           <div role="tooltip" className="pointer-events-none fixed z-[260] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md bg-midnight px-2 py-1 font-geist text-caption text-background shadow-[0_4px_12px_rgba(30,5,37,0.2)]" style={{ left: tip.x, top: tip.y - 6 }}>
@@ -349,8 +338,8 @@ export default function GithubWidget({ className = "" }: { className?: string })
         </span>
       </button>
 
-      <FocusOverlay source={btn.current} open={open} onClosed={onClosed} label="GitHub contributions" width={CARD_W} height={CARD_H} fitWidth={760} fitHeight={640} closeMs={reduced ? 0 : TURN_MS}>
-        {(phase, close) => <FlipStage phase={phase} front={<Card hovered={false} />} back={<Calendars close={close} phase={phase} />} />}
+      <FocusOverlay source={btn.current} open={open} onClosed={onClosed} label="GitHub contributions" width={CARD_W} height={CARD_H} fitWidth={CARD_W} fitHeight={CARD_H} closeMs={reduced ? 0 : TURN_MS}>
+        {(phase) => <FlipStage phase={phase} front={<Card hovered={false} />} back={<Calendars />} />}
       </FocusOverlay>
     </>
   );

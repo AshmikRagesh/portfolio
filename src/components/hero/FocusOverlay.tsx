@@ -43,13 +43,15 @@ type Props = {
   height: number;
   /** How long the object takes to close up before it flies home */
   closeMs?: number;
+  /** Or: close up, and resolve once it has (the book waits for its pages to settle) */
+  beforeClose?: () => Promise<void>;
   /** The largest the object gets once open, so it's scaled to fit the screen */
   fitWidth?: number;
   fitHeight?: number;
   children: (phase: FocusPhase, close: () => void) => ReactNode;
 };
 
-export default function FocusOverlay({ source, open, onClosed, label, width, height, closeMs = 0, fitWidth, fitHeight, children }: Props) {
+export default function FocusOverlay({ source, open, onClosed, label, width, height, closeMs = 0, beforeClose, fitWidth, fitHeight, children }: Props) {
   const [phase, setPhase] = useState<FocusPhase>("flying");
   const stage = useRef<HTMLDivElement>(null);
   const root = useRef<HTMLDivElement>(null);
@@ -114,14 +116,20 @@ export default function FocusOverlay({ source, open, onClosed, label, width, hei
         ? el?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: "forwards" })
         : el?.animate([{ transform: "none" }, { transform: fromSource() }], { duration: HOME_MS, easing: "cubic-bezier(0.5, 0, 0.2, 1)", fill: "forwards" });
       const done = () => {
-        if (source) source.style.visibility = "";
+        if (source) {
+          source.style.visibility = "";
+          // Lands back in its spot with a small settle
+          if (!reduced) source.animate([{ transform: "scale(1.035)" }, { transform: "scale(0.995)" }, { transform: "none" }], { duration: 420, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
+        }
         onClosed();
       };
       if (anim) anim.finished.then(done, done);
       else done();
     };
-    window.setTimeout(fly, reduced ? 0 : closeMs);
-  }, [closeMs, fromSource, onClosed, reduced, source]);
+    if (reduced) return fly();
+    if (beforeClose) beforeClose().then(fly, fly);
+    else window.setTimeout(fly, closeMs);
+  }, [beforeClose, closeMs, fromSource, onClosed, reduced, source]);
 
   // While open: Escape closes, the page underneath stays put, focus moves in
   useEffect(() => {
@@ -155,43 +163,44 @@ export default function FocusOverlay({ source, open, onClosed, label, width, hei
           </div>
         </div>
       </div>
+      {/* Close: one large, quiet button in the corner, the same for every object */}
+      <button
+        type="button"
+        onClick={close}
+        aria-label="Close"
+        className={`absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-background/80 text-heading shadow-[0_0_0_1px_rgba(30,5,37,0.08),0_2px_4px_rgba(30,5,37,0.06),0_8px_24px_rgba(30,5,37,0.12)] backdrop-blur-md transition-[opacity,transform,background-color] duration-300 ease-out hover:bg-background active:scale-95 md:right-6 md:top-6 md:h-12 md:w-12 ${
+          phase === "open" ? "scale-100 opacity-100" : "pointer-events-none scale-90 opacity-0"
+        }`}
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+          <path d="M2 2l10 10M12 2 2 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      </button>
     </div>,
     document.body,
   );
 }
 
 // ── Shared controls ───────────────────────────────────────────────────────────
-// One quiet glass pill under every opened object: optional page controls, then Close.
+// A quiet glass pill for anything that pages (the book). Close lives in the corner.
 
-const pill =
-  "inline-flex h-10 items-center gap-1 rounded-full bg-background/75 p-1 shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_1px_2px_rgba(30,5,37,0.06),0_8px_24px_rgba(30,5,37,0.10)] backdrop-blur-md";
 const round =
-  "flex h-8 w-8 items-center justify-center rounded-full text-secondary transition-[background-color,color,transform] duration-200 hover:bg-card hover:text-heading active:scale-95 disabled:pointer-events-none disabled:opacity-30";
+  "flex h-9 w-9 items-center justify-center rounded-full text-secondary transition-[background-color,color,transform] duration-200 hover:bg-card hover:text-heading active:scale-95 disabled:pointer-events-none disabled:opacity-25";
 
-export function ControlBar({ children, onClose, visible = true }: { children?: ReactNode; onClose: () => void; visible?: boolean }) {
+export function NavPill({ children, visible = true }: { children: ReactNode; visible?: boolean }) {
   return (
     <div
-      className={`${pill} transition-[opacity,transform] duration-300 ease-out ${visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0"}`}
+      className={`inline-flex h-11 items-center gap-1 rounded-full bg-background/80 p-1 shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_1px_2px_rgba(30,5,37,0.06),0_8px_24px_rgba(30,5,37,0.10)] backdrop-blur-md transition-[opacity,transform] duration-300 ease-out ${
+        visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0"
+      }`}
     >
       {children}
-      {children && <span className="mx-1 h-4 w-px bg-line-soft" aria-hidden="true" />}
-      <button type="button" onClick={onClose} className={`${round} w-auto gap-2 px-3 font-geist text-caption-lg`}>
-        <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
-          <path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-        </svg>
-        Close
-      </button>
     </div>
   );
 }
 
 export function RoundButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return <button type="button" {...props} className={`${round} ${props.className ?? ""}`} />;
-}
-
-/** The close pill on its own */
-export function CloseChip({ onClick }: { onClick: () => void }) {
-  return <ControlBar onClose={onClick} />;
 }
 
 // ── Turn over ─────────────────────────────────────────────────────────────────

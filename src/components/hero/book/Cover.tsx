@@ -65,14 +65,14 @@ function CoverInner() {
 
       {/* Title, debossed: a shadow above the letters, light below */}
       <div className="absolute left-7 top-8 right-7">
-        <p className="font-brand text-[10px] uppercase leading-none tracking-[2.4px] text-grape/70">Field notes · Vol. 01</p>
+        <p className="font-geist text-[10px] font-medium uppercase leading-none tracking-[2px] text-grape/70">Field notes · Vol. 01</p>
         <p
           className="mt-3 font-heading text-[44px] leading-[0.95] tracking-[-1.6px] text-grape"
           style={{ textShadow: "0 -1px 0 rgba(30,5,37,0.18), 0 1px 0 rgba(255,255,255,0.9)" }}
         >
           Itinerary
         </p>
-        <div className="mt-4 flex items-center gap-2 font-brand text-[10px] uppercase leading-none tracking-[2px] text-grape/80">
+        <div className="mt-4 flex items-center gap-2 font-geist text-[10px] font-medium uppercase leading-none tracking-[1.6px] text-grape/80">
           <span>4 trips</span>
           <span className="h-px w-4 bg-grape/40" />
           <span>2024–2026</span>

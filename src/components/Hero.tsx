@@ -35,22 +35,22 @@ export default function Hero() {
             className="absolute left-[-4%] top-[-2.71%] w-[108%] max-w-none"
           />
         </div>
-        {/* The desk objects. Always beside the portrait: on tablet and up all four sit
-            round it, two each side; on a phone the book and the medal sit at its
-            shoulders and the GitHub card and the lion just under it. Sizes step down
-            with the screen so they never crowd the face. */}
-        <Tossed rotate={-7} delay={0} className="absolute left-[-40px] top-[2%] z-10 md:left-[-104px] md:top-[24px] lg:left-[-232px] lg:top-[36px]">
-          <TripsBook className="w-[76px] md:w-[104px] lg:w-[156px]" />
+        {/* The desk objects, always beside the portrait. Left: the trips book over the
+            Chelsea pin. Right: the GitHub card over the Superhost medal. On a phone the
+            book and the GitHub card sit at the shoulders and the pin and the medal just
+            under the portrait. Each can be picked up and moved (Tossed). */}
+        <Tossed rotate={-6} delay={0} className="absolute left-[-44px] top-[-8px] z-10 md:left-[-128px] md:top-[8px] lg:left-[-264px] lg:top-0">
+          <TripsBook className="w-[112px] md:w-[152px] lg:w-[200px]" />
         </Tossed>
-        <Tossed rotate={5} delay={110} className="absolute right-[-34px] top-[4%] z-10 md:right-[-104px] md:top-[20px] lg:right-[-184px] lg:top-[24px]">
-          <NivasaMedal className="w-[54px] md:w-[84px] lg:w-[112px]" />
+        <Tossed rotate={4} delay={110} className="absolute right-[-44px] top-0 z-10 md:right-[-136px] md:top-[40px] lg:right-[-272px] lg:top-[48px]">
+          <GithubWidget className="w-[140px] md:w-[176px] lg:w-[224px]" />
         </Tossed>
-        <div className="relative z-10 -mt-6 flex w-full items-start justify-between px-2 md:contents">
-          <Tossed rotate={4} delay={220} className="md:absolute md:left-[-104px] md:top-[296px] lg:left-[-252px] lg:top-[336px]">
-            <GithubWidget className="w-[148px] md:w-[136px] lg:w-[200px]" />
+        <div className="relative z-10 -mt-12 flex w-full items-start justify-between px-3 md:contents">
+          <Tossed rotate={-6} delay={220} className="md:absolute md:left-[-100px] md:top-[300px] lg:left-[-196px] lg:top-[320px]">
+            <ChelseaBadge className="w-[64px] md:w-[80px] lg:w-[104px]" />
           </Tossed>
-          <Tossed rotate={-6} delay={330} className="mr-4 md:absolute md:right-[-96px] md:top-[296px] md:mr-0 lg:right-[-176px] lg:top-[318px]">
-            <ChelseaBadge className="w-[52px] md:w-[64px] lg:w-[88px]" />
+          <Tossed rotate={5} delay={330} className="md:absolute md:right-[-108px] md:top-[256px] lg:right-[-200px] lg:top-[268px]">
+            <NivasaMedal className="w-[76px] md:w-[96px] lg:w-[124px]" />
           </Tossed>
         </div>
       </div>

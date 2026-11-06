@@ -1013,6 +1013,9 @@
 .group:hover .work-cta__circle > span, .group:focus-visible .work-cta__circle > span { transform: none; }
 /* Under NDA: the pill greyed out, and it doesn't react to the card's hover */
 .work-cta--off { color: #8e8292; cursor: not-allowed; }
+/* The same pill, smaller, for CTAs inside cards and dialogs */
+.work-cta--sm { --cta-h: 40px; }
+.work-cta--sm .work-cta__inner { padding-inline: 20px; }
 .work-cta--off .work-cta__inner, .group:hover .work-cta--off .work-cta__inner { background-color: #e5e7eb; }
 @media (prefers-reduced-motion: reduce) {
   .work-cta__inner, .work-cta__circle, .work-cta__circle > span { transition: none; }

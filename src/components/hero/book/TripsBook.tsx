@@ -17,7 +17,7 @@
 // Arrow keys and the buttons drive the same spring.
 
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import FocusOverlay, { ControlBar, RoundButton, useReducedMotion, type FocusPhase } from "../FocusOverlay";
+import FocusOverlay, { NavPill, RoundButton, useReducedMotion, type FocusPhase } from "../FocusOverlay";
 import { Cover, ClosedEdges, PH, PW } from "./Cover";
 import TripMap from "./TripMap";
 import { TRIPS, type Trip } from "./trip";
@@ -66,7 +66,7 @@ function Thumbs({ stop, onOpen }: { stop: Trip["stops"][number]; onOpen: (p: num
 function Itinerary({ trip, index, active, setActive, openPhoto }: { trip: Trip; index: number; active: number | null; setActive: (i: number | null) => void; openPhoto: (s: number, p: number) => void }) {
   return (
     <div className="flex h-full flex-col pl-7 pr-9 pt-7">
-      <p className="font-brand text-[10px] uppercase leading-none tracking-[2px] text-muted">
+      <p className="font-geist text-[10px] font-medium uppercase leading-none tracking-[1.6px] text-muted">
         Trip {index + 1} of {TRIPS.length}
       </p>
       <p className="mt-2 font-heading text-[30px] leading-none tracking-[-1px] text-heading">{trip.title}</p>
@@ -117,7 +117,7 @@ function EndPaper() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-2">
       <p className="font-handwriting text-[30px] leading-none text-grape/70">until the next one</p>
-      <p className="font-brand text-[10px] uppercase tracking-[2px] text-muted">— A.R.</p>
+      <p className="font-geist text-caption text-muted">— A.R.</p>
     </div>
   );
 }
@@ -131,7 +131,7 @@ function PhotoViewer({ trip, at, onMove, onClose }: { trip: Trip; at: { s: numbe
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img key={ph.src} src={ph.src} alt={`${stop.name}: ${ph.caption}`} draggable={false} className="absolute inset-0 h-full w-full animate-[bookPhotoImg_600ms_ease-out] object-cover" />
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-midnight/85 via-midnight/40 to-transparent px-5 pb-5 pt-16">
-        <p className="font-brand text-[10px] uppercase tracking-[2px] text-background/70">
+        <p className="font-geist text-[10px] font-medium uppercase tracking-[1.6px] text-background/70">
           {stop.name} · {at.p + 1} / {stop.photos.length}
         </p>
         <p className="mt-1 font-geist text-body-lg text-background">{ph.caption}</p>
@@ -163,7 +163,7 @@ function ViewerButton({ label, onClick, children }: { label: string; onClick: ()
 // ── The book ──────────────────────────────────────────────────────────────────
 type Sim = { a: number[]; v: number[]; target: number[]; startAt: number[] };
 
-function Book({ phase, turned, setTurned, uid }: { phase: FocusPhase; turned: number; setTurned: (n: number) => void; uid: string }) {
+function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turned: number; setTurned: (n: number) => void; uid: string; api: React.MutableRefObject<BookApi | null> }) {
   const [active, setActive] = useState<(number | null)[]>(() => TRIPS.map(() => null));
   const [photo, setPhoto] = useState<{ t: number; s: number; p: number } | null>(null);
   const reduced = useReducedMotion();
@@ -179,6 +179,8 @@ function Book({ phase, turned, setTurned, uid }: { phase: FocusPhase; turned: nu
   const gesture = useRef<{ x: number; y: number; id: number; started: boolean; side: "l" | "r" } | null>(null);
   const swallow = useRef(false);
   const raf = useRef(0);
+  const closing = useRef(false);
+  const waiters = useRef<(() => void)[]>([]);
 
   // ── Drawing one frame ──
   const draw = useCallback(() => {
@@ -242,7 +244,9 @@ function Book({ phase, turned, setTurned, uid }: { phase: FocusPhase; turned: nu
           moving = true;
           continue;
         }
-        const acc = -STIFF * (s.a[i] - s.target[i]) - DAMP * s.v[i];
+        const k = closing.current ? 260 : STIFF;
+        const c = closing.current ? 30 : DAMP;
+        const acc = -k * (s.a[i] - s.target[i]) - c * s.v[i];
         s.v[i] += acc * dt;
         s.a[i] += s.v[i] * dt;
         // Paper landing on paper: it can't go through, it settles with a small bounce
@@ -261,6 +265,10 @@ function Book({ phase, turned, setTurned, uid }: { phase: FocusPhase; turned: nu
       }
       draw();
       if (moving) raf.current = requestAnimationFrame(step);
+      else {
+        closing.current = false;
+        waiters.current.splice(0).forEach((f) => f());
+      }
     };
     raf.current = requestAnimationFrame(step);
   }, [draw]);
@@ -278,7 +286,7 @@ function Book({ phase, turned, setTurned, uid }: { phase: FocusPhase; turned: nu
       const t = i < turned ? 180 : 0;
       if (s.target[i] !== t) {
         s.target[i] = t;
-        s.startAt[i] = now + order * 70;
+        s.startAt[i] = now + order * (closing.current ? 55 : 70);
         order++;
       }
     }
@@ -292,6 +300,21 @@ function Book({ phase, turned, setTurned, uid }: { phase: FocusPhase; turned: nu
   }, [turned, reduced, run, draw]);
 
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
+
+  // Closing: the turned pages riffle back one after another, last first, quicker than a
+  // normal turn; resolves once every page is lying flat
+  api.current = {
+    closeUp: () =>
+      new Promise<void>((resolve) => {
+        setPhoto(null);
+        if (turned === 0 && sim.current.a.every((a) => a === 0)) return resolve();
+        closing.current = true;
+        waiters.current.push(resolve);
+        window.setTimeout(resolve, 2000);
+        if (turned === 0) run();
+        else setTurned(0);
+      }),
+  };
 
   const go = useCallback(
     (n: number) => {
@@ -478,16 +501,20 @@ function Book({ phase, turned, setTurned, uid }: { phase: FocusPhase; turned: nu
 }
 
 // ── In the hero ───────────────────────────────────────────────────────────────
+type BookApi = { closeUp: () => Promise<void> };
+
 export default function TripsBook({ className = "" }: { className?: string }) {
   const btn = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [turned, setTurned] = useState(0);
+  const api = useRef<BookApi | null>(null);
   const uid = useId().replace(/:/g, "");
-  const reduced = useReducedMotion();
   const onClosed = useCallback(() => {
     setOpen(false);
     setTurned(0);
   }, []);
+  // Before it flies home: riffle the pages shut, and wait until they've settled
+  const beforeClose = useCallback(() => api.current?.closeUp() ?? Promise.resolve(), []);
 
   // The cover is drawn at full size and scaled to whatever width the hero gives it
   useLayoutEffect(() => {
@@ -528,51 +555,37 @@ export default function TripsBook({ className = "" }: { className?: string }) {
         label="Trips book"
         width={PW}
         height={PH}
-        fitWidth={PW * 2 + 48}
-        fitHeight={PH + 140}
-        closeMs={reduced || turned === 0 ? 0 : 760 + turned * 70}
+        fitWidth={PW * 2 + 32}
+        fitHeight={PH + 132}
+        beforeClose={beforeClose}
       >
-        {(phase, close) => <BookStage phase={phase} close={close} turned={turned} setTurned={setTurned} uid={uid} />}
+        {(phase) => <BookStage phase={phase} turned={turned} setTurned={setTurned} uid={uid} api={api} />}
       </FocusOverlay>
     </>
   );
 }
 
-function BookStage({ phase, close, turned, setTurned, uid }: { phase: FocusPhase; close: () => void; turned: number; setTurned: (n: number) => void; uid: string }) {
-  // Closing: shut the book first, then FocusOverlay flies it home
-  useEffect(() => {
-    if (phase === "closing") setTurned(0);
-  }, [phase, setTurned]);
-  const [hinted, setHinted] = useState(false);
-  useEffect(() => {
-    if (turned > 1) setHinted(true);
-  }, [turned]);
-
+function BookStage({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turned: number; setTurned: (n: number) => void; uid: string; api: React.MutableRefObject<BookApi | null> }) {
+  const label = turned === 0 ? "Itinerary" : TRIPS[turned - 1].title;
   return (
     <>
-      <Book phase={phase} turned={turned} setTurned={setTurned} uid={uid} />
-      <div className="absolute left-1/2 top-full mt-10 flex -translate-x-1/2 flex-col items-center gap-3 whitespace-nowrap">
-        <ControlBar onClose={close} visible={phase === "open"}>
+      <Book phase={phase} turned={turned} setTurned={setTurned} uid={uid} api={api} />
+      {/* One line: back, where you are, forward */}
+      <div className="absolute left-1/2 top-full mt-8 -translate-x-1/2 whitespace-nowrap">
+        <NavPill visible={phase === "open"}>
           <RoundButton onClick={() => setTurned(Math.max(0, turned - 1))} disabled={turned === 0} aria-label="Previous page">
             <Chevron left />
           </RoundButton>
-          <div className="flex min-w-[132px] flex-col items-center gap-1 px-2" aria-live="polite">
-            <span key={turned} className="animate-[bookLabel_360ms_cubic-bezier(0.22,1,0.36,1)] font-geist text-caption-lg leading-none text-heading">
-              {turned === 0 ? "Itinerary" : TRIPS[turned - 1].title}
+          <span className="flex min-w-[148px] items-baseline justify-center gap-2 px-2" aria-live="polite">
+            <span key={label} className="animate-[bookLabel_360ms_cubic-bezier(0.22,1,0.36,1)] font-geist text-body font-medium text-heading">
+              {label}
             </span>
-            <span className="flex items-center gap-1" aria-hidden="true">
-              {TRIPS.map((t, i) => (
-                <span key={t.key} className={`block h-1 rounded-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${turned === i + 1 ? "w-4 bg-grape" : "w-1 bg-line"}`} />
-              ))}
-            </span>
-          </div>
-          <RoundButton onClick={() => setTurned(Math.min(MAX_TURN, turned + 1))} disabled={turned === MAX_TURN} aria-label="Next page">
+            <span className="font-geist text-caption tabular-nums text-muted">{turned === 0 ? "Cover" : `${turned} of ${TRIPS.length}`}</span>
+          </span>
+          <RoundButton onClick={() => setTurned(Math.min(MAX_TURN, turned + 1))} disabled={turned === MAX_TURN} aria-label={turned === 0 ? "Open the book" : "Next page"}>
             <Chevron />
           </RoundButton>
-        </ControlBar>
-        <p className={`font-geist text-caption text-muted transition-opacity duration-500 ${phase === "open" && !hinted ? "opacity-100" : "opacity-0"}`}>
-          {turned === 0 ? "Tap the cover, or drag it open" : "Drag a page to turn it"}
-        </p>
+        </NavPill>
       </div>
     </>
   );
@@ -580,8 +593,8 @@ function BookStage({ phase, close, turned, setTurned, uid }: { phase: FocusPhase
 
 function Chevron({ left = false }: { left?: boolean }) {
   return (
-    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style={{ transform: left ? "scaleX(-1)" : undefined }}>
-      <path d="M4.5 2.5 8 6l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style={{ transform: left ? "scaleX(-1)" : undefined }}>
+      <path d="M5.25 3 9.25 7l-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
