@@ -1,5 +1,5 @@
 // ── Testimonials ──────────────────────────────────────────────────────────────
-// "The guestbook": dark panel with two cream "notepad" cards — ruled lines every 24px,
+// "The guestbook": dark panel of cream "notepad" cards (two columns, three from 1280px) — ruled lines every 24px,
 // a punched hole in the top-right corner, a slight tilt that straightens on hover,
 // and the guest's signature in ink at the bottom right.
 // Uses the shared page container (1240px at desktop). All values are multiples of 2/4px.
@@ -92,9 +92,9 @@ export default function Testimonials() {
             </div>
 
             {/* Cards */}
-            <ol className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2 md:gap-6 min-[960px]:grid-cols-3">
+            <ol className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2 md:gap-6 xl:grid-cols-3">
               {testimonials.map((t, i) => (
-                <li key={i} className="min-w-0 md:last:odd:col-span-2 md:last:odd:mx-auto md:last:odd:w-[calc(50%_-_12px)] min-[960px]:last:odd:col-span-1 min-[960px]:last:odd:w-auto">
+                <li key={i} className="min-w-0 md:last:odd:col-span-2 md:last:odd:mx-auto md:last:odd:w-[calc(50%_-_12px)] xl:last:odd:col-span-1 xl:last:odd:w-auto">
                   <figure
                     className={`relative m-0 flex h-full flex-col rounded-sm border border-white/25 [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] p-5 text-heading shadow-[0_4px_18px_rgba(30,5,37,0.16)] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:!translate-y-[-4px] hover:!rotate-0 md:p-6 motion-reduce:!transform-none motion-reduce:transition-none ${
                       TILTS[i % TILTS.length]
