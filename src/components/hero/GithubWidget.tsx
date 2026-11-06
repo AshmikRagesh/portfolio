@@ -285,40 +285,44 @@ function Calendars() {
   return (
     <div className="flex flex-col items-center">
       <div className="max-h-[calc(100dvh-152px)] sm:max-h-[calc(100dvh-112px)] w-[calc(100vw-24px)] max-w-[560px] overflow-y-auto overscroll-contain rounded-2xl bg-background p-5 sm:w-max sm:p-8 shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]">
-        <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-3">
-          <div>
-            <p className="flex items-center gap-2 font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-muted">
-              <Mark size={12} /> GitHub · the last year
-            </p>
-            <p className="mt-3 font-heading text-h2-lg text-heading">
-              <span className="tabular-nums">{total}</span> contributions
-            </p>
-          </div>
-          <div className="flex items-center gap-2 pt-1 font-geist text-caption text-muted">
-            Less
-            {RAMP.map((c) => (
-              <span key={c} className="block rounded-xs" style={{ width: 10, height: 10, background: c }} />
-            ))}
-            More
-          </div>
+        <div>
+          <p className="flex items-center gap-2 font-geist text-[11px] font-medium uppercase tracking-[1.2px] text-muted">
+            <Mark size={12} /> GitHub · the last year
+          </p>
+          <p className="mt-3 font-heading text-h2-lg text-heading">
+            <span className="tabular-nums">{total}</span> contributions
+          </p>
         </div>
         <div className="mt-8 flex flex-col gap-8">
           {c.accounts.map((a) => (
             <div key={a.key} className="flex flex-col gap-3">
-              <div className="flex items-baseline justify-between gap-4 font-geist text-body">
-                <span className="flex items-baseline gap-2">
-                  <span className="font-medium text-heading">{a.label}</span>
-                  <a href={`https://github.com/${a.handle}`} target="_blank" rel="noreferrer" className="text-muted underline-offset-2 transition-colors hover:text-grape hover:underline">
+              {/* The account on the left, its year's total on the right, set like the headline */}
+              <div className="flex items-end justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                  <span className="font-geist text-body font-medium text-heading">{a.label}</span>
+                  <a href={`https://github.com/${a.handle}`} target="_blank" rel="noreferrer" className="font-geist text-caption text-muted underline-offset-2 transition-colors hover:text-grape hover:underline">
                     @{a.handle} ↗
                   </a>
-                </span>
-                <span className="font-medium tabular-nums text-heading">{a.total}</span>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <span className="font-heading text-h3-lg leading-none tabular-nums text-heading">{a.total}</span>
+                  <span className="font-geist text-caption text-muted">in the last year</span>
+                </div>
               </div>
               <Calendar days={a.days} asOf={c.asOf} onTip={setTip} />
             </div>
           ))}
         </div>
-        <p className="mt-6 font-geist text-caption text-muted">Day by day for {rangeLabel(c.asOf)}. Work is private repositories at Travelopia. Live from GitHub, updated hourly.</p>
+        {/* The key and the note sit under the calendars; the note wraps to their width
+            rather than stretching the card past them */}
+        <div className="mt-8 flex items-center gap-2 font-geist text-caption text-muted">
+          Less
+          {RAMP.map((c) => (
+            <span key={c} className="block rounded-xs" style={{ width: 10, height: 10, background: c }} />
+          ))}
+          More
+        </div>
+        <p className="mt-3 w-0 min-w-full font-geist text-caption text-muted">Day by day for {rangeLabel(c.asOf)}. Work is private repositories at Travelopia. Live from GitHub, updated hourly.</p>
       </div>
       {tip &&
         createPortal(
