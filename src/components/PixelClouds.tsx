@@ -8,12 +8,12 @@ import { useEffect, useRef } from "react";
 // edges, picks one of seven tones per cell:
 //   clear · pale dither · pale · mid dither · mid · deep dither · deep
 // where a "dither" is a 1px checkerboard of the two tones either side of it, drawn at the
-// screen's own pixel density so it stays crisp. Each card has its own colour (yellow,
-// green, blue, grape; grey for NDA). On a hover the clouds roll in from the edges in quick
-// steps, keep drifting
-// while the pointer stays, and roll back out when it leaves. They stay light and hug the
-// edges: the middle stays clear and the noise is weighted lightly, so grape (or dark grey)
-// only shows at the outer peaks and the work itself stays in view.
+// screen's own pixel density so it stays crisp. Every card uses the one brand pink. On a
+// hover the clouds puff in from the edges in quick steps (overshooting a touch, then
+// settling), keep drifting on two axes and breathing while the pointer stays, swell towards
+// the pointer when it comes near the image, and throw off the odd twinkling pixel along
+// their fringe. They roll back out when it leaves. They stay light and hug the edges: the
+// middle stays clear, so grape only shows at the outer peaks and the work stays in view.
 //
 // Hover is read from the card (the nearest .group). Touch screens never hover, so they
 // never see it; with reduced motion the clouds appear and leave without drifting.
@@ -21,22 +21,21 @@ import { useEffect, useRef } from "react";
 // so only a light fringe drifts round the edge.
 const CELL = 8;
 const DOT = 1;
-// One set per card colour; greys for NDA works, to match their greyed-out image
-const PALETTES = {
-  brand: { pale: "#F9E4FF", mid: "#F2B6EC", deep: "#9D136A" },
-  yellow: { pale: "#FFF3D1", mid: "#F7CF6E", deep: "#D9940F" },
-  green: { pale: "#DDF4E6", mid: "#8FD5A9", deep: "#23845A" },
-  blue: { pale: "#DDEBFF", mid: "#93BCF5", deep: "#2A64CF" },
-  grey: { pale: "#F3F4F6", mid: "#D1D5DB", deep: "#6B7280" },
-};
+// The one palette: brand pink, from pale blush to grape
+const COLORS = { pale: "#F9E4FF", mid: "#F2B6EC", deep: "#9D136A" };
+const SPARK = "#FFFFFF"; // twinkling pixels on the fringe
 // Tone thresholds on the (field − hidden) value; seven tones, so six cuts
 // The first cut sets how far the clouds reach; the later ones are close together so more
 // of the cloud turns grape (or dark grey) without the cloud growing
 const CUTS = [0.62, 0.67, 0.71, 0.75, 0.79, 0.84];
-const STEPS = 12; // the reveal moves in this many visible jumps
-const IN_MS = 520;
-const OUT_MS = 360;
-const DRIFT = 1.2; // cells per second
+const STEPS = 16; // the reveal moves in this many visible jumps
+const IN_MS = 640;
+const OUT_MS = 380;
+const DRIFT = 1.6; // cells per second, sideways
+const BOB = 0.6; // cells of slow up-and-down sway
+const BREATHE = 0.025; // how much the clouds swell and shrink while hovered
+const PULL = 0.16; // how far the clouds swell towards a nearby pointer
+const TWINKLE = 0.035; // share of fringe cells sparkling at any moment
 const MAX_TONE = 6; // all seven tones; the deepest only reach the outermost peaks
 const CLEAR = 0.72; // no clouds inside this distance from the centre (0 = centre, 1 = corners)
 
@@ -78,14 +77,15 @@ function checker(ctx: CanvasRenderingContext2D, a: string | null, b: string, px:
   return ctx.createPattern(tile, "repeat")!;
 }
 
+// Puffs past 1 then settles back, so the clouds billow in rather than slide
+const easeOutBack = (t: number) => 1 + 2.2 * (t - 1) ** 3 + 1.2 * (t - 1) ** 2;
+
 export default function PixelClouds({
   seed = 1,
-  palette = "brand",
   subtle = false,
   className = "",
 }: {
   seed?: number;
-  palette?: keyof typeof PALETTES;
   subtle?: boolean;
   className?: string;
 }) {
@@ -115,7 +115,6 @@ export default function PixelClouds({
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       const px = Math.max(1, Math.round(DOT * dpr));
-      const COLORS = PALETTES[palette];
       fills = [
         "",
         checker(ctx, null, COLORS.pale, px),
@@ -130,32 +129,62 @@ export default function PixelClouds({
     let cover = 0; // 0 = no clouds, 1 = fully in
     let target = 0;
     let drift = 0;
+    let time = 0; // seconds of hover, for the sway, breathing and twinkles
     let last = 0;
     let raf = 0;
+    // The pointer in the canvas's own 0–1 space (far away when unknown), eased so the
+    // swell glides after it rather than jumping
+    let px = 9;
+    let py = 9;
+    let gx = 9;
+    let gy = 9;
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const shown = Math.ceil(cover * STEPS) / STEPS;
+      // Rolling in: billow past full, then settle. Rolling out: straight back.
+      const eased = target > 0 && !still ? easeOutBack(cover) : cover;
+      const shown = Math.ceil(eased * STEPS) / STEPS;
       if (shown <= 0) return;
       const cols = Math.ceil(w / cell);
       const rows = Math.ceil(h / cell);
+      const bob = Math.sin(time * 0.9) * BOB;
+      const breathe = Math.sin(time * 2.2) * BREATHE * Math.min(1, cover);
+      const tick6 = Math.floor(time * 7); // twinkles change seven times a second
+      const fill = (c: number, r: number) => {
+        const x = Math.round(c * cell * dpr);
+        const y = Math.round(r * cell * dpr);
+        ctx.fillRect(x, y, Math.round((c + 1) * cell * dpr) - x, Math.round((r + 1) * cell * dpr) - y);
+      };
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           // Distance from the centre: 0 in the middle, ~1 in the corners
-          const ex = ((c + 0.5) * cell) / w - 0.5;
-          const ey = ((r + 0.5) * cell) / h - 0.5;
+          const ux = ((c + 0.5) * cell) / w;
+          const uy = ((r + 0.5) * cell) / h;
+          const ex = ux - 0.5;
+          const ey = uy - 0.5;
           const edge = Math.min(1, Math.hypot(ex * 1.6, ey * 1.8));
           // The middle stays clear: clouds only gather in the outer band
           if (edge < clear) continue;
+          // Swell towards the pointer when it's near (it fades out ~a third of the way across)
+          const d2 = ((ux - gx) * 1.6) ** 2 + ((uy - gy) * 1.8) ** 2;
+          const pull = d2 < 0.3 ? PULL * Math.exp(-d2 / 0.06) : 0;
           const field =
-            0.4 * fbm((c + drift) * 0.14 * k, r * 0.2 * k, seed) + 0.6 * edge * edge + 0.04 * hash(c, r, seed + 3) - (1 - shown) * 0.7;
+            0.4 * fbm((c + drift) * 0.14 * k, (r + bob) * 0.2 * k, seed) +
+            0.6 * edge * edge +
+            0.04 * hash(c, r, seed + 3) +
+            breathe +
+            pull -
+            (1 - shown) * 0.7;
           let tone = 0;
           while (tone < maxTone && field >= CUTS[tone]) tone++;
           if (!tone) continue;
           ctx.fillStyle = fills[tone];
-          const x = Math.round(c * cell * dpr);
-          const y = Math.round(r * cell * dpr);
-          ctx.fillRect(x, y, Math.round((c + 1) * cell * dpr) - x, Math.round((r + 1) * cell * dpr) - y);
+          fill(c, r);
+          // A few pale fringe cells twinkle white for a beat once the clouds are in
+          if (!still && !subtle && tone <= 2 && cover > 0.6 && hash(c, r, seed + tick6) < TWINKLE) {
+            ctx.fillStyle = SPARK;
+            fill(c, r);
+          }
         }
       }
     };
@@ -167,6 +196,10 @@ export default function PixelClouds({
       else {
         cover = target > cover ? Math.min(target, cover + dt / IN_MS) : Math.max(target, cover - dt / OUT_MS);
         drift += (dt / 1000) * DRIFT;
+        time += dt / 1000;
+        const ease = 1 - Math.exp(-dt / 120);
+        gx += (px - gx) * ease;
+        gy += (py - gy) * ease;
       }
       draw();
       // Keep going while hovered (drifting) or still rolling out
@@ -184,7 +217,20 @@ export default function PixelClouds({
     };
     const onLeave = () => {
       target = 0;
+      px = py = 9;
       start();
+    };
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType === "touch") return;
+      const b = canvas.getBoundingClientRect();
+      if (!b.width || !b.height) return;
+      px = (e.clientX - b.left) / b.width;
+      py = (e.clientY - b.top) / b.height;
+      // First sighting: start the swell where the pointer is, not gliding in from afar
+      if (gx > 5) {
+        gx = px;
+        gy = py;
+      }
     };
 
     size();
@@ -195,13 +241,15 @@ export default function PixelClouds({
     ro.observe(canvas);
     card.addEventListener("pointerenter", onEnter);
     card.addEventListener("pointerleave", onLeave);
+    card.addEventListener("pointermove", onMove);
     return () => {
       ro.disconnect();
       cancelAnimationFrame(raf);
       card.removeEventListener("pointerenter", onEnter);
       card.removeEventListener("pointerleave", onLeave);
+      card.removeEventListener("pointermove", onMove);
     };
-  }, [seed, palette, subtle]);
+  }, [seed, subtle]);
 
   return <canvas ref={ref} aria-hidden="true" className={`pointer-events-none absolute inset-0 h-full w-full ${className}`} />;
 }

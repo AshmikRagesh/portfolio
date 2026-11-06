@@ -4,16 +4,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import KeyTag from "@/components/KeyTag";
+import { TypeTag, DisciplineTag } from "@/components/Tag";
 import NdaStamp from "@/components/NdaStamp";
 import PixelClouds from "@/components/PixelClouds";
 import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 
 // ── Featured card ─────────────────────────────────────────────────────────────
-// A soft grey card in two parts with the same padding all round: the words (the title in
-// the heading serif, a line about it, and a pill "Read case study" at the foot)
-// and the work, a rounded image centred in its own half. Flagships sit side by side from
-// lg (words 0.82fr, image 1.18fr) and stack below it; the smaller pair always stack.
-// Hovering the card rolls pixel clouds in round the image in the card's own colour, drops
+// A soft grey card in two parts with the same padding all round: the words and the work.
+// The words read in one order on every card: the two tags (type, discipline), the title in
+// the heading serif, a line about it (lead, 18/28 from md), and a pill "Read case study"
+// pinned to the foot. Flagships sit side by side from lg (words 0.82fr, image 1.18fr) and
+// the image fills its half's full height there; below lg they stack with the image at its
+// own aspect; the smaller pair always stack.
+// Hovering the card rolls pink pixel clouds in round the image, drops
 // the room key onto its hook, and turns the pill grape as it makes room for an arrow
 // circle (see .work-cta). NDA works show a stamp on a greyed image and a greyed-out pill.
 export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string }) {
@@ -30,12 +33,16 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
       } ${isLink ? "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape" : ""}`}
     >
       {/* Words */}
-      <div className={`flex min-w-0 flex-col justify-between gap-[24px] md:gap-[32px] ${pad} ${isFlagship ? "pb-0 md:pb-0 lg:pb-[32px]" : "pb-0 md:pb-0"}`}>
-        <div>
-          <h3 className="m-0 text-balance font-heading text-[26px] font-normal leading-[32px] tracking-[-1px] text-heading md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]">
+      <div className={`flex min-w-0 flex-col justify-between gap-[32px] md:gap-[40px] ${pad} ${isFlagship ? "pb-0 md:pb-0 lg:pb-[32px]" : "pb-0 md:pb-0"}`}>
+        <div className="flex flex-col">
+          <div className="flex flex-wrap gap-[8px]">
+            <TypeTag type={work.type} face="geist" />
+            <DisciplineTag discipline={work.discipline} face="geist" />
+          </div>
+          <h3 className="m-0 mt-[16px] max-w-[560px] text-balance font-heading text-[26px] font-normal leading-[32px] tracking-[-1px] text-heading md:mt-[20px] md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]">
             {work.title}
           </h3>
-          <p className="m-0 mt-[16px] text-pretty font-body text-[16px] leading-[26px] text-secondary">
+          <p className="m-0 mt-[12px] max-w-[560px] text-pretty font-body text-lead-md text-secondary md:mt-[16px]">
             {work.description}
           </p>
         </div>
@@ -56,12 +63,17 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
         )}
       </div>
 
-      {/* The work, centred in its half with the same padding as the words */}
-      <div className={`flex min-w-0 items-center ${pad}`}>
-        <div className="relative w-full">
+      {/* The work, in its half with the same padding as the words; side by side (lg) it
+          fills the half's full height, stacked it keeps its own aspect */}
+      <div className={`flex min-w-0 items-center ${isFlagship ? "lg:items-stretch" : ""} ${pad}`}>
+        <div className={`relative w-full ${isFlagship ? "lg:h-full" : ""}`}>
           {/* Open works: the room key drops onto its hook on hover. (NDA works: the stamp.) */}
           {!work.nda && <KeyTag room={room} className="absolute -top-[2px] right-[12px] z-[3]" />}
-          <div className={`relative aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder ${work.nda ? "stamp-thud" : ""}`}>
+          <div
+            className={`relative aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder ${
+              isFlagship ? "lg:aspect-auto lg:h-full lg:min-h-[320px]" : ""
+            } ${work.nda ? "stamp-thud" : ""}`}
+          >
             <Image
               src={work.image}
               alt={work.imageAlt}
@@ -71,8 +83,8 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
               className={`object-cover ${work.nda ? "grayscale" : ""}`}
             />
 
-            {/* Pixel clouds roll in round the image's edges on hover, in this card's colour */}
-            <PixelClouds seed={Number(room)} palette={work.nda ? "grey" : work.clouds ?? "brand"} className="z-[1]" />
+            {/* Pink pixel clouds roll in round the image's edges on hover */}
+            <PixelClouds seed={Number(room)} className="z-[1]" />
 
             {/* NDA: the image stays greyed out; the stamp presses down in the centre the first
                 time the card is hovered or focused (on scroll-in for touch), then stays. */}

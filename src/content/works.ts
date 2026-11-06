@@ -19,7 +19,6 @@ export interface FeaturedWork {
   imagePosition?: string;
   href: string;
   layout: FeaturedLayout;
-  clouds?: "yellow" | "green" | "blue" | "brand"; // the pixel clouds' colour on hover
 }
 
 // Helix, search and Find a Trip as flagships, then Bella and the NDA project as the
@@ -35,7 +34,6 @@ export const featuredWorks: FeaturedWork[] = [
     imageAlt: "A Quark expedition card in Helix, the design-system skill",
     href: "/works/helix",
     layout: "flagship",
-    clouds: "yellow",
   },
   {
     type: "Case study",
@@ -47,7 +45,6 @@ export const featuredWorks: FeaturedWork[] = [
     imageAlt: "The TCS World Travel search page before the redesign",
     href: "/works/tcs-search",
     layout: "flagship",
-    clouds: "green",
   },
   {
     type: "Case study",
@@ -60,7 +57,6 @@ export const featuredWorks: FeaturedWork[] = [
     imagePosition: "center 58%",
     href: "/works/tcs-find-a-trip",
     layout: "flagship",
-    clouds: "blue",
   },
   {
     type: "Side project",
@@ -73,7 +69,6 @@ export const featuredWorks: FeaturedWork[] = [
     imageAlt: "Bella preview",
     href: "/works/bella",
     layout: "standard",
-    clouds: "brand",
   },
   {
     type: "Side project",
