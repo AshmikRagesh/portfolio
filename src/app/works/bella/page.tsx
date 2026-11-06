@@ -58,21 +58,15 @@ function Overview() {
     <Chapter id="overview" num={0} title="What Bella is, and why I made it">
       <Copy>
         <p>
-          Bella is the host of this portfolio: a desk bell that sits in the
-          navbar as the logo. It <Highlight>tracks how long each visitor actively
-          spends on the site</Highlight> and shows that time on a small sign on hover.
-          When it has something to say, it rings first.
+          Bella is the host of this portfolio: a desk bell that sits in the navbar
+          as the logo. It <Highlight>counts how long you actively spend here</Highlight> and
+          shows it on a small sign when you hover.
         </p>
         <p>
-          I built it to answer two questions. <Highlight>Do people actually read my
-          work, and for how long?</Highlight> And can the site give them a reason to
-          stay a little longer? A plain timer could answer the first but not the
-          second, so the timer became a character.
-        </p>
-        <p>
-          From the first sketch to the live site, <Highlight>Bella was designed and
-          built entirely in Claude Code</Highlight>. I directed it in plain language
-          and didn&apos;t draw anything by hand.
+          I wanted to know <Highlight>whether people actually read my work</Highlight>, and to
+          give them a reason to stay. A timer could only do the first, so it became
+          a character. I designed and built it <Highlight>entirely in Claude Code</Highlight>,
+          without drawing anything by hand.
         </p>
       </Copy>
       <Visual>
