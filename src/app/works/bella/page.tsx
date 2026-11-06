@@ -187,10 +187,6 @@ function Characters() {
           didn&apos;t fit the site</Highlight>, so each round moved back toward the
           design system.
         </p>
-        <PullQuote
-          text="It's flat."
-          emphasis="It has no depth and no character."
-        />
       </Copy>
       {CHARACTERS.map(({ title, note, stage }) => (
         <div key={title} className="cs-sub">
