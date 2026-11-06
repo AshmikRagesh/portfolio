@@ -188,7 +188,7 @@ function Characters() {
           design system.
         </p>
         <PullQuote
-          text="It's clean, but it's flat."
+          text="It's flat."
           emphasis="It has no depth and no character."
         />
       </Copy>
