@@ -334,9 +334,9 @@ function Finishing() {
 // video="/videos/bella/<slug>.mp4" with a poster. Placeholders until then. The sign and
 // tooltip explorations sit under the use case they belong to.
 const SIGNS = [
-  { name: "Dark flip clock", src: art("sign-flip-clock") },
   { name: "Brass and ivory plaque", src: art("sign-brass-ivory") },
   { name: "Grape wood frame", src: art("sign-grape-wood") },
+  { name: "Dark flip clock", src: art("sign-flip-clock") },
   { name: "Cream plaque with flip digits", src: art("sign-neutral"), kept: true },
 ];
 
