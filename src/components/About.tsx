@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import Cta from "@/components/Cta";
 
 export default function About() {
   return (
@@ -38,12 +38,7 @@ export default function About() {
             <p className="font-body font-normal text-[16px] leading-[26px] text-secondary lg:text-[18px] lg:leading-[30px]">
               Being a designer with a systems-thinking mindset, I&apos;ve always felt most at home at the intersection of product thinking and visual craft. I work best when I get to own the full journey — from early research to shipped product. Now that&apos;s my superpower.
             </p>
-            <Link
-              href="#"
-              className="self-start bg-primary text-white font-brand font-medium text-[13px] tracking-[0.2px] px-5 py-[10px] rounded-full transition-colors duration-200 hover:bg-grape whitespace-nowrap"
-            >
-              Learn more about Ashmik
-            </Link>
+            <Cta href="#">Learn more about Ashmik</Cta>
           </div>
 
         </div>

@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import Cta from "@/components/Cta";
 
 /**
  * Case study hero — the case study's image (`image`, cropped to fill; `imagePosition` picks
@@ -61,19 +61,9 @@ export default function Hero({
             {date}
           </span>
           {link && (
-            <a
-              href={link.href}
-              target="_blank"
-              rel="noreferrer"
-              className="group/visit pointer-events-auto inline-flex items-center gap-[6px] whitespace-nowrap rounded-full bg-primary px-[18px] py-[10px] font-body text-[16px] leading-[20px] text-white"
-            >
-              <span className="transition-opacity duration-200 group-hover/visit:opacity-80">{link.label}</span>
-              <ArrowRight
-                size={16}
-                strokeWidth={2}
-                className="-mr-[2px] transition-[transform,opacity] duration-[250ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/visit:-rotate-45 group-hover/visit:opacity-80"
-              />
-            </a>
+            <Cta href={link.href} external size="sm" className="pointer-events-auto">
+              {link.label}
+            </Cta>
           )}
         </div>
         <h1 className="text-balance text-left font-heading text-[40px] font-normal leading-[44px] tracking-[-2px] text-white [text-shadow:0_2px_24px_rgba(18,2,15,0.4)] md:text-[44px] md:leading-[48px] lg:text-[50px] lg:leading-[54px]">

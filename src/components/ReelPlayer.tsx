@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import Link from "next/link";
+import Cta from "@/components/Cta";
 import { X, ChevronUp, ChevronDown } from "lucide-react";
 import type { Reel } from "@/content/reels";
 import { useReportWatching } from "@/lib/curiosity/watching";
@@ -98,20 +98,6 @@ const expandSrc = (id: string, controls: boolean) =>
 const EASE_OPEN = "cubic-bezier(0.2, 0.8, 0.3, 1)";
 const EASE_CLOSE = "cubic-bezier(0.4, 0, 0.2, 1)";
 
-// Figma arrow/arrow-up icon, turned to point right
-function ArrowRight() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 12.0001 15.3333" fill="none" aria-hidden="true" className="rotate-90 transition-transform duration-200 group-hover:translate-x-[2px]">
-      <path
-        d="M1.00006 5.85867C2.29637 4.10584 3.81072 2.53153 5.5048 1.1746C5.65012 1.0582 5.82509 1 6.00006 1M11.0001 5.85867C9.70376 4.10583 8.18941 2.53153 6.49533 1.1746C6.35 1.0582 6.17503 1 6.00006 1M6.00006 1V14.3333"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 // Two arrows pointing out to opposite corners; they spread on hover
 function ExpandIcon() {
@@ -128,9 +114,6 @@ function ExpandIcon() {
     </svg>
   );
 }
-
-const ctaButton =
-  "group flex h-[48px] w-full items-center justify-center gap-[8px] rounded-lg bg-white px-[16px] font-brand text-[14px] uppercase tracking-[1px] text-midnight transition-colors duration-200 hover:bg-grape hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
 
 const roundButton =
   "flex size-[48px] shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-200 hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
@@ -492,15 +475,13 @@ export default function ReelPlayer({
 
                 <div className="reel-modal-ui pointer-events-auto">
                   {browse ? (
-                    <Link href={reel.href} className={ctaButton}>
+                    <Cta href={reel.href} dark>
                       Read case study
-                      <ArrowRight />
-                    </Link>
+                    </Cta>
                   ) : (
-                    <button onClick={close} className={ctaButton}>
+                    <Cta onClick={close} dark>
                       Continue reading
-                      <ArrowRight />
-                    </button>
+                    </Cta>
                   )}
                 </div>
               </div>

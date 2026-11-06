@@ -34,17 +34,6 @@ export default function NextCase({ current }: { current: string }) {
               Down the hall
             </h2>
           </div>
-          <Link
-            href="/#works"
-            className="group inline-flex h-[42px] items-center gap-[8px] self-start whitespace-nowrap rounded-lg bg-white px-[16px] font-brand text-[14px] uppercase tracking-[1px] text-midnight transition-colors duration-200 hover:bg-grape hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:self-auto"
-          >
-            All work
-            <ArrowRight
-              size={16}
-              aria-hidden="true"
-              className="transition-transform duration-[200ms] group-hover:translate-x-[4px] motion-reduce:transition-none"
-            />
-          </Link>
         </div>
 
         <ul className="relative m-0 mt-[32px] flex list-none flex-col p-0 md:mt-[40px]">

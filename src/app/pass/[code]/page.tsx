@@ -2,7 +2,7 @@
 // (nothing is stored), with a way into the portfolio. Its preview image is the pass.
 
 import type { Metadata } from "next";
-import Link from "next/link";
+import Cta from "@/components/Cta";
 import Footer from "@/components/Footer";
 import CuriosityPass from "@/components/bella/CuriosityPass";
 import { decodePass, shareMessage } from "@/lib/bella/passArt";
@@ -39,12 +39,8 @@ export default async function SharedPass({ params }: Props) {
           </div>
         )}
         <div className="flex flex-wrap justify-center gap-[8px]">
-          <Link href="/" className="inline-flex items-center rounded-full bg-[#e3bd62] px-[20px] py-[12px] font-geist text-[14px] font-medium leading-[20px] text-[#1e0525] hover:bg-[#f2cf7a]">
-            Visit the portfolio
-          </Link>
-          <Link href="/pass" className="inline-flex items-center rounded-full border border-white/20 px-[20px] py-[12px] font-geist text-[14px] leading-[20px] text-[#f8f1e3] hover:border-[#e3bd62] hover:text-[#e3bd62]">
-            Get your own pass
-          </Link>
+          <Cta href="/" dark>Visit the portfolio</Cta>
+          <Cta href="/pass" dark>Get your own pass</Cta>
         </div>
       </main>
       <Footer />

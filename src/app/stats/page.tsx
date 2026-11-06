@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { readStats, STATS_DAYS, type Tally } from "@/lib/curiosity/stats";
 import { hasAccess, lock, unlock } from "./actions";
+import Cta from "@/components/Cta";
 
 // ── /stats ────────────────────────────────────────────────────────────────────
 // Private numbers behind the front-desk bell. 404s unless STATS_KEY is set, and
@@ -105,9 +106,7 @@ function KeyForm({ wrong }: { wrong: boolean }) {
           />
         </label>
         {wrong && <p className="text-caption text-warning">That key didn&apos;t match.</p>}
-        <button type="submit" className="h-[44px] rounded-md bg-primary font-brand text-body text-white hover:bg-grape">
-          Open stats
-        </button>
+        <Cta type="submit">Open stats</Cta>
       </form>
     </main>
   );

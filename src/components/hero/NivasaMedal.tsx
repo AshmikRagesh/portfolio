@@ -12,6 +12,7 @@
 
 import { useCallback, useId, useRef, useState } from "react";
 import HoverTip from "./HoverTip";
+import Cta from "@/components/Cta";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 import { useCursorLight } from "./light";
 
@@ -241,18 +242,9 @@ function HostCard() {
         </div>
 
         {/* The work cards' CTA, smaller: grape on hover, and the arrow circle slides out */}
-        <a href={PROFILE} target="_blank" rel="noreferrer" className="group mt-6 inline-flex sm:mt-7">
-          <span className="work-cta work-cta--sm font-geist text-[14px] font-medium leading-[20px]">
-            <span className="work-cta__inner">View Nivasa on Airbnb</span>
-            <span aria-hidden="true" className="work-cta__circle">
-              <span>
-                <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-                  <path d="M4 10 10 4M5 4h5v5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-            </span>
-          </span>
-        </a>
+        <Cta href={PROFILE} external size="sm" className="mt-6 sm:mt-7">
+          View Nivasa on Airbnb
+        </Cta>
       </div>
     </div>
   );

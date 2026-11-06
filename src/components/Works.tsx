@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { CtaPill } from "@/components/Cta";
 import KeyTag from "@/components/KeyTag";
 import NdaStamp from "@/components/NdaStamp";
 import PixelClouds from "@/components/PixelClouds";
@@ -41,19 +41,10 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
           </p>
         </div>
         {isLink ? (
-          <span className="work-cta font-geist text-[16px] font-medium leading-[24px]">
-            <span className="work-cta__inner">Read case study</span>
-            <span aria-hidden="true" className="work-cta__circle">
-              <span>
-                <ArrowUpRight size={18} strokeWidth={2} />
-              </span>
-            </span>
-          </span>
+          <CtaPill>Read case study</CtaPill>
         ) : (
           // Under NDA: the same pill, greyed out and inert
-          <span aria-disabled="true" className="work-cta work-cta--off font-geist text-[16px] font-medium leading-[24px]">
-            <span className="work-cta__inner">Read case study</span>
-          </span>
+          <CtaPill off>Read case study</CtaPill>
         )}
       </div>
 

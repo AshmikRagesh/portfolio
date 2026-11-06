@@ -1017,6 +1017,10 @@
 .work-cta--sm { --cta-h: 40px; }
 .work-cta--sm .work-cta__inner { padding-inline: 20px; }
 .work-cta--off .work-cta__inner, .group:hover .work-cta--off .work-cta__inner { background-color: #e5e7eb; }
+/* On midnight surfaces: a white pill with midnight text, turning grape (white text) on hover */
+.work-cta--dark { color: #1e0525; }
+.work-cta--dark .work-cta__inner, .work-cta--dark .work-cta__circle { background-color: #fff; }
+.group:hover .work-cta--dark, .group:focus-visible .work-cta--dark { color: #fff; }
 @media (prefers-reduced-motion: reduce) {
   .work-cta__inner, .work-cta__circle, .work-cta__circle > span { transition: none; }
 }
