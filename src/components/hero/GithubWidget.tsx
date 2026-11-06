@@ -293,7 +293,7 @@ function Calendars() {
             <span className="tabular-nums">{total}</span> contributions
           </p>
         </div>
-        <div className="mt-8 flex flex-col gap-8">
+        <div className="mt-8 flex flex-col gap-12">
           {c.accounts.map((a) => (
             <div key={a.key} className="flex flex-col gap-3">
               {/* The account on the left, its year's total on the right, set like the headline */}
