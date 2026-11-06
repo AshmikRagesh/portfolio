@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
-import { Palette, Shapes, Eye, Sparkle } from "@phosphor-icons/react/dist/ssr";
+import { Palette, Shapes, Eye, Sparkle, PencilSlash, Timer, ChatText, Compass, BookOpen, GitCommit } from "@phosphor-icons/react/dist/ssr";
 import {
   Hero,
   Chapter,
@@ -11,15 +11,19 @@ import {
   PullQuote,
   Pointers,
   Timeline,
+  Stats,
   ExplorationCard,
   BellaStates,
+  BellaSolves,
+  BellComparison,
+  ReferencePlayground,
   NextCase,
   Highlight,
   SessionLog,
 } from "@/components/case-study";
 
 // DRAFT, 2 Nov 2026. Bella's own outline, set by Ashmik (not the Problem → Outcome template):
-// what Bella is and why → research → four characters → the final two → finishing the bell →
+// what Bella is and why → research → four characters → the pick (bell vs key tag) → finishing →
 // Bella on the live site, one use case at a time (recordings), with the sign and tooltip
 // rounds under their use case → what it solves and what it can be → working only in Claude
 // Code. No results section. Bella was made start to end in Claude Code, so each section
@@ -40,10 +44,10 @@ const SECTIONS: CaseStudySection[] = [
   { id: "overview",     label: "Overview"       },
   { id: "research",     label: "Research"       },
   { id: "characters",   label: "Characters"     },
-  { id: "choosing",     label: "Why the bell"   },
+  { id: "choosing",     label: "The pick"       },
   { id: "finish",       label: "Finishing"      },
   { id: "solution",     label: "On the site"    },
-  { id: "purpose",      label: "What it can be" },
+  { id: "purpose",      label: "What it solves" },
   { id: "claude-code",  label: "Claude Code"    },
 ];
 
@@ -54,7 +58,7 @@ const art = (name: string) => `/images/bella/${name}.svg`;
 // ─────────────────────────────────────────────────────────────────────────────
 function Overview() {
   return (
-    <Chapter id="overview" num={0} title="Meet Bella">
+    <Chapter id="overview" num={0} title="What Bella is, and why I made it">
       <Copy>
         <p>
           Bella is the desk bell that runs the front desk of this portfolio.
@@ -108,61 +112,18 @@ const TRAITS = [
   },
 ];
 
-// Every reference looked at, and why. Names only: no outside findings or numbers.
+// Four of the six hospitality references, pictures only, loose on one card to drag around.
+// x and y are where each starts, as a share of the free space.
 const REFERENCES = [
-  { why: "Hospitality mascots, 23 Oct", items: [
-    { name: "Ollie", from: "Tripadvisor" },
-    { name: "The Suica penguin", from: "JR East's Suica card" },
-    { name: "The Maharaja", from: "Air India" },
-    { name: "Kumamon", from: "Kumamoto Prefecture" },
-    { name: "Bibendum", from: "Michelin" },
-    { name: "Grimace", from: "McDonald's" },
-  ] },
-  { why: "Depth and shading, 23 Oct", items: [
-    { name: "Grok, Codex and Muse characters", from: "AI tools I pointed Claude Code to" },
-  ] },
-  { why: "How other teams built theirs, 31 Oct", items: [
-    { name: "Duo", from: "Duolingo" },
-    { name: "The hedgehog", from: "PostHog" },
-    { name: "Freddie", from: "Mailchimp" },
-    { name: "Clippy", from: "Microsoft Office" },
-    { name: "Ollie, 2025 redesign", from: "Tripadvisor" },
-  ] },
+  { name: "Ollie, Tripadvisor's owl", slug: "ollie", x: 0.06, y: 0.12 },
+  { name: "The Suica penguin", slug: "suica-penguin", x: 0.38, y: 0.78 },
+  { name: "Kumamon", slug: "kumamon", x: 0.66, y: 0.08 },
+  { name: "Bibendum, the Michelin Man", slug: "bibendum", x: 0.94, y: 0.7 },
 ];
-
-const TH = "pb-[12px] pr-[16px] font-brand text-[12px] font-normal uppercase leading-[16px] text-muted";
-const TD = "py-[14px] pr-[16px] align-top";
-
-function ReferenceTable() {
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[480px] border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
-        <thead>
-          <tr className="border-b border-line-soft">
-            <th scope="col" className={TH}>Reference</th>
-            <th scope="col" className={TH}>From</th>
-            <th scope="col" className={`${TH} pr-0`}>Looked at for</th>
-          </tr>
-        </thead>
-        <tbody>
-          {REFERENCES.flatMap(({ why, items }) =>
-            items.map(({ name, from }) => (
-              <tr key={name} className="border-b border-line-soft">
-                <th scope="row" className={`${TD} font-medium text-heading`}>{name}</th>
-                <td className={`${TD} text-secondary`}>{from}</td>
-                <td className={`${TD} pr-0 text-secondary`}>{why}</td>
-              </tr>
-            )),
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-}
 
 function Research() {
   return (
-    <Chapter id="research" num={1} title="Six references in two minutes">
+    <Chapter id="research" num={1} title="What I learned from other mascots">
       <Copy>
         <p>
           The research started as one message. I asked Claude Code for a small,
@@ -177,6 +138,11 @@ function Research() {
             { from: "claude", text: "Six references (Tripadvisor's Ollie, the Suica penguin, Air India's Maharaja, Kumamon, Bibendum and Grimace) and three directions from the site's guesthouse theme: key tag, bellhop, desk bell. Two minutes later, at 09:12." },
           ]}
         />
+      </Copy>
+      <Visual>
+        <ReferencePlayground items={REFERENCES} />
+      </Visual>
+      <Copy>
         <p>
           The six share one or two colours, one basic shape and dot eyes, and <Highlight>get
           their personality from pose</Highlight>. Those four traits became Bella&apos;s rules.
@@ -185,14 +151,6 @@ function Research() {
       <Visual>
         <CardGrid items={TRAITS} />
       </Visual>
-      <div className="cs-sub">
-        <Copy>
-          <h3>Every reference we looked at</h3>
-        </Copy>
-        <Visual>
-          <ReferenceTable />
-        </Visual>
-      </div>
     </Chapter>
   );
 }
@@ -202,12 +160,12 @@ function Research() {
 // ─────────────────────────────────────────────────────────────────────────────
 const CHARACTERS = [
   {
-    title: "First sketches",
+    title: "First sketches, in one colour",
     note: "Three directions from the site's guesthouse theme, each in one colour. The door hanger came later, drawn for this write-up.",
     stage: "sketch",
   },
   {
-    title: "With depth",
+    title: "The same four, with light and shadow",
     note: "I pointed Claude Code at the Grok, Codex and Muse characters. Each got a lit side, a shade side and a shadow.",
     stage: "depth",
   },
@@ -222,7 +180,7 @@ const CHARACTER_NAMES = [
 
 function Characters() {
   return (
-    <Chapter id="characters" num={2} title="Four characters">
+    <Chapter id="characters" num={2} title="Four ideas for the character">
       <Copy>
         <p>
           Claude Code drew every character as code, in the browser, from my
@@ -281,15 +239,34 @@ function CardRow({ items }: { items: { name: string; src: string; kept?: boolean
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Why the desk bell  (what we picked, and why)
 // ─────────────────────────────────────────────────────────────────────────────
-const WHY_BELL = [
-  { lead: "It reads at 40px.", text: "The dome-on-a-base silhouette holds up at logo size in the navbar." },
-  { lead: "It already makes a sound.", text: "A desk bell calls for attention, so ringing before every line feels natural." },
-  { lead: "It belongs at a front desk.", text: "Like the rest of the site's guesthouse theme." },
+// The same three questions for both finalists (bella-notes.md: 23 Oct 10:26, and the decisions list)
+const QUESTIONS = ["Clear at logo size?", "Can it ring?", "Fits the guesthouse theme?"];
+
+const FINALISTS = [
+  {
+    name: "Key tag",
+    src: art("depth-key-tag"),
+    answers: [
+      { yes: false, text: "In the 40px navbar it looked tiny and its details disappeared." },
+      { yes: false, text: "A key tag makes no sound, so a ding before each line wouldn't fit." },
+      { yes: true, text: "Guests get one at check-in." },
+    ],
+  },
+  {
+    name: "Desk bell",
+    src: art("depth-desk-bell"),
+    picked: true,
+    answers: [
+      { yes: true, text: "A dome on a base still reads at 40px." },
+      { yes: true, text: "A bell already calls for attention, so it rings before it speaks." },
+      { yes: true, text: "Guests ring it at the front desk." },
+    ],
+  },
 ];
 
 function Choosing() {
   return (
-    <Chapter id="choosing" num={3} title="Why the desk bell">
+    <Chapter id="choosing" num={3} title="We picked the desk bell over the key tag">
       <Copy>
         <p>
           The key tag went furthest before it lost. Claude Code put it in the
@@ -300,15 +277,9 @@ function Choosing() {
           text="In the header the key tag looks really small and"
           emphasis="the details go missing."
         />
-        <Pointers items={WHY_BELL} />
       </Copy>
       <Visual>
-        <CardRow
-          items={[
-            { name: "Key tag", src: art("depth-key-tag") },
-            { name: "Desk bell", src: art("depth-desk-bell"), kept: true, tag: "Selected" },
-          ]}
-        />
+        <BellComparison questions={QUESTIONS} finalists={FINALISTS} />
       </Visual>
     </Chapter>
   );
@@ -333,7 +304,7 @@ const FINAL_CHOICES = [
 
 function Finishing() {
   return (
-    <Chapter id="finish" num={4} title="Finishing the bell">
+    <Chapter id="finish" num={4} title="Settling Bella's colours, face and sound">
       <Copy>
         <p>
           Once picked, the bell drifted. Each time I asked for more character,
@@ -351,7 +322,7 @@ function Finishing() {
       </Visual>
       <div className="cs-sub">
         <Copy>
-          <h3>What we settled on</h3>
+          <h3>The look we kept</h3>
           <Pointers items={FINAL_CHOICES} />
         </Copy>
       </div>
@@ -434,7 +405,7 @@ const USE_CASES: {
 
 function Solution() {
   return (
-    <Chapter id="solution" num={5} title="Bella on the site today">
+    <Chapter id="solution" num={5} title="What Bella does on the site">
       <Copy>
         <p>
           The first Bella only kept time. <Highlight>Every addition after that came from a
@@ -466,22 +437,11 @@ function Solution() {
       ))}
       <div className="cs-sub">
         <Copy>
-          <h3>Every state, at a glance</h3>
+          <h3>All of Bella&apos;s moods</h3>
         </Copy>
         <Visual>
           <BellaStates />
         </Visual>
-      </div>
-      <div className="cs-sub">
-        <Copy>
-          <h3>What we chose not to add</h3>
-          <p>
-            A halo and wings for celebrations (&ldquo;the circular motion is
-            not needed&rdquo;), Bella travelling between sections as you
-            scroll, a guest card in the footer, hands straightening the bow
-            tie, and a ten-minute cap on the clock.
-          </p>
-        </Copy>
       </div>
     </Chapter>
   );
@@ -490,92 +450,29 @@ function Solution() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: What it solves, and what it can be
 // ─────────────────────────────────────────────────────────────────────────────
-// Each feature, and what it does for the visitor and for me. Draft copy, from the notes.
-const FEATURES = [
+// What Bella solves, each with the live Bella in the state that shows it
+const SOLVES: Parameters<typeof BellaSolves>[0]["items"] = [
   {
-    feature: "Active-time clock",
-    visitor: "Only time you actually spend here counts. Nothing runs while you're away.",
-    me: "I see real attention, not tabs left open, so I know which visits were read.",
-  },
-  {
-    feature: "The sign",
-    visitor: "Your time is one hover away, and out of the way the rest of the time.",
-    me: "The number I care about lives in the logo, not in a dashboard I have to open.",
-  },
-  {
-    feature: "Three lines a visit",
-    visitor: "A little company at 0:30, 2:00 and 5:00, in plain words.",
-    me: "A nudge to keep reading that never covers the work.",
-  },
-  {
-    feature: "Glasses",
-    visitor: "Bella notices what you're doing: reading, or watching.",
-    me: "Shows care for detail before anyone opens a case study.",
-  },
-  {
-    feature: "Dozing",
-    visitor: "You're never counted when you've stepped away.",
-    me: "Hidden tabs and idle time stay out of the numbers.",
-  },
-  {
-    feature: "Goals and the bow tie",
-    visitor: "A small reward for exploring.",
-    me: "Rewards what I hope visitors do: read a second case study, take the resume, get in touch.",
-  },
-  {
-    feature: "Stamps and the pass",
-    visitor: "Something to find, collect and share.",
-    me: "A reason to look beyond the first page.",
-  },
-  {
-    feature: "The champion",
-    visitor: "A record to beat.",
-    me: "A reason to stay a little longer.",
-  },
-  {
-    feature: "Footer Bella",
-    visitor: "My email, copied in one click.",
-    me: "Getting in touch is the easiest last step on the page.",
-  },
-];
-
-function FeatureTable() {
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[560px] border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
-        <thead>
-          <tr className="border-b border-line-soft">
-            <th scope="col" className={TH}>Feature</th>
-            <th scope="col" className={TH}>For visitors</th>
-            <th scope="col" className={`${TH} pr-0`}>For me</th>
-          </tr>
-        </thead>
-        <tbody>
-          {FEATURES.map(({ feature, visitor, me }) => (
-            <tr key={feature} className="border-b border-line-soft">
-              <th scope="row" className={`${TD} font-medium text-heading`}>{feature}</th>
-              <td className={`${TD} text-secondary`}>{visitor}</td>
-              <td className={`${TD} pr-0 text-secondary`}>{me}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-const SOLVES = [
-  {
-    lead: "I can see what holds attention.",
+    lead: "I can see what holds attention",
     text: "Active time per visit and per case study tells me which work people actually read.",
+    pose: { glasses: "reading" },
   },
   {
-    lead: "Visitors get a reason to stay.",
+    lead: "Visitors get a reason to stay",
     text: "Lines, stamps and goals invite a second case study without getting in the way of the first.",
+    pose: {},
+    loop: "celebrate",
   },
   {
-    lead: "The site has a host.",
+    lead: "Only real time counts",
+    text: "The clock pauses when you hide the tab or stop for 30 seconds, so a tab left open all day adds nothing.",
+    pose: { mood: "dozing" },
+  },
+  {
+    lead: "The site has a host",
     text: "A portfolio that greets you and notices you feels less like a folder of files.",
+    pose: {},
+    loop: "ding",
   },
 ];
 
@@ -596,26 +493,19 @@ const NEXT = [
 
 function Purpose() {
   return (
-    <Chapter id="purpose" num={6} title="What Bella solves, and what it can be">
+    <Chapter id="purpose" num={6} title="What Bella solves, and what comes next">
       <Copy>
         <p>
           Bella has two jobs: give visitors a reason to look around, and tell
           me whether they did. <Highlight>Every feature has to do one, and most do both.</Highlight>
         </p>
-        <h3>What it solves</h3>
-        <Pointers items={SOLVES} />
       </Copy>
+      <Visual>
+        <BellaSolves items={SOLVES} />
+      </Visual>
       <div className="cs-sub">
         <Copy>
-          <h3>Every feature, and who it helps</h3>
-        </Copy>
-        <Visual>
-          <FeatureTable />
-        </Visual>
-      </div>
-      <div className="cs-sub">
-        <Copy>
-          <h3>What it can be</h3>
+          <h3>What comes next</h3>
           <Timeline items={NEXT} />
         </Copy>
       </div>
@@ -628,43 +518,61 @@ function Purpose() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Facts from bella-notes.md and git (49 commits to Bella's code, 23 Oct – 1 Nov 2026).
 // Draft wording, for Ashmik to rewrite.
+const WORKING_STATS = [
+  { stat: "0", label: "design files behind Bella" },
+  { stat: "2 min", label: "from my first message to six references and three characters" },
+  { stat: "10", label: "days of work, from 23 Oct to 1 Nov" },
+  { stat: "49", label: "commits, so any version can be brought back" },
+];
+
+const icon = (I: typeof Timer) => <I size={28} weight="fill" className="text-grape" />;
+
 const WORKING = [
   {
-    lead: "Nothing was drawn by hand.",
-    text: "Bella, its sign, its moods and its ding are all code Claude Code wrote from my descriptions. There is no design file behind this page.",
+    icon: icon(PencilSlash),
+    title: "Nothing drawn by hand",
+    description: "Bella, its sign, its moods and its ding are all code Claude Code wrote from my descriptions.",
   },
   {
-    lead: "Rounds took minutes.",
-    text: "Six references and three characters came back two minutes after I asked for them.",
+    icon: icon(Timer),
+    title: "Rounds took minutes",
+    description: "I asked for references and characters at 09:10. They were on screen at 09:12.",
   },
   {
-    lead: "Feedback was a sentence.",
-    text: "I said what felt wrong, like “it doesn't feel like a bell anymore”, and the next version was on screen.",
+    icon: icon(ChatText),
+    title: "Feedback was a sentence",
+    description: "I said what felt wrong, like “it doesn't feel like a bell anymore”, and the next version was on screen.",
   },
   {
-    lead: "Direction stayed with me.",
-    text: "Claude Code kept adding finish: chrome, shading, gloss. Twice I pulled it back to the design system.",
+    icon: icon(Compass),
+    title: "Direction stayed with me",
+    description: "Claude Code kept adding chrome, shading and gloss. Twice I pulled it back to the design system.",
   },
   {
-    lead: "It documented itself.",
-    text: "Claude Code built a reference page for Bella: anatomy, palette, moods, motion, copy, sound, and do's and don'ts.",
+    icon: icon(BookOpen),
+    title: "It documented itself",
+    description: "Claude Code built a reference page for Bella: anatomy, palette, moods, motion, copy, sound, and do's and don'ts.",
   },
   {
-    lead: "Every decision is a commit.",
-    text: "49 commits between 23 Oct and 1 Nov, so any version of Bella can be brought back.",
+    icon: icon(GitCommit),
+    title: "Every decision is a commit",
+    description: "Each change shipped as its own commit, so I could go back to any earlier Bella.",
   },
 ];
 
 function WorkingInClaudeCode() {
   return (
-    <Chapter id="claude-code" num={7} title="Working only in Claude Code">
+    <Chapter id="claude-code" num={7} title="Designing without a design tool">
       <Copy>
         <p>
           Bella is the first thing I designed without a design tool. <Highlight>The
           conversation was the design file.</Highlight>
         </p>
-        <Pointers items={WORKING} />
+        <Stats items={WORKING_STATS} />
       </Copy>
+      <Visual>
+        <CardGrid items={WORKING} />
+      </Visual>
     </Chapter>
   );
 }
@@ -676,7 +584,7 @@ export default function BellaPage() {
   return (
     <CaseStudyLayout sections={SECTIONS}>
       <Hero
-        title="Bella, the desk bell that hosts this portfolio, designed entirely in Claude Code"
+        title="A desk bell that shows how long people really read my portfolio, designed in Claude Code"
         date="October 2026"
         image="/images/bella/hero.svg"
       />

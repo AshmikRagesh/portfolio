@@ -45,3 +45,6 @@ export { default as BellaStates } from "./BellaStates";
 export { default as SessionLog } from "./SessionLog";
 export { default as ResultsCard } from "./ResultsCard";
 export { default as ChangeList } from "./ChangeList";
+export { default as ReferencePlayground } from "./ReferencePlayground";
+export { default as BellComparison } from "./BellComparison";
+export { default as BellaSolves } from "./BellaSolves";
