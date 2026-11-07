@@ -44,6 +44,7 @@ export default function TornNetFrame({
   netColor = "#9D136A", // grape, from the DS
   matchHeightOf,
   className = "",
+  children,
 }: {
   src: string;
   alt: string;
@@ -51,6 +52,8 @@ export default function TornNetFrame({
   /** On a wide screen, size the frame so it stands exactly as tall as this element */
   matchHeightOf?: string;
   className?: string;
+  /** Pieces pinned on the frame (positioned by the caller), above the net so they stay clickable */
+  children?: React.ReactNode;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -410,6 +413,7 @@ export default function TornNetFrame({
         className="pointer-events-none absolute z-10"
         style={{ left: "-50%", top: "-16%", width: "200%", height: "146%" }}
       />
+      {children}
 
       <p className="absolute left-0 right-0 top-full mt-[20px] text-center font-geist text-[12px] leading-[16px] text-muted" aria-hidden="true">
         {torn ? "Pull at the torn edges to open it wider" : "Grab the net and pull to tear it"}

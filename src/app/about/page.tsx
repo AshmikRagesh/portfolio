@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import TornNetFrame from "@/components/about/TornNetFrame";
+import ChelseaBadge from "@/components/hero/ChelseaBadge";
+import NivasaMedal from "@/components/hero/NivasaMedal";
 import { Highlight } from "@/components/case-study/Marks";
 import {
   AirbnbPill,
@@ -56,7 +58,16 @@ export default function AboutPage() {
         alt="Ashmik in a winter coat and beanie, standing in snow above the clouds"
         matchHeightOf="about-text"
         className="w-full max-w-[360px] md:max-w-[440px] lg:max-w-none lg:justify-self-end"
-      />
+      >
+        {/* Pinned on the frame's top corners, at their true 2:3 proportions: the Chelsea
+            pin on the left, the Superhost medal hanging from the right */}
+        <div className="absolute left-0 -top-6 z-20">
+          <ChelseaBadge className="w-[44px] md:w-[56px]" />
+        </div>
+        <div className="absolute right-0 -top-4 z-20">
+          <NivasaMedal className="w-[40px] md:w-[52px]" />
+        </div>
+      </TornNetFrame>
     </section>
   );
 }
