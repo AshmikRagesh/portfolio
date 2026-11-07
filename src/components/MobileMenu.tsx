@@ -33,10 +33,10 @@ export function MenuToggle({ open, onToggle }: { open: boolean; onToggle: () => 
       aria-expanded={open}
       aria-controls="mobile-menu"
       aria-label={open ? "Close menu" : "Open menu"}
-      className="mobile-toggle group flex h-[40px] items-center gap-[10px] rounded-full border border-line-soft bg-surface pl-[16px] pr-[14px] text-heading transition-[border-color,background-color] duration-300 active:scale-[0.97]"
+      className="mobile-toggle group flex h-[40px] items-center gap-[10px] rounded-[6px] pl-[14px] pr-[12px] text-white"
       data-open={open || undefined}
     >
-      <span className="relative block h-[20px] overflow-hidden font-geist text-[14px] font-medium leading-[20px] tracking-[-0.01em]">
+      <span className="relative block h-[20px] overflow-hidden font-geist text-[14px] font-medium leading-[20px] tracking-[0px]">
         <span className="mobile-toggle-label block">Menu</span>
         <span className="mobile-toggle-label block" aria-hidden="true">
           Close
