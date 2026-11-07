@@ -37,8 +37,21 @@ function useSeen<T extends Element>() {
   return [ref, seen] as const;
 }
 
-const CARD =
-  "rounded-[20px] border border-line-soft shadow-[0_1px_2px_rgba(30,5,37,0.04)] transition-shadow duration-300 hover:shadow-[0_12px_32px_rgba(30,5,37,0.08)]";
+// Every card: one surface, a hairline border and a whisper of shadow; no hover (they're
+// read, not clicked)
+const CARD = "rounded-xl border border-heading/[0.08] shadow-[0_1px_2px_rgba(30,5,37,0.04),0_8px_24px_-12px_rgba(30,5,37,0.08)]";
+
+// The same three steps in every card: a small mono label, the number, then one line that
+// says what it means with the key fact picked out
+function Label({ children, aside }: { children: React.ReactNode; aside?: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-[12px]">
+      <p className="font-brand text-[12px] uppercase leading-[16px] tracking-[1.6px] text-muted">{children}</p>
+      {aside}
+    </div>
+  );
+}
+const Strong = ({ children }: { children: React.ReactNode }) => <span className="font-medium text-heading">{children}</span>;
 
 // A number that counts up from zero the first time it comes into view
 function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value: number; format?: (n: number) => string }) {
@@ -67,10 +80,12 @@ function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value:
 
 function Tile({ label, children, note }: { label: string; children: React.ReactNode; note?: React.ReactNode }) {
   return (
-    <div className={`flex flex-col gap-[12px] bg-white p-[24px] ${CARD}`}>
-      <p className="font-body text-[14px] leading-[20px] text-secondary">{label}</p>
-      <div className="font-heading text-[48px] leading-[52px] text-heading tabular-nums">{children}</div>
-      {note && <p className="mt-auto font-body text-[14px] leading-[20px] text-muted">{note}</p>}
+    <div className={`flex flex-col gap-[16px] bg-white p-[24px] md:p-[28px] ${CARD}`}>
+      <Label>{label}</Label>
+      <div className="flex flex-col gap-[8px]">
+        <div className="font-heading text-stat leading-none tracking-[-1.6px] text-heading tabular-nums">{children}</div>
+        {note && <p className="font-body text-[14px] leading-[20px] text-secondary">{note}</p>}
+      </div>
     </div>
   );
 }
@@ -83,29 +98,33 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
   const at = (n: number) => `${Math.min(100, (n / longest) * 100)}%`;
   const yours = seconds >= longest && month.longestSeconds !== null && seconds >= month.longestSeconds;
   return (
-    <div className={`flex flex-col gap-[24px] bg-white p-[24px] md:col-span-2 md:p-[32px] ${CARD}`}>
-      <div className="flex flex-wrap items-end justify-between gap-x-[24px] gap-y-[8px]">
+    <div className={`flex flex-col gap-[32px] bg-white p-[24px] md:col-span-2 md:p-[32px] ${CARD}`}>
+      <div className="flex flex-col gap-[16px]">
+        <Label>Your stay</Label>
         <div className="flex flex-col gap-[8px]">
-          <p className="font-body text-[14px] leading-[20px] text-secondary">Your stay</p>
-          <p className="font-heading text-[64px] leading-[64px] text-grape tabular-nums">
+          <p className="font-heading text-stat leading-none tracking-[-2px] text-grape tabular-nums md:text-[64px]">
             <CountUp value={seconds} format={formatStay} />
           </p>
+          <p className="font-body text-[16px] leading-[24px] text-secondary">
+            {month.beaten === null ? (
+              "You’re the first guest this month."
+            ) : yours ? (
+              <Strong>The longest stay this month so far.</Strong>
+            ) : (
+              <>
+                Longer than <Strong>{month.beaten}%</Strong> of this month’s guests
+              </>
+            )}
+          </p>
         </div>
-        <p className="max-w-[340px] text-balance pb-[6px] font-body text-[16px] leading-[24px] text-secondary">
-          {month.beaten === null
-            ? "You’re the first guest this month."
-            : yours
-              ? "The longest stay this month so far."
-              : `Longer than ${month.beaten}% of this month’s guests.`}
-        </p>
       </div>
 
       {/* The line: 0 to the longest, average and yours marked */}
-      <div ref={ref} className="flex flex-col gap-[10px]" role="img" aria-label={`Your stay ${formatStay(seconds)}, this month's average ${month.averageSeconds === null ? "not known" : formatStay(month.averageSeconds)}, longest ${formatStay(longest)}`}>
-        <div className="relative mt-[32px] h-[12px] rounded-full bg-line-soft">
+      <div ref={ref} className="flex flex-col gap-[12px] border-t border-heading/[0.06] pt-[8px]" role="img" aria-label={`Your stay ${formatStay(seconds)}, this month's average ${month.averageSeconds === null ? "not known" : formatStay(month.averageSeconds)}, longest ${formatStay(longest)}`}>
+        <div className="relative mt-[32px] h-[8px] rounded-full bg-heading/[0.06]">
           <span className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-grape/40 to-grape transition-[width] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ width: seen ? at(seconds) : "0%" }} />
           {month.averageSeconds !== null && (
-            <span className="absolute -top-[6px] h-[24px] w-[2px] -translate-x-1/2 rounded-full bg-heading" style={{ left: at(month.averageSeconds) }} />
+            <span className="absolute -top-[6px] h-[20px] w-[2px] -translate-x-1/2 rounded-full bg-heading/60" style={{ left: at(month.averageSeconds) }} />
           )}
           {/* You: a dot on the end of the fill, with a tag above it */}
           <span
@@ -122,11 +141,11 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
             </span>
           </span>
         </div>
-        <div className="relative h-[20px] font-body text-[12px] leading-[20px] text-muted">
+        <div className="relative h-[16px] font-body text-[12px] leading-[16px] text-muted tabular-nums">
           {(month.averageSeconds === null || month.averageSeconds / longest > 0.2) && <span className="absolute left-0">0m</span>}
           {month.averageSeconds !== null && (
             <span
-              className={`absolute whitespace-nowrap text-heading ${month.averageSeconds / longest < 0.2 ? "" : "-translate-x-1/2"}`}
+              className={`absolute whitespace-nowrap text-secondary ${month.averageSeconds / longest < 0.2 ? "" : "-translate-x-1/2"}`}
               style={{ left: month.averageSeconds / longest < 0.2 ? 0 : at(month.averageSeconds) }}
             >
               Average {formatStay(month.averageSeconds)}
@@ -146,13 +165,22 @@ function HereNow({ count }: { count: number }) {
   const others = Math.max(0, count - 1);
   const shown = Math.min(others, MAX_OTHERS);
   return (
-    <div className={`flex flex-col gap-[12px] bg-grape-light/50 p-[24px] md:p-[32px] ${CARD}`}>
-      <div className="flex items-baseline justify-between gap-[12px]">
-        <p className="font-body text-[14px] leading-[20px] text-secondary">Here right now</p>
-        <p className="font-body text-[12px] leading-[16px] text-muted">Updates live</p>
-      </div>
+    <div className={`flex flex-col gap-[16px] bg-grape-light/60 p-[24px] md:p-[32px] ${CARD}`}>
+      <Label
+        aside={
+          <span className="flex items-center gap-[6px] rounded-full bg-white/80 px-[8px] py-[2px] font-brand text-[10px] uppercase leading-[16px] tracking-[1.2px] text-grape">
+            <span className="relative flex h-[6px] w-[6px]">
+              <span className="absolute inset-0 animate-ping rounded-full bg-grape/50 motion-reduce:animate-none" />
+              <span className="relative h-[6px] w-[6px] rounded-full bg-grape" />
+            </span>
+            Live
+          </span>
+        }
+      >
+        Here right now
+      </Label>
       <p className="flex items-baseline gap-[8px]">
-        <span className="font-heading text-[64px] leading-[64px] text-grape tabular-nums">
+        <span className="font-heading text-stat leading-none tracking-[-2px] text-grape tabular-nums md:text-[64px]">
           <CountUp value={count} />
         </span>
         <span className="font-body text-[16px] leading-[24px] text-secondary">{count === 1 ? "guest" : "guests"}</span>
@@ -186,8 +214,8 @@ function HereNow({ count }: { count: number }) {
         <span className="mt-[6px] w-[64px] text-center font-brand text-[10px] uppercase leading-[12px] tracking-[1px] text-grape">You</span>
       </div>
 
-      <p className="font-body text-[14px] leading-[20px] text-muted">
-        {count <= 1 ? "Just you at the desk" : `You and ${others} ${others === 1 ? "other" : "others"}`}
+      <p className="font-body text-[14px] leading-[20px] text-secondary">
+        {count <= 1 ? "Just you at the desk" : <>You and <Strong>{others} {others === 1 ? "other" : "others"}</Strong></>}
       </p>
     </div>
   );
@@ -221,32 +249,33 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
 
   const busiest = stats.lastDays.reduce((m, d) => (d.visits > m.visits ? d : m), stats.lastDays[0]);
   const share = Math.round((stats.month.guests / Math.max(1, stats.guests)) * 100);
-  const perGuest = +(stats.visits / Math.max(1, stats.guests)).toFixed(1);
   const daily = stats.lastDays.reduce((n, d) => n + d.visits, 0) / stats.lastDays.length;
   const times = daily ? +(busiest.visits / daily).toFixed(1) : 0;
 
   return (
-    <section className="flex w-full max-w-[1040px] flex-col gap-[32px]" aria-labelledby="house-title">
+    <section className="flex w-full max-w-[1040px] flex-col gap-[40px]" aria-labelledby="house-title">
       <div className="flex flex-col items-center gap-[8px] text-center">
-        <h2 id="house-title" className="font-heading text-[40px] leading-[48px] text-heading">
-          The house
+        <h2 id="house-title" className="font-heading text-h1 text-heading md:text-h1-md lg:text-h1-lg">
+          Around the house
         </h2>
-        <p className="font-body text-[16px] leading-[24px] text-secondary">Who’s here now, and this month so far.</p>
+        <p className="max-w-[480px] text-balance font-body text-lead text-secondary md:text-lead-md">
+          How your stay compares, who’s here with you, and how the month is going.
+        </p>
       </div>
 
       <div className="grid gap-[16px] md:grid-cols-3">
         <StayCard seconds={seconds} month={stats.month} />
         <HereNow count={stats.hereNow} />
 
-        <Tile label="Guests so far" note={`${stats.visits.toLocaleString()} visits, about ${perGuest} each`}>
+        <Tile label="Guests so far" note="Since the house opened">
           <CountUp value={stats.guests} />
         </Tile>
-        <Tile label="Guests this month" note={`${share}% of everyone so far`}>
+        <Tile label="This month" note={<><Strong>{share}%</Strong> of everyone so far</>}>
           <CountUp value={stats.month.guests} />
         </Tile>
         <Tile
-          label="Busiest day, last two weeks"
-          note={`${busiest.visits} ${busiest.visits === 1 ? "visit" : "visits"}${times >= 1.5 ? `, ${times}× the average` : ""}`}
+          label="Busiest day"
+          note={times >= 1.5 ? <><Strong>{times}×</Strong> a usual day, last two weeks</> : "Of the last two weeks"}
         >
           {!busiest.visits ? "–" : busiest === stats.lastDays[stats.lastDays.length - 1] ? "Today" : fmtDay(busiest.day, true)}
         </Tile>
