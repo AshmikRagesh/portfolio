@@ -37,7 +37,7 @@ function useSeen<T extends Element>() {
   return [ref, seen] as const;
 }
 
-// Every card: one surface, a hairline border and a whisper of shadow; no hover (they're
+// Every light card: one surface, a hairline border and a whisper of shadow; no hover (they're
 // read, not clicked)
 const CARD = "rounded-xl border border-heading/[0.08] shadow-[0_1px_2px_rgba(30,5,37,0.04),0_8px_24px_-12px_rgba(30,5,37,0.08)]";
 
@@ -52,6 +52,22 @@ function Label({ children, aside }: { children: React.ReactNode; aside?: React.R
   );
 }
 const Strong = ({ children }: { children: React.ReactNode }) => <span className="font-medium text-heading">{children}</span>;
+
+// Small line icons for the tiles, in grape on a soft grape square
+const ICONS = {
+  guests: "M8 8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z M3 13.5c.6-2.3 2.6-3.5 5-3.5s4.4 1.2 5 3.5",
+  month: "M3 5.5h10v8H3z M3 8h10 M5.5 3v3 M10.5 3v3",
+  busiest: "M2.5 12l3.5-4 3 2.5 4.5-6 M10 4.5h3.5V8",
+};
+function Icon({ name }: { name: keyof typeof ICONS }) {
+  return (
+    <span className="grid h-[32px] w-[32px] place-items-center rounded-md bg-grape-light text-grape" aria-hidden="true">
+      <svg viewBox="0 0 16 16" className="h-[16px] w-[16px]" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+        <path d={ICONS[name]} />
+      </svg>
+    </span>
+  );
+}
 
 // A number that counts up from zero the first time it comes into view
 function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value: number; format?: (n: number) => string }) {
@@ -78,12 +94,16 @@ function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value:
   return <span ref={ref}>{format(shown)}</span>;
 }
 
-function Tile({ label, children, note }: { label: string; children: React.ReactNode; note?: React.ReactNode }) {
+function Tile({ label, icon, children, note, meter }: { label: string; icon: keyof typeof ICONS; children: React.ReactNode; note?: React.ReactNode; meter?: number }) {
   return (
-    <div className={`flex flex-col gap-[16px] bg-white p-[24px] md:p-[28px] ${CARD}`}>
-      <Label>{label}</Label>
-      <div className="flex flex-col gap-[8px]">
+    <div className={`flex flex-col gap-[20px] bg-white p-[24px] md:p-[28px] ${CARD}`}>
+      <Label aside={<Icon name={icon} />}>{label}</Label>
+      <div className="mt-auto flex flex-col gap-[10px]">
         <div className="font-heading text-stat leading-none tracking-[-1.6px] text-heading tabular-nums">{children}</div>
+        {/* The same space in every tile, so the numbers line up; filled only where there's a share */}
+        <span className={`block h-[4px] overflow-hidden rounded-full ${meter === undefined ? "" : "bg-grape-light"}`} aria-hidden="true">
+          {meter !== undefined && <span className="block h-full rounded-full bg-grape" style={{ width: `${Math.max(2, Math.min(100, meter))}%` }} />}
+        </span>
         {note && <p className="font-body text-[14px] leading-[20px] text-secondary">{note}</p>}
       </div>
     </div>
@@ -98,7 +118,7 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
   const at = (n: number) => `${Math.min(100, (n / longest) * 100)}%`;
   const yours = seconds >= longest && month.longestSeconds !== null && seconds >= month.longestSeconds;
   return (
-    <div className={`flex flex-col gap-[32px] bg-white p-[24px] md:col-span-2 md:p-[32px] ${CARD}`}>
+    <div className={`flex flex-col gap-[32px] bg-white bg-[radial-gradient(120%_90%_at_0%_0%,rgba(249,228,255,0.9),rgba(255,255,255,0)_60%)] p-[24px] md:col-span-2 md:p-[32px] ${CARD}`}>
       <div className="flex flex-col gap-[16px]">
         <Label>Your stay</Label>
         <div className="flex flex-col gap-[8px]">
@@ -121,7 +141,7 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
 
       {/* The line: 0 to the longest, average and yours marked */}
       <div ref={ref} className="flex flex-col gap-[12px] border-t border-heading/[0.06] pt-[8px]" role="img" aria-label={`Your stay ${formatStay(seconds)}, this month's average ${month.averageSeconds === null ? "not known" : formatStay(month.averageSeconds)}, longest ${formatStay(longest)}`}>
-        <div className="relative mt-[32px] h-[8px] rounded-full bg-heading/[0.06]">
+        <div className="relative mt-[32px] h-[8px] rounded-full bg-grape-light">
           <span className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-grape/40 to-grape transition-[width] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ width: seen ? at(seconds) : "0%" }} />
           {month.averageSeconds !== null && (
             <span className="absolute -top-[6px] h-[20px] w-[2px] -translate-x-1/2 rounded-full bg-heading/60" style={{ left: at(month.averageSeconds) }} />
@@ -142,7 +162,7 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
           </span>
         </div>
         <div className="relative h-[16px] font-body text-[12px] leading-[16px] text-muted tabular-nums">
-          {(month.averageSeconds === null || month.averageSeconds / longest > 0.2) && <span className="absolute left-0">0m</span>}
+          {(month.averageSeconds === null || month.averageSeconds / longest > 0.36) && <span className="absolute left-0">0m</span>}
           {month.averageSeconds !== null && (
             <span
               className={`absolute whitespace-nowrap text-secondary ${month.averageSeconds / longest < 0.2 ? "" : "-translate-x-1/2"}`}
@@ -165,32 +185,29 @@ function HereNow({ count }: { count: number }) {
   const others = Math.max(0, count - 1);
   const shown = Math.min(others, MAX_OTHERS);
   return (
-    <div className={`flex flex-col gap-[16px] bg-grape-light/60 p-[24px] md:p-[32px] ${CARD}`}>
-      <Label
-        aside={
-          <span className="flex items-center gap-[6px] rounded-full bg-white/80 px-[8px] py-[2px] font-brand text-[10px] uppercase leading-[16px] tracking-[1.2px] text-grape">
-            <span className="relative flex h-[6px] w-[6px]">
-              <span className="absolute inset-0 animate-ping rounded-full bg-grape/50 motion-reduce:animate-none" />
-              <span className="relative h-[6px] w-[6px] rounded-full bg-grape" />
-            </span>
-            Live
+    <div className="flex flex-col gap-[16px] rounded-xl bg-primary bg-[radial-gradient(110%_80%_at_100%_0%,rgba(157,19,106,0.45),rgba(50,7,62,0)_60%)] p-[24px] shadow-[0_1px_2px_rgba(30,5,37,0.12),0_12px_28px_-12px_rgba(30,5,37,0.45)] md:p-[32px]">
+      <div className="flex items-center justify-between gap-[12px]">
+        <p className="font-brand text-[12px] uppercase leading-[16px] tracking-[1.6px] text-grape-light/60">Here right now</p>
+        <span className="flex items-center gap-[6px] rounded-full bg-white/10 px-[8px] py-[2px] font-brand text-[10px] uppercase leading-[16px] tracking-[1.2px] text-pink">
+          <span className="relative flex h-[6px] w-[6px]">
+            <span className="absolute inset-0 animate-ping rounded-full bg-pink/60 motion-reduce:animate-none" />
+            <span className="relative h-[6px] w-[6px] rounded-full bg-pink" />
           </span>
-        }
-      >
-        Here right now
-      </Label>
+          Live
+        </span>
+      </div>
       <p className="flex items-baseline gap-[8px]">
-        <span className="font-heading text-stat leading-none tracking-[-2px] text-grape tabular-nums md:text-[64px]">
+        <span className="font-heading text-stat leading-none tracking-[-2px] text-white tabular-nums md:text-[64px]">
           <CountUp value={count} />
         </span>
-        <span className="font-body text-[16px] leading-[24px] text-secondary">{count === 1 ? "guest" : "guests"}</span>
+        <span className="font-body text-[16px] leading-[24px] text-grape-light/70">{count === 1 ? "guest" : "guests"}</span>
       </p>
 
       {/* The desk */}
       <div className="mt-auto flex flex-col pt-[8px]" aria-hidden="true">
         <div className="flex items-end px-[8px]">
           <svg viewBox="36 120 128 108" className="h-[40px] w-auto shrink-0">
-            <path d={BELL} fill="#9D136A" />
+            <path d={BELL} fill="#f8c2f7" />
             <ellipse cx="86" cy="184" rx="9" ry="11" fill="#fff" />
             <ellipse cx="114" cy="184" rx="9" ry="11" fill="#fff" />
             <circle cx="88" cy="186" r="5" fill="#32073e" />
@@ -203,19 +220,19 @@ function HereNow({ count }: { count: number }) {
               className={`relative h-[30px] w-auto shrink-0 ${i ? "-ml-[8px]" : "ml-[6px]"}`}
               style={{ zIndex: MAX_OTHERS - i }}
             >
-              <path d={BELL} fill="#E7C6DC" stroke="#FCF2FF" strokeWidth="10" strokeLinejoin="round" paintOrder="stroke" />
+              <path d={BELL} fill="#6a3a78" stroke="#32073e" strokeWidth="10" strokeLinejoin="round" paintOrder="stroke" />
             </svg>
           ))}
           {others > MAX_OTHERS && (
             <span className="ml-[8px] pb-[2px] font-body text-[14px] leading-[20px] text-secondary tabular-nums">+{others - MAX_OTHERS}</span>
           )}
         </div>
-        <span className="h-[6px] rounded-full bg-heading/15" />
-        <span className="mt-[6px] w-[64px] text-center font-brand text-[10px] uppercase leading-[12px] tracking-[1px] text-grape">You</span>
+        <span className="h-[6px] rounded-full bg-white/10" />
+        <span className="mt-[6px] w-[64px] text-center font-brand text-[10px] uppercase leading-[12px] tracking-[1px] text-pink">You</span>
       </div>
 
-      <p className="font-body text-[14px] leading-[20px] text-secondary">
-        {count <= 1 ? "Just you at the desk" : <>You and <Strong>{others} {others === 1 ? "other" : "others"}</Strong></>}
+      <p className="font-body text-[14px] leading-[20px] text-grape-light/70">
+        {count <= 1 ? "Just you at the desk" : <>You and <span className="font-medium text-white">{others} {others === 1 ? "other" : "others"}</span></>}
       </p>
     </div>
   );
@@ -267,14 +284,15 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
         <StayCard seconds={seconds} month={stats.month} />
         <HereNow count={stats.hereNow} />
 
-        <Tile label="Guests so far" note="Since the house opened">
+        <Tile label="Guests so far" icon="guests" note="Since the house opened">
           <CountUp value={stats.guests} />
         </Tile>
-        <Tile label="This month" note={<><Strong>{share}%</Strong> of everyone so far</>}>
+        <Tile label="This month" icon="month" meter={share} note={<><Strong>{share}%</Strong> of everyone so far</>}>
           <CountUp value={stats.month.guests} />
         </Tile>
         <Tile
           label="Busiest day"
+          icon="busiest"
           note={times >= 1.5 ? <><Strong>{times}×</Strong> a usual day, last two weeks</> : "Of the last two weeks"}
         >
           {!busiest.visits ? "–" : busiest === stats.lastDays[stats.lastDays.length - 1] ? "Today" : fmtDay(busiest.day, true)}
