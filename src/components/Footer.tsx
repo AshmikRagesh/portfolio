@@ -9,7 +9,7 @@ import { awardStamp, celebrate, useMoment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
 import { useVideoGlasses } from "@/lib/curiosity/watching";
 import { COPY_EMAIL_EVENT, EMAIL, LINKEDIN, X_PROFILE } from "@/lib/contact";
-import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
+import TimerBoard, { messageBoardWidth } from "@/components/host/TimerBoard";
 import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
 import PaperTooth from "@/components/PaperTooth";
@@ -446,8 +446,9 @@ function FooterBell() {
     align === "left" ? `${layout.width / 2 - 4}px` : align === "right" ? `calc(100% - ${layout.width / 2 + 4}px)` : "calc(50% - 4px)";
   // The board hangs centred under the hands, nudged in from the ends of the counter
   const gripMid = (layout.hands[0].x + layout.hands[1].x) / 2;
+  const boardWidth = messageBoardWidth(EMAIL);
   const boardLeft = card
-    ? Math.round(gripMid - BOARD_WIDTH / 2 + (card.align === "left" ? BOARD_WIDTH / 2 - gripMid : card.align === "right" ? -(BOARD_WIDTH / 2 - (layout.width - gripMid)) : 0))
+    ? Math.round(gripMid - boardWidth / 2 + (card.align === "left" ? boardWidth / 2 - gripMid : card.align === "right" ? -(boardWidth / 2 - (layout.width - gripMid)) : 0))
     : 0;
   const talking = card !== null || momentHere !== null || (hovered && !touch);
 

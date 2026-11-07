@@ -27,6 +27,12 @@ import { formatClock } from "@/components/host/clock";
 /** Board width, so the host can centre and clamp the board before it renders. */
 export const BOARD_WIDTH = 184;
 
+/** Width for a board carrying a line of text (the footer's email): wide enough for the text
+ *  in its window — 12px Geist Mono is 7.2px a character — plus the window, face and frame
+ *  padding and a little air, rounded up to 4px. Never narrower than the clock board. */
+export const messageBoardWidth = (text: string) =>
+  Math.max(BOARD_WIDTH, Math.ceil((text.length * 7.2 + 48) / 4) * 4);
+
 /** One half of a card, showing the matching half of `value`. */
 function Half({ value, half, tall = false, className = "" }: { value: string; half: "top" | "bottom"; tall?: boolean; className?: string }) {
   return (
@@ -143,7 +149,7 @@ export default function TimerBoard({ seconds, champion = false, grips = [], bare
   }
 
   return (
-    <div role={message ? "status" : "timer"} aria-label={message ? `${message.title}: ${message.text}` : label} className="relative" style={{ width: BOARD_WIDTH }}>
+    <div role={message ? "status" : "timer"} aria-label={message ? `${message.title}: ${message.text}` : label} className="relative" style={{ width: message ? messageBoardWidth(message.text) : BOARD_WIDTH }}>
       {/* Rings the hands hold */}
       {grips.map((x, i) => (
         <span
