@@ -1,7 +1,6 @@
 // ── Résumé ────────────────────────────────────────────────────────────────────
 // What the "Fancy paper" sheet shows and the file "Take a copy" downloads.
-// PLACEHOLDER copy for now: Ashmik will swap in the real résumé (and the PDF in
-// /public) later. Wrap a phrase in **double stars** to set it in the darker ink, or
+// Content from Ashmik's 2026 résumé, trimmed to what the sheet needs. Wrap a phrase in **double stars** to set it in the darker ink, or
 // in ((double brackets)) to circle it in pen; `note` adds a handwritten margin note.
 
 import { EMAIL, LINKEDIN } from "@/lib/contact";
@@ -29,52 +28,56 @@ export const resumeSections: ResumeSection[] = [
     label: "Experience",
     entries: [
       {
-        org: "Studio Placeholder",
-        role: "Senior Product Designer",
-        when: "2024 – Now",
-        detail: [
-          "Led **end-to-end design of the core search experience**, from research and flows to shipped UI, working closely with engineering and product.",
-          "Built and maintained ((a design system used across four product teams)), with tokens, components and documentation.",
-        ],
-        note: "ask me how this started",
-      },
-      {
-        org: "Company Placeholder",
+        org: "Travelopia",
         role: "Product Designer",
-        when: "2022 – 2024",
+        when: "Aug 2023 – Now",
         detail: [
-          "Redesigned onboarding and account setup, ((simplifying a seven-step flow into three)).",
-          "Ran usability sessions every sprint and turned findings into a shared backlog of fixes.",
+          "Led design for three brands: Enchanting Travels, Hayes & Jarvis and My Planet.",
+          "Spearheaded the **Artemis design system** across three travel brands, ((boosting task completion by 35%)) and reducing errors by 60%.",
+          "Redesigned the travel proposal UX, leading to **a 40% increase in bookings**.",
+          "Designed a travel planning tool that cut lead prospecting time by 75%.",
         ],
-        note: "my favourite project",
       },
       {
-        org: "Agency Placeholder",
+        org: "Cubera",
+        role: "Product Designer",
+        when: "Jan – Aug 2023",
+        detail: [
+          "Developed the **Pegasus design system**, ((reducing system errors by 65%)).",
+          "Led the MVP design for the Pegasus application, with high-fidelity prototypes that sped up development and stakeholder alignment.",
+        ],
+      },
+      {
+        org: "Synctric",
+        role: "Product Designer",
+        when: "Aug 2022 – Jan 2023",
+        detail: [
+          "Created Synctric's brand identity and led its design system and website redesign.",
+          "Designed high-fidelity financial dashboards.",
+        ],
+      },
+      {
+        org: "AMMACHI Labs",
         role: "UX Designer",
-        when: "2020 – 2022",
+        when: "Jan 2022 – Jul 2022",
         detail: [
-          "Designed web and mobile products for clients in retail, travel and finance, **from first sketch to developer handoff**.",
+          "Led UI/UX design for **NCERT government-funded educational simulations**, shaped by user research with the team.",
         ],
-      },
-      {
-        org: "Freelance",
-        role: "Visual Designer",
-        when: "2019 – 2020",
-        detail: ["Brand identities, websites and motion pieces for small businesses."],
       },
     ],
   },
   {
     label: "Education",
     entries: [
-      { org: "University Placeholder", detail: ["B.Des. in Interaction Design", "2015 – 2019"] },
+      { org: "Amrita Vishwa Vidyapeetham", detail: ["Bachelor of Business Administration", "2019 – 2022"] },
     ],
   },
   {
     label: "Skills",
     entries: [
-      { org: "Design & Prototype", detail: ["Product design, interaction design, design systems, UX research, motion."] },
-      { org: "Tools", detail: ["Figma, Claude Code, Cursor, Framer, Adobe CC, HTML/CSS/JavaScript."] },
+      { org: "Design & Animation", detail: ["Interaction design, prototyping, user flows, information architecture, motion design, branding, responsive design for iOS, Android and web."] },
+      { org: "Research", detail: ["User interviews, usability tests, heuristic evaluation, survey design, comparative analysis, A/B testing."] },
+      { org: "Tools", detail: ["Figma, Framer, Adobe CC, FigJam, Protopie, Spline, Notion, Jira, ChatGPT, Midjourney."] },
     ],
   },
 ];
