@@ -24,7 +24,6 @@ import { chimeBell, primeBell, ringBell } from "@/components/host/bellSound";
 // All on the right of the bell. Fancy paper is a tab like the others, not a button.
 const navLinks = [
   { label: "Work", href: "#works" },
-  { label: "Play", href: "#play" },
   { label: "About", href: "/about" },
   { label: "Pass", href: "/pass" },
   { label: "Fancy paper", href: RESUME_PDF },
