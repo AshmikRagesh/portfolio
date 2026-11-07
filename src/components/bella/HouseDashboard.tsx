@@ -41,19 +41,19 @@ function useSeen<T extends Element>() {
 // read, not clicked)
 const CARD = "rounded-xl border border-heading/[0.08] shadow-[0_1px_2px_rgba(30,5,37,0.04),0_8px_24px_-12px_rgba(30,5,37,0.08)]";
 
-// The same three steps in every card: a small mono label, the number, then one line that
+// The same three steps in every card: a small label, the number, then one line that
 // says what it means with the key fact picked out
 function Label({ children, aside }: { children: React.ReactNode; aside?: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-[12px]">
-      <p className="font-brand text-[12px] uppercase leading-[16px] tracking-[1.6px] text-muted">{children}</p>
+      <p className="font-body text-[14px] font-medium leading-[20px] text-secondary">{children}</p>
       {aside}
     </div>
   );
 }
 const Strong = ({ children }: { children: React.ReactNode }) => <span className="font-medium text-heading">{children}</span>;
 
-// Small line icons for the tiles, in grape on a soft grape square
+// Small line icons for the tiles, in white on a grape square
 const ICONS = {
   guests: "M8 8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z M3 13.5c.6-2.3 2.6-3.5 5-3.5s4.4 1.2 5 3.5",
   month: "M3 5.5h10v8H3z M3 8h10 M5.5 3v3 M10.5 3v3",
@@ -61,7 +61,7 @@ const ICONS = {
 };
 function Icon({ name }: { name: keyof typeof ICONS }) {
   return (
-    <span className="grid h-[32px] w-[32px] place-items-center rounded-md bg-grape-light text-grape" aria-hidden="true">
+    <span className="grid h-[32px] w-[32px] place-items-center rounded-md bg-grape text-white" aria-hidden="true">
       <svg viewBox="0 0 16 16" className="h-[16px] w-[16px]" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
         <path d={ICONS[name]} />
       </svg>
@@ -118,7 +118,7 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
   const at = (n: number) => `${Math.min(100, (n / longest) * 100)}%`;
   const yours = seconds >= longest && month.longestSeconds !== null && seconds >= month.longestSeconds;
   return (
-    <div className={`flex flex-col gap-[32px] bg-white bg-[radial-gradient(120%_90%_at_0%_0%,rgba(249,228,255,0.9),rgba(255,255,255,0)_60%)] p-[24px] md:col-span-2 md:p-[32px] ${CARD}`}>
+    <div className={`flex flex-col gap-[32px] bg-white p-[24px] md:col-span-2 md:p-[32px] ${CARD}`}>
       <div className="flex flex-col gap-[16px]">
         <Label>Your stay</Label>
         <div className="flex flex-col gap-[8px]">
@@ -153,7 +153,7 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
           >
             <span className="absolute left-0 top-0 h-[20px] w-[20px] -translate-x-1/2 -translate-y-1/2 rounded-full border-[4px] border-white bg-grape shadow-[0_2px_6px_rgba(30,5,37,0.24)]" />
             <span
-              className={`absolute bottom-[16px] whitespace-nowrap rounded-full bg-grape px-[8px] font-brand text-[10px] uppercase leading-[20px] tracking-[1px] text-white ${
+              className={`absolute bottom-[16px] whitespace-nowrap rounded-full bg-grape px-[8px] font-body text-[12px] font-medium leading-[20px] text-white ${
                 seconds / longest < 0.06 ? "-left-[10px]" : seconds / longest > 0.94 ? "-right-[10px]" : "-translate-x-1/2"
               }`}
             >
@@ -185,10 +185,10 @@ function HereNow({ count }: { count: number }) {
   const others = Math.max(0, count - 1);
   const shown = Math.min(others, MAX_OTHERS);
   return (
-    <div className="flex flex-col gap-[16px] rounded-xl bg-primary bg-[radial-gradient(110%_80%_at_100%_0%,rgba(157,19,106,0.45),rgba(50,7,62,0)_60%)] p-[24px] shadow-[0_1px_2px_rgba(30,5,37,0.12),0_12px_28px_-12px_rgba(30,5,37,0.45)] md:p-[32px]">
+    <div className="flex flex-col gap-[16px] rounded-xl bg-primary bg-[linear-gradient(rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:24px_24px] bg-[position:-1px_-1px] p-[24px] ring-1 ring-inset ring-white/10 shadow-[0_1px_2px_rgba(30,5,37,0.12),0_12px_28px_-12px_rgba(30,5,37,0.45)] md:p-[32px]">
       <div className="flex items-center justify-between gap-[12px]">
-        <p className="font-brand text-[12px] uppercase leading-[16px] tracking-[1.6px] text-grape-light/60">Here right now</p>
-        <span className="flex items-center gap-[6px] rounded-full bg-white/10 px-[8px] py-[2px] font-brand text-[10px] uppercase leading-[16px] tracking-[1.2px] text-pink">
+        <p className="font-body text-[14px] font-medium leading-[20px] text-grape-light/70">Here right now</p>
+        <span className="flex items-center gap-[6px] rounded-full bg-white/10 px-[8px] py-[2px] font-body text-[12px] font-medium leading-[16px] text-pink">
           <span className="relative flex h-[6px] w-[6px]">
             <span className="absolute inset-0 animate-ping rounded-full bg-pink/60 motion-reduce:animate-none" />
             <span className="relative h-[6px] w-[6px] rounded-full bg-pink" />
@@ -228,7 +228,7 @@ function HereNow({ count }: { count: number }) {
           )}
         </div>
         <span className="h-[6px] rounded-full bg-white/10" />
-        <span className="mt-[6px] w-[64px] text-center font-brand text-[10px] uppercase leading-[12px] tracking-[1px] text-pink">You</span>
+        <span className="mt-[6px] w-[64px] text-center font-body text-[12px] font-medium leading-[16px] text-pink">You</span>
       </div>
 
       <p className="font-body text-[14px] leading-[20px] text-grape-light/70">
