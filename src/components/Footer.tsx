@@ -8,7 +8,7 @@ import { chimeBell, ringBell } from "@/components/host/bellSound";
 import { awardStamp, celebrate, useMoment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
 import { useVideoGlasses } from "@/lib/curiosity/watching";
-import { COPY_EMAIL_EVENT, EMAIL } from "@/lib/contact";
+import { COPY_EMAIL_EVENT, EMAIL, LINKEDIN, X_PROFILE } from "@/lib/contact";
 import TimerBoard, { BOARD_WIDTH } from "@/components/host/TimerBoard";
 import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
@@ -16,22 +16,15 @@ import PaperTooth from "@/components/PaperTooth";
 
 const socialLinks = [
   {
-    label: "Discord",
-    href: "https://discord.com/users/ashmikragesh",
-    bg: "#67c23a",
-    tiltClass: "hover:-rotate-6",
-    icon: <img src="/icons/social-discord.svg" alt="Discord" className="w-[18px] h-[18px] md:w-[24px] md:h-[24px]" />,
-  },
-  {
     label: "LinkedIn",
-    href: "https://linkedin.com/in/ashmikragesh",
+    href: LINKEDIN,
     bg: "#1f88f9",
     tiltClass: "hover:rotate-6",
     icon: <img src="/icons/social-linkedin.svg" alt="LinkedIn" className="w-[18px] h-[18px] md:w-[24px] md:h-[24px]" />,
   },
   {
     label: "Twitter / X",
-    href: "https://twitter.com/ashmikragesh",
+    href: X_PROFILE,
     bg: "#091624",
     tiltClass: "hover:-rotate-3",
     icon: <img src="/icons/social-x.svg" alt="Twitter / X" className="w-[18px] h-[18px] md:w-[24px] md:h-[24px]" />,

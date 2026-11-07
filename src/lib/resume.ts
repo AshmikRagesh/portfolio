@@ -4,7 +4,7 @@
 // /public) later. Wrap a phrase in **double stars** to set it in the darker ink, or
 // in ((double brackets)) to circle it in pen; `note` adds a handwritten margin note.
 
-import { EMAIL } from "@/lib/contact";
+import { EMAIL, LINKEDIN } from "@/lib/contact";
 
 export const RESUME_PDF = "/Ashmik-Ragesh-Resume.pdf";
 export const RESUME_FILENAME = "Ashmik-Ragesh-Resume.pdf";
@@ -18,7 +18,7 @@ export const resume = {
   title: "Product Designer",
   site: "ashmikragesh.com",
   email: EMAIL,
-  linkedin: { label: "in/ashmikragesh", href: "https://www.linkedin.com/in/ashmikragesh" },
+  linkedin: { label: "in/ashmik-ragesh", href: LINKEDIN },
 };
 
 export type ResumeEntry = { org: string; role?: string; when?: string; detail: string[]; note?: string };

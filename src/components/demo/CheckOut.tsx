@@ -2,11 +2,11 @@
 
 import { ArrowUpRight } from "lucide-react";
 import { useStay, formatStay } from "./useGuesthouse";
+import { LINKEDIN, X_PROFILE } from "@/lib/contact";
 
 const socials = [
-  { label: "LinkedIn", href: "https://linkedin.com/in/ashmikragesh" },
-  { label: "Twitter / X", href: "https://twitter.com/ashmikragesh" },
-  { label: "Discord", href: "https://discord.com/users/ashmikragesh" },
+  { label: "LinkedIn", href: LINKEDIN },
+  { label: "Twitter / X", href: X_PROFILE },
 ];
 
 // Footer as check-out: how long you stayed, how to stay in touch, housekeeping date.

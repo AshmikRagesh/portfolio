@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import { LINKEDIN } from "@/lib/contact";
 
 // Testimonials as a guestbook: same notepad cards and punch holes, now with a
 // handwritten signature and the room each guest "stayed in". Dark panel gets the
@@ -47,7 +48,7 @@ export default function Guestbook() {
             </h2>
           </div>
           <a
-            href="https://linkedin.com/in/ashmikragesh/details/recommendations/"
+            href={`${LINKEDIN}details/recommendations/`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex min-h-[44px] items-center gap-[6px] text-[14px] font-medium text-pink underline underline-offset-4"
