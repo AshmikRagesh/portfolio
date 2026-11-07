@@ -115,7 +115,7 @@ export default function Works() {
             Selected work.
           </h2>
           <p className="m-0 text-pretty font-body text-[16px] leading-[26px] text-secondary">
-            Each card is a room. Check in for the problem, the research and what shipped, from Helix on Claude Code to the search filters TCS travellers use today.
+            A collection of my recent work, from a design-system skill on Claude Code to search and trip planning for TCS World Travel.
           </p>
         </header>
 
