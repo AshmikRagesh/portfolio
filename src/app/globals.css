@@ -1217,6 +1217,23 @@
    A terminal-style check-in on grape. Repeat visits in the same session get
    .loader-skip on <html> before paint (layout.tsx), so it never flashes. */
 .loader-skip .bella-loader { display: none; }
+/* Three DS backgrounds while we choose (?loader=vanilla | midnight | plum):
+   --ld-bg screen, --ld-ink text, --ld-bar the highlight bar, --ld-bar-ink text on it,
+   --ld-spot the soft light behind Bella that keeps her dark dome readable */
+.bella-loader { background: var(--ld-bg); color: var(--ld-ink); }
+.bella-loader--vanilla { --ld-bg: #ece5d8; --ld-ink: #32073e; --ld-bar: #32073e; --ld-bar-ink: #ece5d8; --ld-spot: rgba(255, 255, 255, 0.7); }
+.bella-loader--midnight { --ld-bg: #1e0525; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #1e0525; --ld-spot: rgba(236, 229, 216, 0.26); }
+.bella-loader--plum { --ld-bg: #32073e; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #32073e; --ld-spot: rgba(236, 229, 216, 0.3); }
+.bella-loader-spot {
+  position: absolute;
+  left: 50%;
+  top: 56px;
+  width: 320px;
+  height: 240px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, var(--ld-spot), transparent);
+  pointer-events: none;
+}
 /* The chores drift upward forever: the list is doubled, and one loop moves it by
    six rows (16px line + 12px gap each) */
 .bella-loader-items { animation: bella-loader-drift 9s linear infinite; }
@@ -1230,15 +1247,15 @@
   right: -4px;
   top: -2px;
   bottom: -2px;
-  background: #ece5d8;
+  background: var(--ld-bar);
   opacity: 0;
 }
-.bella-loader-item.is-active { color: #32073e; }
+.bella-loader-item.is-active { color: var(--ld-bar-ink); }
 .bella-loader-item.is-active::before { opacity: 1; }
 .bella-loader-list ul { isolation: isolate; }
 /* A letter arriving in the note: a solid block in the text colour */
 .bella-loader-block { position: relative; display: inline-block; color: transparent; }
-.bella-loader-block::after { content: ""; position: absolute; left: 0; top: 0; width: 1ch; height: 100%; background: #ece5d8; }
+.bella-loader-block::after { content: ""; position: absolute; left: 0; top: 0; width: 1ch; height: 100%; background: var(--ld-ink); }
 .bella-loader-cursor { animation: bella-loader-blink 600ms steps(1, end) infinite; }
 @keyframes bella-loader-blink { 50% { opacity: 0; } }
 /* Closing: everything blinks out twice before the screen lifts */

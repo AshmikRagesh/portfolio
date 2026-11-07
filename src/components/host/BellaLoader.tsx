@@ -6,21 +6,28 @@
 //
 //   left    a list of housekeeping chores ("// Fluffing your pillows...") that drifts
 //           slowly upward on a loop; the chore under way is marked by a vanilla bar.
-//   centre  Bella sits on top of the count "( 42% )". She looks across at the chore
-//           list, hops a little each time a new chore starts, and rings once at 100.
+//   centre  Bella stands in a soft spotlight above the count "( 42% )", set in the
+//           display serif. Her eyes follow the highlighted chore as it drifts, or
+//           the cursor while it moves. Each chore gets its own move: a bounce to
+//           fluff the pillows, a ding and a glint for the polish, a wiggle for the
+//           towels, a hop for the mint, a sleepy sink for the turndown. Tap her to
+//           ring for service. At 100 she plays her celebration and the screen lifts.
 //   right   a note to the guest types itself out: each letter arrives as a solid
 //           block, flickers through a few random characters, then settles; a block
 //           cursor blinks at the end.
 //
 // The count reaches 100 only once the page has loaded (or after MAX_MS). Then the
-// last chore reads "Your room is ready", Bella dings, the text blinks out and the
-// screen lifts away like a blind. A click or key skips once the page has loaded.
+// last chore reads "Your room is ready", Bella celebrates, the text blinks out and
+// the screen lifts away like a blind. A click or key skips once the page has loaded.
 // On phones the three parts stack: list on top, count in the middle, note below.
 //
 // Bella is flat, so she only moves in the picture plane (hops, squash).
 // Shown once per session (sessionStorage "bella-loaded"); ?loader shows it again.
 // An inline script in layout.tsx hides it before paint on repeat visits.
 // With reduced motion nothing scrolls or scrambles, and the screen fades out.
+//
+// Background: three DS options while we choose, picked with ?loader=vanilla (default),
+// ?loader=midnight or ?loader=plum. Colours live in CSS variables (globals.css).
 
 import { useEffect, useRef, useState } from "react";
 import HostCharacter, { hostLayout } from "@/components/host/HostCharacter";
@@ -29,7 +36,9 @@ const SEEN_KEY = "bella-loaded";
 const MAX_MS = 9000; // never hold the visitor longer than this, loaded or not
 const PACE_MS = 3600; // the count's pace when the page is quick
 const LIFT_MS = 900;
-const BELLA_H = 96;
+const BELLA_H = 112;
+const THEMES = ["vanilla", "midnight", "plum"] as const;
+type Theme = (typeof THEMES)[number];
 
 const CHORES = [
   "Fluffing your pillows",
@@ -52,6 +61,9 @@ export default function BellaLoader() {
   const [ding, setDing] = useState(0);
   const [closing, setClosing] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [celebrate, setCelebrate] = useState(0);
+  const [gaze, setGaze] = useState<{ x: number; y: number } | null>({ x: -1, y: 0 });
+  const [theme, setTheme] = useState<Theme>("vanilla");
 
   const rootRef = useRef<HTMLDivElement>(null);
   const bellaRef = useRef<HTMLDivElement>(null);
@@ -60,7 +72,10 @@ export default function BellaLoader() {
 
   useEffect(() => {
     const html = document.documentElement;
-    const forced = new URLSearchParams(window.location.search).has("loader");
+    const params = new URLSearchParams(window.location.search);
+    const forced = params.has("loader");
+    const asked = params.get("loader") as Theme;
+    if (THEMES.includes(asked)) setTheme(asked);
     let seen = false;
     try {
       seen = !!sessionStorage.getItem(SEEN_KEY);
@@ -113,11 +128,30 @@ export default function BellaLoader() {
       at(260 + LIFT_MS + 200, restore); // in case the tab never paints it
     };
 
-    const skip = () => {
+    const skip = (e: Event) => {
+      // A tap on Bella rings her instead
+      if (e.target instanceof Node && bellaRef.current?.contains(e.target)) return;
       if (loaded) leave();
     };
     window.addEventListener("keydown", skip);
     rootRef.current?.addEventListener("pointerdown", skip);
+
+    // Where Bella should look: at the nearest highlighted chore as it drifts
+    let lastPointer = -Infinity;
+    const onPointer = () => (lastPointer = performance.now());
+    window.addEventListener("pointermove", onPointer);
+    const lookAtChore = () => {
+      const eye = bellaRef.current?.getBoundingClientRect();
+      const bars = Array.from(rootRef.current?.querySelectorAll(".bella-loader-item.is-active") ?? []);
+      if (!eye || !bars.length) return { x: -1, y: 0 };
+      const cx = eye.left + eye.width / 2;
+      const cy = eye.top + eye.height * 0.45;
+      const near = bars
+        .map((b) => b.getBoundingClientRect())
+        .sort((a, b) => Math.abs(a.top - cy) - Math.abs(b.top - cy))[0];
+      const clamp = (v: number) => Math.max(-1, Math.min(1, v));
+      return { x: clamp((near.left + near.width / 2 - cx) / 240), y: clamp((near.top + near.height / 2 - cy) / 160) };
+    };
 
     // ── The count and the note, on a timer so they run in a tab that isn't painting
     let shown = 0;
@@ -132,6 +166,9 @@ export default function BellaLoader() {
       setN(Math.floor(shown));
       setHead(reduced ? NOTE.length + SETTLE : (t - 300) * NOTE_CHARS_PER_MS);
       setTick((k) => k + 1);
+      // Eyes on the highlighted chore, unless the cursor moved in the last 1.5s
+      if (performance.now() - lastPointer < 1500) setGaze(null);
+      else setGaze(lookAtChore());
       if (shown >= 100 && !finished) {
         finished = true;
         window.clearInterval(counter);
@@ -139,8 +176,9 @@ export default function BellaLoader() {
         if (reduced) {
           at(600, leave);
         } else {
-          at(160, () => setDing((d) => d + 1));
-          at(900, leave);
+          setGaze({ x: 0, y: 0 });
+          at(120, () => setCelebrate((c) => c + 1));
+          at(1500, leave);
         }
       }
     }, 40);
@@ -150,24 +188,44 @@ export default function BellaLoader() {
       timers.forEach(window.clearTimeout);
       window.removeEventListener("load", onLoad);
       window.removeEventListener("keydown", skip);
+      window.removeEventListener("pointermove", onPointer);
       html.style.overflow = prevOverflow;
     };
   }, []);
 
-  // A little hop each time a new chore starts
+  // Each chore gets its own move, all in the picture plane, pivoting on her base
   useEffect(() => {
-    if (active === 0 || reducedMotion) return;
-    bellaRef.current?.animate(
-      [
-        { transform: "translateY(0) scale(1, 1)" },
-        { transform: "translateY(2px) scale(1.06, 0.92)", offset: 0.18 },
-        { transform: "translateY(-14px) scale(0.96, 1.05)", offset: 0.5 },
-        { transform: "translateY(1px) scale(1.04, 0.95)", offset: 0.8 },
-        { transform: "translateY(0) scale(1, 1)" },
-      ],
-      { duration: 460, easing: "ease-in-out" },
-    );
-  }, [active, reducedMotion]);
+    if (reducedMotion || n >= 100) return;
+    const el = bellaRef.current;
+    if (!el?.animate) return;
+    const T = (y: number, sx: number, sy: number, r = 0) => `translateY(${y}px) rotate(${r}deg) scale(${sx}, ${sy})`;
+    const moves: [string[], number][] = [
+      // Fluffing the pillows: two bounces
+      [[T(0, 1, 1), T(2, 1.08, 0.9), T(-16, 0.96, 1.05), T(2, 1.08, 0.9), T(-10, 0.97, 1.03), T(0, 1, 1)], 900],
+      // Polishing the bell: a ding plays its glint; she straightens up proudly
+      [[T(0, 1, 1), T(0, 0.98, 1.04), T(0, 1, 1)], 500],
+      // Folding towels: a wiggle side to side
+      [[T(0, 1, 1), T(0, 1, 1, -8), T(0, 1, 1, 7), T(0, 1, 1, -4), T(0, 1, 1, 2), T(0, 1, 1)], 700],
+      // A mint on the pillow: one hop
+      [[T(0, 1, 1), T(2, 1.06, 0.92), T(-14, 0.96, 1.05), T(1, 1.04, 0.95), T(0, 1, 1)], 460],
+      // Turning down the bed: a slow, sleepy sink and back
+      [[T(0, 1, 1), T(4, 1.06, 0.9), T(4, 1.06, 0.9), T(0, 1, 1)], 1100],
+    ];
+    const [frames, duration] = moves[active] ?? moves[3];
+    const t = window.setTimeout(() => {
+      el.animate(frames.map((transform) => ({ transform })), { duration, easing: "ease-in-out" });
+      if (active === 1) setDing((d) => d + 1);
+    }, active === 0 ? 400 : 0);
+    return () => window.clearTimeout(t);
+  }, [active, reducedMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Tap Bella to ring for service (doesn't skip the loader)
+  const ring = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    setDing((d) => d + 1);
+    if (!reducedMotion)
+      bellaRef.current?.animate([{ transform: "scale(1, 1)" }, { transform: "scale(1.06, 0.92)" }, { transform: "scale(1, 1)" }], { duration: 240, easing: "ease-out" });
+  };
 
   if (gone) return null;
 
@@ -177,7 +235,7 @@ export default function BellaLoader() {
   return (
     <div
       ref={rootRef}
-      className={`bella-loader fixed inset-0 z-[1000] select-none bg-grape font-brand text-caption uppercase text-vanilla ${closing ? "is-closing" : ""}`}
+      className={`bella-loader bella-loader--${theme} fixed inset-0 z-[1000] select-none font-brand text-caption uppercase ${closing ? "is-closing" : ""}`}
       role="progressbar"
       aria-label="Loading the site"
       aria-valuemin={0}
@@ -197,11 +255,12 @@ export default function BellaLoader() {
         </div>
 
         {/* Bella on top of the count */}
-        <div className="bella-loader-fade flex flex-col items-center md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-[64%]">
-          <div ref={bellaRef} style={{ transformOrigin: "50% 100%" }}>
-            <HostCharacter ding={ding} gaze={n >= 100 ? { x: 0, y: 0 } : { x: -1, y: 0.3 }} style={{ width: bella.width, height: BELLA_H }} />
+        <div className="bella-loader-fade relative flex flex-col items-center md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-[60%]">
+          <div className="bella-loader-spot" aria-hidden="true" />
+          <div ref={bellaRef} onPointerDown={ring} className="relative cursor-pointer" style={{ transformOrigin: "50% 100%" }} title="Ring for service">
+            <HostCharacter ding={ding} celebrate={celebrate} gaze={gaze} style={{ width: bella.width, height: BELLA_H }} />
           </div>
-          <div className="mt-2 whitespace-pre text-h3-md tabular-nums md:text-h3-lg">{`( ${n}% )`}</div>
+          <div className="relative mt-4 whitespace-pre font-heading text-h2 tabular-nums normal-case md:text-h2-md">{`( ${n}% )`}</div>
         </div>
 
         {/* The note, typing itself out */}
