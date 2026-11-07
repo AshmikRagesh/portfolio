@@ -1,6 +1,6 @@
 // ── Testimonials ──────────────────────────────────────────────────────────────
 // "The guestbook": dark panel of cream "notepad" cards (two columns, three from 1280px) — grained
-// paper lit from the top left, on a second sheet, ruled lines under each line of the quote,
+// paper lit from the top left, ruled lines under each line of the quote,
 // a punched hole in the top-right corner, a slight tilt that straightens on hover,
 // and the guest's signature in ink at the bottom right.
 // Uses the shared page container (1240px at desktop). All values are multiples of 2/4px.
@@ -66,9 +66,8 @@ const testimonials: Testimonial[] = [
   },
 ];
 
-// Cards tilt alternately, like loose pages; the sheet underneath turns the other way
+// Cards tilt alternately, like loose pages
 const TILTS = ["-rotate-[0.35deg]", "rotate-[0.4deg]", "rotate-[0.3deg]", "-rotate-[0.4deg]"];
-const UNDER = ["0.8deg", "-0.7deg", "-0.8deg", "0.7deg"];
 
 function ArrowUpRight({ size }: { size: number }) {
   return (
@@ -106,7 +105,7 @@ export default function Testimonials() {
               {testimonials.map((t, i) => (
                 <li
                   key={i}
-                  style={{ "--gb-under": UNDER[i % UNDER.length] } as React.CSSProperties} className="gb-sheet min-w-0 md:last:odd:col-span-2 md:last:odd:mx-auto md:last:odd:w-[calc(50%_-_12px)] xl:last:odd:col-span-1 xl:last:odd:w-auto">
+                  className="gb-sheet min-w-0 md:last:odd:col-span-2 md:last:odd:mx-auto md:last:odd:w-[calc(50%_-_12px)] xl:last:odd:col-span-1 xl:last:odd:w-auto">
                   <figure
                     className={`relative m-0 flex h-full flex-col rounded-[2px] gb-paper p-5 text-heading hover:!translate-y-[-6px] hover:!rotate-0 md:p-6 motion-reduce:!transform-none motion-reduce:transition-none ${
                       TILTS[i % TILTS.length]
