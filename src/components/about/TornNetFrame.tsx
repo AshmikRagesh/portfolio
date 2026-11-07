@@ -42,33 +42,51 @@ export default function TornNetFrame({
   src,
   alt,
   netColor = "#9D136A", // grape, from the DS
+  matchHeightOf,
   className = "",
 }: {
   src: string;
   alt: string;
   netColor?: string;
+  /** On a wide screen, size the frame so it stands exactly as tall as this element */
+  matchHeightOf?: string;
   className?: string;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [torn, setTorn] = useState(false);
+  const [width, setWidth] = useState<number | null>(null);
+
+  // Stand as tall as the text beside it (desktop only), so the two columns end together
+  useEffect(() => {
+    if (!matchHeightOf) return;
+    const target = document.getElementById(matchHeightOf);
+    if (!target) return;
+    const wide = window.matchMedia("(min-width: 1024px)");
+    // never wider than its column, so it can't squeeze the text and loop
+    const fit = () => {
+      const room = (target.parentElement?.clientWidth ?? 0) - target.offsetWidth - 56;
+      const w = Math.round((target.offsetHeight * FRAME.w) / FRAME.h);
+      setWidth(wide.matches ? Math.max(320, Math.min(w, room > 0 ? room : w)) : null);
+    };
+    const ro = new ResizeObserver(fit);
+    ro.observe(target);
+    wide.addEventListener("change", fit);
+    fit();
+    return () => {
+      ro.disconnect();
+      wide.removeEventListener("change", fit);
+    };
+  }, [matchHeightOf]);
 
   useEffect(() => {
     const card = cardRef.current;
-    if (!card) return;
+    const canvas = canvasRef.current;
+    if (!card || !canvas) return;
 
-    // The net is drawn on a canvas over the whole window, so torn pieces can fall out of
-    // the frame and down the page. It never takes the pointer — the card does.
-    const canvas = document.createElement("canvas");
-    canvas.setAttribute("aria-hidden", "true");
-    Object.assign(canvas.style, {
-      position: "fixed",
-      inset: "0",
-      width: "100%",
-      height: "100%",
-      pointerEvents: "none",
-      zIndex: "40",
-    });
-    document.body.appendChild(canvas);
+    // The net is drawn on a canvas that sits in the page around the frame (reaching well
+    // past it, so torn pieces can fall out), and scrolls with it — never a frame behind.
+    // It never takes the pointer; the card does.
     const ctx = canvas.getContext("2d")!;
 
     let seed = 7;
@@ -77,29 +95,33 @@ export default function TornNetFrame({
     addNet(1);
     const current = () => slots[slots.length - 1].net;
 
-    // Where the board sits on screen, this frame
-    const view = { scale: 1, ox: 0, oy: 0, w: 1, h: 1, dpr: 1 };
+    // Where the board sits on the canvas (canvas pixels, CSS size), and where the canvas is
+    const view = { scale: 1, ox: 0, oy: 0, w: 1, h: 1, dpr: 1, left: 0, top: 0 };
     function measure() {
+      const c = canvas!.getBoundingClientRect();
       const r = card!.getBoundingClientRect();
       const px = r.width / FRAME.w;
+      view.left = c.left;
+      view.top = c.top;
       view.scale = px / K;
-      view.ox = r.left + FX0 * px;
-      view.oy = r.top + FY0 * px;
+      view.ox = r.left - c.left + FX0 * px;
+      view.oy = r.top - c.top + FY0 * px;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (c.width !== view.w || c.height !== view.h || dpr !== view.dpr) {
+        view.w = c.width;
+        view.h = c.height;
+        view.dpr = dpr;
+        canvas!.width = Math.round(c.width * dpr);
+        canvas!.height = Math.round(c.height * dpr);
+      }
     }
-    function resize() {
-      view.dpr = Math.min(window.devicePixelRatio || 1, 2);
-      view.w = window.innerWidth;
-      view.h = window.innerHeight;
-      canvas.width = Math.round(view.w * view.dpr);
-      canvas.height = Math.round(view.h * view.dpr);
-    }
-    resize();
+    const resize = measure;
     measure();
 
     const toWorld = (cx: number, cy: number, z = 0) => {
       const r = EYE / (EYE - z);
-      const wx = (cx - view.ox) / view.scale;
-      const wy = (cy - view.oy) / view.scale;
+      const wx = (cx - view.left - view.ox) / view.scale;
+      const wy = (cy - view.top - view.oy) / view.scale;
       return [MID[0] + (wx - MID[0]) / r, MID[1] + (wy - MID[1]) / r];
     };
 
@@ -351,15 +373,15 @@ export default function TornNetFrame({
       card.removeEventListener("pointerup", onUp);
       card.removeEventListener("pointercancel", onUp);
       window.removeEventListener("resize", resize);
-      canvas.remove();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     };
   }, [netColor]);
 
-  // The picture sits a little under the mat all round. There's no mending: once torn,
+  // The picture sits a little under the carving all round. There's no mending: once torn,
   // the net stays torn until the page is loaded again.
   const inset = (v: number, of: number) => `${((v - 10) / of) * 100}%`;
   return (
-    <div className={`flex flex-col items-start ${className}`}>
+    <div className={`relative ${className}`} style={width ? { width } : undefined}>
       <div
         ref={cardRef}
         className="relative w-full touch-none select-none [filter:drop-shadow(0_1px_1px_rgba(50,30,12,0.28))_drop-shadow(0_8px_12px_rgba(50,30,12,0.16))_drop-shadow(0_28px_40px_rgba(50,30,12,0.14))]"
@@ -374,13 +396,19 @@ export default function TornNetFrame({
             bottom: inset(FRAME.h - FY1, FRAME.h),
           }}
         >
-          <Image src={src} alt={alt} fill sizes="440px" priority draggable={false} className="object-cover object-center" />
+          <Image src={src} alt={alt} fill sizes="480px" priority draggable={false} className="object-cover object-center" />
           <div className="pointer-events-none absolute inset-0 shadow-[inset_3px_3px_8px_rgba(30,16,6,0.4),inset_0_0_2px_rgba(30,16,6,0.5)]" />
         </div>
         <PictureFrame className="pointer-events-none absolute inset-0 h-full w-full" />
       </div>
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute z-10"
+        style={{ left: "-50%", top: "-16%", width: "200%", height: "146%" }}
+      />
 
-      <p className="mt-[24px] w-full text-center font-geist text-[12px] leading-[16px] text-muted" aria-hidden="true">
+      <p className="absolute left-0 right-0 top-full mt-[20px] text-center font-geist text-[12px] leading-[16px] text-muted" aria-hidden="true">
         {torn ? "Pull at the torn edges to open it wider" : "Grab the net and pull to tear it"}
       </p>
     </div>

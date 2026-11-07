@@ -3,7 +3,7 @@ import TornNetFrame from "@/components/about/TornNetFrame";
 import {
   AirbnbPill,
   BadmintonPill,
-  ChelseaSignOff,
+  ChelseaLine,
   CodeAndAIPill,
   DesignEngineerPill,
   FootballPill,
@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <section className="page-container flex flex-col items-start gap-[64px] pt-[140px] pb-[96px] lg:grid lg:grid-cols-[minmax(0,1fr)_440px] lg:gap-[64px] lg:pt-[160px] lg:pb-[160px]">
-      {/* Text */}
-      <div className="flex w-full flex-col gap-[40px] md:gap-[48px]">
+    <section className="page-container flex flex-col items-start gap-[64px] overflow-x-clip pt-[140px] pb-[120px] lg:grid lg:grid-cols-[minmax(0,600px)_minmax(0,1fr)] lg:items-start lg:gap-[56px] lg:pt-[160px] lg:pb-[200px]">
+      {/* Text — the frame beside it stands exactly as tall as this */}
+      <div id="about-text" className="flex w-full flex-col gap-[40px] md:gap-[48px]">
         <h1 className="font-heading text-[40px] font-normal leading-[44px] text-heading md:text-[56px] md:leading-[60px] md:tracking-[-2px]">
           Building products that <br className="hidden md:block" />
           people care about
@@ -42,18 +42,17 @@ export default function AboutPage() {
             Outside work, I run a small <AirbnbPill /> in Bangalore. I&apos;m also a big sports enthusiast,
             particularly when it comes to <FootballPill /> and <BadmintonPill />. I&apos;ve been following Chelsea for
             years, which means I&apos;ve experienced more than my fair share of emotional ups and downs. Still here,
-            still supporting.
+            still supporting. <ChelseaLine />
           </p>
         </div>
-
-        <ChelseaSignOff />
       </div>
 
       {/* Framed photo under a grape net you can tear. Left-aligned when stacked. */}
       <TornNetFrame
         src="/images/about/ashmik-snow.jpg"
         alt="Ashmik in a winter coat and beanie, standing in snow above the clouds"
-        className="w-full max-w-[360px] md:max-w-[400px] lg:sticky lg:top-[120px] lg:max-w-none lg:self-start"
+        matchHeightOf="about-text"
+        className="w-full max-w-[360px] md:max-w-[400px] lg:max-w-none lg:justify-self-end"
       />
     </section>
   );
