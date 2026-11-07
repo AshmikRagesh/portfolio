@@ -42,7 +42,9 @@ export function panelPath(inset = 0, w = PASS_W, h = PASS_H) {
 
 const STAR = "M0 -9 L2.4 -2.4 L9 0 L2.4 2.4 L0 9 L-2.4 2.4 L-9 0 L-2.4 -2.4 Z";
 
-/** Gold-foil frame, blackcurrant panel with a fine gold keyline, a star in each corner. */
+/** Gold-foil frame with a brushed grain, the blackcurrant panel pressed into it (a shadow
+ * inside its top-left edge, light along the foil's), a fine foil keyline, and a star
+ * debossed in each corner. Panel colours are the DS primary and midnight. */
 export function frameSvg(id = "pf") {
   const stars = [
     [MARGIN + 22, MARGIN + 22],
@@ -50,18 +52,37 @@ export function frameSvg(id = "pf") {
     [PASS_W - MARGIN - 22, PASS_H - MARGIN - 22],
     [MARGIN + 22, PASS_H - MARGIN - 22],
   ]
-    .map(([x, y]) => `<path d="${STAR}" transform="translate(${x} ${y})" fill="#3e0d4b" opacity="0.7"/>`)
+    .map(
+      ([x, y]) =>
+        `<path d="${STAR}" transform="translate(${x + 0.6} ${y + 0.8})" fill="#fff6d8" opacity="0.55"/>` +
+        `<path d="${STAR}" transform="translate(${x} ${y})" fill="#7a5420" opacity="0.75"/>`,
+    )
     .join("");
+  const panel = panelPath();
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${PASS_W} ${PASS_H}" preserveAspectRatio="none">` +
     `<defs><linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1">` +
-    `<stop offset="0" stop-color="#f6dc8c"/><stop offset="0.28" stop-color="#c8952e"/><stop offset="0.5" stop-color="#f2c75c"/>` +
-    `<stop offset="0.74" stop-color="#b8851e"/><stop offset="1" stop-color="#f0cf78"/></linearGradient>` +
-    `<radialGradient id="${id}p" cx="50%" cy="42%" r="70%"><stop offset="0" stop-color="#4a1258"/><stop offset="1" stop-color="#2e0939"/></radialGradient></defs>` +
+    `<stop offset="0" stop-color="#f1d58a"/><stop offset="0.18" stop-color="#c3913a"/><stop offset="0.36" stop-color="#ecca72"/>` +
+    `<stop offset="0.52" stop-color="#b28233"/><stop offset="0.7" stop-color="#e6c06a"/><stop offset="0.86" stop-color="#a97a2c"/>` +
+    `<stop offset="1" stop-color="#dcb560"/></linearGradient>` +
+    // Brushed foil: fine streaks running across
+    `<filter id="${id}b" x="0" y="0" width="100%" height="100%">` +
+    `<feTurbulence type="fractalNoise" baseFrequency="0.004 0.7" numOctaves="2" seed="5"/>` +
+    `<feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.95  0 0 0 0 0.8  0.9 0 0 0 -0.38"/>` +
+    `<feComposite in2="SourceAlpha" operator="in"/></filter>` +
+    `<radialGradient id="${id}p" cx="50%" cy="40%" r="72%"><stop offset="0" stop-color="#3a0a47"/><stop offset="0.6" stop-color="#32073e"/><stop offset="1" stop-color="#1e0525"/></radialGradient>` +
+    `<clipPath id="${id}c"><path d="${panel}"/></clipPath>` +
+    `<filter id="${id}s" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="2.4"/></filter></defs>` +
     `<rect width="${PASS_W}" height="${PASS_H}" rx="10" fill="url(#${id}g)"/>` +
+    `<rect width="${PASS_W}" height="${PASS_H}" rx="10" fill="#000" filter="url(#${id}b)" opacity="0.5"/>` +
+    // The foil's own bevel round the outside
+    `<rect x="1" y="1" width="${PASS_W - 2}" height="${PASS_H - 2}" rx="9" fill="none" stroke="#fff6d8" stroke-opacity="0.5" stroke-width="1.5"/>` +
     stars +
-    `<path d="${panelPath()}" fill="url(#${id}p)"/>` +
-    `<path d="${panelPath(10)}" fill="none" stroke="#e3bd62" stroke-opacity="0.45" stroke-width="1.5"/>` +
+    // Light along the foil where it meets the panel, then the panel, pressed in
+    `<path d="${panel}" fill="none" stroke="#fff6d8" stroke-opacity="0.55" stroke-width="2" transform="translate(0.8 1)"/>` +
+    `<path d="${panel}" fill="url(#${id}p)"/>` +
+    `<g clip-path="url(#${id}c)"><path d="${panel}" fill="none" stroke="#0b0110" stroke-opacity="0.7" stroke-width="7" filter="url(#${id}s)" transform="translate(2 3)"/></g>` +
+    `<path d="${panelPath(10)}" fill="none" stroke="#d9b45e" stroke-opacity="0.55" stroke-width="1.5"/>` +
     `</svg>`
   );
 }

@@ -43,7 +43,7 @@ export async function GET(req: Request) {
   ].filter(Boolean) as { name: string; data: ArrayBuffer | Buffer; weight: 400 | 500 }[];
 
   const line = [`Guest no. ${guestNumber(d.n)}`, d.a && `Arrived ${d.a}`, `Stayed ${formatStay(d.s)}`].filter(Boolean).join("  ·  ");
-  const gold = "#e3bd62";
+  const faint = "rgba(236,229,216,0.62)";
 
   return new ImageResponse(
     (
@@ -72,16 +72,16 @@ export async function GET(req: Request) {
                 fontFamily: "Alpina",
                 fontSize: 108,
                 lineHeight: 0.88,
-                color: "#4d165b",
+                color: "#3a0a48",
                 textShadow: "0 -3px 0 rgba(10,0,14,0.7), 0 3px 0 rgba(255,220,255,0.22)",
               }}
             >
               <span>Curiosity</span>
               <span>Pass</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, fontSize: 19, color: "#f8f1e3" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, fontSize: 19, color: "#ece5d8" }}>
               <span>{line}</span>
-              {d.f ? <span style={{ color: gold }}>From {d.f}</span> : null}
+              {d.f ? <span style={{ color: faint }}>From {d.f}</span> : null}
             </div>
           </div>
         </div>

@@ -17,8 +17,9 @@
 // scrolling back up doesn't close it or take long. `onOpen` fires
 // once the pass is out, so the page can hold the rest back until then.
 //
-// A flat blackcurrant envelope on the dark grid, thin fold lines, a liner of small gold
-// bells. With reduced motion there's no pinning:
+// A blackcurrant paper envelope with a scalloped flap: paper grain, a light from the top
+// left, soft shadows where the flaps overlap, and a liner of small gold bells. Sealed
+// with real-looking gold wax. With reduced motion there's no pinning:
 // the pass is simply shown.
 
 import { useEffect, useRef, useState, type ReactElement } from "react";
@@ -32,28 +33,52 @@ const BELL_PATH =
   "M48 214 Q48 140 100 140 Q152 140 152 214 Z M76 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M106 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M94 124 h12 v14 h-12 Z M38 212 h124 v14 h-124 Z";
 const BLOB = (() => {
   const pts: string[] = [];
-  for (let i = 0; i <= 64; i++) {
-    const a = (i / 64) * Math.PI * 2;
-    const r = 54 + 2.6 * Math.sin(a * 5 + 0.6) + 1.8 * Math.sin(a * 9 + 2.1) + 1.2 * Math.sin(a * 14);
+  for (let i = 0; i <= 72; i++) {
+    const a = (i / 72) * Math.PI * 2;
+    const r = 54 + 2.6 * Math.sin(a * 5 + 0.6) + 1.8 * Math.sin(a * 9 + 2.1) + 1.2 * Math.sin(a * 14) + 0.8 * Math.sin(a * 23 + 1);
     pts.push(`${(60 + r * Math.cos(a)).toFixed(1)} ${(60 + r * Math.sin(a)).toFixed(1)}`);
   }
   return `M${pts.join(" L")} Z`;
 })();
+const BEADS = Array.from({ length: 44 }, (_, i) => {
+  const a = (i / 44) * Math.PI * 2;
+  return [+(60 + 35.6 * Math.cos(a)).toFixed(2), +(60 + 35.6 * Math.sin(a)).toFixed(2)];
+});
 const CRACK = {
   left: "M-4 -4 L62 -4 L56 22 L66 40 L54 62 L64 82 L56 104 L60 124 L-4 124 Z",
   right: "M62 -4 L124 -4 L124 124 L60 124 L56 104 L64 82 L54 62 L66 40 L56 22 Z",
 };
 
-// Poured gold wax with Bella pressed into it
+// Poured gold wax with Bella pressed into it. Drawn as a height map (lighter grey stands
+// higher) and lit with SVG lighting, so it catches the light like real wax: the puddled
+// edge sloping down to the paper, a rim squeezed up round the press, the flat pressed
+// face, a beaded border, and Bella in relief, with a fine wax grain over it all.
 function Seal({ id, half }: { id: string; half?: "left" | "right" }) {
   return (
     <svg viewBox="-6 -6 132 132" aria-hidden="true">
       <defs>
-        <radialGradient id={`${id}w`} cx="36%" cy="30%" r="80%">
-          <stop offset="0" stopColor="#ffe9a6" />
-          <stop offset="0.4" stopColor="#e3b450" />
-          <stop offset="1" stopColor="#8a5c12" />
+        <radialGradient id={`${id}e`} cx="50%" cy="50%" r="50%">
+          <stop offset="0.7" stopColor="#9c9c9c" />
+          <stop offset="0.9" stopColor="#747474" />
+          <stop offset="1" stopColor="#3c3c3c" />
         </radialGradient>
+        <filter id={`${id}l`} x="-10%" y="-10%" width="120%" height="120%" colorInterpolationFilters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="0.9" result="sm" />
+          <feColorMatrix in="sm" type="luminanceToAlpha" result="h0" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.45" numOctaves="2" seed="7" result="nz" />
+          <feColorMatrix in="nz" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.07 0 0 0 0" result="na" />
+          <feComposite in="h0" in2="na" operator="arithmetic" k2="1" k3="1" result="h" />
+          <feDiffuseLighting in="h" surfaceScale="7" diffuseConstant="1.2" lightingColor="#ffffff" result="d">
+            <feDistantLight azimuth={225} elevation={50} />
+          </feDiffuseLighting>
+          <feSpecularLighting in="h" surfaceScale="7" specularConstant="0.9" specularExponent="20" lightingColor="#fff0c4" result="s">
+            <feDistantLight azimuth={225} elevation={50} />
+          </feSpecularLighting>
+          <feFlood floodColor="#c79a45" result="g" />
+          <feComposite in="g" in2="d" operator="arithmetic" k1="1" result="lit" />
+          <feComposite in="s" in2="lit" operator="arithmetic" k2="0.75" k3="1" result="shine" />
+          <feComposite in="shine" in2="SourceAlpha" operator="in" />
+        </filter>
         {half && (
           <clipPath id={`${id}c`}>
             <path d={CRACK[half]} />
@@ -61,26 +86,74 @@ function Seal({ id, half }: { id: string; half?: "left" | "right" }) {
         )}
       </defs>
       <g clipPath={half ? `url(#${id}c)` : undefined}>
-        <path d={BLOB} fill={`url(#${id}w)`} />
-        <circle cx="60" cy="60" r="40" fill="#c8952e" />
-        <circle cx="60" cy="60" r="40" fill="none" stroke="#6b4508" strokeOpacity="0.5" strokeWidth="2.5" transform="translate(0.8 1.2)" />
-        <circle cx="60" cy="60" r="40.5" fill="none" stroke="#fff3c4" strokeOpacity="0.6" strokeWidth="1.5" transform="translate(-0.6 -0.8)" />
-        <g transform="translate(60 60) scale(0.36) translate(-100 -176)">
-          <path d={BELL_PATH} fillRule="evenodd" fill="#5e3a06" opacity="0.6" transform="translate(-2.4 -3)" />
-          <path d={BELL_PATH} fillRule="evenodd" fill="#fff3c4" opacity="0.6" transform="translate(2.4 3)" />
-          <path d={BELL_PATH} fillRule="evenodd" fill="#c8952e" />
+        <g filter={`url(#${id}l)`}>
+          <path d={BLOB} fill={`url(#${id}e)`} />
+          <circle cx="60" cy="60" r="43.5" fill="none" stroke="#c8c8c8" strokeWidth="7" />
+          <circle cx="60" cy="60" r="40" fill="#7e7e7e" />
+          <circle cx="60" cy="60" r="31" fill="none" stroke="#a2a2a2" strokeWidth="1.2" />
+          {BEADS.map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="1.3" fill="#a6a6a6" />
+          ))}
+          <g transform="translate(60 61) scale(0.3) translate(-100 -176)">
+            <path d={BELL_PATH} fillRule="evenodd" fill="#b2b2b2" />
+          </g>
         </g>
-        <ellipse cx="38" cy="30" rx="16" ry="7" fill="#fff" opacity="0.35" transform="rotate(-32 38 30)" />
       </g>
     </svg>
+  );
+}
+
+// The flap's edge: from each top corner down to the point in three soft scallops,
+// `inset` further in for the liner printed inside it
+function flapPath(inset = 0) {
+  const y0 = inset * 0.6, tip: [number, number] = [350, 300 - inset * 1.6];
+  const side = (ax: number, ay: number, bx: number, by: number) => {
+    const dx = bx - ax, dy = by - ay, len = Math.hypot(dx, dy);
+    const pts: string[] = [];
+    for (let i = 1; i <= 60; i++) {
+      const t = i / 60, bump = 9 * Math.abs(Math.sin(Math.PI * 3 * t));
+      pts.push(`${(ax + dx * t - (dy / len) * bump).toFixed(1)} ${(ay + dy * t + (dx / len) * bump).toFixed(1)}`);
+    }
+    return pts.join(" L");
+  };
+  return `M${inset} ${y0} L${side(inset, y0, tip[0], tip[1])} L${side(tip[0], tip[1], 700 - inset, y0)} Z`;
+}
+const FLAP = flapPath();
+const FLAP_IN = flapPath(14);
+
+// The envelope's paper: a fine grain of light fibres and a faint mottle, over any shape
+// drawn with it; a light from the top left; and a soft blur for shadows
+function PaperDefs({ id }: { id: string }) {
+  return (
+    <>
+      <filter id={`${id}g`} x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="3" result="n" />
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 0.94  0 0 0 0 1  0 0 0 1.1 -0.5" result="lt" />
+        <feTurbulence type="fractalNoise" baseFrequency="0.018 0.03" numOctaves="2" seed="9" result="m" />
+        <feColorMatrix in="m" type="matrix" values="0 0 0 0 0.04  0 0 0 0 0  0 0 0 0 0.06  0 0 0 0.5 -0.17" result="dk" />
+        <feMerge>
+          <feMergeNode in="dk" />
+          <feMergeNode in="lt" />
+        </feMerge>
+        <feComposite in2="SourceAlpha" operator="in" />
+      </filter>
+      <linearGradient id={`${id}l`} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="700" y2="500">
+        <stop offset="0" stopColor="#fff" stopOpacity="0.08" />
+        <stop offset="0.5" stopColor="#fff" stopOpacity="0" />
+        <stop offset="1" stopColor="#000" stopOpacity="0.2" />
+      </linearGradient>
+      <filter id={`${id}b`} x="-10%" y="-10%" width="120%" height="120%">
+        <feGaussianBlur stdDeviation="6" />
+      </filter>
+    </>
   );
 }
 
 function Liner({ id }: { id: string }) {
   return (
     <pattern id={id} width="44" height="44" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)">
-      <rect width="44" height="44" fill="#260630" />
-      <g fill="#c8952e" opacity="0.45">
+      <rect width="44" height="44" fill="#1e0525" />
+      <g fill="#c79a45" opacity="0.38">
         <path d="M6 16 Q6 8 12 8 Q18 8 18 16 Z M5 16.5 h14 v2 h-14 Z M11 5.5 h2 v3 h-2 Z" />
         <path d="M28 38 Q28 30 34 30 Q40 30 40 38 Z M27 38.5 h14 v2 h-14 Z M33 27.5 h2 v3 h-2 Z" />
       </g>
@@ -113,6 +186,7 @@ export default function PassScene({
   const front = useRef<HTMLDivElement>(null);
   const flap = useRef<HTMLDivElement>(null);
   const flapOut = useRef<HTMLDivElement>(null);
+  const flapShadow = useRef<SVGPathElement>(null);
   const sealLayer = useRef<HTMLDivElement>(null);
   const seal = useRef<HTMLDivElement>(null);
   const halves = useRef<(HTMLDivElement | null)[]>([]);
@@ -219,6 +293,7 @@ export default function PassScene({
         flap.current.style.opacity = String(envFade);
       }
       if (flapOut.current) flapOut.current.style.filter = `brightness(${1 - 0.25 * Math.sin(turn * Math.PI)})`;
+      if (flapShadow.current) flapShadow.current.style.opacity = String(0.55 * (1 - seg(turn, 0, 0.3)));
 
       // The seal cracks, and the halves fall away
       const c = seg(p, 0.015, 0.12);
@@ -278,15 +353,23 @@ export default function PassScene({
           {head}
         </div>
 
-        {/* Inside of the envelope: a dark liner */}
+        {/* Inside of the envelope: the liner, darker deeper in the pocket */}
         <div ref={back} className="ps-env" style={{ zIndex: 1 }} aria-hidden="true">
-          <div className="ps-env-part">
+          <div className="ps-env-part is-back">
             <svg viewBox="0 0 700 500" preserveAspectRatio="none">
               <defs>
+                <PaperDefs id="pse0" />
                 <Liner id="psl1" />
+                <linearGradient id="psd" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor="#000" stopOpacity="0" />
+                  <stop offset="1" stopColor="#000" stopOpacity="0.55" />
+                </linearGradient>
               </defs>
-              <rect width="700" height="500" rx="4" fill="#2e0939" />
+              <rect width="700" height="500" fill="#2a0634" />
               <rect x="10" y="8" width="680" height="300" fill="url(#psl1)" />
+              <rect width="700" height="500" fill="url(#pse0l)" />
+              <rect width="700" height="500" fill="#000" filter="url(#pse0g)" opacity="0.3" />
+              <rect y="100" width="700" height="400" fill="url(#psd)" />
             </svg>
           </div>
         </div>
@@ -295,26 +378,45 @@ export default function PassScene({
           {pass({ revealed, tilt: settled })}
         </div>
 
-        {/* The pocket: side flaps and the bottom flap, with thin fold lines */}
+        {/* The pocket: side flaps and the bottom flap, folded paper with soft shadows where
+            one layer lies over another */}
         <div ref={front} className="ps-env" style={{ zIndex: 3 }} aria-hidden="true">
           <div className="ps-env-part">
             <svg viewBox="0 0 700 500" preserveAspectRatio="none">
               <defs>
+                <PaperDefs id="pse1" />
                 <linearGradient id="pss1" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0" stopColor="#33093f" />
-                  <stop offset="1" stopColor="#40104c" />
+                  <stop offset="0" stopColor="#2c0637" />
+                  <stop offset="1" stopColor="#35083f" />
                 </linearGradient>
                 <linearGradient id="pss2" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stopColor="#521960" />
-                  <stop offset="1" stopColor="#3f0f4a" />
+                  <stop offset="0" stopColor="#3b0a48" />
+                  <stop offset="1" stopColor="#32073e" />
                 </linearGradient>
+                <clipPath id="pso">
+                  <path d="M0 0 L322 232 L350 214 L378 232 L700 0 Z" />
+                </clipPath>
               </defs>
+              {/* The pocket's edge darkens whatever is just inside it */}
+              <g clipPath="url(#pso)" opacity="0.6">
+                <path d="M0 0 L322 232 L350 214 L378 232 L700 0" fill="none" stroke="#0b0110" strokeWidth="28" filter="url(#pse1b)" />
+              </g>
               <path d="M0 0 L372 268 Q378 273 372 278 L0 500 Z" fill="url(#pss1)" />
               <path d="M700 0 L328 268 Q322 273 328 278 L700 500 Z" fill="url(#pss1)" />
+              <path d="M0 500 L330 226 Q350 212 370 226 L700 500 Z" fill="#000" opacity="0.45" filter="url(#pse1b)" transform="translate(3 -2)" />
               <path d="M0 500 L330 226 Q350 212 370 226 L700 500 Z" fill="url(#pss2)" />
-              <path d="M0 0 L372 268 M700 0 L328 268 M0 500 L330 226 Q350 212 370 226 L700 500" fill="none" stroke="#fff" strokeOpacity="0.08" strokeWidth="2" />
+              <g fill="#000">
+                <path d="M0 0 L372 268 Q378 273 372 278 L0 500 Z M700 0 L328 268 Q322 273 328 278 L700 500 Z M0 500 L330 226 Q350 212 370 226 L700 500 Z" fill="url(#pse1l)" />
+                <path d="M0 0 L372 268 Q378 273 372 278 L0 500 Z M700 0 L328 268 Q322 273 328 278 L700 500 Z" filter="url(#pse1g)" opacity="0.4" />
+                <path d="M0 500 L330 226 Q350 212 370 226 L700 500 Z" filter="url(#pse1g)" opacity="0.4" />
+              </g>
+              {/* Folded edges catch the light */}
+              <path d="M0 500 L330 226 Q350 212 370 226 L700 500" fill="none" stroke="#fff" strokeOpacity="0.14" strokeWidth="1.5" />
+              <path d="M0 0 L372 268 M700 0 L328 268" fill="none" stroke="#fff" strokeOpacity="0.08" strokeWidth="1.5" />
               {/* Sides and bottom only: a top edge here would cross the pass as it comes out */}
-              <path d="M1 1 V499 H699 V1" fill="none" stroke="#fff" strokeOpacity="0.06" strokeWidth="2" />
+              <path d="M1 1 V499 H699 V1" fill="none" stroke="#fff" strokeOpacity="0.07" strokeWidth="2" />
+              {/* The closed flap's soft shadow on the pocket; fades as the flap lifts */}
+              <path ref={flapShadow} d={FLAP} fill="#0b0110" opacity="0.55" filter="url(#pse1b)" transform="translate(4 9)" />
             </svg>
           </div>
         </div>
@@ -323,22 +425,27 @@ export default function PassScene({
           <div ref={flapOut} className="ps-flap-face">
             <svg viewBox="0 0 700 500" preserveAspectRatio="none">
               <defs>
+                <PaperDefs id="pse2" />
                 <linearGradient id="pss3" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stopColor="#47135a" />
-                  <stop offset="1" stopColor="#5c1f6c" />
+                  <stop offset="0" stopColor="#3c0b4a" />
+                  <stop offset="1" stopColor="#32073e" />
                 </linearGradient>
               </defs>
-              <path d="M0 0 L700 0 L370 296 Q350 312 330 296 Z" fill="url(#pss3)" />
-              <path d="M0 0 L370 296 Q350 312 330 296 L700 0" fill="none" stroke="#fff" strokeOpacity="0.09" strokeWidth="2" />
+              <path d={FLAP} fill="url(#pss3)" />
+              <path d={FLAP} fill="url(#pse2l)" />
+              <path d={FLAP} fill="#000" filter="url(#pse2g)" opacity="0.4" />
+              <path d={FLAP} fill="none" stroke="#fff" strokeOpacity="0.14" strokeWidth="1.5" />
             </svg>
           </div>
           <div className="ps-flap-face is-inside">
             <svg viewBox="0 0 700 500" preserveAspectRatio="none">
               <defs>
+                <PaperDefs id="pse3" />
                 <Liner id="psl2" />
               </defs>
-              <path d="M0 0 L700 0 L370 296 Q350 312 330 296 Z" fill="#3a0c46" />
-              <path d="M12 6 L688 6 L366 290 Q350 302 334 290 Z" fill="url(#psl2)" />
+              <path d={FLAP} fill="#2a0634" />
+              <path d={FLAP_IN} fill="url(#psl2)" />
+              <path d={FLAP} fill="#000" filter="url(#pse3g)" opacity="0.3" />
             </svg>
           </div>
         </div>
