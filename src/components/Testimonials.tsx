@@ -17,14 +17,15 @@ interface Testimonial {
   signature: string[]; // SVG path strokes, drawn in a 168×72 box
 }
 
-// TODO: DUMMY CONTENT — fictional people and quotes. Replace with real excerpts
-// from LinkedIn recommendations before publishing.
+// Amlan's words are his real recommendation. TODO: Snehpk's and Anish's quotes are
+// placeholders until Ashmik sends their copy. The signature strokes are drawn
+// scribbles, not their real signatures.
 const testimonials: Testimonial[] = [
   {
     quote:
-      "Ashmik turned a scattered set of components into a design system the whole team actually wanted to use. Every decision came with a reason, and every handoff came with documentation.",
-    name: "Rohan Mehta",
-    role: "Engineering Lead",
+      "Her ability to take full ownership, navigate tough situations, and apply her solid design-system expertise makes her stand out. She leads with clarity, confidence, and accountability.",
+    name: "Amlan Mukherjee",
+    role: "Ex-Design Manager, Travelopia",
     signature: [
       "M14 50C12 34 16 18 24 12c8-6 16 0 12 10-3 8-14 10-18 8 8 6 14 16 22 22",
       "M40 52c4-12 10-14 12-8s-4 8-2 0 8-10 10-2c1 6 2 8 4 2s6-14 8-22c-2 12-2 22 0 28 2-8 8-12 10-4 1 4 2 4 4-2",
@@ -34,9 +35,9 @@ const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "He has a knack for finding the real problem behind a request. The reservations redesign made a dense tool feel calm for our ops team.",
-    name: "Sarah Lindqvist",
-    role: "Product Manager",
+      "Placeholder: Snehpk's recommendation goes here.",
+    name: "Snehpk",
+    role: "Meesho",
     signature: [
       "M32 16c-8-6-20-2-16 8 4 8 18 8 16 18s-18 10-22 2",
       "M38 46c2-8 10-8 8 0s-6 6-4 0 6-4 8 2c2-6 6-10 10-8-4 4-4 10 0 8 4-6 8-8 8 0 0-8 4-26 6-32-2 16-2 28 0 34 2-8 8-10 8-2",
@@ -46,9 +47,9 @@ const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "Ashmik makes complicated flows feel obvious. Insurance went from an afterthought at checkout to something guests actually chose.",
-    name: "Daniel Okafor",
-    role: "Head of Product",
+      "Placeholder: Anish's recommendation goes here.",
+    name: "Anish",
+    role: "Product Manager, Enchanting Travels",
     signature: [
       "M18 16c0 12-2 26-4 36M14 18c16-6 30 4 26 18s-18 18-28 14",
       "M44 46c2-8 8-8 8-2s-4 6-3 0 5-6 8 2c2-6 6-8 8-2 1 4 2 4 3 0 2-8 4-18 6-26-2 10-2 20 0 28",
