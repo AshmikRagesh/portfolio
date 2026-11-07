@@ -1217,13 +1217,12 @@
    A terminal-style check-in on grape. Repeat visits in the same session get
    .loader-skip on <html> before paint (layout.tsx), so it never flashes. */
 .loader-skip .bella-loader { display: none; }
-/* Three DS backgrounds while we choose (?loader=vanilla | midnight | plum):
-   --ld-bg screen, --ld-ink text, --ld-bar the highlight bar, --ld-bar-ink text on it,
-   --ld-spot the soft light behind Bella that keeps her dark dome readable */
-.bella-loader { background: var(--ld-bg); color: var(--ld-ink); }
-.bella-loader--vanilla { --ld-bg: #ece5d8; --ld-ink: #32073e; --ld-bar: #32073e; --ld-bar-ink: #ece5d8; --ld-spot: rgba(255, 255, 255, 0.7); }
-.bella-loader--midnight { --ld-bg: #1e0525; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #1e0525; --ld-spot: rgba(236, 229, 216, 0.26); }
-.bella-loader--plum { --ld-bg: #32073e; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #32073e; --ld-spot: rgba(236, 229, 216, 0.3); }
+/* Midnight screen, vanilla text and highlight bar. --ld-spot is the soft light
+   behind Bella; at 100 it warms to gold as she's cast in gold */
+.bella-loader { --ld-bg: #1e0525; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #1e0525; --ld-spot: rgba(236, 229, 216, 0.22); background: var(--ld-bg); color: var(--ld-ink); }
+.bella-loader.is-done { --ld-spot: rgba(242, 199, 92, 0.3); }
+/* Bella's dome shade is midnight too: a thin vanilla rim light keeps her outline */
+.bella-loader-bella { filter: drop-shadow(0 0 1px rgba(236, 229, 216, 0.55)) drop-shadow(0 0 12px rgba(236, 229, 216, 0.18)); }
 .bella-loader-spot {
   position: absolute;
   left: 50%;
