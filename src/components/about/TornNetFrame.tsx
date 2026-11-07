@@ -362,7 +362,7 @@ export default function TornNetFrame({
     <div className={`flex flex-col items-start ${className}`}>
       <div
         ref={cardRef}
-        className="relative w-full touch-none select-none [filter:drop-shadow(0_1px_1px_rgba(30,5,37,0.3))_drop-shadow(0_8px_12px_rgba(30,5,37,0.16))_drop-shadow(0_28px_40px_rgba(30,5,37,0.16))]"
+        className="relative w-full touch-none select-none [filter:drop-shadow(0_1px_1px_rgba(50,30,12,0.28))_drop-shadow(0_8px_12px_rgba(50,30,12,0.16))_drop-shadow(0_28px_40px_rgba(50,30,12,0.14))]"
         style={{ aspectRatio: `${FRAME.w} / ${FRAME.h}` }}
       >
         <div
@@ -375,7 +375,7 @@ export default function TornNetFrame({
           }}
         >
           <Image src={src} alt={alt} fill sizes="440px" priority draggable={false} className="object-cover object-center" />
-          <div className="pointer-events-none absolute inset-0 shadow-[inset_2px_2px_6px_rgba(30,5,37,0.18)]" />
+          <div className="pointer-events-none absolute inset-0 shadow-[inset_3px_3px_8px_rgba(30,16,6,0.4),inset_0_0_2px_rgba(30,16,6,0.5)]" />
         </div>
         <PictureFrame className="pointer-events-none absolute inset-0 h-full w-full" />
       </div>
