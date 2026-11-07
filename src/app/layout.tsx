@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Nanum_Pen_Script } from "next/font/google";
+import { Geist, Geist_Mono, Nanum_Pen_Script, Source_Serif_4 } from "next/font/google";
 import GlobalLayout from "@/components/GlobalLayout";
 import "./globals.css";
 
@@ -14,6 +14,15 @@ const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist",
   weight: ["400", "500", "600"],
+});
+
+// Source Serif (v4, the current release of Source Serif Pro) — the primary font, for headings.
+// GT Alpina stays loaded in globals.css as the fallback, so switching back is one line in tokens.ts.
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
 });
 
 const nanumPen = Nanum_Pen_Script({
@@ -43,7 +52,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geist.variable} ${geistMono.variable} ${nanumPen.variable} bg-background font-body text-text-base antialiased`}
+        className={`${geist.variable} ${geistMono.variable} ${sourceSerif.variable} ${nanumPen.variable} bg-background font-body text-text-base antialiased`}
       >
         <GlobalLayout>{children}</GlobalLayout>
       </body>
