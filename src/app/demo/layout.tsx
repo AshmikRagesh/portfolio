@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
 import "./demo.css";
 
 // Theme preview for "The Guesthouse" — not linked from the site and not indexed.
-// Body text uses Geist here (instead of Roboto Slab) so the swap can be judged.
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-demo-body",
-  weight: ["400", "500", "600"],
-});
+// Body text uses Geist here (instead of Roboto Slab) so the swap can be judged. It reuses
+// the Geist the root layout already loads (--font-geist): loading the same Google font a
+// second time made production builds fail when one of the two downloads came back broken.
 
 export const metadata: Metadata = {
   title: "The Guesthouse · Ashmik Ragesh (demo)",
@@ -17,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function DemoLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`${geist.variable} demo-root`}>
+    <div className="demo-root [--font-demo-body:var(--font-geist)]">
       {/* Hand-drawn wobble for lines and sticker edges */}
       <svg aria-hidden="true" width="0" height="0" className="absolute">
         <filter id="scribble">

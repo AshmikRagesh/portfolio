@@ -1,34 +1,44 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Nanum_Pen_Script, Source_Serif_4 } from "next/font/google";
+import localFont from "next/font/local";
 import GlobalLayout from "@/components/GlobalLayout";
 import "./globals.css";
 
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
+// All fonts are self-hosted from src/app/fonts (OFL, licences alongside). They used to come
+// from next/font/google, but that downloads them at build time, and Next 15.1's loader
+// crashes when Google returns a font address without a file extension, which failed
+// production builds on Vercel.
+
+const geistMono = localFont({
+  src: "./fonts/GeistMono-Variable.woff2",
   variable: "--font-brand",
-  weight: ["400", "500"],
+  weight: "100 900",
+  display: "swap",
 });
 
 // Geist — the secondary font: body text everywhere, and plain UI
-const geist = Geist({
-  subsets: ["latin"],
+const geist = localFont({
+  src: "./fonts/Geist-Variable.woff2",
   variable: "--font-geist",
-  weight: ["400", "500", "600"],
+  weight: "100 900",
+  display: "swap",
 });
 
-// Source Serif (v4, the current release of Source Serif Pro) — the primary font, for headings.
+// Source Serif 4 (the current release of Source Serif Pro) — the primary font, for headings.
 // GT Alpina stays loaded in globals.css as the fallback, so switching back is one line in tokens.ts.
-const sourceSerif = Source_Serif_4({
-  subsets: ["latin"],
+const sourceSerif = localFont({
+  src: [
+    { path: "./fonts/source-serif-4-latin-wght-normal.woff2", weight: "200 900", style: "normal" },
+    { path: "./fonts/source-serif-4-latin-wght-italic.woff2", weight: "200 900", style: "italic" },
+  ],
   variable: "--font-serif",
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
+  display: "swap",
 });
 
-const nanumPen = Nanum_Pen_Script({
-  subsets: ["latin"],
+const nanumPen = localFont({
+  src: "./fonts/nanum-pen-script-latin-400-normal.woff2",
   variable: "--font-handwriting",
-  weight: ["400"],
+  weight: "400",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

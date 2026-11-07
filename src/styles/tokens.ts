@@ -32,16 +32,16 @@ export const tokens = {
     warning:        "#c5444a",  // Negative — cons, alerts
   },
   fontFamily: {
-    // Geist Mono — nav links, CTA chips (loaded via next/font/google in layout.tsx)
+    // Geist Mono — nav links, CTA chips (self-hosted via next/font/local in layout.tsx)
     brand: ["var(--font-brand)", "monospace"],
-    // Geist — plain UI sans, used for the host's tooltip (loaded via next/font/google in layout.tsx)
+    // Geist — plain UI sans, used for the host's tooltip (self-hosted via next/font/local in layout.tsx)
     geist: ["var(--font-geist)", "sans-serif"],
-    // Geist — the secondary font: body / lead / captions, and the page default (next/font/google in layout.tsx)
+    // Geist — the secondary font: body / lead / captions, and the page default (next/font/local in layout.tsx)
     body: ["var(--font-geist)", "sans-serif"],
-    // Source Serif 4 — the primary font, for display headings (next/font/google in layout.tsx).
+    // Source Serif 4 — the primary font, for display headings (next/font/local in layout.tsx).
     // GT Alpina Trial (public/fonts/, @font-face in globals.css) is the fallback; drop the var to go back.
     heading: ["var(--font-serif)", "GT Alpina Trial", "serif"],
-    // Nanum Pen Script — handwritten decorative tags (loaded via next/font/google in layout.tsx)
+    // Nanum Pen Script — handwritten decorative tags (self-hosted via next/font/local in layout.tsx)
     // Exposed under tailwind.config.ts as `font-handwriting`.
   },
   // Corner radius — one scale for the whole site, every step even:
