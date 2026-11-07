@@ -1217,24 +1217,30 @@
    A terminal-style check-in on grape. Repeat visits in the same session get
    .loader-skip on <html> before paint (layout.tsx), so it never flashes. */
 .loader-skip .bella-loader { display: none; }
-/* Midnight screen, vanilla text and highlight bar */
-.bella-loader { --ld-bg: #1e0525; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #1e0525; background: var(--ld-bg); color: var(--ld-ink); }
-/* Bella's dome shade is midnight too: a crisp 1px vanilla outline keeps her shape
-   (four hard-edged drop-shadows, no blur). Her own ground shadow is hidden here,
-   so it doesn't get outlined; she stands on a flat pool of light instead. */
-.bella-loader-bella .host {
-  filter: drop-shadow(1px 0 0 rgba(236, 229, 216, 0.5)) drop-shadow(-1px 0 0 rgba(236, 229, 216, 0.5)) drop-shadow(0 1px 0 rgba(236, 229, 216, 0.5)) drop-shadow(0 -1px 0 rgba(236, 229, 216, 0.5));
-}
+/* Midnight screen, vanilla text and highlight bar. The screen colour is on the two
+   curtain halves, so the page shows through as they part. */
+.bella-loader { --ld-bg: #1e0525; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #1e0525; color: var(--ld-ink); }
+.bella-loader-curtain { position: absolute; inset: 0; background: var(--ld-bg); }
+/* Bella's own ground shadow is hidden here: she stands in a soft pool of light with a
+   tight contact shadow under her base */
 .bella-loader-bella .host > ellipse { display: none; }
 .bella-loader-pool {
   position: absolute;
   left: 50%;
-  width: 112px;
-  height: 12px;
+  width: 240px;
+  height: 40px;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: #ece5d8;
-  opacity: 0.12;
+  background: radial-gradient(closest-side, rgba(236, 229, 216, 0.2), rgba(236, 229, 216, 0.06) 60%, transparent);
+}
+.bella-loader-contact {
+  position: absolute;
+  left: 50%;
+  width: 116px;
+  height: 6px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(12, 1, 16, 0.9), rgba(12, 1, 16, 0));
 }
 /* The chores drift upward forever: the list is doubled, and one loop moves it by
    six rows (16px line + 12px gap each) */

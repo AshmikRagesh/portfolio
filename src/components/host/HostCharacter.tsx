@@ -39,6 +39,12 @@
 //              gold rim, the gold bow tie popping on, star eyes, then a hop and back
 //              to normal. Sparks burst twice. Nothing stays afterwards.
 //
+//   rendered   a richer, lit finish for big moments (the loader): a lacquered metal
+//              dome with a soft studio highlight that slides with the light, a rim
+//              light on the right edge, the base reflected in the dome's lower edge,
+//              a polished plunger and a cylinder-shaded base, and glossy eyes. Same
+//              shapes, moves and expressions as the flat drawing.
+//
 // There's no mouth — the face is just the eyes.
 //
 // Cursor tracking and the arm swing write straight to the DOM on rAF, so neither
@@ -107,6 +113,8 @@ interface Props {
   expression?: "surprised" | null;
   /** Bump to play the goal celebration. */
   celebrate?: number;
+  /** The richer, lit finish (used large, on the loader). */
+  rendered?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -114,7 +122,7 @@ interface Props {
 // easeOutBack — a small overshoot, so the hands land with a little weight
 const settle = (t: number) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
 
-export default function HostCharacter({ mood = "idle", gold = false, holding = false, ding = 0, gaze = null, glasses = null, expression = null, celebrate = 0, className = "", style }: Props) {
+export default function HostCharacter({ mood = "idle", gold = false, holding = false, ding = 0, gaze = null, glasses = null, expression = null, celebrate = 0, rendered = false, className = "", style }: Props) {
   const uid = useId().replace(/:/g, "");
   const clipId = `${uid}-dome`;
 
@@ -314,6 +322,9 @@ export default function HostCharacter({ mood = "idle", gold = false, holding = f
   const golden = champion || gold;
   const finish = golden ? FINISH.gold : FINISH.primary;
   const ink = finish.ink;
+  // The rendered finish swaps flat fills for gradients (defs below); gold stays flat
+  const lit = rendered && !golden;
+  const g = (name: string, flat: string) => (lit ? `url(#${uid}-${name})` : flat);
 
   const armLayer = (
     <g>
@@ -355,6 +366,61 @@ export default function HostCharacter({ mood = "idle", gold = false, holding = f
           <stop offset="0.45" stopColor={GRAPE.lit} />
           <stop offset="1" stopColor={GRAPE.mid} />
         </radialGradient>
+        {lit && (
+          <>
+            {/* Lacquered plum metal, lit from the upper left */}
+            <radialGradient id={`${uid}-metal`} cx="34%" cy="26%" r="86%">
+              <stop offset="0" stopColor="#6b2a7c" />
+              <stop offset="0.32" stopColor="#4a1559" />
+              <stop offset="0.7" stopColor="#2c0a36" />
+              <stop offset="1" stopColor="#14021a" />
+            </radialGradient>
+            {/* The soft studio highlight; slides opposite the gaze with the light */}
+            <radialGradient id={`${uid}-sheen`} cx="30%" cy="24%" r="46%">
+              <stop offset="0" stopColor="#fff" stopOpacity="0.5" />
+              <stop offset="0.45" stopColor="#fff" stopOpacity="0.12" />
+              <stop offset="1" stopColor="#fff" stopOpacity="0" />
+            </radialGradient>
+            {/* The grape base reflected in the dome's lower edge */}
+            <linearGradient id={`${uid}-reflect`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor={GRAPE.lit} stopOpacity="0" />
+              <stop offset="1" stopColor={GRAPE.lit} stopOpacity="0.55" />
+            </linearGradient>
+            {/* Rim light down the right edge, strongest at the shoulder */}
+            <linearGradient id={`${uid}-rim`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#f3e9f6" stopOpacity="0.1" />
+              <stop offset="0.4" stopColor="#f3e9f6" stopOpacity="0.55" />
+              <stop offset="1" stopColor="#f3e9f6" stopOpacity="0.05" />
+            </linearGradient>
+            {/* Polished cylinders: plunger and base, lit from the left */}
+            <linearGradient id={`${uid}-chrome`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor="#5a0a3c" />
+              <stop offset="0.28" stopColor="#e86bb4" />
+              <stop offset="0.5" stopColor={GRAPE.mid} />
+              <stop offset="1" stopColor="#3e0628" />
+            </linearGradient>
+            <linearGradient id={`${uid}-base`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor="#4a0832" />
+              <stop offset="0.22" stopColor={GRAPE.lit} />
+              <stop offset="0.6" stopColor={GRAPE.mid} />
+              <stop offset="1" stopColor="#3a0626" />
+            </linearGradient>
+            <linearGradient id={`${uid}-base-top`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#f08cc4" />
+              <stop offset="1" stopColor={GRAPE.mid} />
+            </linearGradient>
+            {/* Glossy eyes: whites shaded at the rim, deep pupils */}
+            <radialGradient id={`${uid}-white`} cx="44%" cy="40%" r="62%">
+              <stop offset="0" stopColor="#ffffff" />
+              <stop offset="0.7" stopColor="#f6f0f7" />
+              <stop offset="1" stopColor="#d9cdde" />
+            </radialGradient>
+            <radialGradient id={`${uid}-pupil`} cx="40%" cy="36%" r="70%">
+              <stop offset="0" stopColor="#3a1046" />
+              <stop offset="1" stopColor="#0c0110" />
+            </radialGradient>
+          </>
+        )}
       </defs>
 
       {/* Shadow beneath */}
@@ -368,16 +434,27 @@ export default function HostCharacter({ mood = "idle", gold = false, holding = f
         <g className="host-breathe">
           {/* Plunger — pressed down on each ding */}
           <g className="host-plunger">
-            <rect x="94" y="126" width="12" height="12" rx="3" fill={GRAPE.mid} />
-            <rect x="94" y="126" width="12" height="5" rx="2.5" fill={GRAPE.lit} />
-            <rect x="88" y="136" width="24" height="6" rx="3" fill={GRAPE.shade} />
+            <rect x="94" y="126" width="12" height="12" rx="3" fill={g("chrome", GRAPE.mid)} />
+            <rect x="94" y="126" width="12" height="5" rx="2.5" fill={g("base-top", GRAPE.lit)} />
+            <rect x="88" y="136" width="24" height="6" rx="3" fill={g("chrome", GRAPE.shade)} />
+            {lit && <rect x="96.4" y="128" width="2" height="8" rx="1" fill="#fff" opacity="0.55" />}
           </g>
 
           {/* Dome — shudders on each ding */}
           <g className="host-dome">
-            <path d={DOME} fill={finish.shade} />
+            <path d={DOME} fill={g("metal", finish.shade)} />
             <g clipPath={`url(#${clipId})`}>
-              <path ref={litRef} d={DOME} fill={finish.lit} transform={`translate(${LIGHT.x} ${LIGHT.y})`} />
+              <path ref={litRef} d={DOME} fill={g("sheen", finish.lit)} transform={`translate(${LIGHT.x} ${LIGHT.y})`} />
+              {lit && (
+                <>
+                  {/* A crisp window reflection near the crown */}
+                  <path d="M70 160 Q76 148 90 144" stroke="#fff" strokeOpacity="0.7" strokeWidth="3" fill="none" strokeLinecap="round" />
+                  {/* Rim light, the base reflected low on the dome, and the seam's shadow */}
+                  <path d="M152 214 Q152 140 100 140" stroke={`url(#${uid}-rim)`} strokeWidth="5" fill="none" />
+                  <rect x="40" y="194" width="120" height="20" fill={`url(#${uid}-reflect)`} />
+                  <rect x="40" y="210" width="120" height="4" fill="#0c0110" opacity="0.45" />
+                </>
+              )}
               {/* A glint that sweeps across on each ding */}
               <rect className="host-sweep" x="20" y="130" width="14" height="100" fill="#fff" opacity="0" transform="skewX(-20)" />
               {/* Celebrating: the dome lights up grape from inside, after a white flash */}
@@ -388,7 +465,7 @@ export default function HostCharacter({ mood = "idle", gold = false, holding = f
               <rect ref={flashRef} x="40" y="120" width="120" height="104" fill="#fff" opacity="0" />
             </g>
             {/* One curved highlight down the left, as in a polished dome */}
-            <path d="M66 198 Q64 168 82 152" stroke="#fff" strokeOpacity="0.18" strokeWidth="5" fill="none" strokeLinecap="round" />
+            <path d="M66 198 Q64 168 82 152" stroke="#fff" strokeOpacity={lit ? 0.28 : 0.18} strokeWidth="5" fill="none" strokeLinecap="round" />
             {/* Celebrating: a gold rim round the dome */}
             <path ref={rimRef} d="M48 214 Q48 140 100 140 Q152 140 152 214" stroke={RIM} strokeWidth="2.6" fill="none" strokeLinecap="round" opacity="0" />
 
@@ -438,13 +515,19 @@ export default function HostCharacter({ mood = "idle", gold = false, holding = f
               ) : (
                 <g className="host-blink">
                   {/* Whites stay put; pupils and catchlights follow the cursor */}
-                  <ellipse cx="85" cy="176" rx="9" ry="11" fill="#fff" />
-                  <ellipse cx="115" cy="176" rx="9" ry="11" fill="#fff" />
+                  <ellipse cx="85" cy="176" rx="9" ry="11" fill={g("white", "#fff")} />
+                  <ellipse cx="115" cy="176" rx="9" ry="11" fill={g("white", "#fff")} />
                   <g ref={pupilsRef}>
-                    <circle cx="87" cy="177" r="5.4" fill={MIDNIGHT} />
-                    <circle cx="117" cy="177" r="5.4" fill={MIDNIGHT} />
+                    <circle cx="87" cy="177" r="5.4" fill={g("pupil", MIDNIGHT)} />
+                    <circle cx="117" cy="177" r="5.4" fill={g("pupil", MIDNIGHT)} />
                     <circle cx="88.8" cy="174.6" r="1.9" fill="#fff" />
                     <circle cx="118.8" cy="174.6" r="1.9" fill="#fff" />
+                    {lit && (
+                      <>
+                        <circle cx="85.4" cy="179.6" r="0.9" fill="#fff" opacity="0.7" />
+                        <circle cx="115.4" cy="179.6" r="0.9" fill="#fff" opacity="0.7" />
+                      </>
+                    )}
                   </g>
                 </g>
               )}
@@ -480,9 +563,10 @@ export default function HostCharacter({ mood = "idle", gold = false, holding = f
         </g>
 
         {/* Base — grape, with a lit top edge */}
-        <rect x="38" y="212" width="124" height="14" rx="7" fill={GRAPE.shade} />
-        <rect x="38" y="212" width="124" height="6" rx="3" fill={GRAPE.mid} />
-        <rect x="48" y="213" width="44" height="2" rx="1" fill="#fff" opacity="0.2" />
+        <rect x="38" y="212" width="124" height="14" rx="7" fill={g("base", GRAPE.shade)} />
+        <rect x="38" y="212" width="124" height="6" rx="3" fill={g("base-top", GRAPE.mid)} />
+        <rect x="48" y="213" width="44" height="2" rx="1" fill="#fff" opacity={lit ? 0.45 : 0.2} />
+        {lit && <rect x="40" y="223" width="120" height="3" rx="1.5" fill="#0c0110" opacity="0.35" />}
 
         {/* Celebrating: the gold bow tie */}
         <g ref={bowRef} opacity="0">

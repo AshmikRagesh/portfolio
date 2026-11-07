@@ -6,27 +6,29 @@
 //
 //   left    a list of housekeeping chores ("// Fluffing your pillows...") that drifts
 //           slowly upward on a loop; the chore under way is marked by a vanilla bar.
-//   centre  Bella stands on a small pool of light above the count "( 42% )", set in the
+//   centre  Bella, in her rendered finish, stands in a soft pool of light above the count "( 42% )", set in the
 //           display serif. Her eyes follow the highlighted chore as it drifts, or
 //           the cursor while it moves. Each chore gets its own move: a bounce to
 //           fluff the pillows, a ding and a glint for the polish, a wiggle for the
 //           towels, a hop for the mint, a sleepy sink for the turndown. Tap her to
-//           ring for service. At 100 she rings once, then the screen lifts.
+//           ring for service. At 100 she rings once, then the curtain opens.
 //   right   a note to the guest types itself out: each letter arrives as a solid
 //           block, flickers through a few random characters, then settles; a block
 //           cursor blinks at the end.
 //
 // The count reaches 100 only once the page has loaded (or after MAX_MS). Then the
 // last chore reads "Your room is ready", Bella rings once, the text blinks
-// out and the screen lifts away like a blind. A click or key skips once the page has loaded.
+// out and the screen opens like a curtain: two halves part from the middle, their
+// inner edges slanted (the bottom travels further than the top), over 1.05s on
+// cubic-bezier(0.76, 0, 0.24, 1). A click or key skips once the page has loaded.
 // On phones the three parts stack: list on top, count in the middle, note below.
 //
 // Bella is flat, so she only moves in the picture plane (hops, squash).
 // Shown once per session (sessionStorage "bella-loaded"); ?loader shows it again.
 // An inline script in layout.tsx hides it before paint on repeat visits.
 // With reduced motion nothing scrolls or scrambles, and the screen fades out.
-// Bella's dome shade is midnight too, so a crisp vanilla outline (globals.css)
-// keeps her shape readable on the dark screen.
+// Bella's rendered finish (HostCharacter `rendered`) gives her a lit, lacquered
+// look with a rim light, so she reads on the dark screen without an outline.
 
 import { useEffect, useRef, useState } from "react";
 import HostCharacter, { hostLayout } from "@/components/host/HostCharacter";
@@ -34,7 +36,13 @@ import HostCharacter, { hostLayout } from "@/components/host/HostCharacter";
 const SEEN_KEY = "bella-loaded";
 const MAX_MS = 9000; // never hold the visitor longer than this, loaded or not
 const PACE_MS = 3600; // the count's pace when the page is quick
-const LIFT_MS = 900;
+const CURTAIN_MS = 1050;
+const CURTAIN_EASE = "cubic-bezier(0.76, 0, 0.24, 1)";
+// Each half: from its side of the screen to off-screen, the inner edge slanting as it goes
+const CURTAIN = {
+  left: ["polygon(0% -10%, 50% -10%, 50% 110%, 0% 110%)", "polygon(0% -10%, -6% -10%, -86% 110%, 0% 110%)"],
+  right: ["polygon(50% -10%, 100% -10%, 100% 110%, 50% 110%)", "polygon(106% -10%, 100% -10%, 100% 110%, 186% 110%)"],
+};
 const BELLA_H = 112;
 
 const CHORES = [
@@ -92,7 +100,7 @@ export default function BellaLoader() {
     let fontsReady = false;
     (document.fonts?.ready ?? Promise.resolve()).then(() => (fontsReady = true));
 
-    // ── Leaving: the text blinks out, then the screen lifts away like a blind ─
+    // ── Leaving: the text blinks out, then the curtain opens ──────────────────
     let leaving = false;
     let restored = false;
     const restore = () => {
@@ -115,9 +123,13 @@ export default function BellaLoader() {
       }
       setClosing(true);
       at(260, () => {
-        root?.animate([{ transform: "translateY(0)" }, { transform: "translateY(-100%)" }], { duration: LIFT_MS, easing: "cubic-bezier(0.76, 0, 0.24, 1)", fill: "forwards" }).finished.then(restore, restore);
+        if (root) root.style.pointerEvents = "none";
+        const halves = (["left", "right"] as const).map((side) =>
+          root?.querySelector<HTMLElement>(`[data-curtain="${side}"]`)?.animate([{ clipPath: CURTAIN[side][0] }, { clipPath: CURTAIN[side][1] }], { duration: CURTAIN_MS, easing: CURTAIN_EASE, fill: "forwards" }),
+        );
+        Promise.all(halves.map((a) => a?.finished)).then(restore, restore);
       });
-      at(260 + LIFT_MS + 200, restore); // in case the tab never paints it
+      at(260 + CURTAIN_MS + 200, restore); // in case the tab never paints it
     };
 
     const skip = (e: Event) => {
@@ -234,6 +246,9 @@ export default function BellaLoader() {
       aria-valuemax={100}
       aria-valuenow={n}
     >
+      {/* The curtain: two midnight halves that part when it's time to go */}
+      <div data-curtain="left" className="bella-loader-curtain" style={{ clipPath: CURTAIN.left[0] }} aria-hidden="true" />
+      <div data-curtain="right" className="bella-loader-curtain" style={{ clipPath: CURTAIN.right[0] }} aria-hidden="true" />
       <div className="relative flex h-full flex-col items-center justify-between px-4 py-12 md:flex-row md:px-5 md:py-0">
         {/* The chores, drifting upward on a loop */}
         <div className="bella-loader-fade bella-loader-list h-[164px] w-full overflow-hidden md:w-auto">
@@ -248,10 +263,11 @@ export default function BellaLoader() {
 
         {/* Bella on top of the count */}
         <div className="bella-loader-fade relative flex flex-col items-center md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-[60%]">
-          {/* The pool of light she stands in (stays on the floor when she hops) */}
-          <div className="bella-loader-pool" style={{ top: bella.base - 6 }} aria-hidden="true" />
+          {/* The pool of light she stands in, and her contact shadow (both stay on the floor when she hops) */}
+          <div className="bella-loader-pool" style={{ top: bella.base - 20 }} aria-hidden="true" />
+          <div className="bella-loader-contact" style={{ top: bella.base - 3 }} aria-hidden="true" />
           <div ref={bellaRef} onPointerDown={ring} className="bella-loader-bella relative cursor-pointer" style={{ transformOrigin: "50% 100%" }} title="Ring for service">
-            <HostCharacter ding={ding} gaze={gaze} style={{ width: bella.width, height: BELLA_H }} />
+            <HostCharacter rendered ding={ding} gaze={gaze} style={{ width: bella.width, height: BELLA_H }} />
           </div>
           <div className="relative mt-4 whitespace-pre font-heading text-h2 tabular-nums normal-case md:text-h2-md">{`( ${n}% )`}</div>
         </div>
