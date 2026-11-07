@@ -99,6 +99,17 @@ function Crimp({ x1, x2, y, h, shade, light }: { x1: number; x2: number; y: numb
   );
 }
 
+// Typed lines on a sheet: thin grey bars at set widths (%), like body text seen from afar
+function SheetLines({ widths, className = "" }: { widths: number[]; className?: string }) {
+  return (
+    <span className={`flex flex-col gap-[6px] ${className}`}>
+      {widths.map((w, i) => (
+        <span key={i} className="block h-[2px] rounded-full bg-[rgba(82,69,85,0.16)]" style={{ width: `${w}%` }} />
+      ))}
+    </span>
+  );
+}
+
 export default function Mailer({
   seed,
   tone = "vanilla",
@@ -133,13 +144,28 @@ export default function Mailer({
       {/* Sheets inside — slide further out on hover */}
       <div
         aria-hidden="true"
-        className="absolute left-[9%] top-[58%] h-[35%] w-[81%] rotate-[1.4deg] rounded-xs border border-[rgba(82,69,85,0.1)] bg-[linear-gradient(170deg,#ffffff,#fcfcfb)] shadow-[0_1px_2px_rgba(0,0,0,0.18)] transition-transform duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-[26%] group-hover:rotate-[3deg] group-focus-visible:translate-y-[26%] motion-reduce:transition-none"
-      />
+        className="absolute left-[9%] top-[58%] h-[35%] w-[81%] rotate-[1.4deg] overflow-hidden rounded-xs border border-[rgba(82,69,85,0.1)] bg-[linear-gradient(170deg,#ffffff,#fcfcfb)] shadow-[0_1px_2px_rgba(0,0,0,0.18)] transition-transform duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-[26%] group-hover:rotate-[3deg] group-focus-visible:translate-y-[26%] motion-reduce:transition-none"
+      >
+        {/* The page underneath: just its typed lines, peeking past the front sheet */}
+        <SheetLines className="absolute inset-x-[10%] bottom-[12px]" widths={[100, 92, 96, 64]} />
+      </div>
       <div
         ref={sheetRef}
         aria-hidden="true"
-        className="absolute left-[11%] top-[56%] h-[34%] w-[77%] -rotate-[0.6deg] rounded-sm border border-[rgba(82,69,85,0.1)] bg-[linear-gradient(175deg,#ffffff,#fdfdfc)] shadow-[0_1px_2px_rgba(0,0,0,0.16)] transition-transform delay-[40ms] duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-rotate-[2deg] group-hover:translate-y-[38%] group-focus-visible:translate-y-[38%] motion-reduce:transition-none"
-      />
+        className="absolute left-[11%] top-[56%] h-[34%] w-[77%] -rotate-[0.6deg] overflow-hidden rounded-sm border border-[rgba(82,69,85,0.1)] bg-[linear-gradient(175deg,#ffffff,#fdfdfc)] shadow-[0_1px_2px_rgba(0,0,0,0.16)] transition-transform delay-[40ms] duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-rotate-[2deg] group-hover:translate-y-[38%] group-focus-visible:translate-y-[38%] motion-reduce:transition-none"
+      >
+        {/* The article itself, laid out from the foot up so it's the part that shows: the
+            title in the heading serif, a few typed lines, and where to read it. Only the
+            bottom shows at rest; the rest comes out with the sheet on hover. */}
+        <div className="absolute inset-x-[10%] bottom-[12px] flex flex-col gap-[8px]">
+          <span className="font-heading text-[14px] leading-[18px] text-heading">{title}</span>
+          <SheetLines widths={[100, 94, 98, 72]} />
+          <span className="mt-[2px] flex items-center justify-between border-t border-[rgba(82,69,85,0.12)] pt-[6px] font-brand text-[8px] uppercase leading-[12px] tracking-[1px] text-muted">
+            <span>Read on Medium</span>
+            <span>{readTime}</span>
+          </span>
+        </div>
+      </div>
 
       {/* The opening — the front panel's lip shades whatever is just inside it, so the
           sheets read as tucked under it and slide out from the dark */}
