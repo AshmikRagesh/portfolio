@@ -11,9 +11,9 @@ import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 // ── Featured card ─────────────────────────────────────────────────────────────
 // A soft grey card in two parts with the same padding all round: the words and the work.
 // The words read in one order on every card: the title in the heading serif, a line about it (lead, 18/28 from md), and a pill "Read case study"
-// pinned to the foot. Flagships sit side by side from lg (words 0.82fr, image 1.18fr) and
-// the image fills its half's full height there; below lg they stack with the image at its
-// own aspect; the smaller pair always stack.
+// pinned to the foot. Flagships sit side by side from lg (words 0.82fr, image 1.18fr); below
+// lg they stack; the smaller pair always stack. The image is always 16:9, the covers' own
+// shape, so it scales with the card and is never cropped at any width.
 // Hovering the card rolls pink pixel clouds (grey for NDA works) in round the image, drops
 // the room key onto its hook, and turns the pill grape as it makes room for an arrow
 // circle (see .work-cta). NDA works show a stamp on a greyed image and a greyed-out pill.
@@ -48,16 +48,14 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
         )}
       </div>
 
-      {/* The work, in its half with the same padding as the words; side by side (lg) it
-          fills the half's full height, stacked it keeps its own aspect */}
-      <div className={`flex min-w-0 items-center ${isFlagship ? "lg:items-stretch" : ""} ${pad}`}>
-        <div className={`relative w-full ${isFlagship ? "lg:h-full" : ""}`}>
+      {/* The work, in its half with the same padding as the words, at a fixed 16:9 and centred
+          against the words beside it */}
+      <div className={`flex min-w-0 items-center ${pad}`}>
+        <div className="relative w-full">
           {/* Open works: the room key drops onto its hook on hover. (NDA works: the stamp.) */}
           {!work.nda && <KeyTag room={room} className="absolute -top-[2px] right-[12px] z-[3]" />}
           <div
-            className={`work-media relative aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder ${
-              isFlagship ? "lg:aspect-auto lg:h-full lg:min-h-[320px]" : ""
-            } ${work.nda ? "stamp-thud" : ""}`}
+            className={`work-media relative aspect-[16/9] overflow-hidden rounded-lg bg-placeholder ${work.nda ? "stamp-thud" : ""}`}
           >
             <Image
               src={work.image}
