@@ -37,9 +37,9 @@ function useSeen<T extends Element>() {
   return [ref, seen] as const;
 }
 
-// Every light card: warm paper stock (like the stamps' paper, only fainter), a hairline
+// Every light card: warm cream paper stock (between white and the DS vanilla), a fine
 // border and a whisper of shadow; no hover (they're read, not clicked)
-const CARD = "relative rounded-xl border border-heading/[0.08] bg-[#fdfbf7] shadow-[0_1px_2px_rgba(30,5,37,0.04),0_8px_24px_-12px_rgba(30,5,37,0.08)]";
+const CARD = "relative rounded-xl border border-[#e4dccb] bg-[#f5f0e6] shadow-[0_1px_2px_rgba(30,5,37,0.05),0_8px_24px_-12px_rgba(30,5,37,0.12)]";
 
 // A ticket stub's tear line: dashed across the card, with a round notch bitten out of
 // each side, like the pass's own paper. `bleed` pulls it out to the card's edges through
@@ -47,12 +47,12 @@ const CARD = "relative rounded-xl border border-heading/[0.08] bg-[#fdfbf7] shad
 function Tear({ bleed }: { bleed: string }) {
   return (
     <div className={`relative h-0 ${bleed}`} aria-hidden="true">
-      <span className="absolute inset-x-[16px] top-0 border-t border-dashed border-heading/[0.16]" />
+      <span className="absolute inset-x-[16px] top-0 border-t border-dashed border-heading/[0.22]" />
       <span className="absolute -left-[9px] top-0 h-[16px] w-[16px] -translate-y-1/2 rounded-full bg-white">
-        <span className="absolute inset-0 rounded-full border border-heading/[0.08] [clip-path:inset(0_0_0_50%)]" />
+        <span className="absolute inset-0 rounded-full border border-[#e4dccb] [clip-path:inset(0_0_0_50%)]" />
       </span>
       <span className="absolute -right-[9px] top-0 h-[16px] w-[16px] -translate-y-1/2 rounded-full bg-white">
-        <span className="absolute inset-0 rounded-full border border-heading/[0.08] [clip-path:inset(0_50%_0_0)]" />
+        <span className="absolute inset-0 rounded-full border border-[#e4dccb] [clip-path:inset(0_50%_0_0)]" />
       </span>
     </div>
   );
@@ -104,7 +104,7 @@ function Tile({ label, children, note, meter }: { label: string; children: React
         <div className="mt-auto flex flex-col gap-[12px]">
           <div className="font-heading text-stat leading-none tracking-[-1.6px] text-heading tabular-nums">{children}</div>
           {/* The same space in every tile, so the numbers and tear lines line up; filled only where there's a share */}
-          <span className={`block h-[4px] overflow-hidden rounded-full ${meter === undefined ? "" : "bg-grape-light"}`} aria-hidden="true">
+          <span className={`block h-[4px] overflow-hidden rounded-full ${meter === undefined ? "" : "bg-[#e7dbe9]"}`} aria-hidden="true">
             {meter !== undefined && <span className="block h-full rounded-full bg-grape" style={{ width: `${Math.max(2, Math.min(100, meter))}%` }} />}
           </span>
         </div>
@@ -148,7 +148,7 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
       {/* The line: 0 to the longest, average and yours marked */}
       <Tear bleed="-mx-[24px] md:-mx-[32px]" />
       <div ref={ref} className="flex flex-col gap-[12px]" role="img" aria-label={`Your stay ${formatStay(seconds)}, this month's average ${month.averageSeconds === null ? "not known" : formatStay(month.averageSeconds)}, longest ${formatStay(longest)}`}>
-        <div className="relative mt-[28px] h-[8px] rounded-full bg-grape-light">
+        <div className="relative mt-[28px] h-[8px] rounded-full bg-[#ebe0ef]">
           <span className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-grape/40 to-grape transition-[width] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ width: seen ? at(seconds) : "0%" }} />
           {month.averageSeconds !== null && (
             <span className="absolute -top-[6px] h-[20px] w-[2px] -translate-x-1/2 rounded-full bg-heading/60" style={{ left: at(month.averageSeconds) }} />
