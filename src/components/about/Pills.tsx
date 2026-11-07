@@ -6,12 +6,12 @@
 //   self-taught      a pencil underlines it by hand
 //   design engineer  turns over into {design + code}
 //   Travelopia       an airliner glides over, leaving a fading contrail
-//   code and AI      a light sweeps through the letters; two sparkles twinkle
+//   code and AI      a prompt above it turns into a line of code, typed out
 //   a workflow       design → code → review ✓ steps in above it (links to Helix)
-//   Airbnb           a brass house key on a leather fob swings down above it
+//   Airbnb           a brass house key on a leather fob hooks onto it and swings
 //   football         a ball is chipped into a little goal and ripples the net
 //   badminton        a shuttlecock is cleared over it and drops
-//   Chelsea          the 💙 at the end of the line beats and lets a few hearts go
+//   Chelsea          a knitted scarf is held up over it and waved; the 💙 beats
 //
 // Motion rules: nothing changes the size of a pill or moves the text around it (every
 // effect is drawn on top, with transforms and opacity only); entrances ease out, exits
@@ -81,7 +81,7 @@ function overlay(host: HTMLElement, html: string, style: Partial<CSSStyleDeclara
 // Geist medium a step smaller than the text around it, a soft top light and a hairline
 // lower edge so it reads as a solid, pressed shape; it lifts a pixel on hover.
 const PILL =
-  "group/pill relative inline-block whitespace-nowrap rounded-full px-[10px] align-baseline font-geist text-[14px] font-medium leading-[24px] tracking-[0px] text-white antialiased md:px-[12px] md:text-[18px] md:leading-[28px] " +
+  "group/pill relative inline-block whitespace-nowrap rounded-full px-[10px] align-baseline font-geist text-[14px] font-medium leading-[24px] tracking-[0px] text-white antialiased md:px-[12px] md:text-[16px] md:leading-[28px] " +
   "bg-[var(--pill)] [background-image:linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0)_60%)] " +
   "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.24),inset_0_-1px_0_rgba(0,0,0,0.16),0_1px_2px_rgba(22,18,26,0.16)] " +
   "transition-[transform,box-shadow] duration-200 ease-out [@media(hover:hover)]:hover:-translate-y-[1px] " +
@@ -224,38 +224,42 @@ export function TravelopiaPill() {
   );
 }
 
-// ── code and AI: a light sweeps through it ────────────────────────────────────
-const SPARK = (size: number, id: string) =>
-  `<svg viewBox="0 0 16 16" width="${size}" height="${size}" style="display:block"><defs><radialGradient id="s${id}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFFBEA"/><stop offset=".55" stop-color="#FFE07A"/><stop offset="1" stop-color="#FFB800"/></radialGradient></defs><path d="M8 0c.5 4.4 3.6 7.5 8 8-4.4.5-7.5 3.6-8 8-.5-4.4-3.6-7.5-8-8 4.4-.5 7.5-3.6 8-8Z" fill="url(#s${id})"/></svg>`;
+// ── code and AI: a prompt becomes code ────────────────────────────────────────
+// A small editor card (midnight, like the site's tooltips) rises above the pill: a prompt
+// line, then the component it turns into, typed out with a caret, then a green tick.
+const PROMPT = "make me a grape button";
+const CODE = '<Button tone="grape" />';
 
 export function CodeAndAIPill() {
-  const text = useRef<HTMLSpanElement>(null);
   const { props } = usePlay(async (pill) => {
-    const sweep = text.current!.animate([{ backgroundPosition: "100% 0" }, { backgroundPosition: "0% 0" }], { duration: 1100, easing: EASE_IN_OUT });
-    const a = overlay(pill, SPARK(12, `${++uid}`), { left: "auto", right: "-6px", top: "-8px" });
-    const b = overlay(pill, SPARK(8, `${++uid}`), { left: "auto", right: "-14px", top: "4px" });
-    const twinkle = (el: HTMLElement, delay: number) =>
-      el.animate(
-        [
-          { transform: "scale(0) rotate(-30deg)", opacity: 0 },
-          { transform: "scale(1) rotate(0deg)", opacity: 1, offset: 0.35 },
-          { transform: "scale(0.85) rotate(20deg)", opacity: 1, offset: 0.6 },
-          { transform: "scale(0) rotate(45deg)", opacity: 0 },
-        ],
-        { duration: 900, delay, easing: EASE_OUT, fill: "both" },
-      ).finished;
-    await Promise.all([sweep.finished, twinkle(a, 250), twinkle(b, 420)]);
-    a.remove();
-    b.remove();
+    const card = overlay(
+      pill,
+      `<span style="display:block;min-width:200px;padding:8px 10px;border-radius:8px;background:#1e0525;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 10px 24px -8px rgba(30,5,37,.5);line-height:16px;white-space:nowrap;text-align:left">
+<span style="display:flex;align-items:center;gap:6px;font:500 12px/16px var(--font-geist),sans-serif;color:rgba(249,228,255,.62)"><svg viewBox="0 0 16 16" width="10" height="10"><path d="M8 0c.5 4.4 3.6 7.5 8 8-4.4.5-7.5 3.6-8 8-.5-4.4-3.6-7.5-8-8 4.4-.5 7.5-3.6 8-8Z" fill="#FFC21A"/></svg>${PROMPT}</span>
+<span style="display:flex;align-items:center;gap:6px;margin-top:4px;font:400 12px/16px var(--font-brand),monospace;color:#F9E4FF"><span class="code"></span><span class="caret" style="display:inline-block;width:6px;height:14px;background:#FFC21A;opacity:.9"></span><span class="tick" style="opacity:0;color:#4ADE80;font-family:var(--font-geist),sans-serif">✓</span></span>
+</span>`,
+      { top: "auto", bottom: "calc(100% + 8px)", lineHeight: "16px", transformOrigin: "16px 100%" },
+    );
+    const code = card.querySelector(".code") as HTMLElement;
+    const caret = card.querySelector(".caret") as HTMLElement;
+    const tick = card.querySelector(".tick") as HTMLElement;
+    await card.animate([{ opacity: 0, transform: "translateY(4px) scale(.96)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], { duration: 220, easing: EASE_OUT, fill: "forwards" }).finished;
+    const blink = caret.animate([{ opacity: 0.9 }, { opacity: 0 }], { duration: 500, iterations: Infinity, direction: "alternate", easing: "steps(1)" });
+    await wait(200);
+    for (let i = 1; i <= CODE.length; i++) {
+      code.textContent = CODE.slice(0, i);
+      await wait(32);
+    }
+    blink.cancel();
+    caret.style.display = "none";
+    await tick.animate([{ opacity: 0, transform: "scale(.4)" }, { opacity: 1, transform: "scale(1)" }], { duration: 260, easing: "cubic-bezier(0.34,1.56,0.64,1)", fill: "forwards" }).finished;
+    await wait(900);
+    await card.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(4px)" }], { duration: 180, easing: "ease-in", fill: "forwards" }).finished;
+    card.remove();
   });
   return (
     <Pill color={COLORS.ink} play={props}>
-      <span
-        ref={text}
-        className="bg-[linear-gradient(105deg,#fff_0%,#fff_38%,#D9C9FF_45%,#9FF3FF_50%,#FFE07A_55%,#fff_62%,#fff_100%)] bg-[length:300%_100%] bg-[position:100%_0] bg-clip-text text-transparent"
-      >
-        code and AI
-      </span>
+      code and AI
     </Pill>
   );
 }
@@ -302,7 +306,7 @@ export function WorkflowPill() {
 
 // ── Airbnb: a house key swings down ───────────────────────────────────────────
 function keys(id: string) {
-  return `<svg viewBox="0 0 40 46" width="34" height="39" style="display:block;overflow:visible">
+  return `<svg viewBox="0 0 40 46" width="30" height="34" style="display:block;overflow:visible">
 <defs><linearGradient id="b${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE3A0"/><stop offset=".45" stop-color="#D9A53C"/><stop offset="1" stop-color="#9A6C1E"/></linearGradient>
 <linearGradient id="r${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4F6F8"/><stop offset=".5" stop-color="#A9B1BB"/><stop offset="1" stop-color="#717A85"/></linearGradient>
 <linearGradient id="t${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F0646A"/><stop offset="1" stop-color="#C9333A"/></linearGradient></defs>
@@ -325,22 +329,23 @@ function keys(id: string) {
 export function AirbnbPill() {
   const { props } = usePlay(async (pill) => {
     const w = pill.offsetWidth;
-    const el = overlay(pill, keys(`${++uid}`), { left: `${w - 26}px`, top: "-44px", transformOrigin: "20px 2px" });
+    // the ring hooks over the tag's top-right corner, and the key hangs down beside it
+    const el = overlay(pill, keys(`${++uid}`), { left: `${w - 15}px`, top: "-3px", transformOrigin: "15px 4px" });
     // drops onto its hook and swings to rest, like a real pendulum: each swing smaller
     await el.animate(
       [
-        { transform: "translateY(-10px) rotate(0deg)", opacity: 0 },
-        { transform: "translateY(0) rotate(22deg)", opacity: 1, offset: 0.16 },
-        { transform: "rotate(-15deg)", offset: 0.36 },
-        { transform: "rotate(9deg)", offset: 0.54 },
-        { transform: "rotate(-5deg)", offset: 0.7 },
-        { transform: "rotate(2deg)", offset: 0.84 },
+        { transform: "translateY(-8px) rotate(0deg)", opacity: 0 },
+        { transform: "translateY(0) rotate(-24deg)", opacity: 1, offset: 0.16 },
+        { transform: "rotate(16deg)", offset: 0.36 },
+        { transform: "rotate(-9deg)", offset: 0.54 },
+        { transform: "rotate(5deg)", offset: 0.7 },
+        { transform: "rotate(-2deg)", offset: 0.84 },
         { transform: "rotate(0deg)", opacity: 1 },
       ],
       { duration: 1500, easing: "cubic-bezier(0.37, 0, 0.63, 1)", fill: "forwards" },
     ).finished;
     await wait(500);
-    await el.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-6px)" }], { duration: 220, easing: "ease-in", fill: "forwards" }).finished;
+    await el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in", fill: "forwards" }).finished;
     el.remove();
   });
   return (
@@ -505,30 +510,65 @@ export function BadmintonPill() {
   );
 }
 
-// ── Chelsea: the heart at the end of the line ─────────────────────────────────
+// ── Chelsea: the scarf goes up ────────────────────────────────────────────────
+// A knitted bar scarf in Chelsea blue and white, CHELSEA knitted in in Geist Mono, is
+// held up over the tag the way a stand does it: it unrolls from the left, sways a few
+// times, rolls back up. The 💙 at the end of the line beats as it goes up.
+function scarf(id: string) {
+  const fringe = (x0: number, dir: number) =>
+    Array.from({ length: 6 }, (_, i) => {
+      const y = 4.6 + i * 3;
+      const x1 = x0 + dir * 7;
+      return `<path d="M${x0} ${y}q${dir * 3} ${i % 2 ? 1 : -1} ${x1 - x0} ${i % 2 ? -0.6 : 0.6}" stroke="${i % 2 ? "#F4F6FA" : "#034694"}" stroke-width="1.6" stroke-linecap="round" fill="none"/>`;
+    }).join("");
+  return `<svg viewBox="0 0 156 24" width="156" height="24" style="display:block;overflow:visible">
+<defs>
+<pattern id="kn${id}" width="4" height="3.2" patternUnits="userSpaceOnUse"><path d="M0 0 2 2.4 4 0" fill="none" stroke="#000" stroke-opacity=".16" stroke-width=".7"/><path d="M0 .6 2 3 4 .6" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width=".5"/></pattern>
+<linearGradient id="sh${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+</defs>
+${fringe(10, -1)}${fringe(146, 1)}
+<rect x="10" y="2" width="136" height="20" rx="1.6" fill="#034694"/>
+<path d="M16 2h8v20h-8ZM132 2h8v20h-8Z" fill="#F4F6FA"/>
+<path d="M27 2h3v20h-3ZM126 2h3v20h-3Z" fill="#F4F6FA"/>
+<text x="78" y="16.2" text-anchor="middle" font-family="var(--font-brand), monospace" font-weight="500" font-size="11" letter-spacing="3" fill="#F4F6FA">CHELSEA</text>
+<rect x="10" y="2" width="136" height="20" rx="1.6" fill="url(#kn${id})"/>
+<rect x="10" y="2" width="136" height="20" rx="1.6" fill="url(#sh${id})"/>
+</svg>`;
+}
+
 export function ChelseaLine() {
   const heart = useRef<HTMLSpanElement>(null);
-  const { props } = usePlay(async () => {
-    const h = heart.current!;
-    h.animate(
-      [{ transform: "scale(1)" }, { transform: "scale(1.28)" }, { transform: "scale(0.94)" }, { transform: "scale(1.12)" }, { transform: "scale(1)" }],
-      { duration: 640, easing: "ease-out" },
-    );
-    const lets = Array.from({ length: 3 }, (_, i) => {
-      const e = overlay(h, `<span style="font-size:10px;line-height:12px">💙</span>`, { left: "50%", top: "0", lineHeight: "12px" });
-      const dx = (i - 1) * 10;
-      return e
-        .animate(
-          [
-            { transform: "translate(-50%, 0) scale(.4)", opacity: 0 },
-            { transform: `translate(calc(-50% + ${dx * 0.4}px), -12px) scale(1)`, opacity: 1, offset: 0.3 },
-            { transform: `translate(calc(-50% + ${dx}px), -34px) scale(.8)`, opacity: 0 },
-          ],
-          { duration: 1000, delay: 120 + i * 110, easing: EASE_OUT, fill: "both" },
-        )
-        .finished.then(() => e.remove());
+  const { props } = usePlay(async (pill) => {
+    const w = pill.offsetWidth;
+    // centred over the tag, but never hanging out past the start of the text column
+    const column = pill.closest("p")?.getBoundingClientRect().left ?? -Infinity;
+    const left = Math.max(column - pill.getBoundingClientRect().left, w / 2 - 78);
+    const s = overlay(pill, scarf(`${++uid}`), {
+      left: `${left}px`,
+      top: "-30px",
+      clipPath: "inset(0 100% 0 0)",
+      transformOrigin: "50% 100%",
     });
-    await Promise.all(lets);
+    heart.current?.animate(
+      [{ transform: "scale(1)" }, { transform: "scale(1.28)" }, { transform: "scale(0.94)" }, { transform: "scale(1.12)" }, { transform: "scale(1)" }],
+      { duration: 640, delay: 200, easing: "ease-out" },
+    );
+    // up it goes…
+    await s.animate([{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)" }], { duration: 420, easing: EASE_OUT, fill: "forwards" }).finished;
+    // …held high and swayed, side to side, a little less each time
+    await s.animate(
+      [
+        { transform: "translateY(0) rotate(0deg)" },
+        { transform: "translateY(-3px) rotate(-3deg)", offset: 0.2 },
+        { transform: "translateY(-1px) rotate(2.4deg)", offset: 0.45 },
+        { transform: "translateY(-3px) rotate(-1.6deg)", offset: 0.7 },
+        { transform: "translateY(0) rotate(0deg)" },
+      ],
+      { duration: 1400, easing: "cubic-bezier(0.37, 0, 0.63, 1)" },
+    ).finished;
+    // …and rolled back up
+    await s.animate([{ clipPath: "inset(0 0% 0 0)", opacity: 1 }, { clipPath: "inset(0 0 0 100%)", opacity: 0.6 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished;
+    s.remove();
   });
   return (
     <>

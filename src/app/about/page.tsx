@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <section className="page-container flex flex-col items-start gap-[64px] overflow-x-clip pt-[140px] pb-[120px] lg:grid lg:grid-cols-[minmax(0,600px)_minmax(0,1fr)] lg:items-start lg:gap-[56px] lg:pt-[160px] lg:pb-[200px]">
+    <section className="page-container flex flex-col items-start gap-[64px] overflow-x-clip pt-[140px] pb-[120px] md:gap-[80px] lg:grid lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)] lg:items-start lg:gap-[104px] lg:pt-[160px] lg:pb-[200px]">
       {/* Text — the frame beside it stands exactly as tall as this */}
       <div id="about-text" className="flex w-full flex-col gap-[40px] md:gap-[48px]">
         <h1 className="font-heading text-[40px] font-normal leading-[44px] text-heading md:text-[56px] md:leading-[60px] md:tracking-[-2px]">
@@ -26,7 +26,7 @@ export default function AboutPage() {
           people care about
         </h1>
 
-        <div className="flex max-w-[600px] flex-col gap-[20px] font-body text-[16px] leading-[28px] text-secondary md:gap-[24px] md:text-[20px] md:leading-[36px]">
+        <div className="flex max-w-[600px] flex-col gap-[20px] font-body text-[16px] leading-[28px] text-secondary md:gap-[24px] lg:gap-[20px] md:text-[18px] md:leading-[30px]">
           <p>
             Hey, I&apos;m <span className="font-medium text-heading">Ashmik Ragesh</span>, a <SelfTaughtPill /> product
             designer with 5+ years of experience, currently working as a <DesignEngineerPill /> at{" "}
@@ -52,7 +52,7 @@ export default function AboutPage() {
         src="/images/about/ashmik-snow.jpg"
         alt="Ashmik in a winter coat and beanie, standing in snow above the clouds"
         matchHeightOf="about-text"
-        className="w-full max-w-[360px] md:max-w-[400px] lg:max-w-none lg:justify-self-end"
+        className="w-full max-w-[360px] md:max-w-[440px] lg:max-w-none lg:justify-self-end"
       />
     </section>
   );

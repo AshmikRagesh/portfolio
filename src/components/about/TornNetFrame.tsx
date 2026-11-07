@@ -65,7 +65,10 @@ export default function TornNetFrame({
     const wide = window.matchMedia("(min-width: 1024px)");
     // never wider than its column, so it can't squeeze the text and loop
     const fit = () => {
-      const room = (target.parentElement?.clientWidth ?? 0) - target.offsetWidth - 56;
+      const parent = target.parentElement;
+      const cs = parent ? getComputedStyle(parent) : null;
+      const inner = parent && cs ? parent.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) : 0;
+      const room = inner - target.offsetWidth - (cs ? parseFloat(cs.columnGap) || 0 : 0);
       const w = Math.round((target.offsetHeight * FRAME.w) / FRAME.h);
       setWidth(wide.matches ? Math.max(320, Math.min(w, room > 0 ? room : w)) : null);
     };
@@ -384,11 +387,11 @@ export default function TornNetFrame({
     <div className={`relative ${className}`} style={width ? { width } : undefined}>
       <div
         ref={cardRef}
-        className="relative w-full touch-none select-none [filter:drop-shadow(0_1px_1px_rgba(50,30,12,0.28))_drop-shadow(0_8px_12px_rgba(50,30,12,0.16))_drop-shadow(0_28px_40px_rgba(50,30,12,0.14))]"
+        className="relative w-full touch-pan-y select-none [filter:drop-shadow(0_1px_1px_rgba(50,30,12,0.28))_drop-shadow(0_8px_12px_rgba(50,30,12,0.16))_drop-shadow(0_28px_40px_rgba(50,30,12,0.14))]"
         style={{ aspectRatio: `${FRAME.w} / ${FRAME.h}` }}
       >
         <div
-          className="absolute overflow-hidden bg-vanilla"
+          className="absolute touch-none overflow-hidden bg-vanilla"
           style={{
             left: inset(FX0, FRAME.w),
             top: inset(FY0, FRAME.h),
