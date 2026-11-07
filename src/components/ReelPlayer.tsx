@@ -179,7 +179,8 @@ export default function ReelPlayer({
 
   // Step aside once the footer comes up, like the chapter pill. With `startAt`, also
   // wait until that section is a third of the way up the screen (on the home page: the
-  // work, so the reel never sits over the hero).
+  // work, so the reel never sits over the hero). Case studies below 1024px wait for half
+  // the hero to pass, as the chapter pill does.
   useEffect(() => {
     let frame: number | null = null;
     const update = () => {
@@ -189,6 +190,13 @@ export default function ReelPlayer({
       if (startAt) {
         const start = document.querySelector<HTMLElement>(startAt);
         setEarly(start ? start.getBoundingClientRect().top > window.innerHeight * 0.66 : false);
+      } else if (pill && window.innerWidth < 1024) {
+        // Case studies on phones and tablets: there the card would sit over the hero's title,
+        // so it comes in with the chapter pill, once half the hero has scrolled away
+        const hero = document.querySelector<HTMLElement>("[data-cs-hero]");
+        setEarly(hero ? window.scrollY <= hero.offsetHeight / 2 : false);
+      } else {
+        setEarly(false);
       }
     };
     const onScroll = () => {
@@ -202,7 +210,7 @@ export default function ReelPlayer({
       window.removeEventListener("resize", onScroll);
       if (frame !== null) window.cancelAnimationFrame(frame);
     };
-  }, [startAt]);
+  }, [startAt, pill]);
 
   // Sit on the dock. The position is written straight to the element so a drag never
   // waits on a render.

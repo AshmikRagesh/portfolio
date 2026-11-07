@@ -5,7 +5,7 @@
 /* Nothing may widen the page sideways: a label or desk object poking past the edge used to
    make phones lay the page out wider than the screen, pushing the navbar's right side off it.
    `clip` (not `hidden`) so sticky elements keep working. */
-body { overflow-x: clip; }
+html, body { overflow-x: clip; }
 
 @layer utilities {
   .scrollbar-hide {
