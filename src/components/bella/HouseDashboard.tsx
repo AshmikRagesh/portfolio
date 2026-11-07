@@ -37,9 +37,26 @@ function useSeen<T extends Element>() {
   return [ref, seen] as const;
 }
 
-// Every light card: one surface, a hairline border and a whisper of shadow; no hover (they're
-// read, not clicked)
-const CARD = "rounded-xl border border-heading/[0.08] shadow-[0_1px_2px_rgba(30,5,37,0.04),0_8px_24px_-12px_rgba(30,5,37,0.08)]";
+// Every light card: warm paper stock (like the stamps' paper, only fainter), a hairline
+// border and a whisper of shadow; no hover (they're read, not clicked)
+const CARD = "relative rounded-xl border border-heading/[0.08] bg-[#fdfbf7] shadow-[0_1px_2px_rgba(30,5,37,0.04),0_8px_24px_-12px_rgba(30,5,37,0.08)]";
+
+// A ticket stub's tear line: dashed across the card, with a round notch bitten out of
+// each side, like the pass's own paper. `bleed` pulls it out to the card's edges through
+// its padding.
+function Tear({ bleed }: { bleed: string }) {
+  return (
+    <div className={`relative h-0 ${bleed}`} aria-hidden="true">
+      <span className="absolute inset-x-[16px] top-0 border-t border-dashed border-heading/[0.16]" />
+      <span className="absolute -left-[9px] top-0 h-[16px] w-[16px] -translate-y-1/2 rounded-full bg-white">
+        <span className="absolute inset-0 rounded-full border border-heading/[0.08] [clip-path:inset(0_0_0_50%)]" />
+      </span>
+      <span className="absolute -right-[9px] top-0 h-[16px] w-[16px] -translate-y-1/2 rounded-full bg-white">
+        <span className="absolute inset-0 rounded-full border border-heading/[0.08] [clip-path:inset(0_50%_0_0)]" />
+      </span>
+    </div>
+  );
+}
 
 // The same three steps in every card: a small label, the number, then one line that
 // says what it means with the key fact picked out
@@ -81,16 +98,20 @@ function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value:
 
 function Tile({ label, children, note, meter }: { label: string; children: React.ReactNode; note?: React.ReactNode; meter?: number }) {
   return (
-    <div className={`flex flex-col gap-[20px] bg-white p-[24px] md:p-[28px] ${CARD}`}>
-      <Label>{label}</Label>
-      <div className="mt-auto flex flex-col gap-[10px]">
-        <div className="font-heading text-stat leading-none tracking-[-1.6px] text-heading tabular-nums">{children}</div>
-        {/* The same space in every tile, so the numbers line up; filled only where there's a share */}
-        <span className={`block h-[4px] overflow-hidden rounded-full ${meter === undefined ? "" : "bg-grape-light"}`} aria-hidden="true">
-          {meter !== undefined && <span className="block h-full rounded-full bg-grape" style={{ width: `${Math.max(2, Math.min(100, meter))}%` }} />}
-        </span>
-        {note && <p className="font-body text-[14px] leading-[20px] text-secondary">{note}</p>}
+    <div className={`flex flex-col gap-[20px] p-[24px] md:p-[28px] ${CARD}`}>
+      <div className="flex flex-1 flex-col gap-[20px]">
+        <Label>{label}</Label>
+        <div className="mt-auto flex flex-col gap-[12px]">
+          <div className="font-heading text-stat leading-none tracking-[-1.6px] text-heading tabular-nums">{children}</div>
+          {/* The same space in every tile, so the numbers and tear lines line up; filled only where there's a share */}
+          <span className={`block h-[4px] overflow-hidden rounded-full ${meter === undefined ? "" : "bg-grape-light"}`} aria-hidden="true">
+            {meter !== undefined && <span className="block h-full rounded-full bg-grape" style={{ width: `${Math.max(2, Math.min(100, meter))}%` }} />}
+          </span>
+        </div>
       </div>
+      <Tear bleed="-mx-[24px] md:-mx-[28px]" />
+      {/* Two lines' room in every tile, so the tear lines sit level across the row */}
+      {note && <p className="min-h-[40px] font-body text-[14px] leading-[20px] text-secondary">{note}</p>}
     </div>
   );
 }
@@ -103,7 +124,7 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
   const at = (n: number) => `${Math.min(100, (n / longest) * 100)}%`;
   const yours = seconds >= longest && month.longestSeconds !== null && seconds >= month.longestSeconds;
   return (
-    <div className={`flex flex-col gap-[32px] bg-white p-[24px] md:col-span-2 md:p-[32px] ${CARD}`}>
+    <div className={`flex flex-col gap-[28px] p-[24px] md:col-span-2 md:p-[32px] ${CARD}`}>
       <div className="flex flex-col gap-[16px]">
         <Label>Your stay</Label>
         <div className="flex flex-col gap-[8px]">
@@ -125,8 +146,9 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
       </div>
 
       {/* The line: 0 to the longest, average and yours marked */}
-      <div ref={ref} className="flex flex-col gap-[12px] border-t border-heading/[0.06] pt-[8px]" role="img" aria-label={`Your stay ${formatStay(seconds)}, this month's average ${month.averageSeconds === null ? "not known" : formatStay(month.averageSeconds)}, longest ${formatStay(longest)}`}>
-        <div className="relative mt-[32px] h-[8px] rounded-full bg-grape-light">
+      <Tear bleed="-mx-[24px] md:-mx-[32px]" />
+      <div ref={ref} className="flex flex-col gap-[12px]" role="img" aria-label={`Your stay ${formatStay(seconds)}, this month's average ${month.averageSeconds === null ? "not known" : formatStay(month.averageSeconds)}, longest ${formatStay(longest)}`}>
+        <div className="relative mt-[28px] h-[8px] rounded-full bg-grape-light">
           <span className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-grape/40 to-grape transition-[width] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ width: seen ? at(seconds) : "0%" }} />
           {month.averageSeconds !== null && (
             <span className="absolute -top-[6px] h-[20px] w-[2px] -translate-x-1/2 rounded-full bg-heading/60" style={{ left: at(month.averageSeconds) }} />
