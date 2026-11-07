@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import TornNetFrame from "@/components/about/TornNetFrame";
 import ChelseaBadge from "@/components/hero/ChelseaBadge";
 import NivasaMedal from "@/components/hero/NivasaMedal";
+import Tossed from "@/components/hero/Tossed";
 import { Highlight } from "@/components/case-study/Marks";
 import {
   AirbnbPill,
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <section className="page-container flex flex-col items-start gap-[64px] overflow-x-clip pt-[140px] pb-[120px] md:gap-[80px] lg:grid lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)] lg:items-start lg:gap-[104px] lg:pt-[160px] lg:pb-[200px]">
+    <section className="page-container flex flex-col items-start gap-[64px] overflow-x-clip pt-[140px] pb-[120px] md:gap-[80px] xl:grid xl:grid-cols-[minmax(0,560px)_minmax(0,1fr)] xl:items-start xl:gap-[104px] lg:pt-[160px] lg:pb-[200px]">
       {/* Text — the frame beside it stands exactly as tall as this */}
       <div id="about-text" className="flex w-full flex-col gap-[40px] md:gap-[48px]">
         <h1 className="font-heading text-[40px] font-normal leading-[44px] text-heading md:text-[56px] md:leading-[60px] md:tracking-[-2px]">
@@ -57,16 +58,17 @@ export default function AboutPage() {
         src="/images/about/ashmik-snow.jpg"
         alt="Ashmik in a winter coat and beanie, standing in snow above the clouds"
         matchHeightOf="about-text"
-        className="w-full max-w-[360px] md:max-w-[440px] lg:max-w-none lg:justify-self-end"
+        className="w-full max-w-[360px] md:max-w-[440px] xl:max-w-none xl:justify-self-end"
       >
-        {/* Pinned on the frame's top corners, at their true 2:3 proportions: the Chelsea
-            pin on the left, the Superhost medal hanging from the right */}
-        <div className="absolute left-0 -top-6 z-20">
-          <ChelseaBadge className="w-[44px] md:w-[56px]" />
-        </div>
-        <div className="absolute right-0 -top-4 z-20">
-          <NivasaMedal className="w-[40px] md:w-[52px]" />
-        </div>
+        {/* Beside the frame, outside it: the Chelsea pin off its top-left corner, the
+            Superhost medal off its bottom-right. On a phone there's no room beside it, so
+            they hang just over the corners. Both can be picked up and moved, as in the hero. */}
+        <Tossed rotate={-6} delay={200} className="absolute -left-2 -top-8 z-20 md:-left-[72px] md:top-2 xl:-left-[92px] xl:top-[72px]">
+          <ChelseaBadge className="w-[56px] md:w-[64px] xl:w-[80px]" />
+        </Tossed>
+        <Tossed rotate={5} delay={320} className="absolute -bottom-8 -right-2 z-20 md:-right-[80px] md:bottom-10 xl:-right-[96px]">
+          <NivasaMedal className="w-[56px] md:w-[64px] xl:w-[80px]" />
+        </Tossed>
       </TornNetFrame>
     </section>
   );

@@ -65,7 +65,7 @@ export default function TornNetFrame({
     if (!matchHeightOf) return;
     const target = document.getElementById(matchHeightOf);
     if (!target) return;
-    const wide = window.matchMedia("(min-width: 1024px)");
+    const wide = window.matchMedia("(min-width: 1280px)"); // side by side from xl
     // never wider than its column, so it can't squeeze the text and loop
     const fit = () => {
       const parent = target.parentElement;
@@ -73,15 +73,19 @@ export default function TornNetFrame({
       const inner = parent && cs ? parent.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) : 0;
       const room = inner - target.offsetWidth - (cs ? parseFloat(cs.columnGap) || 0 : 0);
       const w = Math.round((target.offsetHeight * FRAME.w) / FRAME.h);
-      setWidth(wide.matches ? Math.max(320, Math.min(w, room > 0 ? room : w)) : null);
+      // never wider than the room beside the text, or it would slide over it
+      setWidth(wide.matches && room > 0 ? Math.min(w, room) : null);
     };
     const ro = new ResizeObserver(fit);
     ro.observe(target);
+    if (target.parentElement) ro.observe(target.parentElement); // the room changes with the page width
     wide.addEventListener("change", fit);
+    window.addEventListener("resize", fit); // the room beside the text changes with the window
     fit();
     return () => {
       ro.disconnect();
       wide.removeEventListener("change", fit);
+      window.removeEventListener("resize", fit);
     };
   }, [matchHeightOf]);
 
