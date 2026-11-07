@@ -52,31 +52,13 @@ function useReducedMotion() {
   return reduced;
 }
 
-type SavePicker = (opts: { suggestedName: string; types: { description: string; accept: Record<string, string[]> }[] }) => Promise<{
-  createWritable: () => Promise<{ write: (b: Blob) => Promise<void>; close: () => Promise<void> }>;
-}>;
-
 /**
- * Downloads the résumé. Where the browser allows it (Chrome, Edge, Arc) this opens the
- * Mac's own Save dialog so the visitor picks where it goes; elsewhere it's an ordinary
- * download to the Downloads folder.
+ * Downloads the résumé straight to the visitor's Downloads folder. (It used to open the
+ * browser's Save dialog where it could, but by the time the torn stub has fallen the click
+ * that started it is old, so Chrome could cancel that dialog at once, and a cancel meant
+ * no download at all. A plain download works in every browser.)
  */
-async function download() {
-  const picker = (window as Window & { showSaveFilePicker?: SavePicker }).showSaveFilePicker;
-  if (picker) {
-    try {
-      const file = await picker({ suggestedName: RESUME_FILENAME, types: [{ description: "PDF document", accept: { "application/pdf": [".pdf"] } }] });
-      const blob = await (await fetch(RESUME_PDF)).blob();
-      const out = await file.createWritable();
-      await out.write(blob);
-      await out.close();
-      celebrate("resume", "Resume downloaded.");
-      return;
-    } catch (e) {
-      // Closed the dialog: no download, no celebration
-      if ((e as DOMException)?.name === "AbortError") return;
-    }
-  }
+function download() {
   const a = document.createElement("a");
   a.href = RESUME_PDF;
   a.download = RESUME_FILENAME;
@@ -241,7 +223,7 @@ export default function ResumeOverlay() {
       {shown ? (
         <TearSheet
           Sheet={Sheet}
-          onTorn={() => void download()}
+          onTorn={download}
           onTearing={(t) => {
             tearing.current = t;
           }}

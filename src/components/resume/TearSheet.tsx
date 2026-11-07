@@ -11,8 +11,8 @@
 // Once the tear reaches the end, the stub lies flat where it is and the résumé itself
 // (everything above the perforation) comes away: a small pop as the tension lets go,
 // then it falls, swaying and tipping as a big sheet does, off the bottom of the screen,
-// showing the pile underneath. Then the download starts (the Mac Save dialog where the
-// browser allows it), and a fresh résumé springs back into place with a new stub.
+// showing the pile underneath. Then the PDF downloads, and a fresh résumé springs back
+// into place with a new stub.
 //
 // Physics, all stepped per frame in small substeps:
 //   tear front   a critically damped spring after your hand: no lag, no overshoot
