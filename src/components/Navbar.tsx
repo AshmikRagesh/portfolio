@@ -25,7 +25,7 @@ import { chimeBell, primeBell, ringBell } from "@/components/host/bellSound";
 const navLinks = [
   { label: "Work", href: "#works" },
   { label: "Play", href: "#play" },
-  { label: "About", href: "#about" },
+  { label: "About", href: "/about" },
   { label: "Pass", href: "/pass" },
   { label: "Fancy paper", href: RESUME_PDF },
 ];
