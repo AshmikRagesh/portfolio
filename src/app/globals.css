@@ -1224,27 +1224,27 @@
 /* Bella's own ground shadow is hidden here: she stands in a soft pool of light with a
    tight contact shadow under her base */
 .bella-loader-bella .host > ellipse { display: none; }
-/* While she waits, Bella sways gently from side to side on her base */
-.bella-loader-sway { transform-origin: 50% 100%; animation: bella-loader-sway 3.2s ease-in-out infinite; }
+/* While she waits, Bella sways slowly from side to side on her base */
+.bella-loader-sway { transform-origin: 50% 100%; animation: bella-loader-sway 6s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
 @keyframes bella-loader-sway {
   0%, 100% { transform: translateX(0) rotate(0deg); }
-  25% { transform: translateX(-4px) rotate(-2deg); }
-  75% { transform: translateX(4px) rotate(2deg); }
+  25% { transform: translateX(-2px) rotate(-1deg); }
+  75% { transform: translateX(2px) rotate(1deg); }
 }
 .bella-loader-pool {
   position: absolute;
   left: 50%;
-  width: 240px;
-  height: 40px;
+  width: 180px;
+  height: 32px;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(236, 229, 216, 0.2), rgba(236, 229, 216, 0.06) 60%, transparent);
+  background: radial-gradient(closest-side, rgba(236, 229, 216, 0.09), rgba(236, 229, 216, 0.03) 60%, transparent);
 }
 .bella-loader-contact {
   position: absolute;
   left: 50%;
-  width: 116px;
-  height: 6px;
+  width: 88px;
+  height: 4px;
   transform: translateX(-50%);
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(12, 1, 16, 0.9), rgba(12, 1, 16, 0));
@@ -1273,9 +1273,6 @@
 .bella-loader-block::after { content: ""; position: absolute; left: 0; top: 0; width: 1ch; height: 100%; background: var(--ld-ink); }
 .bella-loader-cursor { animation: bella-loader-blink 600ms steps(1, end) infinite; }
 @keyframes bella-loader-blink { 50% { opacity: 0; } }
-/* Closing: everything blinks out twice before the screen lifts */
-.bella-loader.is-closing .bella-loader-fade { animation: bella-loader-out 240ms steps(1, end) forwards; }
-@keyframes bella-loader-out { 0% { opacity: 0; } 33% { opacity: 1; } 66%, 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
   .bella-loader-items, .bella-loader-cursor, .bella-loader-sway { animation: none; }
 }
