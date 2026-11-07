@@ -198,14 +198,14 @@
 .signature path {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.9s cubic-bezier(0.6, 0, 0.3, 1);
+  /* Each stroke's duration and delay are set inline from its length (Signature.tsx), so the
+     pen moves at one steady speed, stroke after stroke, left to right */
+  transition-property: stroke-dashoffset;
+  transition-timing-function: cubic-bezier(0.45, 0.05, 0.55, 0.95);
 }
 .signature[data-drawn="true"] path {
   stroke-dashoffset: 0;
 }
-.signature[data-drawn="true"] path:nth-child(2) { transition-delay: 0.35s; }
-.signature[data-drawn="true"] path:nth-child(3) { transition-delay: 0.7s; }
-.signature[data-drawn="true"] path:nth-child(4) { transition-delay: 1.05s; }
 
 /* Guestbook cards — a real sheet of notepad paper with a second sheet under it.
    The li holds the under-sheet (::before) and the long contact shadow (::after); the
