@@ -23,30 +23,47 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
   const isFlagship = work.layout === "flagship";
   const pad = "p-[24px] md:p-[32px]";
 
+  const title = (
+    <h3 className="m-0 max-w-[560px] text-balance font-heading text-[26px] font-normal leading-[32px] tracking-[-1px] text-heading md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]">
+      {work.title}
+    </h3>
+  );
+  const description = (
+    <p className="m-0 max-w-[560px] text-pretty font-body text-lead-md text-secondary">{work.description}</p>
+  );
+  // Under NDA: the same pill, greyed out and inert
+  const cta = isLink ? <CtaPill>Read case study</CtaPill> : <CtaPill off>Read case study</CtaPill>;
+
   return (
     <Wrapper
       href={work.href as string}
-      className={`work-card group relative grid h-full min-w-0 grid-rows-[auto_1fr] rounded-xl text-heading ${
-        isFlagship ? "lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:grid-rows-1" : ""
+      className={`work-card group relative grid h-full min-w-0 rounded-xl text-heading ${
+        isFlagship
+          ? "grid-rows-[auto_1fr] lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:grid-rows-1"
+          : // The smaller pair share three rows (title, words + pill, image) through a subgrid, so
+            // side by side a two-line title and a three-line one still start the description,
+            // the pill and the image at the same height on both cards
+            "grid-rows-[auto_auto_1fr] lg:row-span-3 lg:grid-rows-subgrid lg:gap-y-0"
       } ${isLink ? "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape" : ""}`}
     >
-      {/* Words */}
-      <div className={`flex min-w-0 flex-col justify-between gap-[32px] md:gap-[40px] ${pad} ${isFlagship ? "pb-0 md:pb-0 lg:pb-[32px]" : "pb-0 md:pb-0"}`}>
-        <div className="flex flex-col">
-          <h3 className="m-0 max-w-[560px] text-balance font-heading text-[26px] font-normal leading-[32px] tracking-[-1px] text-heading md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]">
-            {work.title}
-          </h3>
-          <p className="m-0 mt-[12px] max-w-[560px] text-pretty font-body text-lead-md text-secondary md:mt-[16px]">
-            {work.description}
-          </p>
+      {isFlagship ? (
+        /* Words */
+        <div className={`flex min-w-0 flex-col justify-between gap-[32px] md:gap-[40px] ${pad} pb-0 md:pb-0 lg:pb-[32px]`}>
+          <div className="flex flex-col gap-[12px] md:gap-[16px]">
+            {title}
+            {description}
+          </div>
+          {cta}
         </div>
-        {isLink ? (
-          <CtaPill>Read case study</CtaPill>
-        ) : (
-          // Under NDA: the same pill, greyed out and inert
-          <CtaPill off>Read case study</CtaPill>
-        )}
-      </div>
+      ) : (
+        <>
+          <div className="min-w-0 px-[24px] pt-[24px] md:px-[32px] md:pt-[32px]">{title}</div>
+          <div className="flex min-w-0 flex-col justify-between gap-[32px] px-[24px] pt-[12px] md:gap-[40px] md:px-[32px] md:pt-[16px]">
+            {description}
+            {cta}
+          </div>
+        </>
+      )}
 
       {/* The work, in its half with the same padding as the words; side by side (lg) it
           fills the half's full height, stacked it keeps its own aspect */}
