@@ -60,7 +60,7 @@ export const featuredWorks: FeaturedWork[] = [
   {
     type: "Side project",
     discipline: "Interaction design",
-    title: "Designing Bella, the desk bell that hosts this portfolio",
+    title: "Designing Bella, the desk bell that hosts this portfolio, in Claude Code",
     description:
       "A front-desk bell in the navbar that keeps track of how long you actually spend here, and rings when it has something to say.",
     image: "/images/bella/cover.png",
