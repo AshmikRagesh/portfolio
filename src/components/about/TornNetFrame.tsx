@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import LaceFrame, { FRAME } from "./LaceFrame";
+import PictureFrame, { FRAME } from "./PictureFrame";
 import {
   createNet,
   EDGE_ALIVE,
@@ -23,8 +23,9 @@ const K = OPEN_W / (FX1 - FX0);
 const OPEN_H = (FY1 - FY0) * K;
 const OPEN: Rect = [0, 0, OPEN_W, OPEN_H];
 const MID = [OPEN_W / 2, OPEN_H / 2];
-// The frame's face, in world units (the lace starts a little in from the board's edge)
-const CARD: Rect = [(8 - FX0) * K, (8 - FY0) * K, (FRAME.w - 8 - FX0) * K, (FRAME.h - 8 - FY0) * K];
+// The frame's face, in world units
+const E = FRAME.edge;
+const CARD: Rect = [(E - FX0) * K, (E - FY0) * K, (FRAME.w - E - FX0) * K, (FRAME.h - E - FY0) * K];
 const onFrame = (x: number, y: number) =>
   x >= CARD[0] && x <= CARD[2] && y >= CARD[1] && y <= CARD[3] && !(x >= 0 && x <= OPEN_W && y >= 0 && y <= OPEN_H);
 
@@ -40,7 +41,7 @@ function hexToRgb(hex: string) {
 export default function TornNetFrame({
   src,
   alt,
-  netColor = "#f9f7f3",
+  netColor = "#9D136A", // grape, from the DS
   className = "",
 }: {
   src: string;
@@ -49,7 +50,6 @@ export default function TornNetFrame({
   className?: string;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const mendRef = useRef<() => void>(() => {});
   const [torn, setTorn] = useState(false);
 
   useEffect(() => {
@@ -220,15 +220,15 @@ export default function TornNetFrame({
       strokeAll(shadows[clip * 2 + 1], 2 * (core + 0.45 + 0.03 * 0.3 * view.scale), "#000", 0.07 * fade);
       for (let t = 0; t < 3; t++)
         for (let a = 0; a < 4; a++)
-          strokeAll(segs[clip * 12 + t * 4 + a], Math.max(0.5, w * THIN[t]), strandStyle, 0.96 * fade * ((a + 1) / 4));
+          strokeAll(segs[clip * 12 + t * 4 + a], Math.max(0.5, w * THIN[t]), strandStyle, 0.86 * fade * ((a + 1) / 4));
       ctx.fillStyle = knotStyle;
       for (let a = 0; a < 4; a++) {
         const list = knots[clip * 4 + a];
         if (!list.length) continue;
-        ctx.globalAlpha = 0.96 * fade * ((a + 1) / 4);
+        ctx.globalAlpha = 0.86 * fade * ((a + 1) / 4);
         ctx.beginPath();
         for (let q = 0; q < list.length; q += 3) {
-          const r = Math.max(0.4, 0.66 * w * list[q + 2]);
+          const r = Math.max(0.35, 0.56 * w * list[q + 2]);
           ctx.rect(list[q] - r, list[q + 1] - r, 2 * r, 2 * r);
         }
         ctx.fill();
@@ -343,14 +343,6 @@ export default function TornNetFrame({
     card.addEventListener("pointercancel", onUp);
     window.addEventListener("resize", resize);
 
-    mendRef.current = () => {
-      releaseHold();
-      const slot = slots[slots.length - 1];
-      slot.net.dropAll();
-      slot.dropped = slot.net.time;
-      addNet(0);
-    };
-
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
@@ -363,17 +355,18 @@ export default function TornNetFrame({
     };
   }, [netColor]);
 
-  // The picture sits a little under the wood all round
+  // The picture sits a little under the mat all round. There's no mending: once torn,
+  // the net stays torn until the page is loaded again.
   const inset = (v: number, of: number) => `${((v - 4) / of) * 100}%`;
   return (
-    <div className={`flex flex-col items-center ${className}`}>
+    <div className={`flex flex-col items-start ${className}`}>
       <div
         ref={cardRef}
-        className="relative w-full touch-none select-none [filter:drop-shadow(0_12px_20px_rgba(60,40,20,0.16))_drop-shadow(0_2px_4px_rgba(60,40,20,0.12))]"
+        className="relative w-full touch-none select-none [filter:drop-shadow(0_1px_1px_rgba(30,5,37,0.3))_drop-shadow(0_8px_12px_rgba(30,5,37,0.16))_drop-shadow(0_28px_40px_rgba(30,5,37,0.16))]"
         style={{ aspectRatio: `${FRAME.w} / ${FRAME.h}` }}
       >
         <div
-          className="absolute overflow-hidden bg-[#f4eee3]"
+          className="absolute overflow-hidden bg-vanilla"
           style={{
             left: inset(FX0, FRAME.w),
             top: inset(FY0, FRAME.h),
@@ -382,26 +375,14 @@ export default function TornNetFrame({
           }}
         >
           <Image src={src} alt={alt} fill sizes="440px" priority draggable={false} className="object-cover object-center" />
-          <div className="pointer-events-none absolute inset-0 shadow-[inset_0_2px_8px_rgba(60,35,15,0.28)]" />
+          <div className="pointer-events-none absolute inset-0 shadow-[inset_2px_2px_6px_rgba(30,5,37,0.18)]" />
         </div>
-        <LaceFrame className="pointer-events-none absolute inset-0 h-full w-full" />
+        <PictureFrame className="pointer-events-none absolute inset-0 h-full w-full" />
       </div>
 
-      <div className="mt-[24px] flex h-[20px] items-baseline justify-center gap-[8px] font-geist text-[12px] leading-[20px]">
-        <p className="m-0 text-muted" aria-hidden="true">
-          {torn ? "Pull at the torn edges to open it wider" : "Grab the net and pull to tear it"}
-        </p>
-        {torn && (
-          <button
-            type="button"
-            onClick={() => mendRef.current()}
-            className="text-secondary underline decoration-muted/40 underline-offset-[4px] transition-colors hover:text-heading"
-          >
-            Mend the net
-          </button>
-        )}
-      </div>
+      <p className="mt-[24px] w-full text-center font-geist text-[12px] leading-[16px] text-muted" aria-hidden="true">
+        {torn ? "Pull at the torn edges to open it wider" : "Grab the net and pull to tear it"}
+      </p>
     </div>
   );
 }
-

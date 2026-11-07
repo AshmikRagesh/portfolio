@@ -415,22 +415,6 @@ export function createNet(open: Rect, onFrame: (x: number, y: number) => boolean
       }
       return best;
     },
-    /** Mend: the whole net comes away and falls */
-    dropAll() {
-      release();
-      for (let i = 0; i < n; i++) {
-        if (degree[i] === 0 && state[i] !== S.Falling) {
-          state[i] = S.Gone;
-          alpha[i] = 0;
-          continue;
-        }
-        if (state[i] === S.Pinned) {
-          state[i] = S.Free;
-          inv[i] = 1;
-        }
-        fall(i, (0.2 + 0.1 * rand()) / 720, 0.9);
-      }
-    },
     get time() {
       return time;
     },
