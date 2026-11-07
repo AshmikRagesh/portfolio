@@ -1233,9 +1233,13 @@
 /* The status line rises in each time it changes */
 .bella-loader-line { animation: bella-line-in 360ms cubic-bezier(0.2, 0.8, 0.3, 1) both; }
 @keyframes bella-line-in { from { opacity: 0; transform: translateY(8px); } }
+/* The odometer: each reel rolls to its digit; pupils glide to where Bella looks */
+.bella-odo-col { -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%); }
+.bella-loader-pupils { transition: transform 200ms ease-out; }
 /* Dizzy eyes after the backflip */
 .bella-loader-dizzy { animation: bella-dizzy 520ms linear infinite; }
 @keyframes bella-dizzy { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
   .bella-loader-line, .bella-loader-dizzy { animation: none; }
+  .bella-loader-pupils { transition: none; }
 }

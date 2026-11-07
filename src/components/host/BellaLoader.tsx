@@ -1,116 +1,86 @@
 "use client";
 
 // ── Bella loader ──────────────────────────────────────────────────────────────
-// The first thing a visitor sees, once per browser session: Bella on an empty
-// vanilla stage, doing tricks while the site loads, over a split-flap counter
-// (the same cards as the timer board) and one plain status line.
+// The first thing a visitor sees, once per browser session: Bella getting the
+// guest's room ready while the site loads. Each chore is one act, with its own line:
 //
-// Bella is drawn here from the same paths and colours as HostCharacter, split into
-// two parts so the dome can lift off its base:
-//   body   the whole bell: jumps, flips, squashes on take-off and landing.
-//   top    plunger + dome + face: lifts off the base like a hat for the hat tip.
+//   pillows   "Fluffing your pillows" — Bella bounces on a hotel pillow to plump it,
+//             the pillow squashing under each landing, then a backflip off it.
+//             Feathers float out when she lands.
+//   polish    "Giving the bell a polish" — a folded napkin swoops in and buffs her
+//             dome; she squeezes her eyes shut, then a glint runs across and a
+//             sparkle catches the light.
+//   mint      "Leaving a mint on your pillow" — a peppermint drops onto the pillow
+//             beside her; she watches it land.
+//   ready     "Your room is ready" — she tips her dome like a hat and the room key
+//             is hanging underneath. One ding, and the stage lifts away.
 //
-// Tricks play one after another, each ending with a landing and a ding:
-//   backflip   squash, launch, a full turn backwards, land, dizzy eyes, ding.
-//   twirl      jump, two turns on the spot (the face hides while Bella faces away).
-//   hat tip    the dome lifts off the base, waves left and right, sets back down.
+// Bella is a flat character, so every move stays in the picture plane: hops,
+// squashes, flips and tilts, never a turn that would show her edge.
+// She's drawn from HostCharacter's paths and colours, split into body (the whole
+// bell) and top (plunger + dome + face), so the dome can lift off the base.
 //
-// The counter only reaches 100 once the page has loaded and at least MIN_MS has
-// passed, so a fast load still sees one full trick. On 100, Bella waits for her next
-// landing, rings once, and the stage closes like an iris onto her, revealing the site.
-//
-// Shown once per session (sessionStorage "bella-loaded"); add ?loader to the URL to
-// see it again. An inline script in layout.tsx hides it before paint for repeat
-// visits, so there's no flash. With reduced motion Bella stays still, only blinking,
-// and the stage fades out instead.
+// The count rolls on an odometer in the display serif. It reaches 100 only once the
+// page has loaded; if loading runs long, the chores go round again with new lines.
+// Shown once per session (sessionStorage "bella-loaded"); ?loader shows it again.
+// An inline script in layout.tsx hides it before paint on repeat visits.
+// With reduced motion Bella sits still on her pillow and the stage fades out.
 // All sizes are multiples of 2/4px.
 
 import { useEffect, useRef, useState } from "react";
-import { FlapDigit } from "@/components/host/TimerBoard";
-import { DOME, FINISH, GRAPE, LIGHT, MIDNIGHT } from "@/components/host/HostCharacter";
+import { DOME, FINISH, GRAPE, LIGHT, MIDNIGHT, RIM, STAR } from "@/components/host/HostCharacter";
 
 const SEEN_KEY = "bella-loaded";
-const MIN_MS = 2600;
 const MAX_MS = 9000; // never hold the visitor longer than this, loaded or not
-const IRIS_MS = 820;
+const LIFT_MS = 900;
 
-type Face = "open" | "up" | "squeeze" | "happy" | "dizzy";
-type Trick = "backflip" | "twirl" | "hattip";
-const ORDER: Trick[] = ["backflip", "twirl", "hattip"];
+type Eyes = "open" | "squeeze" | "happy" | "dizzy";
+type Face = { eyes: Eyes; dx?: number; dy?: number };
+type Act = "pillows" | "polish" | "mint" | "ready";
 
-const MESSAGES: [number, string][] = [
-  [0, "Opening the front desk"],
-  [22, "Setting out the case studies"],
-  [48, "Turning on the lights"],
-  [74, "Getting your room ready"],
-  [100, "Welcome in"],
-];
-const messageFor = (n: number) => MESSAGES.reduce((m, [at, text]) => (n >= at ? text : m), MESSAGES[0][1]);
+const LINES: Record<Act, [string, string]> = {
+  // [first time round, if loading runs long and the chores go round again]
+  pillows: ["Fluffing your pillows", "Plumping the cushions"],
+  polish: ["Giving the bell a polish", "Polishing the brass"],
+  mint: ["Leaving a mint on your pillow", "Turning down the bed"],
+  ready: ["Your room is ready", "Your room is ready"],
+};
+const DURATION: Record<Act, number> = { pillows: 1300, polish: 1200, mint: 1000, ready: 1200 };
+const CHORES_MS = DURATION.pillows + DURATION.polish + DURATION.mint;
 
-// [ms, ...values] → a transform about a point, as in HostCharacter
+// Where things stand: the pillow's top is at y≈214 under Bella (her base sinks 12 into
+// it), and it squashes toward the floor at y=284, so a squash of sy lowers her 70·(1−sy)
+const FLOOR = 284;
+const PILLOW = "M8 248 Q2 222 24 220 Q100 208 176 220 Q198 222 192 248 Q198 274 176 276 Q100 288 24 276 Q2 274 8 248 Z";
+const STITCH = "M18 248 Q14 229 32 227 Q100 216 168 227 Q186 229 182 248 Q186 267 168 269 Q100 280 32 269 Q14 267 18 248 Z";
+const FEATHER = "M0 -8 Q5 -2 0 8 Q-5 -2 0 -8 Z";
+
 const around = (x: number, y: number, mid: string) => `translate(${x}px, ${y}px) ${mid} translate(${-x}px, ${-y}px)`;
+// [ms, y, rot, sx, sy] for the whole bell — flips about her middle, squashes from her base
 const bodyFrame = (p: number[]) => ({
   transform: `translate(0px, ${p[1]}px) ${around(100, 183, `rotate(${p[2]}deg)`)} ${around(100, 226, `scale(${p[3]}, ${p[4]})`)}`,
 });
-
-interface Script {
-  duration: number;
-  /** When Bella is back on the ground and could stop. */
-  landed: number;
-  body: number[][];
-  shadow: number[][];
-  top?: number[][];
-  faceOpacity?: number[][];
-  faces: [number, Face][];
-  dust?: number;
-  ding: number;
-}
-
-const SCRIPTS: Record<Trick, Script> = {
-  backflip: {
-    duration: 1700,
-    landed: 1120,
-    body: [[0, 0, 0, 1, 1], [180, 0, 0, 1.16, 0.82], [300, -30, 0, 0.9, 1.14], [460, -88, -120, 1, 1], [600, -102, -240, 1, 1], [760, -60, -340, 0.96, 1.04], [880, 0, -360, 1.2, 0.8], [1000, -8, -360, 0.96, 1.04], [1120, 0, -360, 1.02, 0.98], [1240, 0, -360, 1, 1], [1700, 0, -360, 1, 1]],
-    shadow: [[0, 1, 0.14], [180, 1.12, 0.16], [600, 0.42, 0.04], [880, 1.2, 0.18], [1120, 1, 0.14], [1700, 1, 0.14]],
-    faces: [[0, "open"], [100, "squeeze"], [300, "happy"], [860, "squeeze"], [1000, "dizzy"], [1500, "open"]],
-    dust: 880,
-    ding: 1160,
-  },
-  twirl: {
-    duration: 1900,
-    landed: 1420,
-    body: [[0, 0, 0, 1, 1], [180, 0, 0, 1.14, 0.84], [300, -24, 0, 0.9, 1.12], [420, -60, 0, 0, 1.04], [540, -84, 0, -1, 1], [660, -92, 0, 0, 1], [780, -84, 0, 1, 1], [880, -66, 0, 0, 1], [980, -40, 0, -1, 1], [1080, -14, 0, 0, 1], [1180, 0, 0, 1.18, 0.82], [1300, -6, 0, 0.96, 1.04], [1420, 0, 0, 1, 1], [1900, 0, 0, 1, 1]],
-    shadow: [[0, 1, 0.14], [180, 1.1, 0.16], [660, 0.5, 0.05], [1180, 1.18, 0.18], [1420, 1, 0.14], [1900, 1, 0.14]],
-    // The face is only on show while Bella faces the front
-    faceOpacity: [[0, 1], [419, 1], [421, 0], [659, 0], [661, 1], [879, 1], [881, 0], [1079, 0], [1081, 1], [1900, 1]],
-    faces: [[0, "open"], [100, "squeeze"], [300, "up"], [1160, "squeeze"], [1300, "happy"], [1700, "open"]],
-    dust: 1180,
-    ding: 1440,
-  },
-  hattip: {
-    duration: 1900,
-    landed: 1500,
-    body: [[0, 0, 0, 1, 1], [160, 0, 0, 1.08, 0.92], [300, 0, 0, 0.98, 1.02], [420, 0, 0, 1, 1], [1300, 0, 0, 1, 1], [1380, 0, 0, 1.1, 0.9], [1500, 0, 0, 0.98, 1.02], [1620, 0, 0, 1, 1], [1900, 0, 0, 1, 1]],
-    shadow: [[0, 1, 0.14], [1900, 1, 0.14]],
-    // [ms, lift, tilt] about the base's top edge
-    top: [[0, 0, 0], [240, 0, 0], [440, -46, -16], [620, -52, 12], [780, -48, -10], [940, -50, 8], [1100, -46, 0], [1300, 0, 0], [1380, 2, 0], [1500, 0, 0], [1900, 0, 0]],
-    faces: [[0, "open"], [260, "happy"], [1300, "squeeze"], [1440, "open"]],
-    ding: 1520,
-  },
-};
+const pillowFrame = (p: number[]) => ({ transform: around(100, FLOOR, `scale(${p[1]}, ${p[2]})`) });
 
 export default function BellaLoader() {
   const [gone, setGone] = useState(false);
   const [n, setN] = useState(0);
-  const [face, setFace] = useState<Face>("open");
+  const [face, setFace] = useState<Face>({ eyes: "open" });
+  const [line, setLine] = useState(LINES.pillows[0]);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const bodyRef = useRef<SVGGElement>(null);
-  const topRef = useRef<SVGGElement>(null);
-  const faceRef = useRef<SVGGElement>(null);
-  const shadowRef = useRef<SVGEllipseElement>(null);
-  const dustRef = useRef<SVGGElement>(null);
+  const r = {
+    body: useRef<SVGGElement>(null),
+    top: useRef<SVGGElement>(null),
+    pillow: useRef<SVGGElement>(null),
+    floor: useRef<SVGEllipseElement>(null),
+    feathers: useRef<SVGGElement>(null),
+    cloth: useRef<SVGGElement>(null),
+    sweep: useRef<SVGRectElement>(null),
+    sparkle: useRef<SVGPathElement>(null),
+    mint: useRef<SVGGElement>(null),
+  };
 
   useEffect(() => {
     const html = document.documentElement;
@@ -133,83 +103,68 @@ export default function BellaLoader() {
     const timers: number[] = [];
     const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
 
-    // ── Readiness ───────────────────────────────────────────────────────────
+    // ── Readiness and the count ─────────────────────────────────────────────
     let loaded = document.readyState === "complete";
     const onLoad = () => (loaded = true);
     window.addEventListener("load", onLoad);
     let fontsReady = false;
     (document.fonts?.ready ?? Promise.resolve()).then(() => (fontsReady = true));
 
-    // ── Counter ─────────────────────────────────────────────────────────────
     let shown = 0;
-    let lastPaint = 0;
     let done = false;
     // On a timer rather than rAF, so the count keeps going in a tab that isn't painting
-    const tick = () => {
-      const now = performance.now();
-      const t = now - start;
+    const counter = window.setInterval(() => {
+      const t = performance.now() - start;
       const ready = (loaded && fontsReady) || t > MAX_MS;
-      // Time gate eases out, so the count rushes early and slows into 100
-      const timeCap = 100 * (1 - Math.pow(1 - Math.min(1, t / MIN_MS), 2.2));
-      const target = Math.min(timeCap, ready ? 100 : 92);
-      shown += (target - shown) * 0.12;
-      if (target - shown < 0.4) shown = target;
-      const value = Math.floor(shown);
-      if (now - lastPaint > 64 || value === 100) {
-        lastPaint = now;
-        setN(value);
-      }
-      if (value >= 100) {
+      // Paced to the chores, easing out so it slows into 100
+      const timeCap = 100 * (1 - Math.pow(1 - Math.min(1, t / CHORES_MS), 1.8));
+      const target = Math.min(timeCap, ready ? 100 : 94);
+      shown += (target - shown) * 0.1;
+      if (target - shown < 0.5) shown = target;
+      setN(Math.round(shown * 100) / 100);
+      if (shown >= 100) {
         done = true;
         window.clearInterval(counter);
-        if (reduced) finish();
+        if (reduced) leave();
       }
-    };
-    const counter = window.setInterval(tick, 32);
+    }, 32);
 
-    // ── Leaving: ring once, then close the stage onto Bella ─────────────────
+    // ── Leaving: the stage lifts away like a blind ─────────────────────────
     let leaving = false;
-    const finish = () => {
+    let restored = false;
+    const restore = () => {
+      if (restored) return;
+      restored = true;
+      html.style.overflow = prevOverflow;
+      setGone(true);
+    };
+    const leave = () => {
       if (leaving) return;
       leaving = true;
       try {
         sessionStorage.setItem(SEEN_KEY, "1");
       } catch {}
       const root = rootRef.current;
-      let restored = false;
-      const restore = () => {
-        if (restored) return;
-        restored = true;
-        html.style.overflow = prevOverflow;
-        setGone(true);
-      };
-      if (!root || reduced) {
-        root?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, easing: "ease-out", fill: "forwards" }).finished.then(restore, restore);
-        at(400, restore); // in case the fade never gets a frame
-        return;
-      }
-      setFace("happy");
-      ding();
-      const box = svgRef.current?.getBoundingClientRect();
-      const cx = box ? Math.round(box.left + box.width / 2) : window.innerWidth / 2;
-      const cy = box ? Math.round(box.top + box.height * 0.62) : window.innerHeight / 2;
-      const r = Math.ceil(Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy)));
-      at(520, () => {
-        const iris = root.animate(
-          [{ clipPath: `circle(${r}px at ${cx}px ${cy}px)` }, { clipPath: `circle(${r * 0.18}px at ${cx}px ${cy}px)`, offset: 0.7 }, { clipPath: `circle(0px at ${cx}px ${cy}px)` }],
-          { duration: IRIS_MS, easing: "cubic-bezier(0.76, 0, 0.24, 1)", fill: "forwards" },
-        );
-        iris.finished.then(restore, restore);
-        at(IRIS_MS + 200, restore); // in case the tab never paints the iris
-      });
+      const lift = reduced
+        ? root?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, easing: "ease-out", fill: "forwards" })
+        : root?.animate([{ transform: "translateY(0)" }, { transform: "translateY(-100%)" }], { duration: LIFT_MS, easing: "cubic-bezier(0.76, 0, 0.24, 1)", fill: "forwards" });
+      lift?.finished.then(restore, restore);
+      at((reduced ? 320 : LIFT_MS) + 200, restore); // in case the tab never paints it
     };
 
     // Skip with a click or a key once the page has loaded
-    const skip = () => loaded && (done = true);
+    const skip = () => {
+      if (loaded) leave();
+    };
     window.addEventListener("keydown", skip);
     rootRef.current?.addEventListener("pointerdown", skip);
 
-    // ── Tricks ──────────────────────────────────────────────────────────────
+    // ── Choreography ────────────────────────────────────────────────────────
+    const play = (el: Element | null, pts: number[][], D: number, frameOf: (p: number[]) => Keyframe, easing = "ease-in-out") => {
+      if (!el?.animate) return;
+      anims.push(el.animate(pts.map((p) => ({ ...frameOf(p), offset: p[0] / D, easing })), { duration: D, fill: "both" }));
+    };
+    const faces = (list: [number, Face][]) => list.forEach(([ms, f]) => at(ms, () => setFace(f)));
     const ding = () => {
       const svg = svgRef.current;
       if (!svg) return;
@@ -218,55 +173,94 @@ export default function BellaLoader() {
       svg.classList.add("is-ding");
       at(900, () => svg.classList.remove("is-ding"));
     };
+    const floor = (pts: number[][], D: number) => play(r.floor.current, pts, D, (p) => ({ transform: around(100, FLOOR, `scale(${p[1]}, 1)`), opacity: p[2] }));
 
-    const play = (el: Element | null, pts: number[][], D: number, frameOf: (p: number[]) => Keyframe, easing = "ease-in-out") => {
-      if (!el?.animate) return;
-      anims.push(el.animate(pts.map((p) => ({ ...frameOf(p), offset: p[0] / D, easing })), { duration: D, fill: "both" }));
-    };
-
-    const puff = () => {
-      const dust = dustRef.current;
-      if (!dust) return;
-      Array.from(dust.children).forEach((c, i) => {
-        const side = i % 2 ? 1 : -1;
-        const far = i < 2 ? 1 : 0.6;
+    const feathers = () => {
+      Array.from(r.feathers.current?.children ?? []).forEach((f, i) => {
+        const side = i === 1 ? 1 : -1;
+        const x0 = [34, 166, 60][i];
+        const drift = [-34, 30, -12][i];
         anims.push(
-          c.animate(
+          f.animate(
             [
-              { transform: "translate(0px, 0px) scale(0.4)", opacity: 0 },
-              { transform: `translate(${side * 14 * far}px, -6px) scale(1)`, opacity: 1, offset: 0.3 },
-              { transform: `translate(${side * 30 * far}px, -14px) scale(1.4)`, opacity: 0 },
+              { transform: `translate(${x0}px, 238px) rotate(0deg) scale(0.4)`, opacity: 0 },
+              { transform: `translate(${x0 + drift * 0.5}px, 200px) rotate(${side * 40}deg) scale(1)`, opacity: 1, offset: 0.25 },
+              { transform: `translate(${x0 + drift * 0.9}px, 214px) rotate(${-side * 20}deg) scale(1)`, opacity: 1, offset: 0.55 },
+              { transform: `translate(${x0 + drift * 0.7}px, 230px) rotate(${side * 30}deg) scale(0.9)`, opacity: 1, offset: 0.8 },
+              { transform: `translate(${x0 + drift}px, 246px) rotate(${-side * 10}deg) scale(0.8)`, opacity: 0 },
             ],
-            { duration: 560, easing: "cubic-bezier(0.2, 0.8, 0.3, 1)", fill: "both" },
+            { duration: 1600 + i * 200, delay: i * 60, easing: "ease-in-out", fill: "both" },
           ),
         );
       });
     };
 
-    let round = 0;
-    const perform = () => {
-      if (leaving) return;
-      const s = SCRIPTS[ORDER[round % ORDER.length]];
-      round += 1;
-      const D = s.duration;
-      play(bodyRef.current, s.body, D, bodyFrame);
-      play(shadowRef.current, s.shadow, D, (p) => ({ transform: around(100, 238, `scale(${p[1]}, 1)`), opacity: p[2] }));
-      if (s.top) play(topRef.current, s.top, D, (p) => ({ transform: `translate(0px, ${p[1]}px) ${around(100, 212, `rotate(${p[2]}deg)`)}` }), "cubic-bezier(0.4, 0, 0.3, 1)");
-      if (s.faceOpacity) play(faceRef.current, s.faceOpacity, D, (p) => ({ opacity: p[1] }), "linear");
-      s.faces.forEach(([ms, f]) => at(ms, () => !leaving && setFace(f)));
-      if (s.dust) at(s.dust, puff);
-      // Back on the ground: leave now if the count is done, else ring and go again
-      at(s.landed, () => {
-        if (done) return finish();
-        at(s.ding - s.landed, ding);
-        at(D - s.landed, () => {
-          if (done) finish();
-          else perform();
-        });
-      });
+    const acts: Record<Act, () => void> = {
+      pillows: () => {
+        const D = DURATION.pillows;
+        // Two small bounces to plump it, a deep load, then a backflip off it
+        play(r.body.current, [[0, 0, 0, 1, 1], [150, 10, 0, 1.1, 0.9], [300, -26, 0, 0.94, 1.08], [420, 8, 0, 1.08, 0.92], [540, 12, 0, 1.14, 0.86], [700, -72, -170, 0.95, 1.06], [820, -86, -300, 1, 1], [960, 12, -360, 1.16, 0.84], [1080, -6, -360, 0.97, 1.03], [1200, 0, -360, 1, 1], [D, 0, -360, 1, 1]], D, bodyFrame);
+        play(r.pillow.current, [[0, 1, 1], [150, 1.04, 0.85], [300, 0.98, 1.05], [420, 1.04, 0.88], [540, 1.06, 0.82], [700, 0.96, 1.08], [820, 1.02, 0.98], [960, 1.06, 0.82], [1080, 0.98, 1.04], [1200, 1, 1], [D, 1, 1]], D, pillowFrame);
+        floor([[0, 1, 0.12], [540, 1.04, 0.14], [820, 0.98, 0.1], [960, 1.06, 0.14], [1200, 1, 0.12], [D, 1, 0.12]], D);
+        faces([[0, { eyes: "open" }], [120, { eyes: "squeeze" }], [260, { eyes: "open", dy: -3 }], [400, { eyes: "squeeze" }], [600, { eyes: "happy" }], [940, { eyes: "squeeze" }], [1060, { eyes: "dizzy" }]]);
+        at(960, feathers);
+      },
+      polish: () => {
+        const D = DURATION.polish;
+        // The napkin buffs the dome, back and forth, and flies off
+        play(r.cloth.current, [[0, 260, 110, 30, 0], [100, 230, 130, 24, 1], [240, 128, 168, 8, 1], [380, 74, 178, -10, 1], [520, 126, 164, 10, 1], [660, 76, 174, -8, 1], [820, 250, 104, 40, 1], [900, 270, 96, 44, 0], [D, 270, 96, 44, 0]], D,
+          (p) => ({ transform: `translate(${p[1]}px, ${p[2]}px) rotate(${p[3]}deg)`, opacity: p[4] }), "cubic-bezier(0.45, 0, 0.3, 1)");
+        play(r.body.current, [[0, 0, 0, 1, 1], [240, 0, 0, 1, 1], [380, 0, -5, 1, 1], [520, 0, 5, 1, 1], [660, 0, -4, 1, 1], [780, 0, 2, 1, 1], [900, 0, 0, 1, 1], [D, 0, 0, 1, 1]], D,
+          (p) => ({ transform: around(100, 226, `rotate(${p[2]}deg)`) }));
+        play(r.sweep.current, [[0, 0, 0], [820, 0, 0.9], [1120, 190, 0], [D, 190, 0]], D, (p) => ({ transform: `skewX(-20deg) translateX(${p[1]}px)`, opacity: p[2] }), "ease-out");
+        play(r.sparkle.current, [[0, 0, 0], [880, 0, 0], [1000, 1.4, 45], [D, 0, 90]], D, (p) => ({ transform: `translate(64px, 150px) rotate(${p[2]}deg) scale(${p[1]})` }), "ease-out");
+        faces([[0, { eyes: "dizzy" }], [220, { eyes: "squeeze" }], [800, { eyes: "happy" }], [1040, { eyes: "open", dx: -2, dy: -2 }]]);
+      },
+      mint: () => {
+        const D = DURATION.mint;
+        // A peppermint drops onto the pillow beside her and settles
+        play(r.mint.current, [[0, -150, -120, 0], [60, -150, -120, 1], [380, 0, 0, 1], [470, -10, 14, 1], [560, 0, 0, 1], [640, -3, 4, 1], [700, 0, 0, 1], [D, 0, 0, 1]], D,
+          (p) => ({ transform: `translate(182px, ${214 + p[1]}px) rotate(${p[2]}deg)`, opacity: p[3] }), "cubic-bezier(0.5, 0, 0.75, 0)");
+        play(r.pillow.current, [[0, 1, 1], [380, 1, 1], [440, 1.01, 0.97], [540, 1, 1], [D, 1, 1]], D, pillowFrame);
+        play(r.body.current, [[0, 0, 0, 1, 1], [380, 0, 0, 1, 1], [440, 2, 0, 1.02, 0.98], [540, 0, 0, 1, 1], [D, 0, 0, 1, 1]], D, bodyFrame);
+        faces([[0, { eyes: "open", dx: 2, dy: -4 }], [300, { eyes: "open", dx: 3, dy: 3 }], [640, { eyes: "happy" }]]);
+      },
+      ready: () => {
+        const D = DURATION.ready;
+        // Tips the dome like a hat: the room key hangs underneath
+        play(r.top.current, [[0, 0, 0], [220, -42, -14], [400, -48, 10], [560, -46, -6], [720, -44, 0], [900, 0, 0], [960, 2, 0], [1020, 0, 0], [D, 0, 0]], D,
+          (p) => ({ transform: `translate(0px, ${p[1]}px) ${around(100, 212, `rotate(${p[2]}deg)`)}` }), "cubic-bezier(0.4, 0, 0.3, 1)");
+        play(r.body.current, [[0, 0, 0, 1, 1], [120, 0, 0, 1.06, 0.94], [260, 0, 0, 0.98, 1.02], [380, 0, 0, 1, 1], [900, 0, 0, 1, 1], [960, 3, 0, 1.08, 0.92], [1080, 0, 0, 1, 1], [D, 0, 0, 1, 1]], D, bodyFrame);
+        faces([[0, { eyes: "happy" }], [900, { eyes: "squeeze" }], [1000, { eyes: "happy" }]]);
+        at(920, ding);
+      },
     };
 
-    if (!reduced) at(240, perform);
+    let round = 0;
+    const run = (act: Act) => {
+      if (leaving) return;
+      if (act === "pillows") {
+        // A fresh round: clear the last one, so the mint is gone and the pillow is plumped
+        anims.splice(0).forEach((a) => a.cancel());
+      }
+      setLine(LINES[act][act === "ready" ? 0 : Math.min(round, 1)]);
+      acts[act]();
+      const next = () => {
+        // Once the count is done, finish the chore in hand and hand over the key
+        if (act !== "ready" && done) return run("ready");
+        if (act === "pillows") return run("polish");
+        if (act === "polish") return run("mint");
+        if (act === "mint") {
+          round += 1;
+          return run("pillows");
+        }
+        leave();
+      };
+      at(DURATION[act], next);
+    };
+
+    if (reduced) setFace({ eyes: "happy" });
+    else at(200, () => run("pillows"));
 
     return () => {
       window.clearInterval(counter);
@@ -276,60 +270,94 @@ export default function BellaLoader() {
       window.removeEventListener("keydown", skip);
       html.style.overflow = prevOverflow;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (gone) return null;
 
-  const digits = String(n).padStart(3, "0").split("");
-  const message = messageFor(n);
   const finish = FINISH.primary;
 
   return (
     <div
       ref={rootRef}
       role="progressbar"
-      aria-label="Loading the site"
+      aria-label="Getting the site ready"
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-valuenow={n}
+      aria-valuenow={Math.floor(n)}
       className="bella-loader fixed inset-0 z-[200] flex flex-col items-center justify-center overflow-hidden select-none"
     >
-      {/* Stage: warm paper, lit from above, a faint grain over it */}
       <div aria-hidden="true" className="bella-loader-stage absolute inset-0" />
 
-      {/* Name, top left; the tagline, top right */}
       <div aria-hidden="true" className="absolute inset-x-0 top-0 flex items-center justify-between px-[24px] pt-[24px] md:px-[40px] md:pt-[32px]">
         <span className="font-heading text-h4 md:text-h4-md text-heading">Ashmik Ragesh</span>
-        <span className="hidden sm:block font-brand text-caption uppercase text-muted">Creator that designs for creators</span>
+        <span className="font-brand text-caption uppercase text-muted">Checking you in</span>
       </div>
 
       <div className="relative flex flex-col items-center">
-        {/* Bella */}
-        <svg ref={svgRef} viewBox="0 20 200 236" width="240" height="284" aria-hidden="true" className="host bella-loader-bell overflow-visible">
+        <svg ref={svgRef} viewBox="0 40 200 260" aria-hidden="true" className="host bella-loader-bell overflow-visible w-[240px] h-[312px] md:w-[280px] md:h-[364px]">
           <defs>
             <clipPath id="bl-dome">
               <path d={DOME} />
             </clipPath>
+            <clipPath id="bl-pillow">
+              <path d={PILLOW} />
+            </clipPath>
+            <radialGradient id="bl-pillow-shade" cx="50%" cy="20%" r="80%">
+              <stop offset="0" stopColor="#ffffff" />
+              <stop offset="0.6" stopColor="#fbf7ef" />
+              <stop offset="1" stopColor="#e9dfcd" />
+            </radialGradient>
           </defs>
 
-          {/* Desk — a pool of light where Bella lands */}
-          <ellipse cx="100" cy="240" rx="92" ry="10" fill="#fff" opacity="0.7" />
-          <ellipse ref={shadowRef} cx="100" cy="238" rx="56" ry="6" fill={MIDNIGHT} opacity="0.14" />
+          {/* Floor shadow */}
+          <ellipse ref={r.floor} cx="100" cy={FLOOR} rx="94" ry="7" fill={MIDNIGHT} opacity="0.12" />
 
-          {/* Dust kicked up on landing */}
-          <g ref={dustRef} fill="#32073e" opacity="0.14">
-            <circle cx="40" cy="232" r="6" opacity="0" />
-            <circle cx="160" cy="232" r="6" opacity="0" />
-            <circle cx="52" cy="234" r="4" opacity="0" />
-            <circle cx="148" cy="234" r="4" opacity="0" />
+          {/* The pillow: soft white, a stitched seam, a tuft in the middle */}
+          <g ref={r.pillow}>
+            <path d={PILLOW} fill="url(#bl-pillow-shade)" />
+            <g clipPath="url(#bl-pillow)">
+              <ellipse cx="100" cy="288" rx="104" ry="22" fill="#d9ccb4" opacity="0.45" />
+            </g>
+            <path d={STITCH} fill="none" stroke="#d6c8af" strokeWidth="1.2" strokeDasharray="2.4 3" />
+            <path d={PILLOW} fill="none" stroke="#d9ccb4" strokeWidth="1" />
+            <circle cx="100" cy="256" r="3" fill="#e2d6c0" />
+            <path d="M93 252 Q96 256 93 260 M107 252 Q104 256 107 260" stroke="#d9ccb4" strokeWidth="1" fill="none" strokeLinecap="round" />
           </g>
 
-          <g ref={bodyRef}>
-            {/* The striker post, only seen when the dome lifts off */}
-            <rect x="95" y="190" width="10" height="24" rx="4" fill={GRAPE.shade} />
-            <circle cx="100" cy="190" r="6" fill={GRAPE.mid} />
+          {/* Feathers out of the pillow */}
+          <g ref={r.feathers}>
+            {[0, 1, 2].map((i) => (
+              <g key={i} opacity="0">
+                <path d={FEATHER} fill="#fff" stroke="#d6c8af" strokeWidth="0.8" />
+                <path d="M0 -6 L0 7" stroke="#d6c8af" strokeWidth="0.6" />
+              </g>
+            ))}
+          </g>
 
-            <g ref={topRef}>
+          <g ref={r.body}>
+            {/* Where the base sinks into the pillow */}
+            <ellipse cx="100" cy="226" rx="62" ry="4" fill={MIDNIGHT} opacity="0.1" />
+
+            {/* Under the dome: the striker post, with the room key hanging off it */}
+            <rect x="96" y="200" width="8" height="14" rx="3" fill={GRAPE.shade} />
+            <g transform="translate(100 178) rotate(-6)">
+              {/* Leather tag on a short cord */}
+              <path d="M0 0 Q6 4 10 2" stroke={GRAPE.shade} strokeWidth="1.2" fill="none" />
+              <g transform="translate(10 2) rotate(24)">
+                <rect x="-5" y="0" width="10" height="16" rx="3" fill={GRAPE.mid} />
+                <circle cy="3" r="1.4" fill={RIM} />
+                <rect x="-2" y="7" width="4" height="6" rx="1" fill="#fff" opacity="0.5" />
+              </g>
+              {/* The key: bow, shaft, bit */}
+              <circle cy="4" r="5" fill="none" stroke={RIM} strokeWidth="2.6" />
+              <rect x="-1.6" y="8" width="3.2" height="20" rx="1.4" fill={RIM} />
+              <rect x="1" y="20" width="4.4" height="2.6" rx="0.8" fill={RIM} />
+              <rect x="1" y="24.4" width="3.2" height="2.6" rx="0.8" fill={RIM} />
+              <rect x="-0.4" y="10" width="1" height="14" rx="0.5" fill="#fff" opacity="0.5" />
+            </g>
+
+            <g ref={r.top}>
               <g className="host-plunger">
                 <rect x="94" y="126" width="12" height="12" rx="3" fill={GRAPE.mid} />
                 <rect x="94" y="126" width="12" height="5" rx="2.5" fill={GRAPE.lit} />
@@ -340,21 +368,38 @@ export default function BellaLoader() {
                 <g clipPath="url(#bl-dome)">
                   <path d={DOME} fill={finish.lit} transform={`translate(${LIGHT.x} ${LIGHT.y})`} />
                   <rect className="host-sweep" x="20" y="130" width="14" height="100" fill="#fff" opacity="0" transform="skewX(-20)" />
+                  <rect ref={r.sweep} x="20" y="130" width="16" height="100" fill="#fff" opacity="0" />
                 </g>
                 <path d="M66 198 Q64 168 82 152" stroke="#fff" strokeOpacity="0.18" strokeWidth="5" fill="none" strokeLinecap="round" />
-                <g ref={faceRef}>
-                  <BellaFace face={face} />
-                </g>
+                <BellaEyes face={face} />
               </g>
             </g>
 
-            {/* Base */}
             <rect x="38" y="212" width="124" height="14" rx="7" fill={GRAPE.shade} />
             <rect x="38" y="212" width="124" height="6" rx="3" fill={GRAPE.mid} />
             <rect x="48" y="213" width="44" height="2" rx="1" fill="#fff" opacity="0.2" />
           </g>
 
-          {/* Ring lines on each ding */}
+          {/* The mint, once it's been left */}
+          <g ref={r.mint} opacity="0">
+            <path d="M-7 0 L-13 -5 L-12 5 Z M7 0 L13 -5 L12 5 Z" fill="#fff" stroke="#d6c8af" strokeWidth="0.8" strokeLinejoin="round" />
+            <circle r="7" fill="#fff" stroke="#e2d6c0" strokeWidth="0.8" />
+            {[0, 60, 120, 180, 240, 300].map((a) => (
+              <path key={a} d="M0 0 L0 -7 A7 7 0 0 1 3.5 -6.06 Z" fill={GRAPE.mid} transform={`rotate(${a})`} />
+            ))}
+            <circle r="2" fill="#fff" />
+          </g>
+
+          {/* The napkin that polishes her */}
+          <g ref={r.cloth} opacity="0">
+            <path d="M-16 -12 L14 -14 Q18 -14 18 -10 L16 12 Q16 15 12 15 L-14 14 Q-18 14 -18 10 Z" fill="#fff" stroke="#d6c8af" strokeWidth="1" />
+            <path d="M-16 -12 L16 12" stroke="#e2d6c0" strokeWidth="1" />
+            <path d="M-14 9 L13 11" stroke={GRAPE.mid} strokeWidth="1.6" opacity="0.7" />
+          </g>
+
+          {/* The sparkle after polishing */}
+          <path ref={r.sparkle} d={STAR} fill={RIM} transform="translate(64 150) scale(0)" />
+
           <g className="host-rings" stroke={GRAPE.mid} strokeWidth="3" strokeLinecap="round" fill="none">
             <path d="M80 128 Q72 120 74 110" />
             <path d="M70 134 Q58 122 62 106" />
@@ -363,48 +408,73 @@ export default function BellaLoader() {
           </g>
         </svg>
 
-        {/* The count, on split-flap cards in a dark window */}
-        <div className="mt-[16px] flex items-end gap-[4px] rounded-lg bg-[#1c1a1d] p-[6px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.8),0_16px_32px_rgba(30,5,37,0.16)]">
-          {digits.map((d, i) => (
-            <FlapDigit key={i} value={d} hero />
-          ))}
-          <span aria-hidden="true" className="self-end pb-[6px] pl-[2px] pr-[4px] font-brand text-body text-[#e9dfc8]/60">
-            %
-          </span>
-        </div>
+        <Odometer value={n} />
 
-        {/* What's happening, in plain words */}
-        <p key={message} className="bella-loader-line mt-[20px] h-[22px] font-geist text-body md:text-body-md text-secondary">
-          {message}
+        <p key={line} className="bella-loader-line mt-[8px] h-[26px] font-geist text-body-md text-secondary">
+          {line}
         </p>
       </div>
 
-      {/* A hairline of progress along the foot of the stage */}
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[2px] bg-primary/10">
-        <div className="h-full origin-left bg-grape transition-transform duration-100 ease-out" style={{ transform: `scaleX(${n / 100})` }} />
+        <div className="h-full origin-left bg-grape transition-transform duration-200 ease-out" style={{ transform: `scaleX(${n / 100})` }} />
       </div>
     </div>
   );
 }
 
-/** Bella's eyes for each moment of a trick. No mouth — the face is just the eyes. */
-function BellaFace({ face }: { face: Face }) {
+/** The count in the display serif on a mechanical odometer: the units wheel turns
+ *  continuously with the count, and each wheel to its left only turns while the one
+ *  beside it passes from 9 to 0. Wheels fade out at the top and bottom of the window.
+ *  Leading zeros fold away, so the number stays centred as it grows. */
+function Odometer({ value }: { value: number }) {
+  const whole = Math.floor(value);
+  const places = [100, 10, 1];
+  return (
+    <div aria-hidden="true" className="mt-[24px] flex items-start font-heading text-stat md:text-stat-md text-heading">
+      {places.map((place) => {
+        // Where this wheel stands, 0–10 (10 is the 0 again, after 9)
+        let pos: number;
+        if (place === 1) pos = value % 10;
+        else {
+          const below = value % place; // what the wheels to the right show together
+          pos = Math.floor(value / place) % 10 + Math.max(0, below - (place - 1));
+        }
+        const hidden = place > 1 && whole < place && !(place === 100 && value > 99);
+        return (
+          <span key={place} className={`bella-odo-col relative block h-[48px] md:h-[56px] overflow-hidden transition-[width,opacity] duration-500 ${hidden ? "w-0 opacity-0" : "w-[30px] md:w-[36px] opacity-100"}`}>
+            <span className="absolute inset-x-0 top-0 flex flex-col items-center" style={{ transform: `translateY(${-(pos / 11) * 100}%)` }}>
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((k, i) => (
+                <span key={i} className="block h-[48px] md:h-[56px] leading-[48px] md:leading-[56px]">
+                  {k}
+                </span>
+              ))}
+            </span>
+          </span>
+        );
+      })}
+      <span className="ml-[4px] mt-[4px] font-heading text-h3 md:text-h3-md text-muted">%</span>
+    </div>
+  );
+}
+
+/** Bella's eyes for each moment. No mouth — the face is just the eyes. */
+function BellaEyes({ face }: { face: Face }) {
   const ink = FINISH.primary.ink;
-  if (face === "squeeze")
+  if (face.eyes === "squeeze")
     return (
       <g stroke={ink} strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round" fill="none">
         <path d="M77 169 L92 177 L77 185" />
         <path d="M123 169 L108 177 L123 185" />
       </g>
     );
-  if (face === "happy")
+  if (face.eyes === "happy")
     return (
       <g stroke={ink} strokeWidth="4.2" strokeLinecap="round" fill="none">
         <path d="M75 180 Q85 168 95 180" />
         <path d="M105 180 Q115 168 125 180" />
       </g>
     );
-  if (face === "dizzy")
+  if (face.eyes === "dizzy")
     return (
       <g stroke={ink} strokeWidth="2.6" strokeLinecap="round" fill="none">
         {[85, 115].map((cx) => (
@@ -414,12 +484,11 @@ function BellaFace({ face }: { face: Face }) {
         ))}
       </g>
     );
-  const dy = face === "up" ? -4 : 0;
   return (
     <g className="host-blink">
       <ellipse cx="85" cy="176" rx="9" ry="11" fill="#fff" />
       <ellipse cx="115" cy="176" rx="9" ry="11" fill="#fff" />
-      <g transform={`translate(0 ${dy})`}>
+      <g className="bella-loader-pupils" style={{ transform: `translate(${face.dx ?? 0}px, ${face.dy ?? 0}px)` }}>
         <circle cx="87" cy="177" r="5.4" fill={MIDNIGHT} />
         <circle cx="117" cy="177" r="5.4" fill={MIDNIGHT} />
         <circle cx="88.8" cy="174.6" r="1.9" fill="#fff" />
