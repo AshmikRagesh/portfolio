@@ -357,7 +357,7 @@ export default function TornNetFrame({
 
   // The picture sits a little under the mat all round. There's no mending: once torn,
   // the net stays torn until the page is loaded again.
-  const inset = (v: number, of: number) => `${((v - 4) / of) * 100}%`;
+  const inset = (v: number, of: number) => `${((v - 10) / of) * 100}%`;
   return (
     <div className={`flex flex-col items-start ${className}`}>
       <div
