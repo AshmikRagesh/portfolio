@@ -14,6 +14,7 @@ interface Testimonial {
   name: string;
   href?: string;
   role: string;
+  emphasis: string; // the phrase that carries the quote, set upright in grape; must appear in quote as written
   signature: string[]; // SVG path strokes, drawn in a 168×72 box
 }
 
@@ -24,6 +25,7 @@ const testimonials: Testimonial[] = [
   {
     quote:
       "Her ability to take full ownership, navigate tough situations, and apply her solid design-system expertise makes her stand out. She leads with clarity, confidence, and accountability.",
+    emphasis: "take full ownership",
     name: "Amlan Mukherjee",
     role: "Ex-Design Manager, Travelopia",
     signature: [
@@ -36,6 +38,7 @@ const testimonials: Testimonial[] = [
   {
     quote:
       "I've collaborated with Ashmik on multiple projects, and every time the designs went further than I'd asked for. Working together has been a genuine pleasure.",
+    emphasis: "went further than I'd asked for",
     name: "Sneha",
     role: "Meesho",
     signature: [
@@ -48,6 +51,7 @@ const testimonials: Testimonial[] = [
   {
     quote:
       "Ashmik turns a rough brief into a flow the team can actually build. On our booking and insurance work, every design decision came with a reason, and engineering always knew exactly what to ship.",
+    emphasis: "every design decision came with a reason",
     name: "Anish",
     role: "Product Manager, Enchanting Travels",
     signature: [
@@ -69,6 +73,19 @@ function ArrowUpRight({ size }: { size: number }) {
       <path d="M7 7h10v10" />
       <path d="M7 17 17 7" />
     </svg>
+  );
+}
+
+// The quote in italic, with its key phrase set upright in grape so a skim still lands it
+function Emphasised({ quote, phrase }: { quote: string; phrase: string }) {
+  const at = quote.indexOf(phrase);
+  if (at < 0) return <>{quote}</>;
+  return (
+    <>
+      {quote.slice(0, at)}
+      <em className="font-medium not-italic text-grape">{phrase}</em>
+      {quote.slice(at + phrase.length)}
+    </>
   );
 }
 
@@ -114,8 +131,14 @@ export default function Testimonials() {
 
                     {/* Quote — written on the ruled part of the page: the rules run edge to edge
                         (negative margin out to the paper's edge), one rule per line */}
-                    <blockquote className="gb-ruled relative -mx-5 m-0 flex-1 px-5 pb-[28px] font-heading text-[20px] font-normal not-italic leading-[28px] tracking-[0px] text-heading md:-mx-6 md:px-6 lg:text-[22px]">
-                      <p className="relative m-0">{t.quote}</p>
+                    <blockquote className="gb-ruled relative -mx-5 m-0 flex-1 px-5 pb-[28px] font-heading text-[20px] font-normal italic leading-[28px] tracking-[0px] text-secondary md:-mx-6 md:px-6 lg:text-[22px]">
+                      <p className="relative m-0">
+                        {/* Hanging open-quote in the margin, so the first line still starts flush */}
+                        <span aria-hidden="true" className="absolute -left-[16px] -top-[4px] font-heading text-[40px] not-italic leading-[40px] text-grape/70">
+                          &ldquo;
+                        </span>
+                        <Emphasised quote={t.quote} phrase={t.emphasis} />
+                      </p>
                     </blockquote>
 
                     {/* Signature — its own element on the right, above the footer. The bottom
