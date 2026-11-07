@@ -143,11 +143,15 @@ export default function Tossed({ rotate, delay = 0, className = "", children }: 
       if (held) {
         swallow = true;
         window.setTimeout(() => (swallow = false), 0);
-        // Keep it on the page
+        // Keep it on the page. Draw where it was let go first: moves are only drawn on the
+        // next frame, so after a quick flick the last one may not be on screen yet
+        node.style.transition = "";
+        place();
         const r = node.getBoundingClientRect();
         const pad = 8;
         if (r.left < pad) offset.current.x += pad - r.left;
-        if (r.right > window.innerWidth - pad) offset.current.x -= r.right - (window.innerWidth - pad);
+        const edge = document.documentElement.clientWidth - pad; // the page, not counting a scrollbar
+        if (r.right > edge) offset.current.x -= r.right - edge;
         lift(false);
       }
       start = null;
