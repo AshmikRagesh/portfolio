@@ -26,7 +26,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
   return (
     <Wrapper
       href={work.href as string}
-      className={`work-card group relative grid h-full min-w-0 grid-rows-[auto_1fr] rounded-xl bg-card text-heading ${
+      className={`work-card group relative grid h-full min-w-0 grid-rows-[auto_1fr] rounded-xl text-heading ${
         isFlagship ? "lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:grid-rows-1" : ""
       } ${isLink ? "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape" : ""}`}
     >
@@ -55,7 +55,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
           {/* Open works: the room key drops onto its hook on hover. (NDA works: the stamp.) */}
           {!work.nda && <KeyTag room={room} className="absolute -top-[2px] right-[12px] z-[3]" />}
           <div
-            className={`relative aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder ${
+            className={`work-media relative aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder ${
               isFlagship ? "lg:aspect-auto lg:h-full lg:min-h-[320px]" : ""
             } ${work.nda ? "stamp-thud" : ""}`}
           >
@@ -65,7 +65,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
               fill
               sizes={isFlagship ? "(min-width: 1024px) 60vw, 100vw" : "(min-width: 1024px) 50vw, 100vw"}
               style={{ objectPosition: work.imagePosition ?? "center" }}
-              className={`object-cover ${work.nda ? "grayscale" : ""}`}
+              className={`work-media__img object-cover ${work.nda ? "grayscale" : ""}`}
             />
 
             {/* Pixel clouds roll in round the image's edges on hover: pink, or grey for NDA */}
@@ -115,7 +115,7 @@ export default function Works() {
             Selected work.
           </h2>
           <p className="m-0 text-pretty font-body text-[16px] leading-[26px] text-secondary">
-            Products I&apos;ve designed and shipped — from design systems to the flows people use every day.
+            Each card is a room. Check in for the problem, the research and what shipped, from Helix on Claude Code to the search filters TCS travellers use today.
           </p>
         </header>
 
