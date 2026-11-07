@@ -29,76 +29,26 @@ const OLD_KEY = "ash.bella.passOpened"; // once kept the pass open for good; cle
 const NAV = 88; // the navbar's height on a phone
 
 
-const BELL_PATH =
-  "M48 214 Q48 140 100 140 Q152 140 152 214 Z M76 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M106 176 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0 Z M94 124 h12 v14 h-12 Z M38 212 h124 v14 h-124 Z";
-const BLOB = (() => {
-  const pts: string[] = [];
-  for (let i = 0; i <= 72; i++) {
-    const a = (i / 72) * Math.PI * 2;
-    const r = 54 + 2.6 * Math.sin(a * 5 + 0.6) + 1.8 * Math.sin(a * 9 + 2.1) + 1.2 * Math.sin(a * 14) + 0.8 * Math.sin(a * 23 + 1);
-    pts.push(`${(60 + r * Math.cos(a)).toFixed(1)} ${(60 + r * Math.sin(a)).toFixed(1)}`);
-  }
-  return `M${pts.join(" L")} Z`;
-})();
-const BEADS = Array.from({ length: 44 }, (_, i) => {
-  const a = (i / 44) * Math.PI * 2;
-  return [+(60 + 35.6 * Math.cos(a)).toFixed(2), +(60 + 35.6 * Math.sin(a)).toFixed(2)];
-});
 const CRACK = {
-  left: "M-4 -4 L62 -4 L56 22 L66 40 L54 62 L64 82 L56 104 L60 124 L-4 124 Z",
-  right: "M62 -4 L124 -4 L124 124 L60 124 L56 104 L64 82 L54 62 L66 40 L56 22 Z",
+  left: "M-6 -6 L62 -6 L56 22 L66 40 L54 62 L64 82 L56 104 L60 126 L-6 126 Z",
+  right: "M62 -6 L126 -6 L126 126 L60 126 L56 104 L64 82 L54 62 L66 40 L56 22 Z",
 };
 
-// Poured gold wax with Bella pressed into it. Drawn as a height map (lighter grey stands
-// higher) and lit with SVG lighting, so it catches the light like real wax: the puddled
-// edge sloping down to the paper, a rim squeezed up round the press, the flat pressed
-// face, a beaded border, and Bella in relief, with a fine wax grain over it all.
+// Gold wax pressed with a copperplate "A" seal, after real metallic sealing wax: six
+// soft poured lobes, a rounded rim, a groove, a double ring, a satin face with a fine
+// metallic sand. It's a lit render (public/images/bella/wax-seal.webp, made from a
+// height map with real lighting), so the wax reads as wax; the cracked halves clip it.
 function Seal({ id, half }: { id: string; half?: "left" | "right" }) {
   return (
     <svg viewBox="-6 -6 132 132" aria-hidden="true">
-      <defs>
-        <radialGradient id={`${id}e`} cx="50%" cy="50%" r="50%">
-          <stop offset="0.7" stopColor="#9c9c9c" />
-          <stop offset="0.9" stopColor="#747474" />
-          <stop offset="1" stopColor="#3c3c3c" />
-        </radialGradient>
-        <filter id={`${id}l`} x="-10%" y="-10%" width="120%" height="120%" colorInterpolationFilters="sRGB">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="0.9" result="sm" />
-          <feColorMatrix in="sm" type="luminanceToAlpha" result="h0" />
-          <feTurbulence type="fractalNoise" baseFrequency="0.45" numOctaves="2" seed="7" result="nz" />
-          <feColorMatrix in="nz" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.07 0 0 0 0" result="na" />
-          <feComposite in="h0" in2="na" operator="arithmetic" k2="1" k3="1" result="h" />
-          <feDiffuseLighting in="h" surfaceScale="7" diffuseConstant="1.2" lightingColor="#ffffff" result="d">
-            <feDistantLight azimuth={225} elevation={50} />
-          </feDiffuseLighting>
-          <feSpecularLighting in="h" surfaceScale="7" specularConstant="0.9" specularExponent="20" lightingColor="#fff0c4" result="s">
-            <feDistantLight azimuth={225} elevation={50} />
-          </feSpecularLighting>
-          <feFlood floodColor="#c79a45" result="g" />
-          <feComposite in="g" in2="d" operator="arithmetic" k1="1" result="lit" />
-          <feComposite in="s" in2="lit" operator="arithmetic" k2="0.75" k3="1" result="shine" />
-          <feComposite in="shine" in2="SourceAlpha" operator="in" />
-        </filter>
-        {half && (
+      {half && (
+        <defs>
           <clipPath id={`${id}c`}>
             <path d={CRACK[half]} />
           </clipPath>
-        )}
-      </defs>
-      <g clipPath={half ? `url(#${id}c)` : undefined}>
-        <g filter={`url(#${id}l)`}>
-          <path d={BLOB} fill={`url(#${id}e)`} />
-          <circle cx="60" cy="60" r="43.5" fill="none" stroke="#c8c8c8" strokeWidth="7" />
-          <circle cx="60" cy="60" r="40" fill="#7e7e7e" />
-          <circle cx="60" cy="60" r="31" fill="none" stroke="#a2a2a2" strokeWidth="1.2" />
-          {BEADS.map(([x, y], i) => (
-            <circle key={i} cx={x} cy={y} r="1.3" fill="#a6a6a6" />
-          ))}
-          <g transform="translate(60 61) scale(0.3) translate(-100 -176)">
-            <path d={BELL_PATH} fillRule="evenodd" fill="#b2b2b2" />
-          </g>
-        </g>
-      </g>
+        </defs>
+      )}
+      <image href="/images/bella/wax-seal.webp" x="-6" y="-6" width="132" height="132" clipPath={half ? `url(#${id}c)` : undefined} />
     </svg>
   );
 }
@@ -368,7 +318,7 @@ export default function PassScene({
               <rect width="700" height="500" fill="#2a0634" />
               <rect x="10" y="8" width="680" height="300" fill="url(#psl1)" />
               <rect width="700" height="500" fill="url(#pse0l)" />
-              <rect width="700" height="500" fill="#000" filter="url(#pse0g)" opacity="0.3" />
+              <rect width="700" height="500" fill="#000" filter="url(#pse0g)" opacity="0.14" />
               <rect y="100" width="700" height="400" fill="url(#psd)" />
             </svg>
           </div>
@@ -407,8 +357,8 @@ export default function PassScene({
               <path d="M0 500 L330 226 Q350 212 370 226 L700 500 Z" fill="url(#pss2)" />
               <g fill="#000">
                 <path d="M0 0 L372 268 Q378 273 372 278 L0 500 Z M700 0 L328 268 Q322 273 328 278 L700 500 Z M0 500 L330 226 Q350 212 370 226 L700 500 Z" fill="url(#pse1l)" />
-                <path d="M0 0 L372 268 Q378 273 372 278 L0 500 Z M700 0 L328 268 Q322 273 328 278 L700 500 Z" filter="url(#pse1g)" opacity="0.4" />
-                <path d="M0 500 L330 226 Q350 212 370 226 L700 500 Z" filter="url(#pse1g)" opacity="0.4" />
+                <path d="M0 0 L372 268 Q378 273 372 278 L0 500 Z M700 0 L328 268 Q322 273 328 278 L700 500 Z" filter="url(#pse1g)" opacity="0.16" />
+                <path d="M0 500 L330 226 Q350 212 370 226 L700 500 Z" filter="url(#pse1g)" opacity="0.16" />
               </g>
               {/* Folded edges catch the light */}
               <path d="M0 500 L330 226 Q350 212 370 226 L700 500" fill="none" stroke="#fff" strokeOpacity="0.14" strokeWidth="1.5" />
@@ -433,7 +383,7 @@ export default function PassScene({
               </defs>
               <path d={FLAP} fill="url(#pss3)" />
               <path d={FLAP} fill="url(#pse2l)" />
-              <path d={FLAP} fill="#000" filter="url(#pse2g)" opacity="0.4" />
+              <path d={FLAP} fill="#000" filter="url(#pse2g)" opacity="0.16" />
               <path d={FLAP} fill="none" stroke="#fff" strokeOpacity="0.14" strokeWidth="1.5" />
             </svg>
           </div>
@@ -445,7 +395,7 @@ export default function PassScene({
               </defs>
               <path d={FLAP} fill="#2a0634" />
               <path d={FLAP_IN} fill="url(#psl2)" />
-              <path d={FLAP} fill="#000" filter="url(#pse3g)" opacity="0.3" />
+              <path d={FLAP} fill="#000" filter="url(#pse3g)" opacity="0.14" />
             </svg>
           </div>
         </div>

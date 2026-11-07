@@ -379,7 +379,7 @@ html, body { overflow-x: clip; }
 .ps-flap-face { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 .ps-flap-face.is-inside { transform: rotateY(180deg); }
 .ps-seal, .ps-half { position: absolute; left: 50%; top: 61%; width: 17%; aspect-ratio: 1; margin: -8.5% 0 0 -8.5%; }
-.ps-seal svg, .ps-half svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 1px 1px rgba(10, 0, 14, 0.6)) drop-shadow(0 4px 6px rgba(10, 0, 14, 0.4)); }
+.ps-seal svg, .ps-half svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 1px 1px rgba(10, 0, 14, 0.45)) drop-shadow(0 6px 10px rgba(10, 0, 14, 0.35)); }
 .ps-half { opacity: 0; will-change: transform, opacity; }
 .ps-hint { position: absolute; z-index: 6; left: 0; right: 0; top: calc(100% - 56px); text-align: center; font-family: var(--font-brand), monospace; font-size: 12px; line-height: 16px; letter-spacing: 2px; text-transform: uppercase; color: rgba(248, 241, 227, 0.8); }
 .ps-hint span { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; animation: ps-nudge 1.8s ease-in-out infinite; }
