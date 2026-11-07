@@ -17,32 +17,36 @@ interface Testimonial {
   signature: string[]; // SVG path strokes, drawn in a 168×72 box
 }
 
-// Amlan's quote is the recommendation as written; Sneha's is lightly edited.
-// TODO: Anish's is a draft; confirm it with Anish before publishing. The signature strokes are drawn
+// Amlan's quote is the recommendation as written, with the pronouns corrected to he/him; Sneha's is lightly edited.
+// TODO: Anish's is a draft; confirm it with Anish before publishing. The signature strokes are drawn to read as each name,
 // scribbles, not their real signatures.
 const testimonials: Testimonial[] = [
   {
     quote:
-      "Her ability to take full ownership, navigate tough situations, and apply her solid design-system expertise makes her stand out. She leads with clarity, confidence, and accountability.",
+      "His ability to take full ownership, navigate tough situations, and apply his solid design-system expertise makes him stand out. He leads with clarity, confidence, and accountability.",
     name: "Amlan Mukherjee",
     role: "Ex-Design Manager, Travelopia",
     signature: [
-      "M14 50C12 34 16 18 24 12c8-6 16 0 12 10-3 8-14 10-18 8 8 6 14 16 22 22",
-      "M40 52c4-12 10-14 12-8s-4 8-2 0 8-10 10-2c1 6 2 8 4 2s6-14 8-22c-2 12-2 22 0 28 2-8 8-12 10-4 1 4 2 4 4-2",
-      "M92 50c2-12 4-22 6-28 2 10 4 18 6 22 2-8 6-18 8-24 0 12 0 22 2 30 4-8 8-10 10-6s-4 6-2 0 8-8 12-2c4-12 6-22 8-28-2 14-2 26 0 34 4-8 8-6 10-2",
-      "M10 62c40-6 90-4 150-12",
+      "M12 54C18 38 24 22 30 12c2 10 6 28 10 42",
+      "M20 38c6-2 12-3 18-2",
+      "M40 54c2-8 4-12 6-10s1 8 1 10c1-8 4-12 6-10s1 8 2 10c3-10 7-28 7-34 0-4-4-2-4 6 0 10 2 24 6 28",
+      "M72 46c-4-2-8 2-7 6s6 2 7-3c0 3 1 5 4 5 2-6 4-10 6-9s2 7 4 9",
+      "M100 54c2-14 4-30 6-40 4 12 6 22 8 28 4-10 8-20 12-28 0 14 0 28 2 40",
+      "M130 48c1 4 2 6 4 6s3-4 4-8c0 4 1 8 4 8 2-10 4-22 6-32 0 12 0 24 1 32 2-6 5-10 7-8s0 6 4 6",
+      "M14 64c50-6 100-6 148-14",
     ],
   },
   {
     quote:
       "I've collaborated with Ashmik on multiple projects, and every time the designs went further than I'd asked for. Working together has been a genuine pleasure.",
     name: "Sneha",
-    role: "Meesho",
+    role: "Senior Visual Designer, Meesho",
     signature: [
-      "M32 16c-8-6-20-2-16 8 4 8 18 8 16 18s-18 10-22 2",
-      "M38 46c2-8 10-8 8 0s-6 6-4 0 6-4 8 2c2-6 6-10 10-8-4 4-4 10 0 8 4-6 8-8 8 0 0-8 4-26 6-32-2 16-2 28 0 34 2-8 8-10 8-2",
-      "M102 14c-4 14-8 28-10 34 6-4 14-2 22 0 2-8 6-12 8-6 1 6 4 4 6-4",
-      "M64 66c30-6 66-6 100-14",
+      "M36 18c-6-6-18-4-16 4 2 8 16 10 14 20s-16 12-20 4",
+      "M38 54c2-6 4-10 7-9s2 7 4 9c3-2 8-5 8-9 0-3-5-3-6 2s4 9 10 6",
+      "M61 53c3-6 7-22 9-34 0-4-4-2-4 6 0 10 0 22 1 29 2-6 5-10 8-9s2 7 5 9",
+      "M88 46c-4-2-8 2-7 6s6 2 7-3c0 3 1 5 5 5",
+      "M34 64c40-4 80-6 124-16",
     ],
   },
   {
@@ -51,10 +55,13 @@ const testimonials: Testimonial[] = [
     name: "Anish",
     role: "Product Manager, Enchanting Travels",
     signature: [
-      "M18 16c0 12-2 26-4 36M14 18c16-6 30 4 26 18s-18 18-28 14",
-      "M44 46c2-8 8-8 8-2s-4 6-3 0 5-6 8 2c2-6 6-8 8-2 1 4 2 4 3 0 2-8 4-18 6-26-2 10-2 20 0 28",
-      "M96 30c-8-2-12 8-8 14s12 4 12-4-6-12-4-10M110 46c2-10 4-22 6-30M112 36c4-2 8-2 10 2M120 46c2-6 6-8 8-4s-4 6-2 0 6-6 10 0",
-      "M8 62c50-8 100-6 152-14",
+      "M14 54C20 38 26 24 32 12c2 12 6 28 10 42",
+      "M22 40c6-2 12-3 18-2",
+      "M42 54c2-6 4-10 7-9s2 7 4 9c2-4 3-7 4-9 0 4 0 7 3 9",
+      "M58 38v0.5",
+      "M61 54c3-4 5-7 7-9 4 3 4 7 0 9-2 1-4 0-5-1",
+      "M68 54c4-2 8-14 10-36 0-4-4-2-4 6 0 10 0 22 1 30 2-6 5-10 8-9s2 7 5 9",
+      "M10 64c50-6 100-6 148-14",
     ],
   },
 ];
