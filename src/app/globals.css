@@ -1217,21 +1217,24 @@
    A terminal-style check-in on grape. Repeat visits in the same session get
    .loader-skip on <html> before paint (layout.tsx), so it never flashes. */
 .loader-skip .bella-loader { display: none; }
-/* Midnight screen, vanilla text and highlight bar. --ld-spot is the soft light
-   behind Bella; at 100 it warms to gold as she's cast in gold */
-.bella-loader { --ld-bg: #1e0525; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #1e0525; --ld-spot: rgba(236, 229, 216, 0.22); background: var(--ld-bg); color: var(--ld-ink); }
-.bella-loader.is-done { --ld-spot: rgba(242, 199, 92, 0.3); }
-/* Bella's dome shade is midnight too: a thin vanilla rim light keeps her outline */
-.bella-loader-bella { filter: drop-shadow(0 0 1px rgba(236, 229, 216, 0.55)) drop-shadow(0 0 12px rgba(236, 229, 216, 0.18)); }
-.bella-loader-spot {
+/* Midnight screen, vanilla text and highlight bar */
+.bella-loader { --ld-bg: #1e0525; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #1e0525; background: var(--ld-bg); color: var(--ld-ink); }
+/* Bella's dome shade is midnight too: a crisp 1px vanilla outline keeps her shape
+   (four hard-edged drop-shadows, no blur). Her own ground shadow is hidden here,
+   so it doesn't get outlined; she stands on a flat pool of light instead. */
+.bella-loader-bella .host {
+  filter: drop-shadow(1px 0 0 rgba(236, 229, 216, 0.5)) drop-shadow(-1px 0 0 rgba(236, 229, 216, 0.5)) drop-shadow(0 1px 0 rgba(236, 229, 216, 0.5)) drop-shadow(0 -1px 0 rgba(236, 229, 216, 0.5));
+}
+.bella-loader-bella .host > ellipse { display: none; }
+.bella-loader-pool {
   position: absolute;
   left: 50%;
-  top: 56px;
-  width: 320px;
-  height: 240px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(closest-side, var(--ld-spot), transparent);
-  pointer-events: none;
+  width: 112px;
+  height: 12px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #ece5d8;
+  opacity: 0.12;
 }
 /* The chores drift upward forever: the list is doubled, and one loop moves it by
    six rows (16px line + 12px gap each) */

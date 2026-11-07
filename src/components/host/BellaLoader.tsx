@@ -6,18 +6,18 @@
 //
 //   left    a list of housekeeping chores ("// Fluffing your pillows...") that drifts
 //           slowly upward on a loop; the chore under way is marked by a vanilla bar.
-//   centre  Bella stands in a soft spotlight above the count "( 42% )", set in the
+//   centre  Bella stands on a small pool of light above the count "( 42% )", set in the
 //           display serif. Her eyes follow the highlighted chore as it drifts, or
 //           the cursor while it moves. Each chore gets its own move: a bounce to
 //           fluff the pillows, a ding and a glint for the polish, a wiggle for the
 //           towels, a hop for the mint, a sleepy sink for the turndown. Tap her to
-//           ring for service. At 100 she's cast in gold with a ding, then the screen lifts.
+//           ring for service. At 100 she rings once, then the screen lifts.
 //   right   a note to the guest types itself out: each letter arrives as a solid
 //           block, flickers through a few random characters, then settles; a block
 //           cursor blinks at the end.
 //
 // The count reaches 100 only once the page has loaded (or after MAX_MS). Then the
-// last chore reads "Your room is ready", Bella turns gold and dings, the text blinks
+// last chore reads "Your room is ready", Bella rings once, the text blinks
 // out and the screen lifts away like a blind. A click or key skips once the page has loaded.
 // On phones the three parts stack: list on top, count in the middle, note below.
 //
@@ -25,8 +25,8 @@
 // Shown once per session (sessionStorage "bella-loaded"); ?loader shows it again.
 // An inline script in layout.tsx hides it before paint on repeat visits.
 // With reduced motion nothing scrolls or scrambles, and the screen fades out.
-// Bella's dome shade is midnight too, so a soft vanilla rim light (globals.css)
-// keeps her outline readable on the dark screen.
+// Bella's dome shade is midnight too, so a crisp vanilla outline (globals.css)
+// keeps her shape readable on the dark screen.
 
 import { useEffect, useRef, useState } from "react";
 import HostCharacter, { hostLayout } from "@/components/host/HostCharacter";
@@ -227,7 +227,7 @@ export default function BellaLoader() {
   return (
     <div
       ref={rootRef}
-      className={`bella-loader fixed inset-0 z-[1000] select-none font-brand text-caption uppercase ${n >= 100 ? "is-done" : ""} ${closing ? "is-closing" : ""}`}
+      className={`bella-loader fixed inset-0 z-[1000] select-none font-brand text-caption uppercase ${closing ? "is-closing" : ""}`}
       role="progressbar"
       aria-label="Loading the site"
       aria-valuemin={0}
@@ -248,9 +248,10 @@ export default function BellaLoader() {
 
         {/* Bella on top of the count */}
         <div className="bella-loader-fade relative flex flex-col items-center md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-[60%]">
-          <div className="bella-loader-spot" aria-hidden="true" />
+          {/* The pool of light she stands in (stays on the floor when she hops) */}
+          <div className="bella-loader-pool" style={{ top: bella.base - 6 }} aria-hidden="true" />
           <div ref={bellaRef} onPointerDown={ring} className="bella-loader-bella relative cursor-pointer" style={{ transformOrigin: "50% 100%" }} title="Ring for service">
-            <HostCharacter ding={ding} gold={n >= 100} gaze={gaze} style={{ width: bella.width, height: BELLA_H }} />
+            <HostCharacter ding={ding} gaze={gaze} style={{ width: bella.width, height: BELLA_H }} />
           </div>
           <div className="relative mt-4 whitespace-pre font-heading text-h2 tabular-nums normal-case md:text-h2-md">{`( ${n}% )`}</div>
         </div>
