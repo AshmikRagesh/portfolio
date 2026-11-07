@@ -6,16 +6,11 @@
 //                     with the average marked
 //   here right now    one small bell per guest, the visitor's own in grape
 //   guests            so far, this month, and the busiest day of the last two weeks
-//   last two weeks    visits per day, with the daily average; hover or arrow keys
-//                     pick a day
-//   stamps            the share of visits that found each one, in each stamp's ink
 // Numbers in GT Alpina and count up when first seen, labels in Geist, grape for the
 // visitor's own. Refreshes every
 // 30 seconds so "here right now" stays live.
 
 import { useEffect, useRef, useState } from "react";
-import Stamp from "@/components/bella/Stamp";
-import { STAMP_INK, STAMPS } from "@/lib/bella/stampArt";
 import { formatStay } from "@/lib/bella/passArt";
 import type { HouseStats } from "@/lib/curiosity/store";
 
@@ -40,149 +35,6 @@ function useSeen<T extends Element>() {
     return () => io.disconnect();
   }, []);
   return [ref, seen] as const;
-}
-
-// Visits per day: hover or arrow keys pick a day, and the header reads it out.
-// Today is solid gold, the rest a lighter gold; a dashed line marks the daily average.
-function VisitsChart({ days }: { days: HouseStats["lastDays"] }) {
-  const [ref, seen] = useSeen<HTMLDivElement>();
-  const last = days.length - 1;
-  const [pick, setPick] = useState<number | null>(null);
-  const peak = Math.max(1, ...days.map((d) => d.visits));
-  const top = Math.max(4, Math.ceil(peak / 4) * 4); // a round top for the scale
-  const total = days.reduce((n, d) => n + d.visits, 0);
-  const avg = total / days.length;
-  const shown = days[pick ?? last];
-
-  return (
-    <div className={`flex flex-col gap-[20px] bg-white p-[24px] ${CARD}`}>
-      <div className="flex items-start justify-between gap-[16px]">
-        <div className="flex flex-col gap-[4px]">
-          <p className="font-body text-[14px] leading-[20px] text-secondary">Visits, last two weeks</p>
-          <p className="font-heading text-[32px] leading-[36px] text-heading tabular-nums">{total.toLocaleString()}</p>
-        </div>
-        <div className="flex flex-col items-end gap-[4px] text-right" aria-live="polite">
-          <p className="font-body text-[14px] leading-[20px] text-secondary">{pick === null || pick === last ? "Today" : fmtDay(shown.day, true)}</p>
-          <p className="font-heading text-[32px] leading-[36px] text-grape tabular-nums">{shown.visits}</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-[24px_minmax(0,1fr)] gap-x-[8px]">
-        {/* The scale: 0, half and the top */}
-        <div className="relative h-[176px] font-body text-[12px] leading-[16px] text-muted tabular-nums" aria-hidden="true">
-          {[top, top / 2, 0].map((v, i) => (
-            <span key={i} className="absolute right-0 -translate-y-1/2" style={{ top: `${(i / 2) * 100}%` }}>
-              {v}
-            </span>
-          ))}
-        </div>
-        <div
-          ref={ref}
-          tabIndex={0}
-          role="img"
-          aria-label={`Visits per day for the last 14 days: ${days.map((d) => `${fmtDay(d.day)} ${d.visits}`).join(", ")}`}
-          onKeyDown={(e) => {
-            if (e.key === "ArrowLeft") setPick((p) => Math.max(0, (p ?? last) - 1));
-            else if (e.key === "ArrowRight") setPick((p) => Math.min(last, (p ?? last) + 1));
-            else return;
-            e.preventDefault();
-          }}
-          onBlur={() => setPick(null)}
-          onMouseLeave={() => setPick(null)}
-          className="relative h-[176px] rounded-[4px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
-        >
-          {/* Recessive grid: top, half, baseline */}
-          {[0, 50, 100].map((t) => (
-            <span key={t} className={`absolute inset-x-0 h-px ${t === 100 ? "bg-line" : "bg-line-soft"}`} style={{ top: `${t}%` }} aria-hidden="true" />
-          ))}
-          {/* Daily average */}
-          <span
-            className="absolute inset-x-0 border-t border-dashed border-heading/30 transition-[bottom] duration-700"
-            style={{ bottom: seen ? `${(avg / top) * 100}%` : 0 }}
-            aria-hidden="true"
-          >
-            <span className="absolute -top-[10px] left-0 z-[1] rounded-[4px] bg-white px-[6px] font-body text-[12px] leading-[20px] text-secondary">
-              Average {avg.toFixed(1)} a day
-            </span>
-          </span>
-
-          <div className="absolute inset-0 flex items-end gap-[6px]">
-            {days.map((d, i) => {
-              const on = pick === i;
-              const today = i === last;
-              return (
-                <div key={d.day} className="relative flex h-full flex-1 cursor-default items-end" onMouseEnter={() => setPick(i)}>
-                  {on && <span className="absolute inset-x-[-3px] inset-y-0 rounded-[6px] bg-grape-light/60" aria-hidden="true" />}
-                  <div
-                    className={`relative w-full rounded-t-[4px] transition-[height,background-color] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                      today || on ? "bg-grape" : pick !== null ? "bg-grape/15" : "bg-grape/30"
-                    }`}
-                    style={{ height: seen ? `${Math.max(1.5, (d.visits / top) * 100)}%` : "0%", transitionDelay: seen ? `${i * 30}ms, 0ms` : "0ms" }}
-                  />
-                  {on && (
-                    <span className="pointer-events-none absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-[8px] bg-primary px-[10px] py-[6px] font-body text-[12px] leading-[16px] text-white shadow-[0_8px_24px_rgba(30,5,37,0.2)]" style={{ bottom: `calc(${(d.visits / top) * 100}% + 10px)` }}>
-                      <b className="font-medium">{d.visits}</b> {d.visits === 1 ? "visit" : "visits"} · {fmtDay(d.day, true)}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <span />
-        <div className="mt-[8px] flex justify-between font-body text-[12px] leading-[16px] text-muted">
-          <span>{fmtDay(days[0].day)}</span>
-          <span>{fmtDay(days[Math.floor(last / 2)].day)}</span>
-          <span>Today</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// The share of visits that found each stamp, each bar in its stamp's own ink
-function StampsFound({ stamps }: { stamps: HouseStats["stamps"] }) {
-  const [ref, seen] = useSeen<HTMLUListElement>();
-  return (
-    <div className={`flex flex-col gap-[16px] bg-white p-[24px] ${CARD}`}>
-      <div className="flex items-baseline justify-between gap-[16px]">
-        <p className="font-body text-[14px] leading-[20px] text-secondary">Stamps found by guests</p>
-        <p className="font-body text-[12px] leading-[16px] text-muted">% of visits</p>
-      </div>
-      <ul ref={ref} className="-mx-[8px] flex flex-col gap-[4px]">
-        {STAMPS.map((s, i) => {
-          const pct = stamps[s.key] ?? 0;
-          return (
-            // Hover or focus swaps the bar for how the stamp is found; the row keeps its height
-            <li
-              key={s.key}
-              tabIndex={0}
-              aria-label={`${s.name}: ${pct}% of visits. ${s.earned}`}
-              className="group grid grid-cols-[36px_minmax(0,1fr)_40px] items-center gap-[12px] rounded-[12px] px-[8px] py-[8px] outline-none transition-colors hover:bg-grape-light/60 focus-visible:bg-grape-light/60 focus-visible:ring-2 focus-visible:ring-grape/40"
-            >
-              <Stamp stamp={s.key} className="h-[36px] w-[36px] transition-transform duration-300 group-hover:-rotate-6 group-focus-visible:-rotate-6" />
-              <div className="flex min-w-0 flex-col gap-[4px] group-hover:col-span-2 group-focus-visible:col-span-2">
-                <span className="font-body text-[14px] leading-[20px] text-heading">{s.name}</span>
-                <span className="grid h-[16px] items-center" aria-hidden="true">
-                  <span className="relative col-start-1 row-start-1 block h-[6px] overflow-hidden rounded-full bg-line-soft transition-opacity duration-200 group-hover:opacity-0 group-focus-visible:opacity-0">
-                    <span
-                      className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                      style={{ width: seen ? `${Math.max(pct ? 2 : 0, pct)}%` : "0%", background: STAMP_INK[s.key], transitionDelay: `${i * 60}ms` }}
-                    />
-                  </span>
-                  <span className="col-start-1 row-start-1 translate-y-[2px] truncate whitespace-nowrap font-body text-[12px] leading-[16px] text-secondary opacity-0 transition-[opacity,transform] duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
-                    {s.earned}
-                  </span>
-                </span>
-              </div>
-              <span className="text-right font-body text-[14px] leading-[20px] text-secondary tabular-nums group-hover:hidden group-focus-visible:hidden">{pct}%</span>
-            </li>
-          );
-        })}
-      </ul>
-      <p className="font-body text-[12px] leading-[16px] text-muted">Hover or tab to a stamp to see how it’s found.</p>
-    </div>
-  );
 }
 
 const CARD =
@@ -398,11 +250,6 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
         >
           {!busiest.visits ? "–" : busiest === stats.lastDays[stats.lastDays.length - 1] ? "Today" : fmtDay(busiest.day, true)}
         </Tile>
-      </div>
-
-      <div className="grid gap-[16px] md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <VisitsChart days={stats.lastDays} />
-        <StampsFound stamps={stats.stamps} />
       </div>
     </section>
   );

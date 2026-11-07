@@ -328,8 +328,8 @@ html, body { overflow-x: clip; }
   filter: drop-shadow(0 1px 0 #7a5420) drop-shadow(0 2px 3px rgba(30, 5, 37, 0.25)) drop-shadow(0 20px 32px rgba(30, 5, 37, 0.2));
 }
 /* A glint that follows the pointer across the foil and the card (CuriosityPass sets --lx, --ly, --lit) */
-.pass-sheen { position: absolute; inset: 0; border-radius: 10px; pointer-events: none; mix-blend-mode: soft-light; opacity: var(--lit, 0);
-  background: radial-gradient(circle at var(--lx, 50%) var(--ly, 30%), rgba(255, 244, 214, 0.9), rgba(255, 244, 214, 0) 45%); }
+.pass-sheen { position: absolute; inset: 0; border-radius: 10px; pointer-events: none; mix-blend-mode: soft-light; opacity: calc(var(--lit, 0) * 0.35);
+  background: radial-gradient(circle at var(--lx, 50%) var(--ly, 30%), rgba(255, 244, 214, 0.7), rgba(255, 244, 214, 0) 40%); }
 .pass-frame, .pass-frame svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .pass-face { position: absolute; inset: 0; padding: 7cqw 8cqw 7.5cqw; display: grid; grid-template-rows: auto 1fr auto auto; justify-items: center; align-items: center; text-align: center; }
 /* Paper grain over the panel */
@@ -344,7 +344,7 @@ html, body { overflow-x: clip; }
 }
 /* The visitor's own numbers, big */
 .pass-details { margin: 0; display: grid; grid-template-columns: repeat(3, auto); align-items: end; }
-.pass-details > div { padding: 0 3.6cqw; display: grid; gap: 0.6cqw; }
+.pass-details > div { padding: 0 3.6cqw; display: grid; gap: 0.6cqw; justify-items: start; text-align: left; }
 .pass-details > div + div { border-left: 1px solid rgba(236, 229, 216, 0.2); }
 .pass-details dt { font-size: 2cqw; line-height: 1.3; color: rgba(236, 229, 216, 0.62); }
 .pass-details dd { margin: 0; font-family: var(--font-serif), "GT Alpina Trial", Georgia, serif; font-size: 4.6cqw; line-height: 1; color: #ece5d8; white-space: nowrap; font-variant-numeric: tabular-nums; }
