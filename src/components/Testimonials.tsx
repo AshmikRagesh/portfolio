@@ -17,8 +17,8 @@ interface Testimonial {
   signature: string[]; // SVG path strokes, drawn in a 168×72 box
 }
 
-// Amlan's words are his real recommendation. TODO: Snehpk's and Anish's quotes are
-// placeholders until Ashmik sends their copy. The signature strokes are drawn
+// Amlan's quote is the recommendation as written; Sneha's is lightly edited.
+// TODO: Anish's is a draft; confirm it with Anish before publishing. The signature strokes are drawn
 // scribbles, not their real signatures.
 const testimonials: Testimonial[] = [
   {
@@ -35,8 +35,8 @@ const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "Placeholder: Snehpk's recommendation goes here.",
-    name: "Snehpk",
+      "I've collaborated with Ashmik on multiple projects, and every time the designs went further than I'd asked for. Working together has been a genuine pleasure.",
+    name: "Sneha",
     role: "Meesho",
     signature: [
       "M32 16c-8-6-20-2-16 8 4 8 18 8 16 18s-18 10-22 2",
@@ -47,7 +47,7 @@ const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "Placeholder: Anish's recommendation goes here.",
+      "Ashmik turns a rough brief into a flow the team can actually build. On our booking and insurance work, every design decision came with a reason, and engineering always knew exactly what to ship.",
     name: "Anish",
     role: "Product Manager, Enchanting Travels",
     signature: [
