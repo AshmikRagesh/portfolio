@@ -6,12 +6,14 @@
 //
 //   left    a list of housekeeping chores ("// Fluffing your pillows...") that drifts
 //           slowly upward on a loop; the chore under way is marked by a vanilla bar.
-//   centre  Bella, in her rendered finish, stands in a soft pool of light above the count "( 42% )", set in the
-//           display serif. Her eyes follow the highlighted chore as it drifts, or
-//           the cursor while it moves. Each chore gets its own move: a bounce to
-//           fluff the pillows, a ding and a glint for the polish, a wiggle for the
-//           towels, a hop for the mint, a sleepy sink for the turndown. Tap her to
-//           ring for service. At 100 she rings once, then the curtain opens.
+//   centre  Bella, in her satin rendered finish, stands in a soft pool of light above
+//           the count "( 42% )", set in the display serif. Her face stays calm
+//           (eyes ahead, blinking); she moves with her whole body instead. She
+//           sways gently while she waits, and each chore gets its own move: hops to
+//           fluff the pillows, a ding for the bell, a shuffle left and right for the
+//           dusting, a hop over to leave the mint, and a backflip to turn down the
+//           bed. Tap her to ring for service. At 100 she rings once, then the
+//           curtain opens.
 //   right   a note to the guest types itself out: each letter arrives as a solid
 //           block, flickers through a few random characters, then settles; a block
 //           cursor blinks at the end.
@@ -46,14 +48,14 @@ const CURTAIN = {
 const BELLA_H = 112;
 
 const CHORES = [
-  "Fluffing your pillows",
+  "Fluffing the pillows",
   "Polishing the front-desk bell",
-  "Folding towels into swans",
+  "Dusting off the case studies",
   "Leaving a mint on your pillow",
   "Turning down the bed",
   "Your room is ready",
 ];
-const NOTE = "Hang tight, guest. Housekeeping is getting your room ready. It takes a moment, but the stay is worth the wait.\u00a0:)";
+const NOTE = "Welcome in. Housekeeping is putting the finishing touches on your room: fresh sheets, plumped pillows, the good soap.";
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>/\\[]{}#%&*+=?!;:^~";
 const NOTE_CHARS_PER_MS = 0.04; // ~3s to type the note
 const SETTLE = 6; // characters behind the head that are still flickering
@@ -66,7 +68,6 @@ export default function BellaLoader() {
   const [ding, setDing] = useState(0);
   const [closing, setClosing] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [gaze, setGaze] = useState<{ x: number; y: number } | null>({ x: -1, y: 0 });
 
   const rootRef = useRef<HTMLDivElement>(null);
   const bellaRef = useRef<HTMLDivElement>(null);
@@ -140,23 +141,6 @@ export default function BellaLoader() {
     window.addEventListener("keydown", skip);
     rootRef.current?.addEventListener("pointerdown", skip);
 
-    // Where Bella should look: at the nearest highlighted chore as it drifts
-    let lastPointer = -Infinity;
-    const onPointer = () => (lastPointer = performance.now());
-    window.addEventListener("pointermove", onPointer);
-    const lookAtChore = () => {
-      const eye = bellaRef.current?.getBoundingClientRect();
-      const bars = Array.from(rootRef.current?.querySelectorAll(".bella-loader-item.is-active") ?? []);
-      if (!eye || !bars.length) return { x: -1, y: 0 };
-      const cx = eye.left + eye.width / 2;
-      const cy = eye.top + eye.height * 0.45;
-      const near = bars
-        .map((b) => b.getBoundingClientRect())
-        .sort((a, b) => Math.abs(a.top - cy) - Math.abs(b.top - cy))[0];
-      const clamp = (v: number) => Math.max(-1, Math.min(1, v));
-      return { x: clamp((near.left + near.width / 2 - cx) / 240), y: clamp((near.top + near.height / 2 - cy) / 160) };
-    };
-
     // ── The count and the note, on a timer so they run in a tab that isn't painting
     let shown = 0;
     let finished = false;
@@ -170,9 +154,6 @@ export default function BellaLoader() {
       setN(Math.floor(shown));
       setHead(reduced ? NOTE.length + SETTLE : (t - 300) * NOTE_CHARS_PER_MS);
       setTick((k) => k + 1);
-      // Eyes on the highlighted chore, unless the cursor moved in the last 1.5s
-      if (performance.now() - lastPointer < 1500) setGaze(null);
-      else setGaze(lookAtChore());
       if (shown >= 100 && !finished) {
         finished = true;
         window.clearInterval(counter);
@@ -180,7 +161,6 @@ export default function BellaLoader() {
         if (reduced) {
           at(600, leave);
         } else {
-          setGaze({ x: 0, y: 0 });
           at(80, () => setDing((d) => d + 1));
           at(1100, leave);
         }
@@ -192,32 +172,35 @@ export default function BellaLoader() {
       timers.forEach(window.clearTimeout);
       window.removeEventListener("load", onLoad);
       window.removeEventListener("keydown", skip);
-      window.removeEventListener("pointermove", onPointer);
       html.style.overflow = prevOverflow;
     };
   }, []);
 
-  // Each chore gets its own move, all in the picture plane, pivoting on her base
+  // Each chore gets its own whole-body move, all in the picture plane. The wrapper
+  // pivots on her base (for squash); flips turn about her middle, FLIP_Y above it.
   useEffect(() => {
     if (reducedMotion || n >= 100) return;
     const el = bellaRef.current;
     if (!el?.animate) return;
-    const T = (y: number, sx: number, sy: number, r = 0) => `translateY(${y}px) rotate(${r}deg) scale(${sx}, ${sy})`;
-    const moves: [string[], number][] = [
-      // Fluffing the pillows: two bounces
-      [[T(0, 1, 1), T(2, 1.08, 0.9), T(-16, 0.96, 1.05), T(2, 1.08, 0.9), T(-10, 0.97, 1.03), T(0, 1, 1)], 900],
-      // Polishing the bell: a ding plays its glint; she straightens up proudly
-      [[T(0, 1, 1), T(0, 0.98, 1.04), T(0, 1, 1)], 500],
-      // Folding towels: a wiggle side to side
-      [[T(0, 1, 1), T(0, 1, 1, -8), T(0, 1, 1, 7), T(0, 1, 1, -4), T(0, 1, 1, 2), T(0, 1, 1)], 700],
-      // A mint on the pillow: one hop
-      [[T(0, 1, 1), T(2, 1.06, 0.92), T(-14, 0.96, 1.05), T(1, 1.04, 0.95), T(0, 1, 1)], 460],
-      // Turning down the bed: a slow, sleepy sink and back
-      [[T(0, 1, 1), T(4, 1.06, 0.9), T(4, 1.06, 0.9), T(0, 1, 1)], 1100],
+    const FLIP_Y = 52;
+    // x, y: px; sx, sy: squash; r: degrees, about her middle
+    const T = (x: number, y: number, sx: number, sy: number, r = 0) =>
+      `translate(${x}px, ${y}px) translateY(${-FLIP_Y}px) rotate(${r}deg) translateY(${FLIP_Y}px) scale(${sx}, ${sy})`;
+    const moves: [string[], number[], number][] = [
+      // Fluffing the pillows: two springy hops
+      [[T(0, 0, 1, 1), T(0, 2, 1.1, 0.88), T(0, -22, 0.94, 1.08), T(0, 2, 1.1, 0.88), T(0, -14, 0.96, 1.05), T(0, 1, 1.05, 0.94), T(0, 0, 1, 1)], [0, 0.14, 0.34, 0.52, 0.7, 0.86, 1], 960],
+      // Polishing the bell: a ding, and she stands a little taller
+      [[T(0, 0, 1, 1), T(0, 0, 0.97, 1.05), T(0, 0, 1, 1)], [0, 0.4, 1], 600],
+      // Dusting: a shuffle to the left, across to the right, and home, leaning into each
+      [[T(0, 0, 1, 1), T(-26, -6, 1, 1, -8), T(-30, 0, 1.04, 0.96, -2), T(22, -8, 1, 1, 8), T(28, 0, 1.04, 0.96, 2), T(0, -4, 1, 1, -3), T(0, 0, 1, 1)], [0, 0.18, 0.3, 0.52, 0.66, 0.86, 1], 1300],
+      // Leaving the mint: a hop over to the right and back
+      [[T(0, 0, 1, 1), T(0, 2, 1.08, 0.9), T(18, -20, 0.95, 1.06), T(32, 0, 1.08, 0.92), T(32, 0, 1, 1), T(14, -14, 0.96, 1.04), T(0, 0, 1.05, 0.95), T(0, 0, 1, 1)], [0, 0.1, 0.24, 0.38, 0.5, 0.66, 0.84, 1], 1000],
+      // Turning down the bed: crouch, a full backflip, a squashy landing
+      [[T(0, 0, 1, 1), T(0, 4, 1.14, 0.84), T(0, -46, 0.94, 1.06, -120), T(0, -58, 1, 1, -230), T(0, -24, 1, 1, -330), T(0, 4, 1.16, 0.84, -360), T(0, -6, 0.97, 1.03, -360), T(0, 0, 1, 1, -360)], [0, 0.18, 0.38, 0.5, 0.66, 0.78, 0.9, 1], 1100],
     ];
-    const [frames, duration] = moves[active] ?? moves[3];
+    const [frames, offsets, duration] = moves[active] ?? moves[3];
     const t = window.setTimeout(() => {
-      el.animate(frames.map((transform) => ({ transform })), { duration, easing: "ease-in-out" });
+      el.animate(frames.map((transform, i) => ({ transform, offset: offsets[i] })), { duration, easing: "ease-in-out" });
       if (active === 1) setDing((d) => d + 1);
     }, active === 0 ? 400 : 0);
     return () => window.clearTimeout(t);
@@ -266,8 +249,10 @@ export default function BellaLoader() {
           {/* The pool of light she stands in, and her contact shadow (both stay on the floor when she hops) */}
           <div className="bella-loader-pool" style={{ top: bella.base - 20 }} aria-hidden="true" />
           <div className="bella-loader-contact" style={{ top: bella.base - 3 }} aria-hidden="true" />
+          <div className="bella-loader-sway">
           <div ref={bellaRef} onPointerDown={ring} className="bella-loader-bella relative cursor-pointer" style={{ transformOrigin: "50% 100%" }} title="Ring for service">
-            <HostCharacter rendered ding={ding} gaze={gaze} style={{ width: bella.width, height: BELLA_H }} />
+            <HostCharacter rendered ding={ding} gaze={{ x: 0, y: 0 }} style={{ width: bella.width, height: BELLA_H }} />
+          </div>
           </div>
           <div className="relative mt-4 whitespace-pre font-heading text-h2 tabular-nums normal-case md:text-h2-md">{`( ${n}% )`}</div>
         </div>
