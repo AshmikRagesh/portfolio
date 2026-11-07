@@ -532,8 +532,9 @@ ${fringe(10, -1)}${fringe(146, 1)}
 </svg>`;
 }
 
-export function ChelseaLine() {
-  const heart = useRef<HTMLSpanElement>(null);
+/** The Chelsea tag: tap it and a scarf goes up over it, and the heart at the end of the
+ *  paragraph (ChelseaLine) beats. */
+export function ChelseaPill() {
   const { props } = usePlay(async (pill) => {
     const w = pill.offsetWidth;
     // centred over the tag, but never hanging out past the start of the text column
@@ -545,7 +546,7 @@ export function ChelseaLine() {
       clipPath: "inset(0 100% 0 0)",
       transformOrigin: "50% 100%",
     });
-    heart.current?.animate(
+    pill.closest("p")?.querySelector<HTMLElement>("[data-chelsea-heart]")?.animate(
       [{ transform: "scale(1)" }, { transform: "scale(1.28)" }, { transform: "scale(0.94)" }, { transform: "scale(1.12)" }, { transform: "scale(1)" }],
       { duration: 640, delay: 200, easing: "ease-out" },
     );
@@ -567,14 +568,20 @@ export function ChelseaLine() {
     s.remove();
   });
   return (
+    <Pill color={COLORS.chelsea} play={props}>
+      Chelsea
+    </Pill>
+  );
+}
+
+/** The closing line, marked with the highlighter, and its heart. */
+export function ChelseaLine() {
+  return (
     <>
-      <Pill color={COLORS.chelsea} play={props}>
-        Chelsea
-      </Pill>{" "}
       <Highlight>
-        <span className="font-medium text-heading">till God calls upon my name.</span>
+        <span className="font-medium text-heading">Chelsea till God calls upon my name.</span>
       </Highlight>{" "}
-      <span ref={heart} className="relative inline-block" role="img" aria-label="blue heart">
+      <span data-chelsea-heart className="relative inline-block" role="img" aria-label="blue heart">
         💙
       </span>
     </>

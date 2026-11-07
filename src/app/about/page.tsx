@@ -8,6 +8,7 @@ import {
   AirbnbPill,
   BadmintonPill,
   ChelseaLine,
+  ChelseaPill,
   CodeAndAIPill,
   DesignEngineerPill,
   FootballPill,
@@ -46,7 +47,7 @@ export default function AboutPage() {
           </p>
           <p>
             Outside work, I run a small <AirbnbPill /> in Bangalore. I&apos;m also a big sports enthusiast,
-            particularly when it comes to <FootballPill /> and <BadmintonPill />. I&apos;ve been following Chelsea for
+            particularly when it comes to <FootballPill /> and <BadmintonPill />. I&apos;ve been following <ChelseaPill /> for
             years, which means I&apos;ve experienced more than my fair share of emotional ups and downs. Still here,
             still supporting. <ChelseaLine />
           </p>
