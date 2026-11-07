@@ -475,11 +475,11 @@ export default function ReelPlayer({
 
                 <div className="reel-modal-ui pointer-events-auto">
                   {browse ? (
-                    <Cta href={reel.href} dark>
+                    <Cta href={reel.href} dark className="cta-full">
                       Read case study
                     </Cta>
                   ) : (
-                    <Cta onClick={close} dark>
+                    <Cta onClick={close} dark className="cta-full">
                       Continue reading
                     </Cta>
                   )}

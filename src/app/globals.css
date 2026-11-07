@@ -1093,6 +1093,10 @@
 .group:hover .work-cta__inner, .group:focus-visible .work-cta__inner { background-color: #9d136a; }
 .group:hover .work-cta__circle, .group:focus-visible .work-cta__circle { width: var(--cta-h); margin-left: 4px; scale: 1; background-color: #9d136a; }
 .group:hover .work-cta__circle > span, .group:focus-visible .work-cta__circle > span { transform: none; }
+/* Filled: the pill stretches to its container's width (the expanded reel) */
+.cta-full { display: flex; width: 100%; align-self: stretch; }
+.cta-full .work-cta { width: 100%; }
+.cta-full .work-cta__inner { flex: 1; }
 /* Under NDA: the pill greyed out, and it doesn't react to the card's hover */
 .work-cta--off { color: #8e8292; cursor: not-allowed; }
 /* The same pill, smaller, for CTAs inside cards and dialogs */
