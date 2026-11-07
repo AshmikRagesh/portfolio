@@ -46,28 +46,13 @@ const CARD = "rounded-xl border border-heading/[0.08] shadow-[0_1px_2px_rgba(30,
 function Label({ children, aside }: { children: React.ReactNode; aside?: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-[12px]">
-      <p className="font-body text-[14px] font-medium leading-[20px] text-secondary">{children}</p>
+      <p className="font-body text-[12px] font-medium uppercase leading-[16px] tracking-[1.2px] text-secondary">{children}</p>
       {aside}
     </div>
   );
 }
 const Strong = ({ children }: { children: React.ReactNode }) => <span className="font-medium text-heading">{children}</span>;
 
-// Small line icons for the tiles, in white on a grape square
-const ICONS = {
-  guests: "M8 8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z M3 13.5c.6-2.3 2.6-3.5 5-3.5s4.4 1.2 5 3.5",
-  month: "M3 5.5h10v8H3z M3 8h10 M5.5 3v3 M10.5 3v3",
-  busiest: "M2.5 12l3.5-4 3 2.5 4.5-6 M10 4.5h3.5V8",
-};
-function Icon({ name }: { name: keyof typeof ICONS }) {
-  return (
-    <span className="grid h-[32px] w-[32px] place-items-center rounded-md bg-grape text-white" aria-hidden="true">
-      <svg viewBox="0 0 16 16" className="h-[16px] w-[16px]" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-        <path d={ICONS[name]} />
-      </svg>
-    </span>
-  );
-}
 
 // A number that counts up from zero the first time it comes into view
 function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value: number; format?: (n: number) => string }) {
@@ -94,10 +79,10 @@ function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value:
   return <span ref={ref}>{format(shown)}</span>;
 }
 
-function Tile({ label, icon, children, note, meter }: { label: string; icon: keyof typeof ICONS; children: React.ReactNode; note?: React.ReactNode; meter?: number }) {
+function Tile({ label, children, note, meter }: { label: string; children: React.ReactNode; note?: React.ReactNode; meter?: number }) {
   return (
     <div className={`flex flex-col gap-[20px] bg-white p-[24px] md:p-[28px] ${CARD}`}>
-      <Label aside={<Icon name={icon} />}>{label}</Label>
+      <Label>{label}</Label>
       <div className="mt-auto flex flex-col gap-[10px]">
         <div className="font-heading text-stat leading-none tracking-[-1.6px] text-heading tabular-nums">{children}</div>
         {/* The same space in every tile, so the numbers line up; filled only where there's a share */}
@@ -187,7 +172,7 @@ function HereNow({ count }: { count: number }) {
   return (
     <div className="flex flex-col gap-[16px] rounded-xl bg-primary bg-[linear-gradient(rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:24px_24px] bg-[position:-1px_-1px] p-[24px] ring-1 ring-inset ring-white/10 shadow-[0_1px_2px_rgba(30,5,37,0.12),0_12px_28px_-12px_rgba(30,5,37,0.45)] md:p-[32px]">
       <div className="flex items-center justify-between gap-[12px]">
-        <p className="font-body text-[14px] font-medium leading-[20px] text-grape-light/70">Here right now</p>
+        <p className="font-body text-[12px] font-medium uppercase leading-[16px] tracking-[1.2px] text-grape-light/70">Here right now</p>
         <span className="flex items-center gap-[6px] rounded-full bg-white/10 px-[8px] py-[2px] font-body text-[12px] font-medium leading-[16px] text-pink">
           <span className="relative flex h-[6px] w-[6px]">
             <span className="absolute inset-0 animate-ping rounded-full bg-pink/60 motion-reduce:animate-none" />
@@ -284,15 +269,14 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
         <StayCard seconds={seconds} month={stats.month} />
         <HereNow count={stats.hereNow} />
 
-        <Tile label="Guests so far" icon="guests" note="Since the house opened">
+        <Tile label="Guests so far" note="Since the house opened">
           <CountUp value={stats.guests} />
         </Tile>
-        <Tile label="This month" icon="month" meter={share} note={<><Strong>{share}%</Strong> of everyone so far</>}>
+        <Tile label="This month" meter={share} note={<><Strong>{share}%</Strong> of everyone so far</>}>
           <CountUp value={stats.month.guests} />
         </Tile>
         <Tile
           label="Busiest day"
-          icon="busiest"
           note={times >= 1.5 ? <><Strong>{times}×</Strong> a usual day, last two weeks</> : "Of the last two weeks"}
         >
           {!busiest.visits ? "–" : busiest === stats.lastDays[stats.lastDays.length - 1] ? "Today" : fmtDay(busiest.day, true)}
