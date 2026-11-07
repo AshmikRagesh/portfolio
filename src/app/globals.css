@@ -1224,13 +1224,6 @@
 /* Bella's own ground shadow is hidden here: she stands in a soft pool of light with a
    tight contact shadow under her base */
 .bella-loader-bella .host > ellipse { display: none; }
-/* While she waits, Bella sways slowly from side to side on her base */
-.bella-loader-sway { transform-origin: 50% 100%; animation: bella-loader-sway 6s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
-@keyframes bella-loader-sway {
-  0%, 100% { transform: translateX(0) rotate(0deg); }
-  25% { transform: translateX(-2px) rotate(-1deg); }
-  75% { transform: translateX(2px) rotate(1deg); }
-}
 .bella-loader-pool {
   position: absolute;
   left: 50%;
@@ -1274,5 +1267,5 @@
 .bella-loader-cursor { animation: bella-loader-blink 600ms steps(1, end) infinite; }
 @keyframes bella-loader-blink { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .bella-loader-items, .bella-loader-cursor, .bella-loader-sway { animation: none; }
+  .bella-loader-items, .bella-loader-cursor { animation: none; }
 }

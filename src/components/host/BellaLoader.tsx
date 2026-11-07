@@ -8,14 +8,12 @@
 //           slowly upward on a loop; the chore under way is marked by a vanilla bar.
 //   centre  Bella, in her satin rendered finish, stands in a soft pool of light above
 //           the count "( 42% )", set in the display serif. Her face stays calm
-//           (eyes ahead, blinking); she moves with her whole body instead, small
-//           and unhurried. She sways slowly while she waits, and each chore gets
-//           its own move: two soft hops to fluff the pillows, a ding for the bell,
-//           a glide left and right for the dusting, a hop over to leave the mint,
-//           and a backflip to turn down the bed. Hops rise easing out and fall
-//           easing in, like gravity; a flip spins at an even pace on its own layer
-//           while the body rises and falls. Tap her to ring for service.
-//           At 100 she rings and the curtain opens straight away.
+//           (eyes ahead, blinking). She stays in one spot and keeps jumping, with
+//           the weight of a real object: a crouch, a stretched take-off, a hang at
+//           the top, a fall that speeds up, a squash on impact, a small rebound,
+//           and a settle. Her contact shadow shrinks and fades as she rises.
+//           Tap her to ring for service. At 100 she rings and the curtain opens
+//           straight away.
 //   right   a note to the guest types itself out: each letter arrives as a solid
 //           block, flickers through a few random characters, then settles; a block
 //           cursor blinks at the end.
@@ -72,7 +70,7 @@ export default function BellaLoader() {
 
   const rootRef = useRef<HTMLDivElement>(null);
   const bellaRef = useRef<HTMLDivElement>(null);
-  const spinRef = useRef<HTMLDivElement>(null);
+  const shadowRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const active = n >= 100 ? CHORES.length - 1 : Math.min(CHORES.length - 2, Math.floor((n / 100) * (CHORES.length - 1)));
@@ -177,58 +175,53 @@ export default function BellaLoader() {
     };
   }, []);
 
-  // Each chore gets its own whole-body move, small and in the picture plane. The body
-  // layer (bellaRef) slides, rises and squashes from her base; the spin layer turns
-  // about her middle. Each keyframe carries the easing of the stretch after it, so
-  // a hop rises easing out and falls easing in, like gravity.
+  // Bella jumps on the spot, on a loop. One cycle is a big jump and a small rebound,
+  // then a beat of rest. Each keyframe carries the easing of the stretch after it:
+  // rises ease out (slowing to the top), falls ease in (speeding up), so the arc
+  // reads as gravity. Stretch is strongest leaving and nearing the ground, none at
+  // the top; squash happens only on contact. Squash pivots on her base.
   useEffect(() => {
-    if (reducedMotion || n >= 100) return;
+    if (reducedMotion) return;
     const body = bellaRef.current;
-    const spin = spinRef.current;
-    if (!body?.animate || !spin?.animate) return;
-    const UP = "cubic-bezier(0.33, 1, 0.68, 1)"; // decelerating to the top of a hop
-    const DOWN = "cubic-bezier(0.32, 0, 0.67, 0)"; // accelerating back down
-    const SOFT = "cubic-bezier(0.37, 0, 0.63, 1)"; // a gentle glide
-    const SETTLE = "cubic-bezier(0.22, 1, 0.36, 1)"; // coming to rest
-    // [offset, x, y, sx, sy, lean°, easing of the next stretch]
-    type F = [number, number, number, number, number, number, string];
-    const frames = (list: F[]) => list.map(([offset, x, y, sx, sy, r, easing]) => ({ offset, easing, transform: `translate(${x}px, ${y}px) rotate(${r}deg) scale(${sx}, ${sy})` }));
-    const moves: [F[], number][] = [
-      // Fluffing the pillows: two soft hops, the second smaller
-      [[[0, 0, 0, 1, 1, 0, SOFT], [0.12, 0, 0, 1.03, 0.97, 0, UP], [0.3, 0, -10, 0.99, 1.01, 0, DOWN], [0.46, 0, 0, 1.03, 0.97, 0, UP], [0.6, 0, -6, 0.995, 1.005, 0, DOWN], [0.74, 0, 0, 1.02, 0.98, 0, SETTLE], [1, 0, 0, 1, 1, 0, SETTLE]], 1400],
-      // Polishing the bell: a ding, and she stands a touch taller
-      [[[0, 0, 0, 1, 1, 0, SOFT], [0.35, 0, 0, 0.99, 1.02, 0, SETTLE], [1, 0, 0, 1, 1, 0, SETTLE]], 1000],
-      // Dusting: a slow glide left, across to the right, and home, leaning into it
-      [[[0, 0, 0, 1, 1, 0, SOFT], [0.3, -12, 0, 1, 1, -3, SOFT], [0.7, 12, 0, 1, 1, 3, SOFT], [1, 0, 0, 1, 1, 0, SOFT]], 2000],
-      // Leaving the mint: a little hop over to the right, and back
-      [[[0, 0, 0, 1, 1, 0, SOFT], [0.12, 0, 0, 1.03, 0.97, 0, UP], [0.28, 7, -9, 0.99, 1.01, 0, DOWN], [0.44, 14, 0, 1.02, 0.98, 0, SOFT], [0.58, 14, 0, 1.02, 0.98, 0, UP], [0.74, 7, -7, 0.99, 1.01, 0, DOWN], [0.88, 0, 0, 1.02, 0.98, 0, SETTLE], [1, 0, 0, 1, 1, 0, SETTLE]], 1600],
-      // Turning down the bed: a crouch, up, a backflip at the top, down, a soft landing
-      [[[0, 0, 0, 1, 1, 0, SOFT], [0.16, 0, 0, 1.04, 0.95, 0, UP], [0.46, 0, -44, 1, 1, 0, DOWN], [0.76, 0, 0, 1.03, 0.97, 0, SETTLE], [1, 0, 0, 1, 1, 0, SETTLE]], 1500],
+    const shadow = shadowRef.current;
+    if (!body?.animate) return;
+    const UP = "cubic-bezier(0.33, 1, 0.68, 1)";
+    const DOWN = "cubic-bezier(0.32, 0, 0.67, 0)";
+    const PUSH = "cubic-bezier(0.5, 0, 0.75, 0)";
+    const EASE = "cubic-bezier(0.37, 0, 0.63, 1)";
+    const REST = "cubic-bezier(0.22, 1, 0.36, 1)";
+    // [offset, y px, scaleX, scaleY, contact shadow scale, shadow opacity, easing of the next stretch]
+    const cycle: [number, number, number, number, number, number, string][] = [
+      [0, 0, 1, 1, 1, 1, EASE],
+      [0.14, 0, 1.06, 0.92, 1.06, 1, PUSH], // crouch
+      [0.2, -5, 0.95, 1.07, 0.96, 0.9, UP], // take-off, stretched
+      [0.42, -30, 1, 1, 0.56, 0.4, DOWN], // the top
+      [0.6, -4, 0.96, 1.05, 0.96, 0.9, "linear"], // about to land, stretched
+      [0.63, 0, 1.08, 0.9, 1.08, 1, REST], // impact
+      [0.69, 0, 0.98, 1.03, 1, 1, UP], // springs back
+      [0.77, -6, 1, 1, 0.88, 0.8, DOWN], // a small rebound
+      [0.85, 0, 1.03, 0.97, 1.03, 1, REST],
+      [0.92, 0, 0.995, 1.005, 1, 1, EASE],
+      [1, 0, 1, 1, 1, 1, EASE],
     ];
-    const [list, duration] = moves[active] ?? moves[3];
-    const t = window.setTimeout(() => {
-      body.animate(frames(list), { duration });
-      if (active === 4)
-        spin.animate(
-          [
-            { offset: 0, transform: "rotate(0deg)" },
-            { offset: 0.18, transform: "rotate(0deg)", easing: "cubic-bezier(0.45, 0.05, 0.55, 0.95)" },
-            { offset: 0.74, transform: "rotate(-360deg)" },
-            { offset: 1, transform: "rotate(-360deg)" },
-          ],
-          { duration },
-        );
-      if (active === 1) setDing((d) => d + 1);
-    }, active === 0 ? 500 : 0);
-    return () => window.clearTimeout(t);
-  }, [active, reducedMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+    const opts: KeyframeAnimationOptions = { duration: 1700, iterations: Infinity, delay: 300 };
+    const a = body.animate(cycle.map(([offset, y, sx, sy, , , easing]) => ({ offset, easing, transform: `translateY(${y}px) scale(${sx}, ${sy})` })), opts);
+    const b = shadow?.animate(cycle.map(([offset, , , , k, o, easing]) => ({ offset, easing, opacity: o, transform: `translateX(-50%) scale(${k}, 1)` })), opts);
+    return () => {
+      a.cancel();
+      b?.cancel();
+    };
+  }, [reducedMotion, gone]);
+
+  // At the polish chore, she rings
+  useEffect(() => {
+    if (active === 1) setDing((d) => d + 1);
+  }, [active]);
 
   // Tap Bella to ring for service (doesn't skip the loader)
   const ring = (e: React.PointerEvent) => {
     e.stopPropagation();
     setDing((d) => d + 1);
-    if (!reducedMotion)
-      bellaRef.current?.animate([{ transform: "scale(1, 1)" }, { transform: "scale(1.03, 0.97)", easing: "cubic-bezier(0.22, 1, 0.36, 1)" }, { transform: "scale(1, 1)" }], { duration: 420, easing: "cubic-bezier(0.37, 0, 0.63, 1)" });
   };
 
   if (gone) return null;
@@ -239,7 +232,7 @@ export default function BellaLoader() {
   return (
     <div
       ref={rootRef}
-      className={`bella-loader fixed inset-0 z-[1000] select-none font-brand text-caption uppercase `}
+      className={`bella-loader fixed inset-0 z-[1000] select-none font-brand text-caption uppercase`}
       role="progressbar"
       aria-label="Loading the site"
       aria-valuemin={0}
@@ -265,14 +258,9 @@ export default function BellaLoader() {
         <div className="relative flex flex-col items-center md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-[60%]">
           {/* The pool of light she stands in, and her contact shadow (both stay on the floor when she hops) */}
           <div className="bella-loader-pool" style={{ top: bella.base - 16 }} aria-hidden="true" />
-          <div className="bella-loader-contact" style={{ top: bella.base - 2 }} aria-hidden="true" />
-          <div className="bella-loader-sway">
-          <div ref={bellaRef} onPointerDown={ring} className="bella-loader-bella relative cursor-pointer" style={{ transformOrigin: "50% 100%" }} title="Ring for service">
-            {/* Spins about her middle, for the backflip */}
-            <div ref={spinRef} style={{ transformOrigin: `50% ${Math.round(BELLA_H * 0.52)}px` }}>
-              <HostCharacter rendered ding={ding} gaze={{ x: 0, y: 0 }} style={{ width: bella.width, height: BELLA_H }} />
-            </div>
-          </div>
+          <div ref={shadowRef} className="bella-loader-contact" style={{ top: bella.base - 2 }} aria-hidden="true" />
+          <div ref={bellaRef} onPointerDown={ring} className="bella-loader-bella relative cursor-pointer" style={{ transformOrigin: `50% ${bella.base}px` }} title="Ring for service">
+            <HostCharacter rendered ding={ding} gaze={{ x: 0, y: 0 }} style={{ width: bella.width, height: BELLA_H }} />
           </div>
           <div className="relative mt-4 whitespace-pre font-heading text-h2 tabular-nums normal-case md:text-h2-md">{`( ${n}% )`}</div>
         </div>
