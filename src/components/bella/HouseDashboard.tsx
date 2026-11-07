@@ -39,7 +39,7 @@ function useSeen<T extends Element>() {
 
 // Every light card: warm paper stock (like the stamps' paper, only fainter), a hairline
 // border and a whisper of shadow; no hover (they're read, not clicked)
-const CARD = "relative rounded-xl border border-heading/[0.08] bg-[#fdfbf7] shadow-[0_1px_2px_rgba(30,5,37,0.04),0_8px_24px_-12px_rgba(30,5,37,0.08)]";
+const CARD = "relative rounded-xl border border-heading/[0.14] bg-[#fdfbf7] shadow-[0_1px_2px_rgba(30,5,37,0.04),0_8px_24px_-12px_rgba(30,5,37,0.08)]";
 
 // A ticket stub's tear line: dashed across the card, with a round notch bitten out of
 // each side, like the pass's own paper. `bleed` pulls it out to the card's edges through
@@ -49,10 +49,10 @@ function Tear({ bleed }: { bleed: string }) {
     <div className={`relative h-0 ${bleed}`} aria-hidden="true">
       <span className="absolute inset-x-[16px] top-0 border-t border-dashed border-heading/[0.16]" />
       <span className="absolute -left-[9px] top-0 h-[16px] w-[16px] -translate-y-1/2 rounded-full bg-white">
-        <span className="absolute inset-0 rounded-full border border-heading/[0.08] [clip-path:inset(0_0_0_50%)]" />
+        <span className="absolute inset-0 rounded-full border border-heading/[0.14] [clip-path:inset(0_0_0_50%)]" />
       </span>
       <span className="absolute -right-[9px] top-0 h-[16px] w-[16px] -translate-y-1/2 rounded-full bg-white">
-        <span className="absolute inset-0 rounded-full border border-heading/[0.08] [clip-path:inset(0_50%_0_0)]" />
+        <span className="absolute inset-0 rounded-full border border-heading/[0.14] [clip-path:inset(0_50%_0_0)]" />
       </span>
     </div>
   );
