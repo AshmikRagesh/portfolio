@@ -596,7 +596,7 @@ export default function TcsSearchPage() {
       <Hero
         title="From every trip at once to the few that fit: filters for TCS search"
         date="May 2026"
-        image="/images/tcs-search/hero.webp"
+        image="/images/tcs-search/cover.webp"
       />
       <Overview />
       <TheProblem />

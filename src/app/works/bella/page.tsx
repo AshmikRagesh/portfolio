@@ -484,7 +484,7 @@ export default function BellaPage() {
       <Hero
         title="A desk bell that shows how long people really read my portfolio, designed in Claude Code"
         date="October 2026"
-        image="/images/bella/hero.svg"
+        image="/images/bella/cover.png"
       />
       <Overview />
       <Research />
