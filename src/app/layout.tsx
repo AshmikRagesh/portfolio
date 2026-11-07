@@ -33,7 +33,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Bella's loader plays once per session: hide it before paint on repeat visits (?loader shows it again) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(sessionStorage.getItem("bella-loaded")&&!/[?&]loader/.test(location.search))document.documentElement.classList.add("loader-skip")}catch(e){}`,
+          }}
+        />
+      </head>
       <body
         className={`${geist.variable} ${geistMono.variable} ${nanumPen.variable} bg-background font-body text-text-base antialiased`}
       >

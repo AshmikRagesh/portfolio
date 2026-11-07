@@ -9,6 +9,7 @@ import { BellStageProvider } from "@/components/host/BellStage";
 import TabPresence from "@/components/host/TabPresence";
 import BellaDirector from "@/components/bella/BellaDirector";
 import ResumeOverlay from "@/components/resume/ResumeOverlay";
+import BellaLoader from "@/components/host/BellaLoader";
 
 export default function GlobalLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -31,6 +32,8 @@ export default function GlobalLayout({ children }: { children: ReactNode }) {
       </BellStageProvider>
       {/* Fancy paper: the résumé sheet, opened from the navbar */}
       <ResumeOverlay />
+      {/* First visit in a session: Bella does tricks while the site loads */}
+      <BellaLoader />
     </CuriosityProvider>
   );
 }

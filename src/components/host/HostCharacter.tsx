@@ -60,19 +60,19 @@ const HOLD = { left: { x: 80, y: 262 }, right: { x: 120, y: 262 } };
 const SWING_MS = 420;
 const DING_MS = 900;
 
-const DOME = "M48 214 Q48 140 100 140 Q152 140 152 214 Z";
-const LIGHT = { x: -6, y: -7 }; // where the lit copy of the dome rests
+export const DOME = "M48 214 Q48 140 100 140 Q152 140 152 214 Z";
+export const LIGHT = { x: -6, y: -7 }; // where the lit copy of the dome rests
 
 // Midnight — one dark for the dome's shade, the arms and the pupils (and the tooltip)
-const MIDNIGHT = "#1e0525";
+export const MIDNIGHT = "#1e0525";
 
-const FINISH = {
+export const FINISH = {
   primary: { lit: "#3e0d4b", shade: MIDNIGHT, ink: "#ffffff" },
   gold: { lit: "#f2c75c", shade: "#c8952e", ink: "#3a2406" },
 };
-const GRAPE = { lit: "#c22a88", mid: "#9D136A", shade: "#6e0e4b" };
-const RIM = "#f2c75c"; // gold rims
-const STAR = "M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6 Z";
+export const GRAPE = { lit: "#c22a88", mid: "#9D136A", shade: "#6e0e4b" };
+export const RIM = "#f2c75c"; // gold rims
+export const STAR = "M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6 Z";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const IVORY = "#f8f1e3"; // the 3D glasses' frame
 

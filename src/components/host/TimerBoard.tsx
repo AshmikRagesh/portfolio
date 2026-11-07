@@ -28,14 +28,14 @@ import { formatClock } from "@/components/host/clock";
 export const BOARD_WIDTH = 184;
 
 /** One half of a card, showing the matching half of `value`. */
-function Half({ value, half, tall = false, className = "" }: { value: string; half: "top" | "bottom"; tall?: boolean; className?: string }) {
+function Half({ value, half, tall = false, hero = false, className = "" }: { value: string; half: "top" | "bottom"; tall?: boolean; hero?: boolean; className?: string }) {
   return (
     <span
       className={`absolute inset-x-0 h-1/2 overflow-hidden ${half === "top" ? "top-0 rounded-t-sm bg-[#2f2d31]" : "bottom-0 rounded-b-sm bg-[#28262a]"} ${className}`}
     >
       {/* Laid out at full card height, then clipped to this half */}
       <span
-        className={`absolute inset-x-0 h-[200%] flex items-center justify-center font-sans font-semibold ${tall ? "text-[24px]" : "text-[20px]"} leading-none tracking-[-0.4px] text-[#f8f3e8] tabular-nums ${
+        className={`absolute inset-x-0 h-[200%] flex items-center justify-center font-sans font-semibold ${hero ? "text-[48px] tracking-[-2px]" : tall ? "text-[24px] tracking-[-0.4px]" : "text-[20px] tracking-[-0.4px]"} leading-none text-[#f8f3e8] tabular-nums ${
           half === "top" ? "top-0" : "bottom-0"
         }`}
       >
@@ -46,8 +46,8 @@ function Half({ value, half, tall = false, className = "" }: { value: string; ha
 }
 
 // Cards are 24×26 on the board; `tall` makes them 26×34 so the bare clock stands 42px,
-// level with the navbar's button
-function FlapDigit({ value, narrow = false, tall = false }: { value: string; narrow?: boolean; tall?: boolean }) {
+// level with the navbar's button; `hero` makes them 52×68 for the loading screen's counter
+export function FlapDigit({ value, narrow = false, tall = false, hero = false }: { value: string; narrow?: boolean; tall?: boolean; hero?: boolean }) {
   const previous = useRef(value);
   const [flip, setFlip] = useState<{ from: string; to: string } | null>(null);
 
@@ -60,16 +60,16 @@ function FlapDigit({ value, narrow = false, tall = false }: { value: string; nar
   }, [value]);
 
   return (
-    <span className={`relative block ${tall ? (narrow ? "w-[22px] h-[34px]" : "w-[26px] h-[34px]") : narrow ? "w-[20px] h-[26px]" : "w-[24px] h-[26px]"} rounded-sm shadow-[0_2px_2px_rgba(0,0,0,0.5)] [perspective:100px]`}>
-      <Half value={value} half="top" tall={tall} />
-      <Half value={flip ? flip.from : value} half="bottom" tall={tall} />
+    <span className={`relative block ${hero ? "w-[52px] h-[68px] [perspective:240px]" : tall ? (narrow ? "w-[22px] h-[34px]" : "w-[26px] h-[34px]") : narrow ? "w-[20px] h-[26px]" : "w-[24px] h-[26px]"} rounded-sm shadow-[0_2px_2px_rgba(0,0,0,0.5)] ${hero ? "" : "[perspective:100px]"}`}>
+      <Half value={value} half="top" tall={tall} hero={hero} />
+      <Half value={flip ? flip.from : value} half="bottom" tall={tall} hero={hero} />
 
       {/* Moving flaps — keyed so a change mid-flip restarts cleanly; once the bottom
           flap lands it matches the resting halves, so they take over */}
       {flip && (
         <span key={`${flip.from}${flip.to}`} aria-hidden="true" onAnimationEnd={(e) => e.animationName === "flap-drop" && setFlip(null)}>
-          <Half value={flip.from} half="top" tall={tall} className="flap-fall z-10" />
-          <Half value={flip.to} half="bottom" tall={tall} className="flap-drop z-10" />
+          <Half value={flip.from} half="top" tall={tall} hero={hero} className="flap-fall z-10" />
+          <Half value={flip.to} half="bottom" tall={tall} hero={hero} className="flap-drop z-10" />
         </span>
       )}
 
