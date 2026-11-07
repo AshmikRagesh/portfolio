@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import TornNetFrame from "@/components/about/TornNetFrame";
+import { Highlight } from "@/components/case-study/Marks";
 import {
   AirbnbPill,
   BadmintonPill,
@@ -28,7 +29,9 @@ export default function AboutPage() {
 
         <div className="flex max-w-[600px] flex-col gap-[20px] font-body text-[16px] leading-[28px] text-secondary md:gap-[24px] lg:gap-[20px] md:text-[18px] md:leading-[30px]">
           <p>
-            Hey, I&apos;m <span className="font-medium text-heading">Ashmik Ragesh</span>, a <SelfTaughtPill /> product
+            Hey, I&apos;m <Highlight>
+              <span className="font-medium text-heading">Ashmik Ragesh</span>
+            </Highlight>, a <SelfTaughtPill /> product
             designer with 5+ years of experience, currently working as a <DesignEngineerPill /> at{" "}
             <TravelopiaPill />. I work across design, technology and everything it takes to bring a product to life.
           </p>

@@ -6,7 +6,7 @@
 //   self-taught      a pencil underlines it by hand
 //   design engineer  turns over into {design + code}
 //   Travelopia       an airliner glides over, leaving a fading contrail
-//   code and AI      a prompt above it turns into a line of code, typed out
+//   code and AI      a soft light glints across it and a gold spark twinkles
 //   a workflow       design → code → review ✓ steps in above it (links to Helix)
 //   Airbnb           a brass house key on a leather fob hooks onto it and swings
 //   football         a ball is chipped into a little goal and ripples the net
@@ -20,6 +20,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Highlight } from "@/components/case-study/Marks";
 
 const COLORS = {
   orange: "#F2541B",
@@ -224,38 +225,33 @@ export function TravelopiaPill() {
   );
 }
 
-// ── code and AI: a prompt becomes code ────────────────────────────────────────
-// A small editor card (midnight, like the site's tooltips) rises above the pill: a prompt
-// line, then the component it turns into, typed out with a caret, then a green tick.
-const PROMPT = "make me a grape button";
-const CODE = '<Button tone="grape" />';
+// ── code and AI: a glint and a spark ──────────────────────────────────────────
+// Quick and quiet, like the rest: a soft light glints across the tag and a small gold
+// spark twinkles at its corner. Under 700ms, all of it.
+const SPARK = `<svg viewBox="0 0 16 16" width="12" height="12" style="display:block"><path d="M8 0c.5 4.4 3.6 7.5 8 8-4.4.5-7.5 3.6-8 8-.5-4.4-3.6-7.5-8-8 4.4-.5 7.5-3.6 8-8Z" fill="#FFC21A"/></svg>`;
 
 export function CodeAndAIPill() {
   const { props } = usePlay(async (pill) => {
-    const card = overlay(
+    const glint = overlay(
       pill,
-      `<span style="display:block;min-width:200px;padding:8px 10px;border-radius:8px;background:#1e0525;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 10px 24px -8px rgba(30,5,37,.5);line-height:16px;white-space:nowrap;text-align:left">
-<span style="display:flex;align-items:center;gap:6px;font:500 12px/16px var(--font-geist),sans-serif;color:rgba(249,228,255,.62)"><svg viewBox="0 0 16 16" width="10" height="10"><path d="M8 0c.5 4.4 3.6 7.5 8 8-4.4.5-7.5 3.6-8 8-.5-4.4-3.6-7.5-8-8 4.4-.5 7.5-3.6 8-8Z" fill="#FFC21A"/></svg>${PROMPT}</span>
-<span style="display:flex;align-items:center;gap:6px;margin-top:4px;font:400 12px/16px var(--font-brand),monospace;color:#F9E4FF"><span class="code"></span><span class="caret" style="display:inline-block;width:6px;height:14px;background:#FFC21A;opacity:.9"></span><span class="tick" style="opacity:0;color:#4ADE80;font-family:var(--font-geist),sans-serif">✓</span></span>
-</span>`,
-      { top: "auto", bottom: "calc(100% + 8px)", lineHeight: "16px", transformOrigin: "16px 100%" },
+      '<span style="position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(100deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.34) 50%,rgba(255,255,255,0) 100%)"></span>',
+      { inset: "0", width: "100%", height: "100%", borderRadius: "9999px", overflow: "hidden", zIndex: "1" },
     );
-    const code = card.querySelector(".code") as HTMLElement;
-    const caret = card.querySelector(".caret") as HTMLElement;
-    const tick = card.querySelector(".tick") as HTMLElement;
-    await card.animate([{ opacity: 0, transform: "translateY(4px) scale(.96)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], { duration: 220, easing: EASE_OUT, fill: "forwards" }).finished;
-    const blink = caret.animate([{ opacity: 0.9 }, { opacity: 0 }], { duration: 500, iterations: Infinity, direction: "alternate", easing: "steps(1)" });
-    await wait(200);
-    for (let i = 1; i <= CODE.length; i++) {
-      code.textContent = CODE.slice(0, i);
-      await wait(32);
-    }
-    blink.cancel();
-    caret.style.display = "none";
-    await tick.animate([{ opacity: 0, transform: "scale(.4)" }, { opacity: 1, transform: "scale(1)" }], { duration: 260, easing: "cubic-bezier(0.34,1.56,0.64,1)", fill: "forwards" }).finished;
-    await wait(900);
-    await card.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(4px)" }], { duration: 180, easing: "ease-in", fill: "forwards" }).finished;
-    card.remove();
+    const band = glint.firstElementChild as HTMLElement;
+    const spark = overlay(pill, SPARK, { left: "auto", right: "-5px", top: "-6px" });
+    await Promise.all([
+      band.animate([{ transform: "translateX(-110%)" }, { transform: "translateX(260%)" }], { duration: 520, easing: EASE_IN_OUT, fill: "forwards" }).finished,
+      spark.animate(
+        [
+          { transform: "scale(0) rotate(-45deg)", opacity: 0 },
+          { transform: "scale(1) rotate(0deg)", opacity: 1, offset: 0.45 },
+          { transform: "scale(0) rotate(45deg)", opacity: 0 },
+        ],
+        { duration: 560, delay: 140, easing: EASE_OUT, fill: "both" },
+      ).finished,
+    ]);
+    glint.remove();
+    spark.remove();
   });
   return (
     <Pill color={COLORS.ink} play={props}>
@@ -575,7 +571,9 @@ export function ChelseaLine() {
       <Pill color={COLORS.chelsea} play={props}>
         Chelsea
       </Pill>{" "}
-      till God calls upon my name.{" "}
+      <Highlight>
+        <span className="font-medium text-heading">till God calls upon my name.</span>
+      </Highlight>{" "}
       <span ref={heart} className="relative inline-block" role="img" aria-label="blue heart">
         💙
       </span>
