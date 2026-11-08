@@ -1072,7 +1072,7 @@ html, body { overflow-x: clip; }
    starts. It stays visible while the loop pulls back off, then goes. */
 .nav-tab-label path { fill: none; stroke: #9d136a; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; transition: stroke-dashoffset 0.56s cubic-bezier(0.45, 0.05, 0.3, 1), opacity 0s 0.56s; }
 .nav-tab:hover, .nav-tab:focus-visible { color: #32073e; }
-.nav-tab:hover path, .nav-tab:focus-visible path, .nav-tab[aria-current="page"] path { stroke-dashoffset: 0; opacity: 1; transition: stroke-dashoffset 0.56s cubic-bezier(0.45, 0.05, 0.3, 1), opacity 0s; }
+.nav-tab:hover path, .nav-tab:focus-visible path, .nav-tab[aria-current] path { stroke-dashoffset: 0; opacity: 1; transition: stroke-dashoffset 0.56s cubic-bezier(0.45, 0.05, 0.3, 1), opacity 0s; }
 @media (prefers-reduced-motion: reduce) {
   .nav-tab, .nav-tab-label path { transition: none; }
 }
