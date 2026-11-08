@@ -69,6 +69,7 @@ export const BELLA_EVENTS = {
   goal_resume: "Celebrated: resume",
   goal_all: "Celebrated: every case study",
   goal_email: "Celebrated: first email copied",
+  goal_video: "Celebrated: watched the walkthroughs",
   here_recruiter: "Here as: recruiter",
   here_designer: "Here as: designer",
   here_engineer: "Here as: engineer",

@@ -148,6 +148,8 @@ export default function ReelPlayer({
   const [target, setTarget] = useState<Dock | null>(null);
   const [footerUp, setFooterUp] = useState(false);
   const [early, setEarly] = useState(!!startAt);
+  // Phones: out of the way of reading (see the scroll effect below)
+  const [phoneAway, setPhoneAway] = useState(false);
   const [view, setView] = useState<"closed" | "open" | "closing">("closed");
   // An opened reel plays with sound: the visitor chose to watch, so the clock keeps running
   useReportWatching(view === "open");
@@ -181,6 +183,8 @@ export default function ReelPlayer({
   // wait until that section is a third of the way up the screen (on the home page: the
   // work, so the reel never sits over the hero). Case studies below 1024px wait for half
   // the hero to pass, as the chapter pill does.
+  // On phones the card sits over the text, so it stays out of reading: it's hidden in
+  // case studies, and on the home page it shows only while the work section is on screen.
   useEffect(() => {
     let frame: number | null = null;
     const update = () => {
@@ -197,6 +201,13 @@ export default function ReelPlayer({
         setEarly(hero ? window.scrollY <= hero.offsetHeight / 2 : false);
       } else {
         setEarly(false);
+      }
+      const phone = window.innerWidth < 768;
+      if (!phone) setPhoneAway(false);
+      else if (pill) setPhoneAway(true);
+      else if (startAt) {
+        const start = document.querySelector<HTMLElement>(startAt);
+        setPhoneAway(start ? start.getBoundingClientRect().bottom < window.innerHeight * 0.5 : false);
       }
     };
     const onScroll = () => {
@@ -426,7 +437,7 @@ export default function ReelPlayer({
         data-fixed={geo.small}
         data-ready={ready}
         data-dragging={dragging}
-        data-hidden={!ready || footerUp || early}
+        data-hidden={!ready || footerUp || early || phoneAway}
         data-away={view !== "closed"}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}

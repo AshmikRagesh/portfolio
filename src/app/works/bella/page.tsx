@@ -370,7 +370,7 @@ const USE_CASES: {
     num: 4,
     slug: "celebrates",
     title: "Rewards exploring",
-    body: <>Reaching a goal on the site earns Bella a gold bow tie. <Highlight>Stamps are hidden across the site</Highlight>, and each one you find is added to your Curiosity Pass.</>,
+    body: <>Reaching a goal on the site earns Bella a gold bow tie. <Highlight>Goals include reading two case studies, downloading the resume and copying the email</Highlight>, and each one gets a short line you can close.</>,
   },
   {
     num: 5,
@@ -441,7 +441,7 @@ const SOLVES: Parameters<typeof BellaSolves>[0]["items"] = [
   },
   {
     lead: "Visitors get a reason to stay",
-    text: "Messages, stamps and goals encourage a second case study without interrupting the first.",
+    text: "Messages and goals encourage a second case study without interrupting the first.",
     pose: {},
     loop: "celebrate",
   },

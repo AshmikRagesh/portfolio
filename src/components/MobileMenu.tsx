@@ -51,7 +51,7 @@ export function MenuToggle({ open, onToggle }: { open: boolean; onToggle: () => 
 }
 
 /** The floating card, with the page blurred behind it. Rendered to the body, over everything. */
-export function MobileMenu({ open, onClose, links, pathname }: { open: boolean; onClose: () => void; links: Link[]; pathname: string }) {
+export function MobileMenu({ open, onClose, links, pathname, inView = null }: { open: boolean; onClose: () => void; links: Link[]; pathname: string; inView?: string | null }) {
   const [shown, setShown] = useState(false); // mounted, including while it animates away
   const card = useRef<HTMLDivElement>(null);
   const scrim = useRef<HTMLDivElement>(null);
@@ -160,7 +160,7 @@ export function MobileMenu({ open, onClose, links, pathname }: { open: boolean; 
           <ul className="px-[16px] py-[6px]">
             {links.map((link, i) => {
               const current = link.href.startsWith("/") && pathname === link.href;
-              const marked = current || tapped === link.label;
+              const marked = current || inView === link.href || tapped === link.label;
               const to = linkHref(link.href);
               return (
                 <li

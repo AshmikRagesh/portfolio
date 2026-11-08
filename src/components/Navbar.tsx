@@ -8,7 +8,7 @@ import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/C
 import HostCharacter, { hostLayout, type HostGlasses, type HostMood } from "@/components/host/HostCharacter";
 import { useVideoGlasses } from "@/lib/curiosity/watching";
 import { track } from "@/lib/curiosity/report";
-import { awardStamp, useMoment, type Moment } from "@/lib/bella/progress";
+import { useMoment, type Moment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
 import { openResume, RESUME_PDF } from "@/lib/resume";
 import { MenuToggle, MobileMenu } from "@/components/MobileMenu";
@@ -23,11 +23,38 @@ import { chimeBell, primeBell, ringBell } from "@/components/host/bellSound";
 
 // All on the right of the bell. Fancy paper is a tab like the others, not a button.
 const navLinks = [
-  { label: "Work", href: "#works" },
+  { label: "Works", href: "#works" },
   { label: "About", href: "/about" },
-  { label: "Pass", href: "/pass" },
   { label: "Fancy paper", href: RESUME_PDF },
+  { label: "Play", href: "/play" },
 ];
+
+// On the home page, the section tab whose section crosses the middle of the screen
+// (Works while the work cards are being read) is marked as where the visitor is.
+function useSectionInView(pathname: string) {
+  const [inView, setInView] = useState<string | null>(null);
+  useEffect(() => {
+    setInView(null);
+    if (pathname !== "/") return;
+    const sections = navLinks
+      .filter((l) => l.href.startsWith("#"))
+      .map((l) => document.querySelector(l.href))
+      .filter((el): el is Element => el !== null);
+    if (!sections.length) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const href = `#${e.target.id}`;
+          setInView((cur) => (e.isIntersecting ? href : cur === href ? null : cur));
+        }
+      },
+      { rootMargin: "-50% 0px -50% 0px" },
+    );
+    sections.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [pathname]);
+  return inView;
+}
 
 // Host size in the navbar — the 68px row leaves a little air above and below
 const HOST_HEIGHT = 56;
@@ -135,20 +162,12 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
   const champion = record || preview === "champion" || preview === "gold-dozing";
   const mood: HostMood = preview === "dozing" || preview === "gold-dozing" || (paused && !holding) ? "dozing" : champion ? "champion" : "idle";
 
-  // Count the sign being opened, once per visit, for the stats page. The first ring earns
-  // the First ring stamp, given once the sign goes back up so it doesn't cut the sign short.
-  const rang = useRef(false);
+  // Count the sign being opened, once per visit, for the stats page
   useEffect(() => {
-    if (holding && !preview) {
-      track("sign_open");
-      rang.current = true;
-    } else if (!holding && rang.current) {
-      rang.current = false;
-      awardStamp("ring");
-    }
+    if (holding && !preview) track("sign_open");
   }, [holding, preview]);
 
-  // Moments (lib/bella/progress): a stamp found, a goal celebrated
+  // Moments (lib/bella/progress): a goal celebrated, or a welcome back
   const [celebrate, setCelebrate] = useState(0);
   useEffect(() => {
     if (!moment) return;
@@ -160,8 +179,6 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
       ringBell();
     }
   }, [moment]);
-  const expression = moment?.kind === "stamp" ? "surprised" : null;
-
 
   // It rings like a desk bell: when the board comes down, and before it says anything
   useEffect(() => {
@@ -240,7 +257,6 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
           holding={holding}
           ding={ding}
           glasses={glasses}
-          expression={expression}
           celebrate={celebrate}
           className={`block ${entrance === "up" ? "" : `bell-${entrance}`}`}
           style={{ width: HOST.width, height: HOST_HEIGHT, animationDelay: entrance === "pop" ? "160ms" : undefined }}
@@ -274,10 +290,12 @@ function linkHref(href: string, pathname: string) {
 }
 
 // A tab: on hover, a quick pen loop is drawn round the word, like the circled marks in the
-// case studies. The page you're on (Pass, Fancy paper) keeps its circle.
-function NavTab({ label, href, pathname }: { label: string; href: string; pathname: string }) {
+// case studies. The page you're on (About), or the home section you're reading (Works),
+// keeps its circle.
+function NavTab({ label, href, pathname, inView }: { label: string; href: string; pathname: string; inView: string | null }) {
   const resume = href === RESUME_PDF;
-  const current = href.startsWith("/") && pathname === href;
+  const page = href.startsWith("/") && pathname === href;
+  const current = page || inView === href;
   const className = `nav-tab font-brand text-body font-normal uppercase tracking-[1px] whitespace-nowrap ${
     current ? "text-grape" : "text-text-base/70"
   }`;
@@ -302,7 +320,7 @@ function NavTab({ label, href, pathname }: { label: string; href: string; pathna
       {inner}
     </a>
   ) : (
-    <a href={linkHref(href, pathname)} aria-current={current ? "page" : undefined} className={className}>
+    <a href={linkHref(href, pathname)} aria-current={page ? "page" : current ? "location" : undefined} className={className}>
       {inner}
     </a>
   );
@@ -324,6 +342,7 @@ export default function Navbar() {
   const speaking = bubble.message !== null;
   const showNav = isNavVisible || speaking || momentHere !== null || menuOpen;
   const closeMenu = useCallback(() => setMenuOpen(false), []);
+  const inView = useSectionInView(pathname);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -412,7 +431,7 @@ export default function Navbar() {
         <ul className="nav-tabs hidden md:flex items-center gap-[16px]">
           {navLinks.map((link) => (
             <li key={link.label}>
-              <NavTab {...link} pathname={pathname} />
+              <NavTab {...link} pathname={pathname} inView={inView} />
             </li>
           ))}
         </ul>
@@ -424,7 +443,7 @@ export default function Navbar() {
       </nav>
 
       {/* Phones: the floating menu card */}
-      <MobileMenu open={menuOpen} onClose={closeMenu} links={navLinks} pathname={pathname} />
+      <MobileMenu open={menuOpen} onClose={closeMenu} links={navLinks} pathname={pathname} inView={inView} />
     </header>
   );
 }

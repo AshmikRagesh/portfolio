@@ -5,7 +5,7 @@ import { useRecordHolder } from "@/components/host/useRecordHolder";
 import { useBellStage } from "@/components/host/BellStage";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 import { chimeBell, ringBell } from "@/components/host/bellSound";
-import { awardStamp, celebrate, useMoment } from "@/lib/bella/progress";
+import { celebrate, useMoment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
 import { useVideoGlasses } from "@/lib/curiosity/watching";
 import { COPY_EMAIL_EVENT, EMAIL, LINKEDIN, X_PROFILE } from "@/lib/contact";
@@ -130,16 +130,6 @@ function FooterBell() {
       ringBell();
     }
   }, [momentHere]);
-
-  // The first ring earns the First ring stamp, once the pointer moves off
-  const rang = useRef(false);
-  useEffect(() => {
-    if (hovered && !touch) rang.current = true;
-    else if (!hovered && rang.current) {
-      rang.current = false;
-      awardStamp("ring");
-    }
-  }, [hovered, touch]);
 
   // Under the pointer, holding up the email card, or playing a moment: stays put
   const still = (hovered && !touch) || card !== null || momentHere !== null;
@@ -423,8 +413,8 @@ function FooterBell() {
       setCard({ copied, align });
       window.clearTimeout(cardTimer.current);
       cardTimer.current = window.setTimeout(() => setCard(null), copied ? 4000 : 8000);
-      // The first email copied is a goal: a celebration (and the Front desk stamp) once the card is down
-      if (copied) celebrate("email", "Email copied.", "desk", 4400);
+      // The first email copied is a goal: a celebration once the card is down
+      if (copied) celebrate("email", "Email copied.", 4400);
     };
     try {
       navigator.clipboard.writeText(EMAIL).then(() => show(true), () => show(false));
@@ -491,7 +481,7 @@ function FooterBell() {
               onBlur={() => setHovered(false)}
               className="relative z-10 block cursor-pointer select-none touch-manipulation rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
             >
-              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} holding={card !== null} expression={momentHere?.kind === "stamp" ? "surprised" : null} celebrate={celebrateCount} className="block" style={{ width: layout.width, height }} />
+              <HostCharacter mood={record ? "champion" : "idle"} ding={ding} gaze={gaze} glasses={watching ? "video" : null} holding={card !== null} celebrate={celebrateCount} className="block" style={{ width: layout.width, height }} />
             </button>
             {/* Below the bell, like the navbar's lines: the copied email, a moment, or the hover hint */}
             {card ? (
