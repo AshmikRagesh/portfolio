@@ -206,10 +206,12 @@ function CoverInner() {
         >
           Itinerary
         </p>
-        <div className="mt-4 flex items-center gap-2 font-geist text-[10px] font-medium uppercase leading-none tracking-[1.6px] text-grape/80">
-          <span>4 trips</span>
-          <span className="h-px w-4 bg-grape/40" />
-          <span>0 regrets</span>
+        {/* Three tiers: the eyebrow, the title, then this line. "4 trips" stays a quiet
+            printed label; "0 regrets" is the punchline, scribbled on in pen */}
+        <div className="mt-4 flex items-center gap-2">
+          <span className="font-geist text-[10px] font-medium uppercase leading-none tracking-[1.6px] text-grape/60">4 trips</span>
+          <span className="h-px w-4 bg-grape/30" />
+          <span className="inline-block -rotate-3 font-handwriting text-[24px] leading-none text-grape">0 regrets</span>
         </div>
       </div>
 
