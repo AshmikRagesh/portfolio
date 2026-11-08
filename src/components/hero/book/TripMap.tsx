@@ -1,11 +1,11 @@
 "use client";
 
 // ── The route map ─────────────────────────────────────────────────────────────
-// One state per trip, from real boundaries: the state itself dithered in pale lilac
+// One place per trip, from real boundaries: the place itself dithered in pale lilac
 // with a blackcurrant edge, its neighbours plain paper with a hairline, anything beyond
 // (sea, other countries) hatched. The route runs dashed from stop to stop with a numbered
 // pin at each. Pick a stop (here or in the list) and the map glides in on it, its label
-// slides out; pick it again and it eases back out to the whole state.
+// slides out; pick it again and it eases back out to the whole map.
 
 import { useEffect, useRef } from "react";
 import { MAPS } from "./maps";

@@ -1,8 +1,8 @@
 // ── The trips in the book ─────────────────────────────────────────────────────
-// DUMMY CONTENT: four stand-in trips so the book has something real-looking to show.
-// Swap in real trips (places, days, notes, photos) when they're ready; the book reads
-// only this file. Photos are from Wikimedia Commons (lead images of each place's
-// Wikipedia article), saved small in /public/images/trips; `credit` is the Commons file.
+// Four of Ashmik's trips, from the itineraries they were booked on: the stops, days and
+// what was planned at each. Distances (`leg`) are only given where the itinerary gave
+// them. The book reads only this file. Photos are from Wikimedia Commons (mostly the lead
+// image of each place's Wikipedia article), saved small in /public/images/trips.
 
 export type Photo = { src: string; caption: string };
 
@@ -18,10 +18,10 @@ export type Stop = {
 };
 
 export type Trip = {
-  key: "kerala" | "rajasthan" | "karnataka" | "meghalaya";
+  key: "dubai" | "azerbaijan" | "bali" | "kashmir";
   title: string;
   when: string;
-  /** Labels for what's round the state on the map: [text, lon, lat, italic for water] */
+  /** Labels for what's round the place on the map: [text, lon, lat, italic for water] */
   labels: [string, number, number, boolean?][];
   stops: Stop[];
 };
@@ -30,57 +30,54 @@ const p = (slug: string, captions: string[]): Photo[] => captions.map((caption, 
 
 export const TRIPS: Trip[] = [
   {
-    key: "kerala",
-    title: "Kerala",
-    when: "9 days · Dec 2025",
-    labels: [["Arabian Sea", 75.15, 10.5, true], ["KARNATAKA", 75.75, 12.62], ["TAMIL NADU", 77.62, 10.9]],
+    key: "dubai",
+    title: "Dubai",
+    when: "6 days · Nov 2026",
+    labels: [["Persian Gulf", 54.78, 25.2, true]],
     stops: [
-      { name: "Kochi", days: "Days 1–2", line: "Fishing nets at Fort Kochi, spice shops in Jew Town, appam and stew for dinner.", lon: 76.27, lat: 9.97, photos: p("kochi", ["Fishing nets at sunset", "Hill Palace", "Santa Cruz Basilica"]) },
-      { name: "Munnar", days: "Days 3–4", leg: "about 130 km from Kochi", line: "Tea estates on every hill, and Top Station above the clouds at 6 am.", lon: 77.06, lat: 10.09, photos: p("munnar", ["Tea hills above town", "Ridges near Anamudi", "A Nilgiri tahr"]) },
-      { name: "Thekkady", days: "Day 5", leg: "about 90 km from Munnar", line: "A bamboo raft on Periyar lake at dawn, then a walk through a spice garden.", lon: 77.17, lat: 9.6, photos: p("thekkady", ["Periyar lake", "Bamboo rafting", "Pattumalay tea bungalow"]) },
-      { name: "Kumarakom", days: "Day 6", leg: "about 115 km from Thekkady", line: "Birds at sunrise from a canoe, and a slow afternoon by Vembanad lake.", lon: 76.43, lat: 9.62, photos: p("kumarakom", ["The backwaters"]) },
-      { name: "Alleppey", days: "Day 7", leg: "about 35 km from Kumarakom", line: "A night on a houseboat through the canals, with karimeen for lunch.", lon: 76.34, lat: 9.49, photos: p("alleppey", ["Houseboat on the canal", "Alleppey beach"]) },
-      { name: "Varkala", days: "Days 8–9", leg: "about 125 km from Alleppey", line: "Cliff-top cafés over a red-laterite beach, and the last sunset of the trip.", lon: 76.72, lat: 8.73, photos: p("varkala", ["The beach below the cliff", "South cliff"]) },
+      { name: "Dubai Marina", days: "Day 1", line: "A dinner cruise along the Marina on the first evening.", lon: 55.14, lat: 25.08, photos: p("dubai-marina", ["Dubai Marina", "Ain Dubai on Bluewaters"]) },
+      { name: "Downtown", days: "Day 2", line: "A city tour, the aquarium in Dubai Mall, then Burj Khalifa from floors 124 and 125.", lon: 55.274, lat: 25.197, photos: p("downtown-dubai", ["Burj Khalifa at dusk", "Dubai Mall"]) },
+      { name: "The desert", days: "Day 3", line: "A desert safari, with a barbecue dinner at the camp.", lon: 55.62, lat: 24.98, photos: p("dubai-desert", ["The desert at Lahbab"]) },
+      { name: "Miracle Garden", days: "Day 4", line: "Miracle Garden in the day, Global Village at night.", lon: 55.244, lat: 25.06, photos: p("miracle-garden", ["Dubai Miracle Garden", "Global Village"]) },
+      { name: "Abu Dhabi", days: "Day 5", line: "A day trip for a city tour of the capital.", lon: 54.43, lat: 24.45, photos: p("abu-dhabi", ["Sheikh Zayed Grand Mosque", "Qasr Al Watan", "Louvre Abu Dhabi"]) },
     ],
   },
   {
-    key: "rajasthan",
-    title: "Rajasthan",
-    when: "12 days · Feb 2025",
-    labels: [["PAKISTAN", 70.2, 28.7], ["GUJARAT", 72.2, 23.7], ["MADHYA PRADESH", 76.6, 23.75], ["HARYANA", 76.4, 29.2]],
+    key: "azerbaijan",
+    title: "Azerbaijan",
+    when: "6 days · Feb 2025",
+    labels: [["Caspian Sea", 50.3, 39.6, true], ["RUSSIA", 47.1, 41.95], ["GEORGIA", 45.75, 41.55], ["ARMENIA", 45.1, 40.0], ["IRAN", 47.3, 38.85]],
     stops: [
-      { name: "Jaipur", days: "Days 1–2", line: "Amber Fort in the morning light, and the Hawa Mahal from a rooftop café.", lon: 75.79, lat: 26.91, photos: p("jaipur", ["Hawa Mahal", "Amber Fort", "Jal Mahal"]) },
-      { name: "Pushkar", days: "Day 3", leg: "about 145 km from Jaipur", line: "The ghats round the lake at dusk, with bells from every temple at once.", lon: 74.55, lat: 26.49, photos: p("pushkar", ["Ghats round the lake", "Hills after the monsoon"]) },
-      { name: "Udaipur", days: "Days 4–6", leg: "about 280 km from Pushkar", line: "A boat on Lake Pichola, the City Palace, and dinner facing the water.", lon: 73.71, lat: 24.59, photos: p("udaipur", ["City Palace at dusk", "Jag Mandir", "Jagdish Temple"]) },
-      { name: "Kumbhalgarh", days: "Day 7", leg: "about 85 km from Udaipur", line: "Walked a stretch of the 36 km wall as the sun went down.", lon: 73.58, lat: 25.15, photos: p("kumbhalgarh", ["The fort walls", "Ram Pol", "From above"]) },
-      { name: "Jodhpur", days: "Days 8–9", leg: "about 180 km from Kumbhalgarh", line: "Mehrangarh standing over a sea of blue houses.", lon: 73.02, lat: 26.24, photos: p("jodhpur", ["Mehrangarh", "Jaswant Thada", "The clock tower"]) },
-      { name: "Jaisalmer", days: "Days 10–12", leg: "about 285 km from Jodhpur", line: "The golden fort, then a night out in the dunes at Sam.", lon: 70.91, lat: 26.92, photos: p("jaisalmer", ["Jaisalmer Fort", "Patwon ki Haveli", "Gadisar Lake"]) },
+      { name: "Baku", days: "Days 1–2", line: "Little Venice and the funicular on the first evening, then the Old City, the Fire Temple and Yanar Dag.", lon: 49.867, lat: 40.409, photos: p("baku", ["Flame Towers", "The funicular", "Maiden Tower, Old City"]) },
+      { name: "Gabala", days: "Day 3", line: "A cable car up Tufandag, a tour of the town, and a night in the mountains.", lon: 47.845, lat: 40.981, photos: p("gabala", ["Gabala from Tufandag", "Mount Tufandag"]) },
+      { name: "Gobustan", days: "Day 4", line: "Rock carvings at Gobustan and the mud volcanoes, then back to Baku.", lon: 49.375, lat: 40.108, photos: p("gobustan", ["Rock carvings at Gobustan", "A mud volcano"]) },
+      { name: "Shahdag", days: "Day 5", line: "A day at Shahdag, with activities picked on the spot.", lon: 48.144, lat: 41.316, photos: p("shahdag", ["Shahdag Mountain Resort", "Mount Shahdag"]) },
     ],
   },
   {
-    key: "karnataka",
-    title: "Karnataka",
-    when: "10 days · Aug 2024",
-    labels: [["Arabian Sea", 73.2, 13.4, true], ["GOA", 73.95, 15.55], ["MAHARASHTRA", 75.4, 17.75], ["ANDHRA PRADESH", 78.4, 15.2], ["TAMIL NADU", 78.1, 11.7], ["KERALA", 75.6, 11.4]],
-    stops: [
-      { name: "Mysuru", days: "Days 1–2", line: "The palace lit up on a Sunday night, and the flower stalls at Devaraja market.", lon: 76.64, lat: 12.3, photos: p("mysuru", ["Chamundeshwari Temple", "From Chamundi Hills"]) },
-      { name: "Coorg", days: "Days 3–4", leg: "about 120 km from Mysuru", line: "Coffee estates in the monsoon, and waterfalls at full force.", lon: 75.74, lat: 12.42, photos: p("coorg", ["Tadiandamol valley", "Mallalli falls", "Coorg hills"]) },
-      { name: "Chikmagalur", days: "Days 5–6", leg: "about 160 km from Coorg", line: "Mullayanagiri at dawn, and far too much filter coffee.", lon: 75.77, lat: 13.32, photos: p("chikmagalur", ["Coffee country"]) },
-      { name: "Gokarna", days: "Days 7–8", leg: "about 330 km from Chikmagalur", line: "The cliff path from Om Beach to Half Moon and Paradise.", lon: 74.32, lat: 14.55, photos: p("gokarna", ["Gokarna", "Vibhuti Falls"]) },
-      { name: "Hampi", days: "Days 9–10", leg: "about 300 km from Gokarna", line: "Boulders and ruins for miles, and sunrise from Matanga Hill.", lon: 76.46, lat: 15.34, photos: p("hampi", ["Virupaksha Temple", "Vittala Temple", "Elephant stables"]) },
-    ],
-  },
-  {
-    key: "meghalaya",
-    title: "Meghalaya",
+    key: "bali",
+    title: "Bali",
     when: "7 days · Jun 2024",
-    labels: [["ASSAM", 91.6, 26.15], ["BANGLADESH", 91.15, 24.95]],
+    labels: [["Bali Sea", 115.1, -8.0, true], ["Indian Ocean", 114.85, -8.95, true]],
     stops: [
-      { name: "Shillong", days: "Days 1–2", line: "Ward’s Lake, Police Bazaar, and live music on a Friday night.", lon: 91.89, lat: 25.58, photos: p("shillong", ["Elephant Falls", "Laitlum Canyon", "Ward’s Lake"]) },
-      { name: "Sohra", days: "Day 3", leg: "about 55 km from Shillong", line: "Waterfalls in every direction, and the wettest air I’ve ever breathed.", lon: 91.73, lat: 25.27, photos: p("sohra", ["Nohkalikai Falls", "Cherrapunji"]) },
-      { name: "Nongriat", days: "Days 4–5", leg: "3,500 steps down from Sohra", line: "The double-decker living root bridge, and a swim under Rainbow Falls.", lon: 91.68, lat: 25.25, photos: p("nongriat", ["The living root bridge"]) },
-      { name: "Mawlynnong", days: "Day 6", leg: "about 80 km from Sohra", line: "A village of flowers and bamboo bins, with a root bridge nearby.", lon: 91.88, lat: 25.2, photos: p("mawlynnong", ["Mawlynnong", "A village street"]) },
-      { name: "Dawki", days: "Day 7", leg: "about 30 km from Mawlynnong", line: "Boats on the Umngot, the water so clear they look like they float.", lon: 92.02, lat: 25.18, photos: p("dawki", ["The Umngot river", "Boating on the Umngot"]) },
+      { name: "Uluwatu", days: "Day 1", line: "Uluwatu Temple on the cliff, and the Kecak dance.", lon: 115.085, lat: -8.829, photos: p("uluwatu", ["Uluwatu Temple", "Kecak dance"]) },
+      { name: "Tanah Lot", days: "Day 2", line: "Ulun Danu on Lake Bratan, then Tanah Lot on its rock in the sea.", lon: 115.087, lat: -8.621, photos: p("tanah-lot", ["Tanah Lot", "Ulun Danu Bratan"]) },
+      { name: "Lempuyang", days: "Day 3", line: "The gates of Lempuyang Temple, then the water palace at Tirta Gangga.", lon: 115.631, lat: -8.391, photos: p("lempuyang", ["Lempuyang Temple", "Tirta Gangga"]) },
+      { name: "Nusa Penida", days: "Day 4", line: "Broken Beach, Angel’s Billabong, Kelingking and Crystal Bay, and a night on the island.", lon: 115.474, lat: -8.751, photos: p("nusa-penida", ["Kelingking Beach", "Broken Beach"]) },
+      { name: "Ubud", days: "Days 5–6", line: "Rafting on the Ayung River, then the volcano from Kintamani, the monkey forest and the Bali Swing.", lon: 115.263, lat: -8.507, photos: p("ubud", ["Sacred Monkey Forest", "Mount Batur from Kintamani", "Rafting on the Ayung"]) },
+    ],
+  },
+  {
+    key: "kashmir",
+    title: "Kashmir",
+    when: "6 days · Nov 2023",
+    labels: [],
+    stops: [
+      { name: "Srinagar", days: "Day 1", line: "Shalimar, Nishat and Chashme Shahi gardens, then Hazratbal and Pari Mahal.", lon: 74.876, lat: 34.149, photos: p("srinagar", ["Shalimar Bagh", "Nishat Bagh", "Hazratbal Shrine"]) },
+      { name: "Sonmarg", days: "Day 2", leg: "about 80 km from Srinagar", line: "A walk or a pony ride up to the Thajiwas glacier.", lon: 75.293, lat: 34.304, photos: p("sonmarg", ["Sonmarg"]) },
+      { name: "Pahalgam", days: "Day 3", leg: "about 90 km from Srinagar", line: "A drive along the Lidder River, with Betaab Valley, Aru and Chandanwari close by.", lon: 75.315, lat: 34.016, photos: p("pahalgam", ["Pahalgam", "Betaab Valley", "Aru Valley"]) },
+      { name: "Gulmarg", days: "Day 4", leg: "about 142 km from Pahalgam", line: "The Gondola up the mountain, then a horse ride in the meadow.", lon: 74.38, lat: 34.048, photos: p("gulmarg", ["Gulmarg", "Gulmarg Gondola"]) },
+      { name: "Dal Lake", days: "Days 5–6", leg: "about 51 km from Gulmarg", line: "A night on a houseboat, and a shikara ride on the lake.", lon: 74.836, lat: 34.075, photos: p("dal-lake", ["Dal Lake", "A shikara"]) },
     ],
   },
 ];
