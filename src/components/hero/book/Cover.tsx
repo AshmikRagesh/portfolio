@@ -75,7 +75,7 @@ function CoverInner() {
         <div className="mt-4 flex items-center gap-2 font-geist text-[10px] font-medium uppercase leading-none tracking-[1.6px] text-grape/80">
           <span>4 trips</span>
           <span className="h-px w-4 bg-grape/40" />
-          <span>2024–2026</span>
+          <span>2023–2026</span>
         </div>
       </div>
 
