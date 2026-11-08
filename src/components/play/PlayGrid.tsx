@@ -9,24 +9,20 @@
 //   Intro        tiles rise in from the middle of the screen outwards.
 //   Hover        a tile lifts and its title slides up; a small "View" label follows the
 //                pointer ("Drag" over the gaps). Mouse and trackpad only.
-//   Mix / Sort   the switch at the bottom. Sort puts one kind per row; the tiles flip
-//                over to their new piece in a wave from the middle of the screen.
 //   Open         a tile grows from where it sits into the viewer (PlayViewer), and
 //                shrinks back into place when closed.
 //
-// Reduced motion: no lean, no intro, and the switch swaps without the flip.
+// Reduced motion: no lean and no intro.
 // Styles: src/app/play/play.css.
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { playItems, PLAY_KINDS, type PlayItem } from "@/content/play";
+import { playItems, type PlayItem } from "@/content/play";
 import PlayViewer from "./PlayViewer";
 import PlayMedia from "./PlayMedia";
 
 const COLS = 6;
 const N = playItems.length;
 const ROWS = Math.ceil(N / COLS);
-const FLIP_MS = 640;
-const MAX_DELAY = 480;
 
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 
@@ -37,7 +33,7 @@ function sizes(w: number) {
   return { tile: 264, gap: 40 };
 }
 
-// Mix: a fixed shuffle, so the page looks the same on every visit
+// A fixed shuffle, so the page looks the same on every visit
 function seeded(seed: number) {
   return () => {
     seed = (seed * 16807) % 2147483647;
@@ -53,8 +49,6 @@ const MIX: number[] = (() => {
   }
   return a;
 })();
-// Sort: grouped by kind, so each row of six is one kind
-const SORT: number[] = PLAY_KINDS.flatMap((k) => playItems.flatMap((it, i) => (it.kind === k ? [i] : [])));
 
 // The piece in a grid cell. Each repeat of the grid further down is shifted three columns,
 // so the same tiles never stack straight above each other.
@@ -63,7 +57,6 @@ function slot(c: number, r: number) {
   return mod(r, ROWS) * COLS + mod(c + block * 3, COLS);
 }
 
-type Mode = "mix" | "sort";
 type Range = { c0: number; c1: number; r0: number; r1: number };
 type Gesture = { id: number; sx: number; sy: number; ox: number; oy: number; moved: boolean; samples: { x: number; y: number; t: number }[] };
 export type Opened = { at: number; cell: string | null; from: DOMRect | null };
@@ -76,11 +69,8 @@ export default function PlayGrid() {
 
   const [vp, setVp] = useState<{ w: number; h: number } | null>(null);
   const [range, setRange] = useState<Range>({ c0: 0, c1: -1, r0: 0, r1: -1 });
-  const [mode, setMode] = useState<Mode>("mix");
-  const [flip, setFlip] = useState<{ from: number[]; to: number[] } | null>(null);
   const [intro, setIntro] = useState(true);
   const [dragging, setDragging] = useState(false);
-  const [explored, setExplored] = useState(false);
   const [opened, setOpened] = useState<Opened | null>(null);
   const [labelText, setLabelText] = useState<"Drag" | "View" | null>(null);
 
@@ -94,7 +84,7 @@ export default function PlayGrid() {
   const fine = useRef(false);
   const labelPos = useRef({ x: -100, y: -100, tx: -100, ty: -100, frame: 0 });
 
-  const order = mode === "mix" ? MIX : SORT;
+  const order = MIX;
   const geo = vp ? sizes(vp.w) : null;
   const cell = geo ? geo.tile + geo.gap : 0;
 
@@ -215,7 +205,6 @@ export default function PlayGrid() {
       pos.current.x -= e.deltaX * k;
       pos.current.y -= e.deltaY * k;
       vel.current = { x: -e.deltaX * k * 0.25, y: -e.deltaY * k * 0.25 };
-      setExplored(true);
       kick();
     };
     el.addEventListener("wheel", onWheel, { passive: false });
@@ -232,7 +221,6 @@ export default function PlayGrid() {
       e.preventDefault();
       const from = target.current ?? pos.current;
       target.current = { x: from.x + d[0] * cell, y: from.y + d[1] * cell };
-      setExplored(true);
       kick();
     };
     window.addEventListener("keydown", onKey);
@@ -268,7 +256,6 @@ export default function PlayGrid() {
         e.currentTarget.setPointerCapture(e.pointerId);
       } catch {}
       setDragging(true);
-      setExplored(true);
     }
     if (!g.moved) return;
     pos.current = { x: g.ox + dx, y: g.oy + dy };
@@ -311,20 +298,9 @@ export default function PlayGrid() {
     }
   };
 
-  // ── Mix / Sort ──
-  const switchMode = (m: Mode) => {
-    if (m === mode || flip) return;
-    const to = m === "mix" ? MIX : SORT;
-    if (!reduce.current) {
-      setFlip({ from: order, to });
-      window.setTimeout(() => setFlip(null), FLIP_MS + MAX_DELAY + 40);
-    }
-    setMode(m);
-  };
-
   // ── Opening a tile ──
   const open = (c: number, r: number, el: HTMLElement) => {
-    if (justDragged.current || flip) return;
+    if (justDragged.current) return;
     setLabelText(null);
     setOpened({ at: mod(slot(c, r), N), cell: `${c},${r}`, from: el.getBoundingClientRect() });
   };
@@ -332,30 +308,24 @@ export default function PlayGrid() {
   // ── The visible tiles ──
   const tiles: React.ReactNode[] = [];
   if (geo) {
-    const { x, y } = pos.current;
-    const midC = vp ? (-x + vp.w / 2 - geo.tile / 2) / cell : 0;
-    const midR = vp ? (-y + vp.h / 2 - geo.tile / 2) / cell : 0;
     for (let r = range.r0; r <= range.r1; r++) {
       for (let c = range.c0; c <= range.c1; c++) {
         const s = mod(slot(c, r), N);
-        const item = playItems[(flip ? flip.from : order)[s]];
-        const back = flip ? playItems[flip.to[s]] : null;
-        const dist = Math.hypot(c - midC, r - midR);
-        const delay = flip ? Math.min(MAX_DELAY, dist * 90) : intro ? Math.min(900, Math.hypot(c, r) * 110) : 0;
+        const item = playItems[order[s]];
+        const delay = intro ? Math.min(900, Math.hypot(c, r) * 110) : 0;
         tiles.push(
           <button
             key={`${c},${r}`}
             type="button"
             data-cell={`${c},${r}`}
-            className={`play-tile ${flip ? "is-flipping" : ""}`}
+            className="play-tile"
             style={{ left: c * cell, top: r * cell, width: geo.tile, height: geo.tile, "--d": `${Math.round(delay)}ms` } as React.CSSProperties}
-            aria-label={`${(back ?? item).title}, ${(back ?? item).kind}. Open`}
+            aria-label={`${item.title}, ${item.kind}. Open`}
             onClick={(e) => open(c, r, e.currentTarget)}
           >
             <span className="play-lift">
               <span className="play-flip">
-                <Face item={item} showKind={mode === "sort" && !flip} />
-                {back && <Face item={back} back showKind={false} />}
+                <Face item={item} />
               </span>
             </span>
           </button>,
@@ -363,8 +333,6 @@ export default function PlayGrid() {
       }
     }
   }
-
-  const touchHint = vp && !fine.current;
 
   return (
     <div
@@ -382,23 +350,6 @@ export default function PlayGrid() {
         <div ref={world} className="play-world">
           {tiles}
         </div>
-      </div>
-
-      {/* How to move around, until the visitor has */}
-      <p className={`play-hint ${explored || opened ? "is-gone" : ""}`} aria-hidden="true">
-        <span className="play-hint-dot" />
-        {touchHint ? "Swipe to explore" : "Drag or scroll to explore"}
-      </p>
-
-      {/* Mix / Sort */}
-      <div data-play-ui className={`play-switch ${opened ? "is-away" : ""}`} role="group" aria-label="Arrange the pieces">
-        <span className="play-switch-thumb" data-mode={mode} aria-hidden="true" />
-        <button type="button" aria-pressed={mode === "mix"} onClick={() => switchMode("mix")}>
-          Mix
-        </button>
-        <button type="button" aria-pressed={mode === "sort"} onClick={() => switchMode("sort")}>
-          Sort by kind
-        </button>
       </div>
 
       {/* The label beside the pointer */}
@@ -419,12 +370,11 @@ export default function PlayGrid() {
 }
 
 /** A tile's face: the piece, or its grey placeholder, with the title that slides up on hover. */
-function Face({ item, back = false, showKind }: { item: PlayItem; back?: boolean; showKind: boolean }) {
+function Face({ item }: { item: PlayItem }) {
   return (
-    <span className={`play-face ${back ? "is-back" : ""}`} style={{ background: item.tone }}>
+    <span className="play-face" style={{ background: item.tone }}>
       <PlayMedia item={item} />
       <span className="play-caption">
-        {showKind && <span className="play-caption-kind">{item.kind}</span>}
         {item.title}
       </span>
     </span>
