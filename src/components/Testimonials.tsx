@@ -17,8 +17,8 @@ interface Testimonial {
   signature: string[]; // SVG path strokes, drawn in a 168×72 box
 }
 
-// Amlan's quote is the recommendation as written, with the pronouns corrected to he/him.
-// TODO: Junaid's and Anish's are drafts; confirm each with them before publishing. The signature strokes are drawn to read as each name,
+// Amlan's quote is the recommendation as written, with the pronouns corrected to he/him; Junaid's is approved.
+// TODO: Anish's is a draft; confirm it with Anish before publishing. The signature strokes are drawn to read as each name,
 // scribbles, not their real signatures.
 const testimonials: Testimonial[] = [
   {
