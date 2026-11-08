@@ -15,8 +15,12 @@
 //   · as it lifts it shades, catches a highlight along the curve, and casts a shadow
 //     on the page underneath that shrinks as it comes over
 // Arrow keys and the buttons drive the same spring.
+//
+// On a phone a two-page spread would be half size, so the book shows one page at a time
+// at full width: a swipe slides from a trip's stops to its route, and the next swipe turns
+// the leaf over while the book slides along with it, so the turned page lands in view.
 
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import HoverTip from "../HoverTip";
 import FocusOverlay, { RoundButton, useReducedMotion, type FocusPhase } from "../FocusOverlay";
 import { Cover, ClosedEdges, PH, PW } from "./Cover";
@@ -162,9 +166,14 @@ function ViewerButton({ label, onClick, children }: { label: string; onClick: ()
 }
 
 // ── The book ──────────────────────────────────────────────────────────────────
-type Sim = { a: number[]; v: number[]; target: number[]; startAt: number[] };
+type Sim = { a: number[]; v: number[]; target: number[]; startAt: number[]; p: number; pv: number; pt: number };
+export type Side = "l" | "r";
+type Nav = { next: () => void; prev: () => void; goTo: (turned: number, side: Side) => void };
 
-function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turned: number; setTurned: (n: number) => void; uid: string; api: React.MutableRefObject<BookApi | null> }) {
+/** Where the book slides to so the page being read is in view (phone, one page at a time) */
+const panFor = (turned: number, side: Side) => (turned > 0 && side === "l" ? PW : 0);
+
+function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPhase; turned: number; side: Side; compact: boolean; nav: Nav; uid: string; api: React.MutableRefObject<BookApi | null> }) {
   const [active, setActive] = useState<(number | null)[]>(() => TRIPS.map(() => null));
   const [photo, setPhoto] = useState<{ t: number; s: number; p: number } | null>(null);
   const reduced = useReducedMotion();
@@ -176,9 +185,12 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
   const castL = useRef<HTMLDivElement>(null);
   const board = useRef<HTMLDivElement>(null);
   const tableShadow = useRef<HTMLDivElement>(null);
-  const sim = useRef<Sim>({ a: Array(LEAVES).fill(0), v: Array(LEAVES).fill(0), target: Array(LEAVES).fill(0), startAt: Array(LEAVES).fill(0) });
-  const dragging = useRef<{ leaf: number; r: number; lastA: number; lastT: number; w: number } | null>(null);
-  const gesture = useRef<{ x: number; y: number; id: number; started: boolean; side: "l" | "r" } | null>(null);
+  const sim = useRef<Sim>({ a: Array(LEAVES).fill(0), v: Array(LEAVES).fill(0), target: Array(LEAVES).fill(0), startAt: Array(LEAVES).fill(0), p: 0, pv: 0, pt: 0 });
+  const dragging = useRef<{ leaf: number; r: number; lastA: number; lastT: number; w: number; a0: number; scale: number } | null>(null);
+  const panning = useRef<{ p0: number; lastP: number; lastT: number; scale: number } | null>(null);
+  const gesture = useRef<{ x: number; y: number; id: number; started: boolean; side: Side } | null>(null);
+  const compactRef = useRef(compact);
+  compactRef.current = compact;
   const swallow = useRef(false);
   const raf = useRef(0);
   const closing = useRef(false);
@@ -228,7 +240,8 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
     }
     // Closed, the cover sits in the middle; as it opens the whole book slides over so the spread is centred
     const open = (1 - Math.cos((a[0] * Math.PI) / 180)) / 2;
-    if (root.current) root.current.style.transform = `translateX(${(open * PW * 0.5).toFixed(2)}px)`;
+    const shift = compactRef.current ? sim.current.p : open * PW * 0.5;
+    if (root.current) root.current.style.transform = `translateX(${shift.toFixed(2)}px)`;
     if (board.current) board.current.style.left = `${((1 - open) * PW - 4).toFixed(2)}px`;
     if (tableShadow.current) tableShadow.current.style.left = `${((1 - open) * PW + 16).toFixed(2)}px`;
   }, []);
@@ -270,10 +283,21 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
           s.v[i] = 0;
         }
       }
+      // The slide (phone): a spring of its own, unless a finger is holding it
+      if (panning.current || (compactRef.current && dragging.current)) moving = true;
+      else {
+        s.pv += (-STIFF * (s.p - s.pt) - DAMP * s.pv) * dt;
+        s.p += s.pv * dt;
+        if (Math.abs(s.p - s.pt) > 0.3 || Math.abs(s.pv) > 2) moving = true;
+        else {
+          s.p = s.pt;
+          s.pv = 0;
+        }
+      }
       draw();
       // Closing: fly home as soon as every page is visibly flat, without waiting out the
       // last invisible fraction of the bounce
-      if (waiters.current.length && s.a.every((a, i) => Math.abs(a - s.target[i]) < 1.5 && Math.abs(s.v[i]) < 30) && !s.startAt.some((t) => now < t)) {
+      if (waiters.current.length && s.a.every((a, i) => Math.abs(a - s.target[i]) < 1.5 && Math.abs(s.v[i]) < 30) && Math.abs(s.p - s.pt) < 2 && !s.startAt.some((t) => now < t)) {
         waiters.current.splice(0).forEach((f) => f());
       }
       if (moving) raf.current = requestAnimationFrame(step);
@@ -302,14 +326,20 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
         order++;
       }
     }
+    s.pt = panFor(turned, side);
     if (reduced) {
       s.a = s.target.slice();
       s.v.fill(0);
+      s.p = s.pt;
+      s.pv = 0;
       draw();
       return;
     }
     run();
-  }, [turned, reduced, run, draw]);
+  }, [turned, side, compact, reduced, run, draw]);
+
+  // Any page move puts an open photo away
+  useEffect(() => setPhoto(null), [turned, side]);
 
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
 
@@ -319,41 +349,41 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
     closeUp: () =>
       new Promise<void>((resolve) => {
         setPhoto(null);
-        if (turned === 0 && sim.current.a.every((a) => a === 0)) return resolve();
+        if (turned === 0 && sim.current.a.every((a) => a === 0) && sim.current.p === 0) return resolve();
         closing.current = true;
         waiters.current.push(resolve);
         window.setTimeout(resolve, 2000);
         if (turned === 0) run();
-        else setTurned(0);
+        else nav.goTo(0, "l");
       }),
   };
-
-  const go = useCallback(
-    (n: number) => {
-      setPhoto(null);
-      setTurned(Math.max(0, Math.min(MAX_TURN, n)));
-    },
-    [setTurned],
-  );
 
   // Arrow keys turn pages
   useEffect(() => {
     if (phase !== "open") return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") go(turned + 1);
-      if (e.key === "ArrowLeft") go(turned - 1);
+      if (e.key === "ArrowRight") nav.next();
+      if (e.key === "ArrowLeft") nav.prev();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [phase, turned, go]);
+  }, [phase, nav]);
 
   // ── Dragging ──
+  // Keep the pointer while a page is held (it can be refused, e.g. if the pointer has already gone)
+  const capture = (e: React.PointerEvent) => {
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {}
+  };
   const geometry = () => {
     const r = root.current!.getBoundingClientRect();
     return { spine: r.left + r.width / 2, w: r.width / 2 };
   };
   const onPointerDown = (e: React.PointerEvent) => {
     if (phase !== "open" || e.button !== 0 || reduced) return;
+    // A second finger while a page is held is ignored
+    if (dragging.current || panning.current) return;
     const { spine } = geometry();
     gesture.current = { x: e.clientX, y: e.clientY, id: e.pointerId, started: false, side: e.clientX >= spine ? "r" : "l" };
   };
@@ -361,18 +391,71 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
     const g = gesture.current;
     if (!g || g.id !== e.pointerId) return;
     const { spine, w } = geometry();
+    const scale = root.current!.getBoundingClientRect().width / (PW * 2);
+    if (compactRef.current) {
+      const dx = e.clientX - g.x;
+      if (!g.started) {
+        if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(e.clientY - g.y)) return;
+        const forward = dx < 0;
+        // Forward from a route page (or the cover) turns the leaf; from a stops page it slides
+        // over to the route. Back is the mirror of that.
+        const turnLeaf = forward ? turned === 0 || side === "r" : turned > 0 && side === "l";
+        if (turnLeaf ? (forward ? turned >= MAX_TURN : turned <= 0) : turned === 0) return;
+        g.started = true;
+        capture(e);
+        setPhoto(null);
+        if (turnLeaf) {
+          const leaf = forward ? turned : turned - 1;
+          dragging.current = { leaf, r: 1, lastA: sim.current.a[leaf], lastT: performance.now(), w, a0: sim.current.a[leaf], scale };
+          sim.current.v[leaf] = 0;
+        } else {
+          panning.current = { p0: sim.current.p, lastP: sim.current.p, lastT: performance.now(), scale };
+          sim.current.pv = 0;
+        }
+        run();
+      }
+      const now = performance.now();
+      const dr = dragging.current;
+      if (dr) {
+        // A swipe across most of the page turns it all the way
+        const th = Math.max(0, Math.min(180, dr.a0 - (dx / (PW * dr.scale * 0.8)) * 180));
+        const dt = Math.max(1, now - dr.lastT) / 1000;
+        const s = sim.current;
+        s.v[dr.leaf] = s.v[dr.leaf] * 0.6 + ((th - dr.lastA) / dt) * 0.4;
+        dr.lastA = th;
+        dr.lastT = now;
+        s.a[dr.leaf] = th;
+        // The book slides with the page, so the page lands where it can be read
+        const rad = (th * Math.PI) / 180;
+        s.p = (PW * (1 - Math.cos(rad))) / 2;
+        s.pv = ((PW * Math.sin(rad)) / 2) * ((s.v[dr.leaf] * Math.PI) / 180);
+        return;
+      }
+      const pn = panning.current;
+      if (pn) {
+        const raw = pn.p0 + dx / pn.scale;
+        // A little give past either end
+        const p = raw < 0 ? raw * 0.3 : raw > PW ? PW + (raw - PW) * 0.3 : raw;
+        const dt = Math.max(1, now - pn.lastT) / 1000;
+        sim.current.pv = sim.current.pv * 0.6 + ((p - pn.lastP) / dt) * 0.4;
+        pn.lastP = p;
+        pn.lastT = now;
+        sim.current.p = p;
+      }
+      return;
+    }
     if (!g.started) {
       const dx = e.clientX - g.x;
       if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(e.clientY - g.y)) return;
       const forward = g.side === "r";
       if (forward ? turned >= MAX_TURN : turned <= 0) return;
       g.started = true;
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      capture(e);
       setPhoto(null);
       const leaf = forward ? turned : turned - 1;
       // Where along the page it was grabbed (never right at the spine, or it would spin)
       const r = Math.max(0.35, Math.min(1, Math.abs(g.x - spine) / w));
-      dragging.current = { leaf, r, lastA: sim.current.a[leaf], lastT: performance.now(), w };
+      dragging.current = { leaf, r, lastA: sim.current.a[leaf], lastT: performance.now(), w, a0: sim.current.a[leaf], scale };
       sim.current.v[leaf] = 0;
       run();
     }
@@ -388,16 +471,29 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
     dr.lastT = now;
     sim.current.a[dr.leaf] = th;
   };
-  const onPointerUp = () => {
+  const onPointerUp = (e: React.PointerEvent) => {
     const g = gesture.current;
+    // Only the finger holding the page lets it go
+    if (g && g.id !== e.pointerId) return;
     gesture.current = null;
     const dr = dragging.current;
-    if (!g?.started || !dr) return;
+    const pn = panning.current;
+    if (!dr && !pn) return;
     // Swallow the click this release would fire, and only that one
     swallow.current = true;
     window.setTimeout(() => (swallow.current = false), 0);
     dragging.current = null;
+    panning.current = null;
     const s = sim.current;
+    if (pn) {
+      // Slid over to the route, or back to the stops: flicked, or whichever is more in view
+      const to: Side = Math.abs(s.pv) > 400 ? (s.pv > 0 ? "l" : "r") : s.p > PW / 2 ? "l" : "r";
+      s.pt = panFor(turned, to);
+      nav.goTo(turned, to);
+      run();
+      return;
+    }
+    if (!dr) return;
     const th = s.a[dr.leaf];
     const w = s.v[dr.leaf];
     const over = Math.abs(w) > FLICK ? w > 0 : th > 90;
@@ -405,7 +501,10 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
     s.target[dr.leaf] = over ? 180 : 0;
     s.startAt[dr.leaf] = 0;
     prevTurned.current = next;
-    if (next !== turned) go(next);
+    // Phone: a turned-over page lands with its stops in view, a page let fall back with its route
+    const to: Side = compactRef.current ? (over ? "l" : "r") : side;
+    s.pt = panFor(next, to);
+    if (next !== turned || to !== side) nav.goTo(next, to);
     run();
   };
 
@@ -424,6 +523,8 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
     faces.push({ front, back });
   }
   const viewing = photo && turned === photo.t + 1 ? photo : null;
+  // A photo opens over the right-hand page, or on a phone over the page in view
+  const photoLeft = compact && side === "l" ? 0 : PW;
 
   return (
     <div
@@ -480,7 +581,7 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
 
       {/* A photo, open over the right-hand page */}
       {viewing && (
-        <div className="absolute top-0 z-[80]" style={{ left: PW, width: PW, height: PH }}>
+        <div className={`absolute top-0 z-[80] ${photoLeft === 0 ? "[&>div]:rounded-l-[6px] [&>div]:rounded-r-none" : ""}`} style={{ left: photoLeft, width: PW, height: PH }}>
           <PhotoViewer
             trip={TRIPS[viewing.t]}
             at={viewing}
@@ -492,25 +593,47 @@ function Book({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turne
 
       {/* Closed: tap the cover to open it */}
       {turned === 0 && phase === "open" && (
-        <button type="button" onClick={() => go(1)} className="absolute top-0 z-[70] cursor-pointer rounded-[3px_10px_10px_3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape" style={{ left: PW, width: PW, height: PH }} aria-label="Open the book" />
+        <button type="button" onClick={nav.next} className="absolute top-0 z-[70] cursor-pointer rounded-[3px_10px_10px_3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape" style={{ left: PW, width: PW, height: PH }} aria-label="Open the book" />
       )}
-      {/* The page corner lifts under the pointer: a hint that it turns */}
-      {turned > 0 && turned < MAX_TURN && phase === "open" && !viewing && (
-        <button
-          type="button"
-          onClick={() => go(turned + 1)}
-          aria-label="Turn the page"
-          className="group absolute bottom-0 z-[70] h-12 w-12"
-          style={{ left: PW * 2 - 48 }}
-        >
-          <span
-            className="absolute bottom-0 right-0 block h-4 w-4 rounded-tl-[3px] transition-all duration-300 ease-out group-hover:h-9 group-hover:w-9"
-            style={{ background: "linear-gradient(135deg, #e9e3d6 0%, #fdfcfa 48%, transparent 50%)", boxShadow: "-2px -2px 6px rgba(30,5,37,0.12)" }}
-          />
-        </button>
+      {/* The page corners lift under the pointer: a hint that they turn. Bottom right goes
+          forward, bottom left goes back */}
+      {turned > 0 && phase === "open" && !viewing && (
+        <>
+          {/* On a phone only the corners of the page in view */}
+          {turned < MAX_TURN && (!compact || side === "r") && <PageCorner corner="r" label="Turn the page" onClick={nav.next} left={PW * 2 - 48} />}
+          {(!compact || side === "l") && <PageCorner corner="l" label="Turn back" onClick={nav.prev} left={0} />}
+        </>
       )}
     </div>
   );
+}
+
+function PageCorner({ corner, label, onClick, left }: { corner: Side; label: string; onClick: () => void; left: number }) {
+  const r = corner === "r";
+  return (
+    <button type="button" onClick={onClick} aria-label={label} className="group absolute bottom-0 z-[70] h-12 w-12" style={{ left }}>
+      <span
+        className={`absolute bottom-0 block h-5 w-5 transition-all duration-300 ease-out group-hover:h-10 group-hover:w-10 group-active:h-10 group-active:w-10 ${r ? "right-0 rounded-tl-[3px]" : "left-0 rounded-tr-[3px]"}`}
+        style={{
+          background: `linear-gradient(${r ? 135 : 225}deg, #e9e3d6 0%, #fdfcfa 48%, transparent 50%)`,
+          boxShadow: `${r ? -2 : 2}px -2px 6px rgba(30,5,37,0.12)`,
+        }}
+      />
+    </button>
+  );
+}
+
+/** A phone: one page at a time */
+function useCompact() {
+  const [compact, setCompact] = useState(false);
+  useEffect(() => {
+    const q = window.matchMedia("(max-width: 639px)");
+    const read = () => setCompact(q.matches);
+    read();
+    q.addEventListener("change", read);
+    return () => q.removeEventListener("change", read);
+  }, []);
+  return compact;
 }
 
 // ── In the hero ───────────────────────────────────────────────────────────────
@@ -520,12 +643,37 @@ export default function TripsBook({ className = "" }: { className?: string }) {
   const btn = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [turned, setTurned] = useState(0);
+  const [side, setSide] = useState<Side>("l");
+  const [moves, setMoves] = useState(0);
+  const compact = useCompact();
   const api = useRef<BookApi | null>(null);
   const uid = useId().replace(/:/g, "");
   const onClosed = useCallback(() => {
     setOpen(false);
     setTurned(0);
+    setSide("l");
   }, []);
+
+  // Paging. On a wide screen a step is a spread; on a phone it's a page: the stops, then the route
+  const goTo = useCallback((t: number, s: Side) => {
+    setTurned(Math.max(0, Math.min(MAX_TURN, t)));
+    setSide(s);
+    setMoves((m) => m + 1);
+  }, []);
+  const next = useCallback(() => {
+    if (!compact) return goTo(turned + 1, "l");
+    if (turned === 0) return goTo(1, "l");
+    if (side === "l") return goTo(turned, "r");
+    if (turned < MAX_TURN) goTo(turned + 1, "l");
+  }, [compact, turned, side, goTo]);
+  const prev = useCallback(() => {
+    if (!compact) return goTo(turned - 1, "l");
+    if (turned === 0) return;
+    if (side === "r") return goTo(turned, "l");
+    goTo(turned - 1, "r");
+  }, [compact, turned, side, goTo]);
+  const nav = useMemo(() => ({ next, prev, goTo }), [next, prev, goTo]);
+  const atEnd = turned === MAX_TURN && (!compact || side === "r");
   // Before it flies home: riffle the pages shut, and wait until they've settled
   const beforeClose = useCallback(() => api.current?.closeUp() ?? Promise.resolve(), []);
 
@@ -569,21 +717,24 @@ export default function TripsBook({ className = "" }: { className?: string }) {
         label="Trips book"
         width={PW}
         height={PH}
-        fitWidth={PW * 2 + 32}
-        fitHeight={PH + 132}
+        fitWidth={compact ? PW + 24 : PW * 2 + 32}
+        fitHeight={PH + 140}
         beforeClose={beforeClose}
       >
-        {(phase) => <BookStage phase={phase} turned={turned} setTurned={setTurned} uid={uid} api={api} />}
+        {(phase) => <BookStage phase={phase} turned={turned} side={side} compact={compact} nav={nav} atEnd={atEnd} moves={moves} uid={uid} api={api} />}
       </FocusOverlay>
     </>
   );
 }
 
-function BookStage({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; turned: number; setTurned: (n: number) => void; uid: string; api: React.MutableRefObject<BookApi | null> }) {
+function BookStage({ phase, turned, side, compact, nav, atEnd, moves, uid, api }: { phase: FocusPhase; turned: number; side: Side; compact: boolean; nav: Nav; atEnd: boolean; moves: number; uid: string; api: React.MutableRefObject<BookApi | null> }) {
   const open = phase === "open";
+  // What's on the page in view, said under the controls on a phone
+  const where = turned === 0 ? "" : compact ? (side === "l" ? "Stops" : "Route") : "";
+  const hint = moves < 2 ? (compact ? "Swipe the page, or use the arrows" : "Drag a page, or use ← → to turn") : where;
   return (
     <>
-      <Book phase={phase} turned={turned} setTurned={setTurned} uid={uid} api={api} />
+      <Book phase={phase} turned={turned} side={side} compact={compact} nav={nav} uid={uid} api={api} />
       {/* Page control: back · one dot per trip · forward. The current trip's dot stretches
           into a pill; every dot is a button, named for its trip, with the name as a tooltip */}
       <nav
@@ -592,20 +743,20 @@ function BookStage({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; 
           open ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0"
         }`}
       >
-        <RoundButton onClick={() => setTurned(Math.max(0, turned - 1))} disabled={turned === 0} aria-label="Previous page">
+        <RoundButton onClick={nav.prev} disabled={turned === 0} aria-label="Previous page" className="h-11 w-11 sm:h-9 sm:w-9">
           <Chevron left />
         </RoundButton>
-        <div className="flex h-9 items-center gap-1.5 px-2">
+        <div className="flex h-11 items-center gap-0.5 px-1 sm:h-9 sm:gap-1.5 sm:px-2">
           {TRIPS.map((t, i) => {
             const on = turned === i + 1;
             return (
               <button
                 key={t.key}
                 type="button"
-                onClick={() => setTurned(i + 1)}
+                onClick={() => nav.goTo(i + 1, "l")}
                 aria-label={`${t.title}, trip ${i + 1} of ${TRIPS.length}`}
                 aria-current={on ? "page" : undefined}
-                className="group/dot relative flex h-6 items-center justify-center px-0.5"
+                className="group/dot relative flex h-11 items-center justify-center px-1.5 sm:h-6 sm:px-0.5"
               >
                 <span
                   className={`block h-1.5 rounded-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
@@ -619,10 +770,17 @@ function BookStage({ phase, turned, setTurned, uid, api }: { phase: FocusPhase; 
             );
           })}
         </div>
-        <RoundButton onClick={() => setTurned(Math.min(MAX_TURN, turned + 1))} disabled={turned === MAX_TURN} aria-label={turned === 0 ? "Open the book" : "Next page"}>
+        <RoundButton onClick={nav.next} disabled={atEnd} aria-label={turned === 0 ? "Open the book" : "Next page"} className="h-11 w-11 sm:h-9 sm:w-9">
           <Chevron />
         </RoundButton>
       </nav>
+      {/* How to turn, until it's been done; then, on a phone, which page is in view */}
+      <p
+        aria-live="polite"
+        className={`absolute left-1/2 top-full mt-[92px] -translate-x-1/2 whitespace-nowrap font-geist text-caption text-muted transition-opacity duration-300 sm:mt-[84px] ${open && hint ? "opacity-100" : "opacity-0"}`}
+      >
+        {hint}
+      </p>
     </>
   );
 }
