@@ -6,7 +6,7 @@
 // photo. The spine has its hinge groove,
 // and the title is debossed into the cloth.
 //
-// Flag stickers for the four trips are stuck across the board, like ones picked up on
+// Flag stickers from the trips abroad are stuck across the board, like ones picked up on
 // the way: vinyl with a white die-cut edge, a soft sheen, a shadow that lifts them a
 // hair off the cloth, and one corner starting to peel.
 
@@ -100,62 +100,73 @@ const FLAGS = {
       </svg>
     ),
   },
-  india: {
-    label: "India",
-    ratio: 1.5,
-    art: (
-      <svg viewBox="0 0 900 600" className="block h-full w-full">
-        <rect width="900" height="200" fill="#FF9933" />
-        <rect y="200" width="900" height="200" fill="#fff" />
-        <rect y="400" width="900" height="200" fill="#138808" />
-        <g transform="translate(450 300)" stroke="#000080" fill="none">
-          <circle r="85" strokeWidth="14" />
-          <circle r="15" fill="#000080" stroke="none" />
-          {Array.from({ length: 24 }, (_, i) => (
-            <line key={i} x1="0" y1="0" x2="0" y2="-80" strokeWidth="5" transform={`rotate(${i * 15})`} />
-          ))}
-        </g>
-      </svg>
-    ),
-  },
 } as const;
 
 type FlagKey = keyof typeof FLAGS;
 
-function Sticker({ flag, width, left, top, rotate, peel = false }: { flag: FlagKey; width: number; left: number; top: number; rotate: number; peel?: boolean }) {
+// Fine print grain, shared by every sticker (an SVG noise tile)
+const GRAIN =
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='64' height='64' filter='url(%23n)'/></svg>\")";
+
+function Sticker({ flag, width, left, top, rotate, peel = false, lift = "right" }: { flag: FlagKey; width: number; left: number; top: number; rotate: number; peel?: boolean; lift?: "left" | "right" }) {
   const f = FLAGS[flag];
-  const EDGE = 5; // the white die-cut margin
+  const EDGE = 3.5; // the white die-cut margin
   const w = width;
-  const h = Math.round((width - EDGE * 2) / f.ratio + EDGE * 2);
-  const P = 14; // how far the peeled corner has lifted
+  const h = Math.round(((width - EDGE * 2) / f.ratio + EDGE * 2) * 10) / 10;
+  const P = 9; // how far the peeled corner has lifted
   const cut = peel ? `polygon(0 0, 100% 0, 100% calc(100% - ${P}px), calc(100% - ${P}px) 100%, 0 100%)` : undefined;
   return (
     <div className="absolute" style={{ left, top, width: w, height: h, transform: `rotate(${rotate}deg)` }} role="img" aria-label={`${f.label} flag sticker`}>
-      {/* The shadow, on its own layer so it follows the cut corner */}
-      <div className="absolute inset-0 rounded-[5px] bg-[#1e0525]/30 blur-[1.5px]" style={{ transform: "translate(0.6px, 1.4px)", clipPath: cut }} />
-      <div className="absolute inset-0 overflow-hidden rounded-[5px] bg-white" style={{ clipPath: cut, boxShadow: "inset 0 0 0 0.5px rgba(30,5,37,0.12)" }}>
-        <div className="absolute overflow-hidden rounded-[2px]" style={{ inset: EDGE, boxShadow: "0 0 0 0.5px rgba(0,0,0,0.12)" }}>
+      {/* Two shadows, both following the cut corner: a tight contact line where the vinyl meets
+          the cloth, and a soft one under the side that's lifting a little */}
+      <div className="absolute inset-0 rounded-[3px] bg-[#1e0525]/35 blur-[0.4px]" style={{ transform: "translate(0, 0.5px)", clipPath: cut }} />
+      <div
+        className="absolute inset-0 rounded-[3px] bg-[#1e0525]/20 blur-[2px]"
+        style={{ transform: `translate(${lift === "right" ? 1 : -1}px, 1.6px)`, clipPath: cut }}
+      />
+      <div className="absolute inset-0 overflow-hidden rounded-[3px] bg-[#fdfcf8]" style={{ clipPath: cut }}>
+        {/* The printed flag: a touch flatter than screen colour, as ink on vinyl is */}
+        <div className="absolute overflow-hidden rounded-[1px]" style={{ inset: EDGE, filter: "saturate(0.9) contrast(0.96) brightness(0.99)" }}>
           {f.art}
         </div>
-        {/* Vinyl: a broad sheen across the top left and a faint one low on the right */}
-        <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(118deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.12) 30%, rgba(255,255,255,0) 46%, rgba(255,255,255,0) 72%, rgba(255,255,255,0.18) 100%)" }} />
-        {/* The edge catches the light on top and sinks into the cloth below */}
-        <div className="pointer-events-none absolute inset-0 rounded-[inherit]" style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(30,5,37,0.08)" }} />
-      </div>
-      {/* The peeled corner: the sticker's paper back, folded over, with its own shadow */}
-      {peel && (
+        {/* Print grain over the whole sticker */}
+        <div className="pointer-events-none absolute inset-0 opacity-[0.18] mix-blend-multiply" style={{ backgroundImage: GRAIN, backgroundSize: "32px 32px" }} />
+        {/* Gloss: a narrow specular streak and a broad soft sheen */}
         <div
-          className="absolute"
+          className="pointer-events-none absolute inset-0"
           style={{
-            right: 0,
-            bottom: 0,
-            width: P,
-            height: P,
-            clipPath: "polygon(0 0, 100% 0, 0 100%)",
-            background: "linear-gradient(135deg, #e9e4da 0%, #fbfaf6 55%, #d9d2c4 100%)",
-            filter: "drop-shadow(-0.5px -0.5px 0.6px rgba(30,5,37,0.3))",
+            background:
+              "linear-gradient(112deg, rgba(255,255,255,0) 18%, rgba(255,255,255,0.5) 24%, rgba(255,255,255,0.08) 31%, rgba(255,255,255,0) 40%), linear-gradient(160deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 45%, rgba(30,5,37,0.06) 100%)",
           }}
         />
+        {/* The lifting side curls up slightly: lighter along its edge */}
+        <div
+          className="pointer-events-none absolute inset-y-0 w-[30%]"
+          style={{ [lift]: 0, background: `linear-gradient(to ${lift}, rgba(255,255,255,0) 0%, rgba(255,255,255,0.22) 100%)` }}
+        />
+        {/* The cut edge: a bright rim on top, a faint dark line below */}
+        <div className="pointer-events-none absolute inset-0 rounded-[inherit]" style={{ boxShadow: "inset 0 0.5px 0 rgba(255,255,255,1), inset 0 -0.5px 0 rgba(30,5,37,0.14), inset 0 0 0 0.5px rgba(30,5,37,0.08)" }} />
+      </div>
+      {/* The peeled corner: the backing, folded over, curving as it lifts, with a shadow on the sticker under it */}
+      {peel && (
+        <>
+          <div
+            className="absolute"
+            style={{ right: P - 1, bottom: P - 1, width: 6, height: 6, background: "radial-gradient(circle at 100% 100%, rgba(30,5,37,0.28), rgba(30,5,37,0) 70%)", transform: "translate(3px, 3px)" }}
+          />
+          <div
+            className="absolute"
+            style={{
+              right: 0,
+              bottom: 0,
+              width: P,
+              height: P,
+              clipPath: "polygon(0 0, 100% 0, 0 100%)",
+              background: "linear-gradient(135deg, #d8d1c3 0%, #f6f3ec 45%, #fffefb 60%, #e4ddd0 100%)",
+              filter: "drop-shadow(-0.4px -0.4px 0.4px rgba(30,5,37,0.35))",
+            }}
+          />
+        </>
       )}
     </div>
   );
@@ -164,10 +175,9 @@ function Sticker({ flag, width, left, top, rotate, peel = false }: { flag: FlagK
 function Stickers() {
   return (
     <div className="pointer-events-none absolute inset-0">
-      <Sticker flag="india" width={78} left={30} top={214} rotate={-9} />
-      <Sticker flag="indonesia" width={70} left={120} top={182} rotate={6} />
-      <Sticker flag="azerbaijan" width={92} left={196} top={226} rotate={-4} peel />
-      <Sticker flag="uae" width={88} left={96} top={286} rotate={8} />
+      <Sticker flag="indonesia" width={56} left={58} top={210} rotate={-8} lift="left" />
+      <Sticker flag="azerbaijan" width={70} left={190} top={196} rotate={5} peel />
+      <Sticker flag="uae" width={66} left={112} top={262} rotate={-3} />
     </div>
   );
 }
