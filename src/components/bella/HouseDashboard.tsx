@@ -96,22 +96,23 @@ function CountUp({ value, format = (n: number) => n.toLocaleString() }: { value:
   return <span ref={ref}>{format(shown)}</span>;
 }
 
-function Tile({ label, children, note, meter }: { label: string; children: React.ReactNode; note?: React.ReactNode; meter?: number }) {
+// On a phone the tiles are compact, two to a row, so the stay and the live card lead
+function Tile({ label, children, note, meter, className = "" }: { label: string; children: React.ReactNode; note?: React.ReactNode; meter?: number; className?: string }) {
   return (
-    <div className={`flex flex-col gap-[20px] p-[24px] md:p-[28px] ${CARD}`}>
-      <div className="flex flex-1 flex-col gap-[20px]">
+    <div className={`flex flex-col gap-[16px] p-[16px] md:gap-[20px] md:p-[28px] ${CARD} ${className}`}>
+      <div className="flex flex-1 flex-col gap-[16px] md:gap-[20px]">
         <Label>{label}</Label>
         <div className="mt-auto flex flex-col gap-[12px]">
-          <div className="font-heading text-stat leading-none tracking-[-1.6px] text-heading tabular-nums">{children}</div>
+          <div className="font-heading text-h1 leading-none tracking-[-1.2px] text-heading tabular-nums md:text-stat md:leading-none md:tracking-[-1.6px]">{children}</div>
           {/* The same space in every tile, so the numbers and tear lines line up; filled only where there's a share */}
           <span className={`block h-[4px] overflow-hidden rounded-full ${meter === undefined ? "" : "bg-grape-light"}`} aria-hidden="true">
             {meter !== undefined && <span className="block h-full rounded-full bg-grape" style={{ width: `${Math.max(2, Math.min(100, meter))}%` }} />}
           </span>
         </div>
       </div>
-      <Tear bleed="-mx-[24px] md:-mx-[28px]" />
+      <Tear bleed="-mx-[16px] md:-mx-[28px]" />
       {/* Two lines' room in every tile, so the tear lines sit level across the row */}
-      {note && <p className="min-h-[40px] font-body text-[14px] leading-[20px] text-secondary">{note}</p>}
+      {note && <p className="min-h-[32px] font-body text-[12px] leading-[16px] text-secondary md:min-h-[40px] md:text-[14px] md:leading-[20px]">{note}</p>}
     </div>
   );
 }
@@ -124,7 +125,7 @@ function StayCard({ seconds, month }: { seconds: number; month: HouseStats["mont
   const at = (n: number) => `${Math.min(100, (n / longest) * 100)}%`;
   const yours = seconds >= longest && month.longestSeconds !== null && seconds >= month.longestSeconds;
   return (
-    <div className={`flex flex-col gap-[28px] p-[24px] md:col-span-2 md:p-[32px] ${CARD}`}>
+    <div className={`col-span-2 flex flex-col gap-[28px] p-[24px] md:p-[32px] ${CARD}`}>
       <div className="flex flex-col gap-[16px]">
         <Label>Your stay</Label>
         <div className="flex flex-col gap-[8px]">
@@ -192,7 +193,7 @@ function HereNow({ count }: { count: number }) {
   const others = Math.max(0, count - 1);
   const shown = Math.min(others, MAX_OTHERS);
   return (
-    <div className="flex flex-col gap-[16px] rounded-xl bg-primary bg-[linear-gradient(rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:24px_24px] bg-[position:-1px_-1px] p-[24px] ring-1 ring-inset ring-white/10 shadow-[0_1px_2px_rgba(30,5,37,0.12),0_12px_28px_-12px_rgba(30,5,37,0.45)] md:p-[32px]">
+    <div className="col-span-2 flex flex-col gap-[16px] rounded-xl bg-primary bg-[linear-gradient(rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:24px_24px] bg-[position:-1px_-1px] p-[24px] ring-1 ring-inset ring-white/10 shadow-[0_1px_2px_rgba(30,5,37,0.12),0_12px_28px_-12px_rgba(30,5,37,0.45)] md:col-span-1 md:p-[32px]">
       <div className="flex items-center justify-between gap-[12px]">
         <p className="font-body text-[12px] font-medium uppercase leading-[16px] tracking-[1.2px] text-grape-light/70">Here right now</p>
         <span className="flex items-center gap-[6px] rounded-full bg-white/10 px-[8px] py-[2px] font-body text-[12px] font-medium leading-[16px] text-pink">
@@ -287,7 +288,7 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
         </p>
       </div>
 
-      <div className="grid gap-[16px] md:grid-cols-3">
+      <div className="grid grid-cols-2 gap-[12px] md:grid-cols-3 md:gap-[16px]">
         <StayCard seconds={seconds} month={stats.month} />
         <HereNow count={stats.hereNow} />
 
@@ -298,6 +299,7 @@ export default function HouseDashboard({ visitorId, seconds }: { visitorId: stri
           <CountUp value={stats.month.guests} />
         </Tile>
         <Tile
+          className="col-span-2 md:col-span-1"
           label="Busiest day"
           note={times >= 1.5 ? <><Strong>{times}×</Strong> a usual day, last two weeks</> : "Of the last two weeks"}
         >

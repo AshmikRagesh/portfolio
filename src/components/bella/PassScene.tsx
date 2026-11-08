@@ -207,9 +207,11 @@ export default function PassScene({
       // drops to one screen and the page shifts up by the same amount, so the view doesn't
       // jump and scrolling back up reaches the top straight away
       const narrow = vw < 640;
-      const W = Math.min(620, vw * 0.86, vh * 0.9);
+      // On a phone the pass runs nearly edge to edge, wider than the cards below it, so it
+      // leads the page; it doesn't grow as it settles there
+      const W = narrow ? Math.min(620, vw - 16) : Math.min(620, vw * 0.86, vh * 0.9);
       const H = (W * 5) / 7;
-      const finalScale = 1.06;
+      const finalScale = narrow ? 1 : 1.06;
       // Settled: in the middle of the screen, or on a phone just under the navbar so the
       // house follows close behind
       const settledTop = narrow ? 120 : (vh - H * finalScale) / 2 + 32;
