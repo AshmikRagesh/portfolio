@@ -19,7 +19,7 @@ import { useEffect, useId, useRef } from "react";
 // hook's tip, runs down into the cup and swings to rest — then stays hung. Every later
 // hover just swings it on the hook. State lives on the card as data-key
 // (dropping → hung → swinging → hung); see .key-hang / .hook-jolt in globals.css.
-// Touch screens can't hover, so there it drops once the card scrolls half into view.
+// Touch screens can't hover, so there it drops once the card's picture scrolls into view.
 // Reduced motion shows it hanging still.
 export default function KeyTag({ room, className = "" }: { room: string; className?: string }) {
   const id = useId().replace(/:/g, "");
@@ -50,18 +50,21 @@ export default function KeyTag({ room, className = "" }: { room: string; classNa
     card.addEventListener("focusin", onEnter);
     key.addEventListener("animationend", onEnd);
 
-    // Touch screens can't hover, so there the key drops once the card is half in view
+    // Touch screens can't hover, so there the key drops once its picture is well in view.
+    // Watching the picture, not the card: on a phone the words sit above it, and the key
+    // used to fall while the picture was still below the screen.
     let io: IntersectionObserver | null = null;
-    if (window.matchMedia("(hover: none)").matches && "IntersectionObserver" in window) {
+    const media = svg?.parentElement;
+    if (media && window.matchMedia("(hover: none), (pointer: coarse)").matches && "IntersectionObserver" in window) {
       io = new IntersectionObserver(
         ([entry]) => {
           if (!entry.isIntersecting) return;
           if (!card.getAttribute("data-key")) set("dropping");
           io?.disconnect();
         },
-        { threshold: 0.5 }
+        { threshold: 0.6, rootMargin: "0px 0px -8% 0px" }
       );
-      io.observe(card);
+      io.observe(media);
     }
 
     return () => {
