@@ -175,9 +175,10 @@ function Sticker({ flag, width, left, top, rotate, peel = false, lift = "right" 
 function Stickers() {
   return (
     <div className="pointer-events-none absolute inset-0">
-      <Sticker flag="indonesia" width={56} left={58} top={210} rotate={-8} lift="left" />
-      <Sticker flag="azerbaijan" width={70} left={190} top={196} rotate={5} peel />
-      <Sticker flag="uae" width={66} left={112} top={262} rotate={-3} />
+      {/* Clustered at the right edge, overlapping a little, the way stickers pile up */}
+      <Sticker flag="azerbaijan" width={70} left={206} top={194} rotate={5} peel />
+      <Sticker flag="uae" width={66} left={226} top={242} rotate={-6} />
+      <Sticker flag="indonesia" width={56} left={200} top={284} rotate={8} lift="left" />
     </div>
   );
 }
