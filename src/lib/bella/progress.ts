@@ -5,9 +5,9 @@
 //
 //   finished    a case study whose end is reached after at least a minute of active
 //               time on it; finished case studies count towards two of the goals.
-//   stamps      five small finds (lib/bella/stampArt).
 //   goals       a short bow-tie celebration, once per visitor each: two case studies in
-//               one visit, the resume, every case study, the first email copied.
+//               one visit, every case study, the resume, the first email copied, and
+//               watching the walkthrough videos.
 //
 // It also remembers who the visitor said they're here as, and where they were reading,
 // so a returning visitor can pick up where they left off. All of it lives in this
@@ -20,7 +20,7 @@
 
 import { useSyncExternalStore } from "react";
 import { artemisDesignSystem, artemisInsurance, artemisReservations, featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
-import { STAMPS, stampDate, type StampKey } from "./stampArt";
+import type { StampKey } from "./stampArt";
 import { track } from "@/lib/curiosity/report";
 import type { BellaEvent } from "@/lib/curiosity/config";
 
@@ -47,7 +47,7 @@ const LISTED = CASE_STUDIES.filter((c) => c.listed);
 export const caseStudy = (slug: string) => CASE_STUDIES.find((c) => c.slug === slug);
 
 // ── Storage ──
-export type Goal = "two" | "resume" | "all" | "email";
+export type Goal = "two" | "resume" | "all" | "email" | "video";
 export type HereAs = "Recruiter" | "Designer" | "Engineer" | "Just curious";
 export interface Reading {
   slug: string;
@@ -57,6 +57,7 @@ export interface Reading {
 }
 export interface Progress {
   keys: Record<string, number>;
+  /** Stamps found before they were retired; kept so old progress still reads. */
   stamps: Partial<Record<StampKey, number>>;
   goals: Partial<Record<Goal, number>>;
   hereAs: HereAs | null;
@@ -110,11 +111,15 @@ export function useProgress(): Progress {
 
 // ── Moments ──
 export type Moment =
-  | { kind: "stamp"; stamp: StampKey; line: string }
-  | { kind: "celebrate"; line: string; stamp?: StampKey }
+  | { kind: "celebrate"; line: string }
   | { kind: "welcome"; line: string; href: string; link: string };
 
-const LENGTH: Record<Moment["kind"], number> = { stamp: 3200, celebrate: 3600, welcome: 7000 };
+// How long a moment stays up. Phones get a few seconds more, since the line sits over
+// the page and is read while scrolling; either can be closed sooner with its cross.
+const LENGTH: Record<Moment["kind"], number> = { celebrate: 4000, welcome: 7000 };
+const PHONE_EXTRA = 2500;
+const lengthOf = (k: Moment["kind"]) =>
+  LENGTH[k] + (window.matchMedia("(hover: none), (pointer: coarse)").matches ? PHONE_EXTRA : 0);
 type Queued = Moment & { id: number };
 const queue: Queued[] = [];
 let current: Queued | null = null;
@@ -136,7 +141,7 @@ function advance() {
     current = null;
     emitMoment();
     window.setTimeout(advance, 400);
-  }, LENGTH[current.kind]);
+  }, lengthOf(current.kind));
 }
 
 export function pushMoment(m: Moment, delay = 0) {
@@ -168,26 +173,13 @@ export function skipMoment() {
 }
 
 // ── Rewards ──
-const stampName = (k: StampKey) => STAMPS.find((s) => s.key === k)!.name;
-
-/** Give a stamp if it's new. Returns true when it was. */
-export function awardStamp(k: StampKey, { quiet = false } = {}) {
-  const p = readProgress();
-  if (p.stamps[k]) return false;
-  save({ ...p, stamps: { ...p.stamps, [k]: Date.now() } });
-  track(`stamp_${k}` as BellaEvent);
-  if (!quiet) pushMoment({ kind: "stamp", stamp: k, line: `New stamp: ${stampName(k)}.` });
-  return true;
-}
-
-/** A goal's celebration, once per visitor. A stamp that comes with it is shown in the same moment. */
-export function celebrate(goal: Goal, line: string, stamp?: StampKey, delay = 0) {
+/** A goal's celebration, once per visitor. */
+export function celebrate(goal: Goal, line: string, delay = 0) {
   const p = readProgress();
   if (p.goals[goal]) return false;
   save({ ...p, goals: { ...p.goals, [goal]: Date.now() } });
   track(`goal_${goal}` as BellaEvent);
-  const gotStamp = stamp ? awardStamp(stamp, { quiet: true }) : false;
-  pushMoment({ kind: "celebrate", line, stamp: gotStamp ? stamp : undefined }, delay);
+  pushMoment({ kind: "celebrate", line }, delay);
   return true;
 }
 
@@ -208,7 +200,7 @@ export function finishCaseStudy(slug: string) {
       sessionStorage.setItem(VISIT_KEYS, JSON.stringify(thisVisit));
     } catch {}
   }
-  if (thisVisit.length >= 2) celebrate("two", "Two case studies in one visit.", "two");
+  if (thisVisit.length >= 2) celebrate("two", "Two case studies in one visit.");
   const all = LISTED.every((c) => readProgress().keys[c.slug]);
   if (all) celebrate("all", `All ${LISTED.length} case studies read.`);
 }
@@ -226,7 +218,7 @@ export function saveReading(r: Reading) {
   save({ ...p, reading: r });
 }
 
-/** Once per visit, on arrival: Back again for a new day, and an offer to pick up the reading. */
+/** Once per visit, on arrival: on a new day, an offer to pick up the reading. */
 export function arrive(visits: number, here: string) {
   const p = readProgress();
   const d = new Date();
@@ -234,7 +226,6 @@ export function arrive(visits: number, here: string) {
   const returning = visits > 1 && p.lastDay !== null && p.lastDay !== today;
   if (p.lastDay !== today) save({ ...p, lastDay: today });
   if (!returning) return;
-  const gotBack = awardStamp("back", { quiet: true });
   const study = p.reading && caseStudy(p.reading.slug);
   if (study && !here.startsWith(study.href)) {
     pushMoment(
@@ -242,7 +233,4 @@ export function arrive(visits: number, here: string) {
       2500,
     );
   }
-  if (gotBack) pushMoment({ kind: "stamp", stamp: "back", line: "New stamp: Back again." }, 2600);
 }
-
-export { stampDate };

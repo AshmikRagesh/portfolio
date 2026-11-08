@@ -8,7 +8,7 @@ import CuriosityBubble, { useMilestoneBubble, type Bubble } from "@/components/C
 import HostCharacter, { hostLayout, type HostGlasses, type HostMood } from "@/components/host/HostCharacter";
 import { useVideoGlasses } from "@/lib/curiosity/watching";
 import { track } from "@/lib/curiosity/report";
-import { awardStamp, useMoment, type Moment } from "@/lib/bella/progress";
+import { useMoment, type Moment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
 import { openResume, RESUME_PDF } from "@/lib/resume";
 import { MenuToggle, MobileMenu } from "@/components/MobileMenu";
@@ -161,20 +161,12 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
   const champion = record || preview === "champion" || preview === "gold-dozing";
   const mood: HostMood = preview === "dozing" || preview === "gold-dozing" || (paused && !holding) ? "dozing" : champion ? "champion" : "idle";
 
-  // Count the sign being opened, once per visit, for the stats page. The first ring earns
-  // the First ring stamp, given once the sign goes back up so it doesn't cut the sign short.
-  const rang = useRef(false);
+  // Count the sign being opened, once per visit, for the stats page
   useEffect(() => {
-    if (holding && !preview) {
-      track("sign_open");
-      rang.current = true;
-    } else if (!holding && rang.current) {
-      rang.current = false;
-      awardStamp("ring");
-    }
+    if (holding && !preview) track("sign_open");
   }, [holding, preview]);
 
-  // Moments (lib/bella/progress): a stamp found, a goal celebrated
+  // Moments (lib/bella/progress): a goal celebrated, or a welcome back
   const [celebrate, setCelebrate] = useState(0);
   useEffect(() => {
     if (!moment) return;
@@ -186,8 +178,6 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
       ringBell();
     }
   }, [moment]);
-  const expression = moment?.kind === "stamp" ? "surprised" : null;
-
 
   // It rings like a desk bell: when the board comes down, and before it says anything
   useEffect(() => {
@@ -266,7 +256,6 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
           holding={holding}
           ding={ding}
           glasses={glasses}
-          expression={expression}
           celebrate={celebrate}
           className={`block ${entrance === "up" ? "" : `bell-${entrance}`}`}
           style={{ width: HOST.width, height: HOST_HEIGHT, animationDelay: entrance === "pop" ? "160ms" : undefined }}
