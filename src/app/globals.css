@@ -368,6 +368,8 @@ html, body { overflow-x: clip; }
    Pinned while the visitor scrolls: the seal cracks, the flap opens, the pass rises out
    tilted, the envelope drops away, and the pass settles in the middle, bigger. */
 .ps-section { position: relative; height: 340vh; }
+/* A phone gets a shorter scroll for the same scene */
+@media (max-width: 639px) { .ps-section { height: 240vh; } }
 .ps-section.is-open { height: 100vh; }
 .ps-section.is-open .ps-sticky { height: 100%; }
 /* Once open, the envelope is gone and the pass's shadow can fall softly past the section
@@ -394,6 +396,9 @@ html, body { overflow-x: clip; }
 .ps-seal svg, .ps-half svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 1px 1px rgba(10, 0, 14, 0.45)) drop-shadow(0 6px 10px rgba(10, 0, 14, 0.35)); }
 .ps-half { opacity: 0; will-change: transform, opacity; }
 .ps-hint { position: absolute; z-index: 6; left: 0; right: 0; top: calc(100% - 56px); text-align: center; font-family: var(--font-brand), monospace; font-size: 12px; line-height: 16px; letter-spacing: 2px; text-transform: uppercase; color: rgba(248, 241, 227, 0.8); }
+.ps-hint { pointer-events: none; }
+.ps-hint button { pointer-events: auto; padding: 12px 16px; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; }
+.ps-hint button:focus-visible { outline: 2px solid rgba(248, 241, 227, 0.8); outline-offset: 2px; border-radius: 8px; }
 .ps-hint span { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; animation: ps-nudge 1.8s ease-in-out infinite; }
 /* A small pill under the words, like a scroll wheel */
 .ps-hint span::after { content: ""; width: 28px; height: 8px; border-radius: 999px; border: 1.5px solid rgba(248, 241, 227, 0.8); }

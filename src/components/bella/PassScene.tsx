@@ -24,6 +24,7 @@
 
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { ringBell } from "@/components/host/bellSound";
+import { useTouchScreen } from "@/components/host/useTouchScreen";
 
 const OLD_KEY = "ash.bella.passOpened"; // once kept the pass open for good; cleared on load
 const NAV = 88; // the navbar's height on a phone
@@ -140,10 +141,42 @@ export default function PassScene({
   const sealLayer = useRef<HTMLDivElement>(null);
   const seal = useRef<HTMLDivElement>(null);
   const halves = useRef<(HTMLDivElement | null)[]>([]);
-  const hint = useRef<HTMLParagraphElement>(null);
+  const hint = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(false);
   const [settled, setSettled] = useState(false);
   const [still, setStill] = useState(false);
+  const touch = useTouchScreen();
+  const playing = useRef(0);
+
+  // Open it for them: a tap on the hint or the seal scrolls through the scene by itself,
+  // at an easy pace. Any wheel, touch or key takes the scroll back.
+  const openNow = () => {
+    const el = section.current;
+    if (!el || el.classList.contains("is-open") || playing.current) return;
+    const from = window.scrollY;
+    const to = from + el.getBoundingClientRect().top + el.offsetHeight - window.innerHeight;
+    const dur = Math.min(2800, Math.max(1600, (to - from) * 0.9));
+    const t0 = performance.now();
+    const events = ["wheel", "touchstart", "keydown"] as const;
+    const stop = () => {
+      cancelAnimationFrame(playing.current);
+      playing.current = 0;
+      events.forEach((ev) => window.removeEventListener(ev, stop));
+    };
+    // Added a moment later, so the tap that started it doesn't stop it
+    window.setTimeout(() => playing.current && events.forEach((ev) => window.addEventListener(ev, stop, { passive: true })), 50);
+    const step = (now: number) => {
+      // Once it's open the scene puts the pass in view itself; don't scroll past that
+      if (el.classList.contains("is-open")) return stop();
+      const t = Math.min(1, (now - t0) / dur);
+      const e = t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+      window.scrollTo({ top: from + (to - from) * e, behavior: "instant" });
+      if (t < 1) playing.current = requestAnimationFrame(step);
+      else stop();
+    };
+    playing.current = requestAnimationFrame(step);
+  };
+  useEffect(() => () => cancelAnimationFrame(playing.current), []);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -269,6 +302,8 @@ export default function PassScene({
         const sealBottom = envTop + envH * 0.61 + envW * 0.085;
         hint.current.style.top = `${Math.min(sealBottom + 20, vh - 56)}px`;
         hint.current.style.opacity = String(1 - seg(p, 0, 0.06));
+        const btn = hint.current.firstElementChild as HTMLElement | null;
+        if (btn) btn.style.visibility = p > 0.06 ? "hidden" : "";
       }
       setRevealed(p > 0.72);
       setSettled(p > 0.9);
@@ -401,7 +436,7 @@ export default function PassScene({
         </div>
 
         <div ref={sealLayer} className="ps-env" style={{ zIndex: 5 }} aria-hidden="true">
-          <div ref={seal} className="ps-seal">
+          <div ref={seal} className="ps-seal cursor-pointer" onClick={openNow}>
             <Seal id="pss" />
           </div>
           {(["left", "right"] as const).map((h, i) => (
@@ -411,9 +446,11 @@ export default function PassScene({
           ))}
         </div>
 
-        <p ref={hint} className="ps-hint">
-          <span>Scroll to open</span>
-        </p>
+        <div ref={hint} className="ps-hint">
+          <button type="button" onClick={openNow}>
+            <span>{touch ? "Tap to open" : "Scroll or click to open"}</span>
+          </button>
+        </div>
       </div>
     </div>
   );
