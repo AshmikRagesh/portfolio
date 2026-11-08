@@ -29,7 +29,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
     </h3>
   );
   const description = (
-    <p className="m-0 max-w-[560px] text-pretty font-body text-lead text-secondary">{work.description}</p>
+    <p className="m-0 max-w-[560px] text-pretty font-body text-lead-md text-secondary">{work.description}</p>
   );
   // Under NDA: the same pill, greyed out and inert
   const cta = isLink ? <CtaPill>Read case study</CtaPill> : <CtaPill off>Read case study</CtaPill>;

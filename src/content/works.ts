@@ -29,7 +29,7 @@ export const featuredWorks: FeaturedWork[] = [
     discipline: "Design systems",
     title: "Shipping designs in half the time with Helix",
     description:
-      "A design-system skill for Claude Code that lets designers build straight from our components and tokens, so what we design is what developers ship.",
+      "A design-system skill for Claude Code, so designers build from our real components and what we design is what ships.",
     image: "/images/helix/cover.webp",
     imageAlt: "An expedition card built from Helix components, with the component list beside it",
     href: "/works/helix",
@@ -40,7 +40,7 @@ export const featuredWorks: FeaturedWork[] = [
     discipline: "Product design",
     title: "From every trip at once to the few that fit: filters for TCS search",
     description:
-      "Redesigned the TCS World Travel search page with filters, a result count and a no-results page that always leads somewhere. Live since July 2026.",
+      "Filters, a result count and a no-results page that always leads somewhere. Live since July 2026.",
     image: "/images/tcs-search/cover.webp",
     imageAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
     href: "/works/tcs-search",
@@ -51,7 +51,7 @@ export const featuredWorks: FeaturedWork[] = [
     discipline: "Product design",
     title: "Letting TCS travellers explore a destination before they browse trips",
     description:
-      "Designed and built a two-path choice in the Find a Trip menu, so travellers still exploring can learn about a place first. Both variants are built for an A/B/C test.",
+      "A two-path choice in the Find a Trip menu, so travellers still exploring can learn about a place first.",
     image: "/images/tcs-find-a-trip/cover.webp",
     imageAlt: "The TCS World Travel Find a Trip menu, with Africa open to Explore Trips and Explore Destination",
     href: "/works/tcs-find-a-trip",
@@ -62,7 +62,7 @@ export const featuredWorks: FeaturedWork[] = [
     discipline: "Interaction design",
     title: "Designing Bella, the desk bell that hosts this portfolio, in Claude Code",
     description:
-      "A front-desk bell in the navbar that keeps track of how long you actually spend here, and rings when it has something to say.",
+      "A front-desk bell in the navbar that tracks how long you actually spend here.",
     image: "/images/bella/cover.png",
     imageAlt: "Bella the desk bell in eight moods: idle, ringing, reading, watching, dozing, celebrating, surprised and champion",
     href: "/works/bella",
@@ -74,7 +74,7 @@ export const featuredWorks: FeaturedWork[] = [
     discipline: "AI",
     title: "Designing an AI-powered itinerary builder for modern travellers",
     description:
-      "Lets travelers create fully personalised trips in under 2 minutes—combining real-time availability, smart suggestions, and a zero-friction booking flow.",
+      "Personalised trips in under 2 minutes, with real-time availability and smart suggestions.",
     image: "/images/works-cover.png",
     imageAlt: "AI Trip Planning preview",
     href: "#",
