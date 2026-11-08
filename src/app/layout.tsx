@@ -1,30 +1,44 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Roboto_Slab, Inter, Nanum_Pen_Script } from "next/font/google";
+import localFont from "next/font/local";
 import GlobalLayout from "@/components/GlobalLayout";
 import "./globals.css";
 
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
+// All fonts are self-hosted from src/app/fonts (OFL, licences alongside). They used to come
+// from next/font/google, but that downloads them at build time, and Next 15.1's loader
+// crashes when Google returns a font address without a file extension, which failed
+// production builds on Vercel.
+
+const geistMono = localFont({
+  src: "./fonts/GeistMono-Variable.woff2",
   variable: "--font-brand",
-  weight: ["400", "500"],
+  weight: "100 900",
+  display: "swap",
 });
 
-const robotoSlab = Roboto_Slab({
-  subsets: ["latin"],
-  variable: "--font-body",
-  weight: ["400", "500"],
+// Geist — the secondary font: body text everywhere, and plain UI
+const geist = localFont({
+  src: "./fonts/Geist-Variable.woff2",
+  variable: "--font-geist",
+  weight: "100 900",
+  display: "swap",
 });
 
-const nanumPen = Nanum_Pen_Script({
-  subsets: ["latin"],
+// Source Serif 4 (the current release of Source Serif Pro) — the primary font, for headings.
+// GT Alpina stays loaded in globals.css as the fallback, so switching back is one line in tokens.ts.
+const sourceSerif = localFont({
+  src: [
+    { path: "./fonts/source-serif-4-latin-wght-normal.woff2", weight: "200 900", style: "normal" },
+    { path: "./fonts/source-serif-4-latin-wght-italic.woff2", weight: "200 900", style: "italic" },
+  ],
+  variable: "--font-serif",
+  display: "swap",
+});
+
+const nanumPen = localFont({
+  src: "./fonts/nanum-pen-script-latin-400-normal.woff2",
   variable: "--font-handwriting",
-  weight: ["400"],
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-ui",
-  weight: ["400", "500", "600", "700"],
+  weight: "400",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -38,9 +52,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Bella's loader plays once per session: hide it before paint on repeat visits (?loader shows it again) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(sessionStorage.getItem("bella-loaded")&&!/[?&]loader/.test(location.search))document.documentElement.classList.add("loader-skip")}catch(e){}`,
+          }}
+        />
+      </head>
       <body
-        className={`${geistMono.variable} ${robotoSlab.variable} ${inter.variable} ${nanumPen.variable} bg-background text-text-base antialiased`}
+        className={`${geist.variable} ${geistMono.variable} ${sourceSerif.variable} ${nanumPen.variable} bg-background font-body text-text-base antialiased`}
       >
         <GlobalLayout>{children}</GlobalLayout>
       </body>

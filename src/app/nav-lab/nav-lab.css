@@ -1,0 +1,113 @@
+/* Nav lab tabs. Every hover idea also shows as the active tab (the page you're on),
+   so each one is judged in both states. Every value is a multiple of 2/4px. */
+.nl-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 4px;
+  font-family: var(--font-brand), monospace;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #524555;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nl-label { position: relative; display: inline-block; }
+
+/* 1. Wavy underline — what's live now */
+.nl-wavy:hover, .nl-wavy.is-active { color: #9d136a; text-decoration: underline wavy; text-underline-offset: 6px; }
+
+/* 2. Highlighter — the pink marker from the case studies sweeps behind the word */
+.nl-marker .nl-label {
+  background-image: linear-gradient(100deg, rgba(248, 194, 247, 0) 0, rgba(248, 194, 247, 0.8) 4%, rgba(248, 194, 247, 0.64) 50%, rgba(248, 194, 247, 0.72) 96%, rgba(248, 194, 247, 0) 100%);
+  background-repeat: no-repeat;
+  background-position: 0 80%;
+  background-size: 0% 72%;
+  border-radius: 4px 8px 4px 8px;
+  padding: 0 4px;
+  margin: 0 -4px;
+  transition: background-size 0.44s cubic-bezier(0.65, 0.05, 0.25, 1);
+}
+.nl-marker:hover, .nl-marker.is-active { color: #32073e; }
+.nl-marker:hover .nl-label, .nl-marker.is-active .nl-label { background-size: 100% 72%; }
+
+/* 3. Pen circle — a quick loop drawn round the word, past where it started */
+.nl-circled svg { position: absolute; left: -12px; top: -8px; width: calc(100% + 24px); height: calc(100% + 16px); overflow: visible; pointer-events: none; }
+.nl-circled path { fill: none; stroke: #9d136a; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 0.56s cubic-bezier(0.45, 0.05, 0.3, 1); }
+.nl-circled:hover, .nl-circled.is-active { color: #32073e; }
+.nl-circled:hover path, .nl-circled.is-active path { stroke-dashoffset: 0; }
+
+/* 4. Tick box — form brackets, the box fills in like ticking a form */
+.nl-box { color: #8e8292; letter-spacing: 0; }
+.nl-box i { display: inline-block; width: 12px; text-align: center; font-style: normal; color: #9d136a; transform: scale(0); transition: transform 0.24s cubic-bezier(0.3, 1.6, 0.5, 1); }
+.nl-checkbox:hover, .nl-checkbox.is-active { color: #32073e; }
+.nl-checkbox:hover i, .nl-checkbox.is-active i { transform: scale(1); }
+
+/* 5. Rubber stamp — the word gets stamped in grape ink, a little crooked, like the pass */
+.nl-stamp .nl-label { transition: transform 0.2s; }
+.nl-stamp .nl-label::after {
+  content: "";
+  position: absolute;
+  inset: -4px -8px;
+  border: 2px solid #9d136a;
+  border-radius: 4px;
+  opacity: 0;
+  transform: scale(1.4) rotate(-8deg);
+  transition: opacity 0.12s, transform 0.24s cubic-bezier(0.3, 1.5, 0.5, 1);
+  -webkit-mask: radial-gradient(circle at 30% 40%, #000 60%, rgba(0, 0, 0, 0.7) 100%);
+}
+.nl-stamp:hover, .nl-stamp.is-active { color: #9d136a; }
+.nl-stamp:hover .nl-label, .nl-stamp.is-active .nl-label { transform: rotate(-4deg); }
+.nl-stamp:hover .nl-label::after, .nl-stamp.is-active .nl-label::after { opacity: 0.9; transform: scale(1) rotate(0); }
+
+/* 6. Ticket punch — a hole is punched just left of the word */
+.nl-hole { position: absolute; left: -20px; top: 50%; margin-top: -8px; transform: scale(0) rotate(-30deg); transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1); }
+.nl-punch:hover, .nl-punch.is-active { color: #32073e; }
+.nl-punch:hover .nl-hole, .nl-punch.is-active .nl-hole { transform: scale(1) rotate(0); }
+
+/* 7. Folder tab — a paper tab rises from the navbar's bottom edge behind the word */
+.nl-tab-lift { padding: 0 12px; }
+.nl-tab-lift::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 4px;
+  bottom: calc(-1 * var(--drop, 14px));
+  background: #f9e4ff;
+  border: 1px solid #e8c8f0;
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.16s;
+  clip-path: inset(-4px -4px 0 -4px);
+}
+.nl-tab-lift > * { position: relative; }
+.nl-tab-lift:hover, .nl-tab-lift.is-active { color: #32073e; }
+.nl-tab-lift:hover::before, .nl-tab-lift.is-active::before { transform: none; opacity: 1; }
+
+/* 8. Ruler ticks — the top ruler's ticks draw under the word, a pixel step at a time */
+.nl-ruler .nl-label::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 6px;
+  background:
+    repeating-linear-gradient(90deg, #9d136a 0 1px, transparent 1px 16px) bottom / 100% 6px no-repeat,
+    repeating-linear-gradient(90deg, #9d136a 0 1px, transparent 1px 4px) bottom / 100% 2px no-repeat;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.4s steps(8);
+}
+.nl-ruler:hover, .nl-ruler.is-active { color: #9d136a; }
+.nl-ruler:hover .nl-label::after, .nl-ruler.is-active .nl-label::after { clip-path: inset(0 0 0 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nl-tab, .nl-tab *, .nl-tab::before, .nl-tab *::after { transition: none !important; }
+}

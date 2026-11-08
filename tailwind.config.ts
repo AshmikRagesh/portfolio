@@ -10,26 +10,45 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: tokens.colors.primary,
-        secondary: tokens.colors.secondary,
-        background: tokens.colors.background,
-        "text-base": tokens.colors.text,
-        heading: tokens.colors.heading,
-        muted: tokens.colors.muted,
-        accent: tokens.colors.accent,
+        // Brand
+        primary:       tokens.colors.primary,
+        midnight:      tokens.colors.midnight,
+        grape:         tokens.colors.grape,
+        "grape-light": tokens.colors["grape-light"],
+        // Text
+        "text-base":   tokens.colors.text,
+        heading:       tokens.colors.heading,
+        secondary:     tokens.colors.secondary,
+        muted:         tokens.colors.muted,
+        // Surfaces
+        background:    tokens.colors.background,
+        surface:       tokens.colors.surface,
+        card:          tokens.colors.card,
+        placeholder:   tokens.colors.placeholder,
+        vanilla:       tokens.colors.vanilla,
+        // Lines
+        "line-soft":   tokens.colors["line-soft"],
+        line:          tokens.colors.line,
+        // Soft accents
+        pink:          tokens.colors.pink,
+        // Status
+        success:       tokens.colors.success,
+        "success-bg":  tokens.colors["success-bg"],
+        warning:       tokens.colors.warning,
       },
       fontFamily: {
         brand: [...tokens.fontFamily.brand],
+        geist: [...tokens.fontFamily.geist],
         body: [...tokens.fontFamily.body],
         heading: [...tokens.fontFamily.heading],
-        ui: [...tokens.fontFamily.ui],
         handwriting: ["var(--font-handwriting)", "cursive"],
       },
-      borderRadius: {
-        sm: tokens.borderRadius.sm,
-        md: tokens.borderRadius.md,
-        lg: tokens.borderRadius.lg,
-      },
+      // Cast: tokens.fontSize is `as const` (readonly), Tailwind expects mutable.
+      fontSize: tokens.fontSize as unknown as Record<
+        string,
+        [string, { lineHeight: string; letterSpacing?: string }]
+      >,
+      borderRadius: { ...tokens.borderRadius },
     },
   },
   plugins: [],

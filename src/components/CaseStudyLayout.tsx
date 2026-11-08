@@ -1,119 +1,33 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import Footer from "@/components/Footer";
+import SectionPill, { type CaseStudySection } from "@/components/case-study/SectionPill";
+import ReelPlayer, { type Reel } from "@/components/ReelPlayer";
+import CaseStudyTracker from "@/components/bella/CaseStudyTracker";
+import RevealOnScroll from "@/components/case-study/RevealOnScroll";
 
-export interface CaseStudySection {
-  id: string;
-  label: string;
-}
+export type { CaseStudySection, Reel };
 
 interface CaseStudyLayoutProps {
   sections: CaseStudySection[];
-  backHref?: string;
+  /** The case study's walkthrough video, floating over the page */
+  reel?: Reel;
   children: React.ReactNode;
 }
 
-export default function CaseStudyLayout({
-  sections,
-  backHref = "/#works",
-  children,
-}: CaseStudyLayoutProps) {
-  const [activeId, setActiveId] = useState(sections[0]?.id ?? "");
-
-  useEffect(() => {
-    const handleScroll = () => {
-      // If scrolled to the bottom of the page, activate the last section
-      const atBottom =
-        window.scrollY + window.innerHeight >= document.body.scrollHeight - 40;
-      if (atBottom) {
-        setActiveId(sections[sections.length - 1]?.id ?? "");
-        return;
-      }
-
-      // Otherwise activate the last section whose top has passed the trigger line
-      const trigger = window.scrollY + 120;
-      let current = sections[0]?.id ?? "";
-      for (const { id } of sections) {
-        const el = document.getElementById(id);
-        if (el && el.offsetTop <= trigger) current = id;
-      }
-      setActiveId(current);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [sections]);
-
-  const scrollTo = (id: string) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - 100;
-    window.scrollTo({ top, behavior: "smooth" });
-  };
-
+export default function CaseStudyLayout({ sections, reel, children }: CaseStudyLayoutProps) {
   return (
     <>
-    <div className="flex min-h-screen pt-[80px]">
-
-      {/* ── Sticky sidebar (desktop only) ── */}
-      <aside className="hidden lg:flex flex-col w-[260px] xl:w-[300px] shrink-0 sticky top-[80px] self-start h-[calc(100vh-80px)] pl-[100px] pr-8 py-10 overflow-y-auto">
-        {/* Back button */}
-        <Link
-          href={backHref}
-          className="flex items-center gap-2 font-brand text-[16px] font-medium uppercase tracking-[1px] text-[#9ca3af] hover:text-[#091624] transition-colors duration-150 mb-8"
-        >
-          <ArrowLeft size={15} strokeWidth={2} />
-          Back
-        </Link>
-
-        {/* Section nav */}
-        <nav className="flex flex-col">
-          {sections.map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={() => scrollTo(id)}
-              className={`text-left font-body font-normal text-[18px] leading-[1.5] py-1 transition-colors duration-150 ${
-                activeId === id
-                  ? "text-[#172b4d]"
-                  : "text-[#9ca3af] hover:text-[#0049c4]"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
-      </aside>
-
-      {/* ── Main content ── */}
-      <main className="flex-1 min-w-0">
-
-        {/* Mobile sticky nav — section tabs only (back is in the navbar) */}
-        <div className="lg:hidden sticky top-[80px] z-30 bg-white border-b border-[#e8eaed]">
-          <div className="flex overflow-x-auto gap-6 px-5 py-2 scrollbar-hide">
-            {sections.map(({ id, label }) => (
-              <button
-                key={id}
-                onClick={() => scrollTo(id)}
-                className={`shrink-0 font-body text-[15px] py-1.5 border-b-2 transition-colors duration-150 whitespace-nowrap ${
-                  activeId === id
-                    ? "border-[#172b4d] text-[#172b4d]"
-                    : "border-transparent text-[#9ca3af] hover:text-[#0049c4]"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
+      {/* Top padding clears the ruler and navbar; bottom padding leaves room for the bell
+          sitting on the footer */}
+      <main data-cs-main className="relative z-10 min-h-screen bg-surface pt-[88px] pb-[96px] md:pb-[128px] lg:pb-[200px]">
         {children}
       </main>
-    </div>
-    <Footer />
+      {/* Every block rises in once as it's read */}
+      <RevealOnScroll />
+      <SectionPill sections={sections} />
+      {/* Room keys and where the reader is, for Bella */}
+      <CaseStudyTracker sections={sections} />
+      {reel && <ReelPlayer reels={[reel]} pill />}
+      <Footer />
     </>
   );
 }

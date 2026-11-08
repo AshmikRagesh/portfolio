@@ -1,44 +1,39 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ChatProvider, useChatDrawer } from "@/context/ChatContext";
-import ChatDrawer from "@/components/ChatDrawer";
+import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
-
-function Inner({ children }: { children: ReactNode }) {
-  const { isOpen, close } = useChatDrawer();
-
-  return (
-    <>
-      {/* Mobile backdrop */}
-      <div
-        aria-hidden="true"
-        onClick={close}
-        className={`lg:hidden fixed inset-0 z-[59] bg-black/40 transition-opacity duration-300 ${
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-      />
-
-      <Navbar />
-
-      {/* Content shifts left when chat drawer opens on desktop */}
-      <div
-        className={`transition-[padding-right] duration-300 ease-in-out ${
-          isOpen ? "lg:pr-[400px]" : ""
-        }`}
-      >
-        {children}
-      </div>
-
-      <ChatDrawer />
-    </>
-  );
-}
+import PixelRuler from "@/components/PixelRuler";
+import { CuriosityProvider } from "@/context/CuriosityContext";
+import { BellStageProvider } from "@/components/host/BellStage";
+import TabPresence from "@/components/host/TabPresence";
+import BellaDirector from "@/components/bella/BellaDirector";
+import ResumeOverlay from "@/components/resume/ResumeOverlay";
+import BellaLoader from "@/components/host/BellaLoader";
 
 export default function GlobalLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  // The /demo theme preview ships its own navbar, and /nav-lab shows the navbar ideas instead
+  const isDemo = pathname.startsWith("/demo") || pathname.startsWith("/nav-lab");
+
+  // The private stats page stands alone: no navbar, and reading it isn't a visit
+  if (pathname.startsWith("/stats")) return <>{children}</>;
+
   return (
-    <ChatProvider>
-      <Inner>{children}</Inner>
-    </ChatProvider>
+    <CuriosityProvider>
+      {/* Bella dozes in the browser tab too, and the title holds the paused time */}
+      <TabPresence />
+      <BellaDirector />
+      {/* The navbar and footer bells take turns — only one is up at a time */}
+      <BellStageProvider>
+        {!isDemo && <Navbar />}
+        <PixelRuler />
+        {children}
+      </BellStageProvider>
+      {/* Fancy paper: the résumé sheet, opened from the navbar */}
+      <ResumeOverlay />
+      {/* First visit in a session: Bella does tricks while the site loads */}
+      <BellaLoader />
+    </CuriosityProvider>
   );
 }

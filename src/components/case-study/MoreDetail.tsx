@@ -1,0 +1,77 @@
+"use client";
+
+import { useId, useState } from "react";
+import { Plus } from "lucide-react";
+
+/**
+ * Extra research tucked behind a toggle. The toggle is a left-aligned text link in the nav
+ * the body face (Geist, sentence case) over a thin underline. On hover a grape line draws in
+ * from the left as the text turns grape and the plus turns a quarter; while open it
+ * stays grape and the plus becomes a cross. The panel
+ * opens and closes by easing its height (a 0fr → 1fr grid row) while fading and settling
+ * in, so closing animates as smoothly as opening; reduced motion skips straight to the end.
+ */
+export default function MoreDetail({
+  label,
+  className = "",
+  children,
+}: {
+  label: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  return (
+    <div className={className}>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen((o) => !o)}
+        className={`group/more flex items-center gap-[8px] whitespace-nowrap rounded-xs py-[8px] font-body text-[16px] font-medium leading-[24px] transition-colors duration-200 hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${
+          open ? "text-grape" : "text-heading"
+        }`}
+      >
+        <span className="relative pb-[4px]">
+          {label}
+          {/* Resting underline, and the grape one that draws in over it */}
+          <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[1px] bg-current opacity-40" />
+          <span
+            aria-hidden="true"
+            className={`absolute inset-x-0 bottom-0 h-[2px] origin-left bg-grape transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/more:scale-x-100 motion-reduce:transition-none ${
+              open ? "scale-x-100" : "scale-x-0"
+            }`}
+          />
+        </span>
+        <Plus
+          size={16}
+          strokeWidth={2}
+          aria-hidden="true"
+          className={`shrink-0 transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+            open ? "rotate-45" : "group-hover/more:rotate-90"
+          }`}
+        />
+      </button>
+      <div
+        id={id}
+        role="region"
+        aria-label={label}
+        inert={!open}
+        className={`grid transition-[grid-template-rows,opacity] duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        }`}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div
+            className={`mt-[24px] rounded-xl border border-line-soft bg-white p-[20px] transition-transform duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:p-[32px] motion-reduce:transition-none ${
+              open ? "translate-y-0" : "-translate-y-[12px]"
+            }`}
+          >
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

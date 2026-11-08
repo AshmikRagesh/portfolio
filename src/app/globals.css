@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Nothing may widen the page sideways: a label or desk object poking past the edge used to
+   make phones lay the page out wider than the screen, pushing the navbar's right side off it.
+   `clip` (not `hidden`) so sticky elements keep working. */
+html, body { overflow-x: clip; }
+
+/* Page transition (app/template.tsx): each page fades in with an 8px rise. Fill is
+   `backwards` only, so once it ends nothing stays transformed and fixed or sticky parts
+   of the page (the reel, the chapter pill) keep working. */
+@keyframes page-enter { from { opacity: 0; transform: translateY(8px); } }
+.page-enter { animation: page-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+@media (prefers-reduced-motion: reduce) { .page-enter { animation: page-fade 200ms ease-out backwards; } }
+@keyframes page-fade { from { opacity: 0; } }
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
@@ -12,12 +25,62 @@
   }
 }
 
+/* Shared page container — 1440px max with 20/80/100px gutters, so content is
+   1240px wide at desktop and lines up with the navbar. */
+@layer components {
+  /* Sections: same gutters as the navbar, but content stops at 1120px — at 1440 that leaves
+     160px each side while the navbar stays wide. */
+  .page-container {
+    @apply mx-auto w-full max-w-[1320px] px-[20px] md:px-[80px] lg:px-[100px];
+  }
+  /* Navbar: full 1240px content width at 1440 */
+  .nav-container {
+    @apply mx-auto w-full max-w-[1440px] px-[20px] md:px-[80px] lg:px-[100px];
+  }
+  /* Same gap between every section: 96 / 128 / 160px */
+  .section-spacing {
+    @apply pt-[96px] md:pt-[128px] lg:pt-[160px];
+  }
+}
+
+/* Footer scroll-reveal */
+@keyframes footer-rise {
+  from { transform: translateY(60px); opacity: 0.6; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.footer-card {
+  animation: footer-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-play-state: paused;
+}
+.footer-card.in-view {
+  animation-play-state: running;
+}
+
+/* Bell duck and pop — one bell is up at a time (BellStage). It sinks out of sight
+   behind an edge after a small squash, and springs back up past it with an overshoot.
+   Percentages are of the bell's own height; whatever holds it clips below the edge. */
+@keyframes bell-duck {
+  0%   { transform: translateY(0) scale(1, 1); }
+  20%  { transform: translateY(-6%) scale(1.04, 0.94); }
+  100% { transform: translateY(110%) scale(0.96, 1.04); }
+}
+@keyframes bell-pop {
+  0%   { transform: translateY(110%) scale(0.96, 1.04); }
+  55%  { transform: translateY(-12%) scale(0.96, 1.06); }
+  75%  { transform: translateY(3%) scale(1.05, 0.95); }
+  90%  { transform: translateY(-1%) scale(1, 1); }
+  100% { transform: none; }
+}
+.bell-duck { transform-origin: 50% 100%; animation: bell-duck 320ms cubic-bezier(0.5, 0, 0.75, 0) both; }
+.bell-pop { transform-origin: 50% 100%; animation: bell-pop 520ms cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+.bell-away { transform: translateY(110%); }
+@media (prefers-reduced-motion: reduce) {
+  .bell-duck, .bell-away { animation: none; transform: translateY(110%); }
+  .bell-pop { animation: none; }
+}
+
 /*
-  GT Alpina Trial — place font files in public/fonts/:
-    GTAlpinaTrial-Regular.woff2
-    GTAlpinaTrial-RegularItalic.woff2
-    GTAlpinaTrial-Medium.woff2
-  Falls back to serif until files are present.
+  GT Alpina Trial — display headings. Files live in public/fonts/.
 */
 @font-face {
   font-family: "GT Alpina Trial";
@@ -41,4 +104,1223 @@
   font-weight: 500;
   font-style: normal;
   font-display: swap;
+}
+
+/* ── Work card reveals ───────────────────────────────────────────────────────────
+   Open works: the first hover/focus drops the key onto the brass hook, where it then
+   stays; later hovers just swing it on the hook. NDA works: the rubber stamp presses down the first time the card is hovered
+   or focused — on scroll-in for touch screens — and then stays (NdaStamp sets
+   data-stamped on the card).
+   Touch screens can't hover, so there the key drops and the stamp presses once the card
+   scrolls into view. Reduced motion shows the end states with no animation. */
+
+/* Key — pivots where the ring's inner top edge rests on the wire (35.5px, 27.9px) */
+.key-hang {
+  transform-box: view-box;
+  transform-origin: 35.5px 27.9px;
+  opacity: 0;
+  transform: translate(10px, -18px) rotate(10deg);
+  transition: opacity 0.22s ease, transform 0.26s cubic-bezier(0.4, 0, 1, 1);
+}
+@keyframes key-drop {
+  0%   { opacity: 0; transform: translate(20px, -42px) rotate(26deg); animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.5); }
+  16%  { opacity: 1; }
+  30%  { transform: translate(7px, -12px) rotate(14deg); animation-timing-function: cubic-bezier(0.4, 0, 0.8, 0.6); } /* ring over the hook's tip */
+  38%  { transform: translate(1px, -3px) rotate(4deg); animation-timing-function: cubic-bezier(0.5, 0, 1, 1); }       /* slides down the wire */
+  44%  { transform: translate(0, 1.5px) rotate(-11deg); animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }   /* drops into the cup */
+  50%  { transform: translate(0, -0.5px) rotate(-13deg); animation-timing-function: ease-in-out; }
+  60%  { transform: translate(0, 0) rotate(8deg); animation-timing-function: ease-in-out; }
+  70%  { transform: rotate(-4.5deg); animation-timing-function: ease-in-out; }
+  80%  { transform: rotate(2.5deg); animation-timing-function: ease-in-out; }
+  90%  { transform: rotate(-1deg); animation-timing-function: ease-in-out; }
+  100% { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+}
+/* KeyTag sets data-key on the card:
+     dropping — first hover/focus: the key drops onto the hook (plays through even if the
+                cursor leaves), then becomes…
+     hung     — stays on the hook for good
+     swinging — every later hover/focus: a gentle swing on the hook, then back to hung */
+.group[data-key="dropping"] .key-hang,
+.group[data-key="hung"] .key-hang,
+.group[data-key="swinging"] .key-hang {
+  opacity: 1;
+  transform: none;
+}
+.group[data-key="dropping"] .key-hang {
+  animation: key-drop 1.6s linear both;
+}
+@keyframes key-swing {
+  0%   { transform: rotate(0deg); }
+  18%  { transform: rotate(8deg); }
+  40%  { transform: rotate(-6deg); }
+  60%  { transform: rotate(3.5deg); }
+  80%  { transform: rotate(-1.5deg); }
+  100% { transform: rotate(0deg); }
+}
+.group[data-key="swinging"] .key-hang {
+  animation: key-swing 1.2s ease-in-out;
+}
+
+/* Hook takes the key's weight at the moment it lands */
+.hook-jolt {
+  transform-box: view-box;
+  transform-origin: 30px 9px;
+}
+@keyframes hook-jolt {
+  0%, 43% { transform: rotate(0deg); }
+  47%     { transform: rotate(3deg); }
+  55%     { transform: rotate(-1.5deg); }
+  65%     { transform: rotate(0.6deg); }
+  75%, 100% { transform: rotate(0deg); }
+}
+.group[data-key="dropping"] .hook-jolt {
+  animation: hook-jolt 1.6s ease-out;
+}
+
+/* NDA stamp (and the case studies' Shipped stamp) — presses down once (first hover/focus), then stays */
+.nda-stamp,
+.shipped-stamp {
+  opacity: 0;
+  transform: scale(1.5) rotate(-6deg);
+}
+@keyframes stamp-press {
+  0%   { opacity: 0; transform: translate(-6px, -18px) scale(1.7) rotate(-4deg); filter: blur(2px); }
+  40%  { opacity: 0.35; transform: translate(-2px, -6px) scale(1.2) rotate(-9deg); filter: blur(1px); }
+  56%  { opacity: 1; transform: scale(0.94) rotate(-12deg); filter: blur(0); }   /* impact */
+  70%  { transform: scale(1.04) rotate(-12deg); }
+  84%  { transform: scale(0.99) rotate(-12deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-12deg); }
+}
+.group[data-stamped="true"] .nda-stamp,
+.group[data-stamped="true"] .shipped-stamp {
+  animation: stamp-press 0.62s cubic-bezier(0.3, 0.7, 0.2, 1) both;
+}
+/* Image takes the hit at the moment of impact */
+@keyframes stamp-thud {
+  0%, 52% { transform: translateY(0); }
+  58%     { transform: translateY(2px); }
+  68%     { transform: translateY(-1px); }
+  100%    { transform: translateY(0); }
+}
+.group[data-stamped="true"] .stamp-thud {
+  animation: stamp-thud 0.62s ease-out;
+}
+
+
+/* Guestbook signature — ink draws in once the card scrolls into view */
+.signature path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  /* Each stroke's duration and delay are set inline from its length (Signature.tsx), so the
+     pen moves at one steady speed, stroke after stroke, left to right */
+  transition-property: stroke-dashoffset;
+  transition-timing-function: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+}
+.signature[data-drawn="true"] path {
+  stroke-dashoffset: 0;
+}
+
+/* Guestbook cards — a real sheet of notepad paper with a second sheet under it.
+   The li holds the under-sheet (::before) and the long contact shadow (::after); the
+   figure is the page itself, so its tilt and hover don't move what's underneath. */
+.gb-sheet { position: relative; isolation: isolate; }
+.gb-sheet::after { content: ""; position: absolute; pointer-events: none; }
+/* Ambient occlusion where the card sits on the desk: dark and tight at the bottom edge */
+.gb-sheet::after {
+  z-index: -2;
+  inset: auto 6% -6px 6%;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(8, 0, 12, 0.55);
+  filter: blur(10px);
+  transition: opacity 360ms, transform 360ms;
+}
+.gb-sheet:hover::after { opacity: 0.7; transform: scaleX(0.96) translateY(4px); }
+
+:root {
+  /* Paper grain: two layers of fine noise, warm-tinted, very low contrast */
+  --gb-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.26 0 0 0 0 0.18 0 0 0 0.11 0'/%3E%3C/filter%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.18' numOctaves='2' seed='8' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.33 0 0 0 0 0.24 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3Crect width='240' height='240' filter='url(%23f)'/%3E%3C/svg%3E");
+}
+
+/* The page: off-white stock lit from the top left, with fine grain and fibres, a slight
+   fall-off towards the bottom right where the sheet bows away from the light, and a hint
+   of lift at that corner. Layered shadows: a crisp contact line, a short soft one and a
+   long ambient one. */
+.gb-paper {
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 38%),
+    radial-gradient(140% 100% at 100% 100%, rgba(90, 70, 40, 0.09) 0%, rgba(90, 70, 40, 0) 45%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 70%, rgba(60, 40, 20, 0.04) 100%),
+    var(--gb-grain),
+    #f6f2e9;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(120, 100, 70, 0.12),
+    0 1px 1px rgba(10, 0, 14, 0.28),
+    0 4px 8px -2px rgba(10, 0, 14, 0.3),
+    0 18px 32px -12px rgba(10, 0, 14, 0.55);
+  transition: transform 360ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 360ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+/* Picked up: the shadows spread and soften as the page leaves the stack */
+.gb-paper:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(120, 100, 70, 0.12),
+    0 2px 2px rgba(10, 0, 14, 0.2),
+    0 10px 18px -4px rgba(10, 0, 14, 0.32),
+    0 30px 48px -16px rgba(10, 0, 14, 0.6);
+}
+
+/* Ruled lines in the printer's pale blue, one under each 28px line of the quote, faintly
+   uneven like printed rules, and fading at the page edges */
+.gb-ruled { position: relative; }
+.gb-ruled::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(transparent 27px, rgba(92, 132, 182, 0.26) 27px) 0 0 / 100% 28px;
+  -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0.5), #000 8%, #000 92%, rgba(0,0,0,0.5));
+          mask-image: linear-gradient(90deg, rgba(0,0,0,0.5), #000 8%, #000 92%, rgba(0,0,0,0.5));
+}
+
+/* Host character — see HostCharacter.tsx for the rig and moods */
+.host-breathe { transform-box: fill-box; transform-origin: 50% 100%; animation: host-breathe 3.6s ease-in-out infinite; }
+@keyframes host-breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.015, 0.985); } }
+.host-blink { transform-box: fill-box; transform-origin: center; animation: host-blink 4.2s infinite; }
+@keyframes host-blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.1); } }
+
+/* Ding — plunger pressed, dome shudders, ring lines fan out, a glint sweeps the dome */
+.host-plunger { transform-box: fill-box; }
+.host.is-ding .host-plunger { animation: host-press 260ms ease-out; }
+@keyframes host-press { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(5px); } }
+.host-dome { transform-origin: 100px 212px; }
+.host.is-ding .host-dome { animation: host-shudder 640ms 80ms ease-out; }
+@keyframes host-shudder {
+  0%, 100% { transform: rotate(0); }
+  15% { transform: rotate(2.2deg); }
+  30% { transform: rotate(-1.8deg); }
+  45% { transform: rotate(1.2deg); }
+  60% { transform: rotate(-0.7deg); }
+  78% { transform: rotate(0.3deg); }
+}
+/* Left lines grow out from their lower right, right lines from their lower left — away from the bell */
+.host-rings path { opacity: 0; transform-box: fill-box; transform-origin: 100% 100%; }
+.host-rings path:nth-child(n + 3) { transform-origin: 0 100%; }
+.host.is-ding .host-rings path { animation: host-ring 720ms 80ms ease-out; }
+.host.is-ding .host-rings path:nth-child(even) { animation-delay: 200ms; }
+@keyframes host-ring {
+  0%   { opacity: 0; transform: scale(0.6); }
+  25%  { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.25); }
+}
+.host.is-ding .host-sweep { animation: host-sweep 700ms 60ms ease-out; }
+@keyframes host-sweep { 0% { opacity: 0.85; transform: skewX(-20deg) translateX(0); } 100% { opacity: 0; transform: skewX(-20deg) translateX(190px); } }
+
+/* Dozing — slumps sideways, breathes slowly, Z's drift up one after another */
+.host-tilt { transition: transform 500ms ease; transform-origin: 100px 226px; }
+/* Glasses slide down onto the face, and slip when Bella dozes off */
+.host-glasses { transform-origin: 100px 178px; transition: transform 500ms ease; animation: host-glasses-on 560ms cubic-bezier(0.3, 0.7, 0.4, 1) both; }
+.host.is-dozing .host-glasses { transform: translate(0px, 8px) rotate(-8deg); }
+@keyframes host-glasses-on { 0% { transform: translate(0px, -48px); opacity: 0; } 70% { transform: translate(0px, 4px); opacity: 1; } 100% { transform: translate(0px, 0px); opacity: 1; } }
+/* ── The Curiosity Pass (components/bella/CuriosityPass.tsx) ──────────────────
+   A blackcurrant card (DS primary to midnight) in a gold-foil frame with scalloped
+   corners; "Curiosity Pass" pressed in tone-on-tone; details in Geist in vanilla. Sized in container
+   units so it scales as one piece. */
+.pass-scene { width: 100%; perspective: 1400px; }
+.pass {
+  position: relative; aspect-ratio: 7 / 5; container-type: inline-size; border-radius: 10px;
+  transform-style: preserve-3d; will-change: transform; color: #ece5d8;
+  font-family: var(--font-geist), sans-serif;
+  /* The card's edge (a sliver of foil-backed board), then a contact and a soft shadow */
+  filter: drop-shadow(0 1px 0 #7a5420) drop-shadow(0 2px 3px rgba(30, 5, 37, 0.25)) drop-shadow(0 20px 32px rgba(30, 5, 37, 0.2));
+}
+/* A glint that follows the pointer across the foil and the card (CuriosityPass sets --lx, --ly, --lit) */
+.pass-sheen { position: absolute; inset: 0; border-radius: 10px; pointer-events: none; mix-blend-mode: soft-light; opacity: calc(var(--lit, 0) * 0.35);
+  background: radial-gradient(circle at var(--lx, 50%) var(--ly, 30%), rgba(255, 244, 214, 0.7), rgba(255, 244, 214, 0) 40%); }
+.pass-frame, .pass-frame svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.pass-face { position: absolute; inset: 0; padding: 7cqw 8cqw 7.5cqw; display: grid; grid-template-rows: auto 1fr auto auto; justify-items: center; align-items: center; text-align: center; }
+/* Paper grain over the panel */
+.pass-face::before { content: ""; position: absolute; inset: 3cqw; border-radius: 6px; pointer-events: none; opacity: 0.6; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .12 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
+.pass-stamps { display: flex; gap: 1.6cqw; align-items: center; }
+.pass-stamp { width: 12cqw; height: 12cqw; }
+/* Embossed in the card's own colour: a light edge along the bottom, a dark one along the top */
+.pass-title {
+  font-family: var(--font-serif), "GT Alpina Trial", Georgia, serif; font-size: 12.4cqw; line-height: 1; letter-spacing: -0.3cqw;
+  color: #3a0a48; text-shadow: 0 -0.24cqw 0.1cqw rgba(10, 0, 14, 0.8), 0 0.24cqw 0.1cqw rgba(249, 228, 255, 0.22);
+}
+/* The visitor's own numbers, big */
+.pass-details { margin: 0; display: grid; grid-template-columns: repeat(3, auto); align-items: end; }
+.pass-details > div { padding: 0 3.6cqw; display: grid; gap: 0.6cqw; justify-items: start; text-align: left; }
+.pass-details > div + div { border-left: 1px solid rgba(236, 229, 216, 0.2); }
+.pass-details dt { font-size: 2cqw; line-height: 1.3; color: rgba(236, 229, 216, 0.62); }
+.pass-details dd { margin: 0; font-family: var(--font-serif), "GT Alpina Trial", Georgia, serif; font-size: 4.6cqw; line-height: 1; color: #ece5d8; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pass-from { margin-top: 2.4cqw; font-size: 2cqw; color: rgba(236, 229, 216, 0.6); }
+.pass-details, .pass-from { opacity: 0; transform: translateY(1cqw); transition: opacity 600ms ease 150ms, transform 600ms ease 150ms; }
+.pass.is-revealed .pass-details, .pass.is-revealed .pass-from { opacity: 1; transform: none; }
+
+/* ── The pass page (components/bella/PassPage.tsx) ─────────────────────────────
+   The site's white page with a faint grape grid, like a drafting table. */
+.pass-page { background-color: #fff; background-image: linear-gradient(rgba(50, 7, 62, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(50, 7, 62, 0.04) 1px, transparent 1px); background-size: 48px 48px; color: #32073e; }
+
+/* ── The envelope scene (components/bella/PassScene.tsx) ───────────────────────
+   Pinned while the visitor scrolls: the seal cracks, the flap opens, the pass rises out
+   tilted, the envelope drops away, and the pass settles in the middle, bigger. */
+.ps-section { position: relative; height: 340vh; }
+/* A phone gets a shorter scroll for the same scene */
+@media (max-width: 639px) { .ps-section { height: 240vh; } }
+.ps-section.is-open { height: 100vh; }
+.ps-section.is-open .ps-sticky { height: 100%; }
+/* Once open, the envelope is gone and the pass's shadow can fall softly past the section
+   (clipped only sideways), instead of being cut off in a hard line */
+.ps-section.is-open .ps-sticky { overflow-x: clip; overflow-y: visible; }
+.ps-section.is-open .ps-env { display: none; }
+/* What's under the pass rises in once the pass is out */
+.pass-after { animation: pass-after-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes pass-after-in { from { opacity: 0; transform: translateY(24px); } }
+@media (prefers-reduced-motion: reduce) { .pass-after { animation: none; } }
+
+.ps-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+.ps-head { position: absolute; left: 0; right: 0; top: 132px; padding: 0 16px; text-align: center; display: grid; gap: 12px; justify-items: center; will-change: transform, opacity; }
+.ps-env, .ps-card { position: absolute; left: 50%; top: 0; will-change: transform; }
+.ps-env-part { position: absolute; inset: 0; border-radius: 4px; overflow: hidden; }
+/* The envelope lying on the page: a tight contact shadow and a wide soft one */
+.ps-env-part.is-back { box-shadow: 0 1px 2px rgba(30, 5, 37, 0.3), 0 16px 32px -12px rgba(30, 5, 37, 0.45), 0 40px 80px -32px rgba(30, 5, 37, 0.4); }
+.ps-flap-face { border-radius: 4px 4px 0 0; overflow: hidden; }
+.ps-env-part svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.ps-flap { transform-origin: 50% 0; transform-style: preserve-3d; }
+.ps-flap-face { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.ps-flap-face.is-inside { transform: rotateY(180deg); }
+.ps-seal, .ps-half { position: absolute; left: 50%; top: 61%; width: 17%; aspect-ratio: 1; margin: -8.5% 0 0 -8.5%; }
+.ps-seal svg, .ps-half svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 1px 1px rgba(10, 0, 14, 0.45)) drop-shadow(0 6px 10px rgba(10, 0, 14, 0.35)); }
+.ps-half { opacity: 0; will-change: transform, opacity; }
+.ps-hint { position: absolute; z-index: 6; left: 0; right: 0; top: calc(100% - 56px); text-align: center; font-family: var(--font-brand), monospace; font-size: 12px; line-height: 16px; letter-spacing: 2px; text-transform: uppercase; color: rgba(248, 241, 227, 0.8); }
+.ps-hint { pointer-events: none; }
+.ps-hint button { pointer-events: auto; padding: 12px 16px; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; }
+.ps-hint button:focus-visible { outline: 2px solid rgba(248, 241, 227, 0.8); outline-offset: 2px; border-radius: 8px; }
+.ps-hint span { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; animation: ps-nudge 1.8s ease-in-out infinite; }
+/* A small pill under the words, like a scroll wheel */
+.ps-hint span::after { content: ""; width: 28px; height: 8px; border-radius: 999px; border: 1.5px solid rgba(248, 241, 227, 0.8); }
+@keyframes ps-nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .ps-hint span { animation: none; } }
+
+/* A stamp lands in Bella's line with a thud */
+.bella-stamp-thud { animation: bella-stamp-thud 420ms cubic-bezier(0.3, 0.7, 0.4, 1) both; }
+@keyframes bella-stamp-thud { from { transform: scale(1.9) rotate(-20deg); opacity: 0; } 60% { transform: scale(0.9) rotate(0deg); opacity: 1; } to { transform: scale(1) rotate(0deg); opacity: 1; } }
+.host-flick { opacity: 0.08; animation: host-flick 1.6s steps(1) infinite; }
+@keyframes host-flick { 0% { opacity: 0.06; } 14% { opacity: 0.26; } 28% { opacity: 0.1; } 42% { opacity: 0.2; } 58% { opacity: 0.04; } 72% { opacity: 0.3; } 86% { opacity: 0.12; } }
+.host.is-dozing .host-tilt { transform: rotate(-5deg); }
+.host.is-dozing .host-breathe { animation-duration: 5.2s; }
+.host-zz text { animation: host-zz 2.4s ease-in-out infinite; opacity: 0; }
+.host-zz text:nth-child(2) { animation-delay: 0.6s; }
+.host-zz text:nth-child(3) { animation-delay: 1.2s; }
+@keyframes host-zz {
+  0%   { opacity: 0; transform: translate(-4px, 6px); }
+  25%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(4px, -6px); }
+}
+
+/* Champion — sparkles twinkle on the gold */
+.host-sparkles path { transform-box: fill-box; transform-origin: center; animation: host-twinkle 1.6s ease-in-out infinite; }
+@keyframes host-twinkle { 0%, 100% { opacity: 0; scale: 0.4; } 50% { opacity: 1; scale: 1; } }
+
+/* Timer board — drops down from the host's hands and swings to rest, like a hanging sign */
+@keyframes host-board-in {
+  0%   { opacity: 0; transform: translateY(-18px) scale(0.92) rotate(0); }
+  40%  { opacity: 1; transform: translateY(0) scale(1) rotate(3deg); }
+  65%  { transform: rotate(-1.6deg); }
+  85%  { transform: rotate(0.6deg); }
+  100% { opacity: 1; transform: rotate(0); }
+}
+.host-board { transform-origin: var(--grip-x, 50%) 0; animation: host-board-in 700ms cubic-bezier(0.3, 1.2, 0.5, 1) both; }
+/* The bare clock settles into the navbar bell's spot while the bell is ducked out */
+@keyframes clock-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.92); }
+  60%  { opacity: 1; transform: translateY(2px) scale(1.02); }
+  to   { opacity: 1; transform: none; }
+}
+.clock-in { transform-origin: 50% 50%; animation: clock-in 360ms cubic-bezier(0.3, 1.2, 0.5, 1) both; }
+/* …and lifts away when the navbar bell comes back up and takes it down */
+@keyframes host-board-out { to { opacity: 0; transform: translateY(-12px) scale(0.92); } }
+.host-board-out { transform-origin: 50% 0; animation: host-board-out 200ms ease-in both; }
+
+/* Split-flap: the old top flap falls forward, then the new bottom flap drops into place */
+@keyframes flap-fall { from { transform: rotateX(0); } to { transform: rotateX(-90deg); } }
+@keyframes flap-drop { from { transform: rotateX(90deg); } to { transform: rotateX(0); } }
+.flap-fall { transform-origin: 50% 100%; animation: flap-fall 180ms ease-in both; backface-visibility: hidden; }
+.flap-drop { transform-origin: 50% 0; animation: flap-drop 200ms 180ms cubic-bezier(0.3, 1.4, 0.6, 1) both; backface-visibility: hidden; }
+
+/* Host tooltip — a quick fade and lift from its pointer, like any tooltip */
+@keyframes host-tip-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes host-tip-out { to { opacity: 0; transform: translateY(-2px) scale(0.98); } }
+.host-tip { transform-origin: 30px 0; animation: host-tip-in 160ms ease-out both; }
+.host-tip.is-leaving { animation: host-tip-out 160ms ease-in both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .key-hang, .nda-stamp, .shipped-stamp, .stamp-thud { transition: none; }
+  .group[data-key] .key-hang { animation: none !important; opacity: 1; transform: none; }
+  .group[data-key] .hook-jolt { animation: none; }
+  .group[data-stamped="true"] .nda-stamp,
+  .group[data-stamped="true"] .shipped-stamp { animation: none; opacity: 1; transform: rotate(-12deg); }
+  .group[data-stamped="true"] .stamp-thud { animation: none; }
+  .signature path { transition: none; stroke-dashoffset: 0; }
+  .gb-sheet::after { transition: none; }
+  .host-breathe, .host-blink, .host-zz text, .host-sparkles path, .host-plunger, .host-dome, .host-rings path, .host-sweep, .host-glasses, .host-flick, .bella-stamp-thud { animation: none !important; }
+  .host-zz text { opacity: 1; }
+  .host-tilt { transition: none; }
+  .host-board, .host-tip, .host-tip.is-leaving { animation: none; }
+  .host-tip.is-leaving { opacity: 0; }
+  .flap-fall, .flap-drop { display: none; }
+}
+
+/* ── Case study template ──────────────────────────────────────────────────────────
+   One 700px reading column, with visuals breaking out to 1000px (720px narrow) and
+   stacking one below the other.
+   Chapters carry a "01. Title" heading (grape full stop), the number set inline at the
+   column's left edge so it lines up with the text below; long titles use the full
+   column and wrap back under the number. Pieces live in components/case-study. */
+@layer components {
+  .cs-column {
+    @apply mx-auto w-[700px] max-w-[calc(100%-40px)] md:max-w-[calc(100%-64px)];
+  }
+  .cs-visual {
+    @apply mx-auto my-[40px] flex w-[1000px] max-w-[calc(100%-40px)] flex-col gap-[24px] md:my-[48px] md:max-w-[calc(100%-64px)];
+  }
+  .cs-visual.cs-narrow {
+    @apply w-[720px];
+  }
+
+  .cs-chapter {
+    @apply mt-[104px] scroll-mt-[128px] md:mt-[160px];
+  }
+  [data-cs-hero] + .cs-chapter {
+    @apply mt-[64px] md:mt-[100px];
+  }
+  /* A step within a chapter (an iteration, a solution, a decision, a pillar) */
+  .cs-sub {
+    @apply mt-[64px] md:mt-[80px];
+  }
+  .cs-h2 {
+    @apply mb-[40px] font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[42px] md:leading-[44px];
+  }
+  .cs-number {
+    @apply mr-[12px] tabular-nums md:mr-[14px];
+  }
+
+  /* Prose inside the reading column — direct children only, so quotes and outcome
+     boxes inside it keep their own type */
+  .cs-copy > p,
+  .cs-copy > ul > li {
+    @apply font-body text-[18px] leading-[30px] text-secondary;
+  }
+  .cs-copy > p + p {
+    @apply mt-[20px];
+  }
+  .cs-copy > h3 {
+    @apply mb-[16px] mt-[56px] font-heading text-[24px] font-normal leading-[30px] tracking-[0px] text-heading;
+  }
+  .cs-copy > h4 {
+    @apply mb-[8px] mt-[32px] font-body text-[20px] font-medium leading-[28px] text-heading;
+  }
+  .cs-copy strong {
+    @apply font-medium text-heading;
+  }
+  .cs-copy > ul {
+    @apply mt-[16px] flex list-disc flex-col gap-[8px] pl-[20px];
+  }
+  .cs-copy > ul + p {
+    @apply mt-[20px];
+  }
+  .cs-copy > .cs-lead {
+    @apply mb-[24px] font-heading text-[26px] leading-[34px] text-heading md:text-[30px] md:leading-[38px];
+  }
+  /* A switched visual fades in (VariantFigure) */
+  .cs-fade {
+    animation: cs-fade 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  /* The expanded view of a figure grows in from a little smaller */
+  .cs-pop {
+    animation: cs-pop 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cs-fade, .cs-pop { animation: none; }
+  }
+  /* Reading reveal (RevealOnScroll). Each kind of block arrives in its own way, all on one
+     long ease-out so things settle rather than stop, and blocks revealed together a beat
+     apart (--reveal-delay):
+     - text rises 12px and fades in, with the faintest blur clearing;
+     - chapter headings rise out from behind a line, like a printed title sliding up;
+     - visuals rise 16px and grow from 98%, without blur (costly on big media);
+     - cards in a revealed grid (.cs-stagger) follow one after another;
+     - bars (.cs-bar) fill from the left once their block is in.
+     Everything clears afterwards, so nothing inside is affected */
+  .cs-reveal {
+    --cs-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(1px);
+    transition:
+      opacity 800ms var(--cs-ease),
+      transform 800ms var(--cs-ease),
+      filter 600ms var(--cs-ease);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .cs-h2.cs-reveal {
+    filter: none;
+    transform: translateY(16px);
+    clip-path: inset(0 0 100% 0);
+    transition:
+      opacity 800ms var(--cs-ease),
+      transform 800ms var(--cs-ease),
+      clip-path 800ms var(--cs-ease);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .cs-visual.cs-reveal {
+    filter: none;
+    transform: translateY(16px) scale(0.98);
+    transition-duration: 900ms;
+  }
+  .cs-reveal.is-in {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .cs-h2.cs-reveal.is-in { clip-path: inset(-20% -4% -30% -4%); }
+  .cs-reveal .cs-stagger > * {
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cs-reveal.is-in .cs-stagger > * { opacity: 1; transform: none; }
+  .cs-reveal.is-in .cs-stagger > :nth-child(1) { transition-delay: calc(var(--reveal-delay, 0ms) + 120ms); }
+  .cs-reveal.is-in .cs-stagger > :nth-child(2) { transition-delay: calc(var(--reveal-delay, 0ms) + 180ms); }
+  .cs-reveal.is-in .cs-stagger > :nth-child(3) { transition-delay: calc(var(--reveal-delay, 0ms) + 240ms); }
+  .cs-reveal.is-in .cs-stagger > :nth-child(4) { transition-delay: calc(var(--reveal-delay, 0ms) + 300ms); }
+  .cs-reveal.is-in .cs-stagger > :nth-child(5) { transition-delay: calc(var(--reveal-delay, 0ms) + 360ms); }
+  .cs-reveal.is-in .cs-stagger > :nth-child(n + 6) { transition-delay: calc(var(--reveal-delay, 0ms) + 420ms); }
+  .cs-reveal .cs-bar {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1200ms cubic-bezier(0.16, 1, 0.3, 1) 300ms;
+  }
+  .cs-reveal.is-in .cs-bar { transform: scaleX(1); }
+  .cs-copy > .cs-closing {
+    @apply mt-[32px] border-t border-line-soft pt-[28px];
+  }
+}
+
+/* Bottom section pill — the case study's index. It fades and rises in once the hero
+   is half scrolled past and drops away when the footer comes up; the button shows the
+   current chapter with a progress bar through it, and opens a timeline of every chapter
+   above itself. Only the button and the open panel take clicks. */
+.cs-pill {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  filter: blur(4px);
+  transform: translate(-50%, 24px) scale(0.96);
+  transition: transform 0.7s var(--ease-out), opacity 0.5s ease, filter 0.5s ease;
+}
+.cs-pill[data-visible="true"] {
+  opacity: 1;
+  filter: none;
+  transform: translate(-50%);
+}
+.cs-pill-button {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  padding: 12px 16px 12px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: theme("colors.midnight");
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  outline-offset: 4px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0 4px 16px;
+}
+.cs-pill-button .cs-pill-num {
+  opacity: 0.55;
+}
+.cs-pill-num {
+  margin-right: 10px;
+  font-variant-numeric: tabular-nums;
+}
+/* The label column eases to each title's measured width; old and new titles share
+   one grid cell while they cross */
+.cs-pill-label {
+  display: grid;
+  flex: 0 0 auto;
+  margin-right: 16px;
+  padding-block: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: left;
+  transition: width 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.cs-pill-slot {
+  grid-area: 1 / 1;
+  justify-self: start;
+}
+@keyframes cs-fade { from { opacity: 0; } }
+@keyframes cs-pop { from { opacity: 0; transform: scale(0.96); } }
+@keyframes cs-slot-in-up { from { opacity: 0; transform: translateY(16px); } }
+@keyframes cs-slot-in-down { from { opacity: 0; transform: translateY(-16px); } }
+@keyframes cs-slot-out-up { to { opacity: 0; transform: translateY(-16px); } }
+@keyframes cs-slot-out-down { to { opacity: 0; transform: translateY(16px); } }
+.cs-pill-slot[data-motion="in-up"] { animation: cs-slot-in-up 0.4s var(--ease-out) both; }
+.cs-pill-slot[data-motion="in-down"] { animation: cs-slot-in-down 0.4s var(--ease-out) both; }
+.cs-pill-slot[data-motion="out-up"] { animation: cs-slot-out-up 0.4s var(--ease-out) both; }
+.cs-pill-slot[data-motion="out-down"] { animation: cs-slot-out-down 0.4s var(--ease-out) both; }
+.cs-pill-sizers {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.cs-pill-sizers > span {
+  position: absolute;
+}
+.cs-pill-bar {
+  position: relative;
+  width: 48px;
+  height: 2px;
+  margin-right: 12px;
+  overflow: hidden;
+  border-radius: theme("borderRadius.xs");
+  background: rgba(255, 255, 255, 0.25);
+}
+.cs-pill-bar > span {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 50%;
+  background: #fff;
+}
+.cs-pill-chevron {
+  transition: transform 0.25s var(--ease-out);
+}
+.cs-pill[data-open="true"] .cs-pill-chevron {
+  transform: rotate(180deg);
+}
+/* A touch roomier than the reference (187px wide, 14px 20px padding, 32px rows);
+   grows with longer titles. Opens with a soft spring up from the pill, closes quickly. */
+.cs-pill-panel {
+  --spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  min-width: 200px;
+  padding: 16px 24px;
+  border-radius: theme("borderRadius.xl");
+  background: theme("colors.midnight");
+  box-shadow: rgba(0, 0, 0, 0.15) 0 4px 16px;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  visibility: hidden;
+  filter: blur(4px);
+  transform: translateY(12px) scale(0.92);
+  transition: transform 0.2s var(--ease-out), opacity 0.16s ease, filter 0.16s ease, visibility 0s 0.2s;
+}
+.cs-pill[data-open="true"] .cs-pill-panel {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+  filter: none;
+  transform: none;
+  transition: transform 0.46s var(--spring), opacity 0.24s ease, filter 0.3s ease;
+}
+/* Rows rise in one after another, and the line draws down through the dots */
+.cs-timeline li {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.cs-pill[data-open="true"] .cs-timeline li {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.3s ease, transform 0.4s var(--ease-out);
+  transition-delay: calc(60ms + var(--i) * 30ms);
+}
+.cs-timeline-track {
+  transform-origin: 50% 0;
+  transform: scaleY(0);
+  transition: transform 0.12s ease;
+}
+.cs-pill[data-open="true"] .cs-timeline-track {
+  transform: none;
+  transition: transform 0.5s var(--ease-out) 80ms;
+}
+/* Timeline: a 2px track through the dots fills to the reading position */
+.cs-timeline {
+  --row: 36px;
+  --ink: #fff;
+  --muted: #a19dab;
+  --line: rgba(255, 255, 255, 0.2);
+  --ring: rgba(255, 255, 255, 0.35);
+  position: relative;
+}
+.cs-timeline-track {
+  position: absolute;
+  top: calc(var(--row) / 2);
+  left: 4px;
+  width: 2px;
+  height: calc(var(--row) * var(--span));
+  background: var(--line);
+}
+.cs-timeline-track > span {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform-origin: 50% 0;
+  transform: scaleY(var(--progress));
+}
+.cs-timeline li {
+  position: relative;
+  height: var(--row);
+}
+.cs-timeline a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-left: 24px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.cs-timeline a:hover,
+.cs-timeline [data-current="true"] a {
+  color: var(--ink);
+}
+.cs-timeline-dot {
+  position: absolute;
+  top: calc(50% - 5px);
+  left: 0;
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--ring);
+  border-radius: 50%;
+  background: theme("colors.midnight");
+  transition: border-color 0.2s;
+}
+.cs-timeline-dot::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  background: var(--ink);
+  transform: scale(0);
+  transition: transform 0.35s var(--ease-out);
+}
+.cs-timeline [data-reached="true"] .cs-timeline-dot {
+  border-color: var(--ink);
+}
+.cs-timeline [data-reached="true"] .cs-timeline-dot::after {
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-pill, .cs-pill-panel, .cs-pill-label, .cs-pill-chevron, .cs-timeline a, .cs-timeline-dot, .cs-timeline-dot::after,
+  .cs-pill .cs-timeline li, .cs-pill .cs-timeline-track { transition: none !important; }
+  .cs-pill-panel { filter: none; transform: none; }
+  .cs-pill-slot[data-motion] { animation: none; }
+  .cs-pill-slot[data-motion^="out"] { display: none; }
+  .cs-pill { filter: none; transform: translate(-50%); }
+}
+
+/* ── Reel: a case study's floating walkthrough video (ReelPlayer.tsx) ───────────── */
+.reel {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 39; /* under the chapter pill, so its timeline opens over the reel */
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+  transition: transform 560ms cubic-bezier(0.3, 1.2, 0.5, 1);
+}
+.reel[data-ready="false"],
+.reel[data-dragging="true"] { transition: none; }
+.reel[data-dragging="true"] { z-index: 60; cursor: grabbing; }
+.reel[data-fixed="true"] { cursor: pointer; touch-action: auto; } /* phones: no drag, so let it scroll the page */
+.reel[data-hidden="true"] { pointer-events: none; }
+.reel[data-away="true"] { visibility: hidden; }
+
+.reel-frame {
+  padding: 4px;
+  border-radius: theme("borderRadius.lg");
+  background: theme("colors.midnight");
+  box-shadow: 0 4px 16px rgba(30, 5, 37, 0.16);
+  transition:
+    transform 320ms var(--ease-out),
+    box-shadow 320ms var(--ease-out),
+    opacity 240ms ease,
+    filter 240ms ease;
+}
+.reel:hover .reel-frame,
+.reel:focus-visible .reel-frame {
+  transform: scale(1.04);
+  box-shadow: 0 12px 32px rgba(30, 5, 37, 0.24);
+}
+.reel:focus-visible .reel-frame { outline: 2px solid theme("colors.grape"); outline-offset: 4px; }
+.reel[data-dragging="true"] .reel-frame {
+  transform: scale(1.06);
+  box-shadow: 0 24px 48px rgba(30, 5, 37, 0.28);
+}
+.reel[data-hidden="true"] .reel-frame {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(16px) scale(0.96);
+}
+
+.reel-video {
+  position: relative;
+  overflow: hidden;
+  border-radius: theme("borderRadius.md");
+  background: #000;
+}
+.reel-video iframe { pointer-events: none; }
+
+/* Hover: the video dims and a white button rises in, its arrows spreading to the corners */
+.reel-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(30, 5, 37, 0.24), rgba(30, 5, 37, 0.48));
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+.reel-expand {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 999px;
+  background: #fff;
+  color: theme("colors.midnight");
+  box-shadow: 0 4px 12px rgba(30, 5, 37, 0.24);
+  opacity: 0;
+  transform: translateY(4px) scale(0.84);
+  transition: opacity 200ms ease, transform 320ms var(--ease-out);
+}
+.reel-arrow-ne, .reel-arrow-sw { transition: transform 320ms var(--ease-out) 60ms; }
+.reel:hover .reel-veil, .reel:focus-visible .reel-veil { opacity: 1; }
+.reel:hover .reel-expand, .reel:focus-visible .reel-expand { opacity: 1; transform: none; }
+.reel:hover .reel-arrow-ne, .reel:focus-visible .reel-arrow-ne { transform: translate(1px, -1px); }
+.reel:hover .reel-arrow-sw, .reel:focus-visible .reel-arrow-sw { transform: translate(-1px, 1px); }
+.reel[data-dragging="true"] .reel-veil,
+.reel[data-dragging="true"] .reel-expand { opacity: 0; }
+
+/* Where it can be dropped, shown while dragging */
+.reel-slot {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 59;
+  border: 1px dashed theme("colors.line");
+  border-radius: theme("borderRadius.lg");
+  background: rgba(255, 255, 255, 0.4);
+  animation: reel-slot-in 200ms ease-out both;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+.reel-slot[data-near="true"] {
+  border: 1px solid theme("colors.grape");
+  background: rgba(249, 228, 255, 0.64); /* grape-light */
+}
+@keyframes reel-slot-in { from { opacity: 0; } }
+
+/* Expanded view. The stage is a size container: the video takes the most room it can
+   while leaving the panel its width, and never grows past 450 × 800. */
+.reel-stage { container-type: size; display: flex; align-items: center; justify-content: center; }
+.reel-stage { --panel: 280px; }
+@media (min-width: 1024px) { .reel-stage { --panel: 400px; } }
+@media (min-width: 768px) {
+  .reel-player {
+    width: min(450px, calc(100cqh * 9 / 16), calc(100cqw - var(--panel) - 16px));
+    /* border-radius alone doesn't clip a YouTube iframe once it has been animated */
+    clip-path: inset(0 round 12px);
+  }
+}
+/* The video covers its box: exact at 9:16, cropped to fill a phone screen */
+.reel-player { container-type: size; }
+.reel-player iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100cqw, calc(100cqh * 9 / 16));
+  height: max(100cqh, calc(100cqw * 16 / 9));
+  transform: translate(-50%, -50%);
+}
+
+/* Stepping between reels: the next slides in over the last, which sinks back and dims.
+   --dir is 1 for next (in from below) and -1 for previous (in from above). */
+.reel-layer { position: absolute; inset: 0; z-index: 2; }
+.reel-layer[data-slide="true"] { animation: reel-layer-in 640ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.reel-layer-out { z-index: 1; animation: reel-layer-out 640ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes reel-layer-in { from { transform: translateY(calc(var(--dir) * 100%)); } }
+@keyframes reel-layer-out {
+  to { transform: translateY(calc(var(--dir) * -24%)) scale(0.92); opacity: 0.2; filter: blur(4px); }
+}
+/* The title and description follow the video's direction, one after the other */
+.reel-info > * { animation: reel-info-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.reel-info > :nth-child(2) { animation-delay: 70ms; }
+@keyframes reel-info-in {
+  from { opacity: 0; transform: translateY(calc(var(--dir) * 24px)); filter: blur(4px); }
+}
+
+/* Expanded view: the title and controls settle in after the video, and the title again
+   on each change of reel */
+.reel-modal-ui { animation: reel-head-in 320ms 200ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+.reel-modal[data-closing="true"] .reel-modal-ui { opacity: 0; transition: opacity 120ms ease; }
+@keyframes reel-head-in { from { opacity: 0; transform: translateY(-8px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .reel, .reel-frame, .reel-expand, .reel-arrow-ne, .reel-arrow-sw { transition: none !important; }
+  .reel-modal-ui, .reel-slot, .reel-layer, .reel-info > * { animation: none !important; }
+}
+
+
+/* Helix review thread: the typing indicator's dots and the caret while a message types */
+@keyframes thread-dot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-4px); opacity: 1; } }
+@keyframes thread-caret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes thread-pop { 0% { transform: scale(0.85); } 100% { transform: scale(1); } }
+
+
+/* ChatQuotes: the typing bubble's three dots rise and fade one after another */
+.cs-typing-dot { animation: cs-typing 1.1s ease-in-out infinite; }
+@keyframes cs-typing {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.45; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .cs-typing-dot { animation: none; } }
+
+/* Pen-and-paper marks (Marks.tsx). Highlight: a pink highlighter stroke with soft,
+   uneven ends sweeps left to right; Circled: a quick pen scribble loops round a number,
+   past where it started. Both run
+   once, when data-seen turns true. */
+.cs-marker {
+  color: inherit;
+  background-color: transparent;
+  background-image: linear-gradient(100deg, rgba(248, 194, 247, 0) 0, rgba(248, 194, 247, 0.78) 1.5%, rgba(248, 194, 247, 0.62) 45%, rgba(248, 194, 247, 0.7) 98.5%, rgba(248, 194, 247, 0) 100%);
+  background-repeat: no-repeat;
+  background-position: 0 70%;
+  background-size: 0% 92%;
+  border-radius: 4px 8px 4px 8px;
+  padding: 0 2px;
+  margin: 0 -2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  /* Like a hand: a quick start, an even pull through the middle, easing off at the end */
+  transition: background-size 0.75s cubic-bezier(0.65, 0.05, 0.25, 1) 0.15s;
+}
+.cs-marker[data-seen="true"] { background-size: 100% 92%; }
+.cs-circled { position: relative; display: inline-block; padding: 0 12px; }
+.cs-circled svg { position: absolute; left: -2px; top: -8px; width: calc(100% + 4px); height: calc(100% + 14px); overflow: visible; pointer-events: none; }
+.cs-circled path { fill: none; stroke: #9d136a; stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.1s cubic-bezier(0.45, 0.05, 0.3, 1) 0.2s; }
+.cs-circled[data-seen="true"] path { stroke-dashoffset: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .cs-marker, .cs-circled path { transition: none; }
+}
+
+/* StepStory, PracticeCheck and SourceList: new content fades up a little */
+@keyframes step-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Navbar tabs: on hover and keyboard focus a quick grape pen loop is drawn round the word,
+   past where it started (like .cs-circled), and the word darkens. The page you're on keeps
+   its circle. */
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 4px;
+  outline: none;
+  transition: color 0.2s, opacity 0.2s;
+}
+/* While one tab is hovered or focused, the rest step back so it stands out */
+.nav-tabs:has(.nav-tab:hover) .nav-tab:not(:hover),
+.nav-tabs:has(.nav-tab:focus-visible) .nav-tab:not(:focus-visible) { opacity: 0.4; }
+.nav-tab-label { position: relative; display: inline-block; }
+.nav-tab-label svg { position: absolute; left: -12px; top: -8px; width: calc(100% + 24px); height: calc(100% + 16px); overflow: visible; pointer-events: none; }
+/* Hidden outright at rest: a round line cap still paints a dot where the undrawn stroke
+   starts. It stays visible while the loop pulls back off, then goes. */
+.nav-tab-label path { fill: none; stroke: #9d136a; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; transition: stroke-dashoffset 0.56s cubic-bezier(0.45, 0.05, 0.3, 1), opacity 0s 0.56s; }
+.nav-tab:hover, .nav-tab:focus-visible { color: #32073e; }
+.nav-tab:hover path, .nav-tab:focus-visible path, .nav-tab[aria-current="page"] path { stroke-dashoffset: 0; opacity: 1; transition: stroke-dashoffset 0.56s cubic-bezier(0.45, 0.05, 0.3, 1), opacity 0s; }
+@media (prefers-reduced-motion: reduce) {
+  .nav-tab, .nav-tab-label path { transition: none; }
+}
+@keyframes cursor-nudge { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-2px, -2px); } }
+@keyframes rollout-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes rollout-land {
+  0% { opacity: 0; transform: translateY(-28px) rotate(-4deg) scale(0.9); }
+  55% { opacity: 1; transform: translateY(2px) rotate(0deg) scale(1.02, 0.94); }
+  78% { transform: translateY(-1px) scale(0.99, 1.02); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes rollout-write { 0%, 100% { transform: scaleX(0.3); } 50% { transform: scaleX(1); } }
+/* Selected work: hover or focus one card and the others blur and fade back, like the navbar tabs */
+.work-card { transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 260ms cubic-bezier(0.2, 0.7, 0.2, 1), filter 400ms ease, opacity 400ms ease; }
+@media (hover: hover) {
+  .works-list:has(.work-card:hover) .work-card:not(:hover) { filter: blur(8px); opacity: 0.5; }
+}
+.works-list:has(.work-card:focus-visible) .work-card:not(:focus-visible) { filter: blur(8px); opacity: 0.5; }
+/* Polish: a top-lit surface with a hairline edge and a highlight along the top; hover lifts the
+   card 4px onto a long soft shadow. The image sits in a framed well (hairline + soft drop) and
+   eases in a touch on hover. */
+.work-card {
+  background: linear-gradient(180deg, #f6f6f5 0%, #f1f1ef 100%);
+  box-shadow: inset 0 0 0 1px rgba(30, 5, 37, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(30, 5, 37, 0.04);
+}
+@media (hover: hover) {
+  .work-card:hover {
+    transform: translateY(-4px);
+    box-shadow: inset 0 0 0 1px rgba(30, 5, 37, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 16px -8px rgba(30, 5, 37, 0.1), 0 28px 56px -28px rgba(30, 5, 37, 0.28);
+  }
+}
+.work-media { box-shadow: 0 1px 2px rgba(30, 5, 37, 0.06), 0 12px 24px -16px rgba(30, 5, 37, 0.24); }
+.work-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(30, 5, 37, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+.work-media__img { transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1); }
+.group:hover .work-media__img, .group:focus-visible .work-media__img { transform: scale(1.04); }
+@media (prefers-reduced-motion: reduce) {
+  .work-card { transition: none; }
+  .work-card:hover { transform: none; }
+  .work-media__img { transition: none; }
+  .group:hover .work-media__img { transform: none; }
+}
+/* Work cards' "Read case study" pill: on card hover it turns grape and an arrow circle
+   grows in beside it (4px apart), the arrow sliding in after it; the pill keeps its padding */
+.work-cta { --cta-h: 48px; display: inline-flex; align-self: flex-start; align-items: center; height: var(--cta-h); color: #fff; }
+.work-cta__inner, .work-cta__circle { display: flex; align-items: center; justify-content: center; height: var(--cta-h); border-radius: 999px; background-color: #32073e; white-space: nowrap; transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
+.work-cta__inner { padding-inline: 28px; }
+.work-cta__circle { width: 0; margin-left: 0; overflow: hidden; scale: 0; transform-origin: 0 center; }
+.work-cta__circle > span { display: grid; place-items: center; width: var(--cta-h); height: 100%; flex-shrink: 0; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) 0.1s; }
+.group:hover .work-cta__inner, .group:focus-visible .work-cta__inner { background-color: #9d136a; }
+.group:hover .work-cta__circle, .group:focus-visible .work-cta__circle { width: var(--cta-h); margin-left: 4px; scale: 1; background-color: #9d136a; }
+.group:hover .work-cta__circle > span, .group:focus-visible .work-cta__circle > span { transform: none; }
+/* Filled: the pill stretches to its container's width (the expanded reel) */
+.cta-full { display: flex; width: 100%; align-self: stretch; }
+.cta-full .work-cta { width: 100%; }
+.cta-full .work-cta__inner { flex: 1; }
+/* Under NDA: the pill greyed out, and it doesn't react to the card's hover */
+.work-cta--off { color: #8e8292; cursor: not-allowed; }
+/* The same pill, smaller, for CTAs inside cards and dialogs */
+.work-cta--sm { --cta-h: 40px; }
+.work-cta--sm .work-cta__inner { padding-inline: 20px; }
+.work-cta--off .work-cta__inner, .group:hover .work-cta--off .work-cta__inner { background-color: #e5e7eb; }
+/* On midnight surfaces: a white pill with midnight text, turning grape (white text) on hover */
+.work-cta--dark { color: #1e0525; }
+.work-cta--dark .work-cta__inner, .work-cta--dark .work-cta__circle { background-color: #fff; }
+.group:hover .work-cta--dark, .group:focus-visible .work-cta--dark { color: #fff; }
+@media (prefers-reduced-motion: reduce) {
+  .work-cta__inner, .work-cta__circle, .work-cta__circle > span { transition: none; }
+}
+
+
+/* Fancy paper: the sheets on the résumé pile settling into focus */
+@keyframes resume-focus-in {
+  from { opacity: 0; filter: blur(16px); }
+  to { opacity: 1; filter: blur(0px); }
+}
+
+/* Fancy paper: the pile's sheets sliding out from under the top one */
+@keyframes resume-pile-in {
+  from { opacity: 0; transform: translate(0, 0) rotate(0deg); filter: blur(6px); }
+  to { opacity: 1; transform: var(--pile-to); filter: blur(0px); }
+}
+
+/* Fancy paper: pen circles come in once, as the flat sheet appears (hidden mid-unfold) */
+/* The same loop, stroke and timing as the navbar tabs' hover circle (.nav-tab-label path),
+   drawn once when the flat sheet appears. Not in the unfold's copy, nor in the tear
+   strip's hidden copies, so it draws exactly once. */
+.resume-pen { fill: none; stroke: #9d136a; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; animation: resume-pen 0.56s cubic-bezier(0.45, 0.05, 0.3, 1) 0.04s forwards; }
+@keyframes resume-pen { 0% { opacity: 1; stroke-dashoffset: 1; } 100% { opacity: 1; stroke-dashoffset: 0; } }
+.resume-unfold .resume-pen, .resume-strip .resume-pen { animation: none; opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .resume-pen { animation: none; opacity: 1; stroke-dashoffset: 0; } }
+
+/* ── Phone menu ─────────────────────────────────────────────────────────────── */
+/* Toggle: the label slides from Menu to Close, the two lines turn into a cross */
+.mobile-toggle-label { transition: transform 0.42s cubic-bezier(0.65, 0, 0.25, 1); }
+.mobile-toggle[data-open] .mobile-toggle-label { transform: translateY(-100%); }
+.mobile-toggle-line { position: absolute; left: 1px; right: 1px; height: 1.5px; border-radius: 2px; background: currentColor; transition: transform 0.42s cubic-bezier(0.65, 0, 0.25, 1), top 0.42s cubic-bezier(0.65, 0, 0.25, 1); }
+.mobile-toggle-line[data-line="top"] { top: 4.5px; }
+.mobile-toggle-line[data-line="bottom"] { top: 10px; }
+.mobile-toggle[data-open] .mobile-toggle-line[data-line="top"] { top: 7.25px; transform: rotate(45deg); }
+.mobile-toggle[data-open] .mobile-toggle-line[data-line="bottom"] { top: 7.25px; transform: rotate(-45deg); }
+/* The phone Menu button: the secondary, outlined look of the menu's arrow buttons, so it
+   doesn't outweigh the page. A 1px blackcurrant ring on clear glass, blackcurrant label;
+   its 6px corners sit inside the bar's 8px ones (10px in). A faint grape wash on press,
+   and grape ring and label while the menu is open. */
+.mobile-toggle {
+  color: #32073e;
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px rgba(50, 7, 62, 0.2);
+  transition: background-color 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s, color 0.35s, transform 0.16s ease;
+}
+.mobile-toggle:active { transform: scale(0.98); background-color: rgba(157, 19, 106, 0.06); }
+.mobile-toggle:focus-visible { outline: 2px solid #9d136a; outline-offset: 2px; }
+.mobile-toggle[data-open] { color: #9d136a; background-color: rgba(157, 19, 106, 0.06); box-shadow: inset 0 0 0 1px rgba(157, 19, 106, 0.4); }
+/* Links: the navbar's pen loop round the page you're on, and round a link as it's tapped */
+.mobile-menu-link .nav-tab-label svg { left: -14px; top: -10px; width: calc(100% + 28px); height: calc(100% + 20px); }
+.mobile-menu-link[data-marked] .nav-tab-label path { stroke-dashoffset: 0; opacity: 1; transition: stroke-dashoffset 0.56s cubic-bezier(0.45, 0.05, 0.3, 1), opacity 0s; }
+/* The arrow button: a soft ring at rest; on tap it fills grape and the arrow slides
+   out to the right while a fresh one slides in from the left */
+.mobile-menu-go { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 999px; border: 1px solid rgba(50, 7, 62, 0.12); color: rgba(50, 7, 62, 0.7); overflow: hidden; transition: background-color 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s, color 0.35s, transform 0.2s ease; }
+.mobile-menu-go svg { overflow: hidden; } /* the waiting arrow stays out of sight */
+.mobile-menu-go-out, .mobile-menu-go-in { transition: transform 0.42s cubic-bezier(0.65, 0, 0.25, 1); }
+.mobile-menu-go-in { transform: translateX(-18px); }
+.mobile-menu-link[data-marked] .mobile-menu-go, .mobile-menu-link:focus-visible .mobile-menu-go { background: #9d136a; border-color: #9d136a; color: #fff; }
+.mobile-menu-link[data-marked] .mobile-menu-go-out { transform: translateX(18px); }
+.mobile-menu-link[data-marked] .mobile-menu-go-in { transform: translateX(0); }
+.mobile-menu-link[aria-current="page"]:not([data-tapped]) .mobile-menu-go-out { transform: none; }
+.mobile-menu-link[aria-current="page"]:not([data-tapped]) .mobile-menu-go-in { transform: translateX(-18px); }
+.mobile-menu-link:active .mobile-menu-go { transform: scale(0.94); }
+.mobile-menu-link:active .nav-tab-label { transform: scale(0.98); }
+.mobile-menu-link .nav-tab-label { transition: transform 0.2s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .mobile-toggle, .mobile-toggle-label, .mobile-toggle-line, .mobile-menu-go, .mobile-menu-go-out, .mobile-menu-go-in { transition: none; }
+}
+
+/* ── Floating header (phones only; desktop keeps the full-width bar) ───────────
+   Glass: mostly-white, strongly blurred and a little more saturated, so what passes
+   under it reads as colour, not detail. Edge: a 1px ring in blackcurrant at low alpha
+   (crisper than a grey border, and no layout shift), plus a white highlight along the
+   inside top, as light catches a pane. Elevation: a tight contact shadow and a soft
+   ambient one, tinted to the brand; it lifts further once the page scrolls under it. */
+@media (max-width: 767.98px) {
+.floating-header {
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 0 0 1px rgba(30, 5, 37, 0.06),
+    0 1px 2px rgba(30, 5, 37, 0.04),
+    0 6px 16px -8px rgba(30, 5, 37, 0.1);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, background-color 0.35s ease;
+}
+.floating-header[data-scrolled] {
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(30, 5, 37, 0.07),
+    0 1px 2px rgba(30, 5, 37, 0.05),
+    0 10px 24px -10px rgba(30, 5, 37, 0.16),
+    0 28px 56px -28px rgba(30, 5, 37, 0.18);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .floating-header { background: rgba(255, 255, 255, 0.96); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .floating-header { transition: none; }
+}
+}
+
+/* ── Hero desk objects ─────────────────────────────────────────────────────── */
+@keyframes bookPhotoIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes bookPhotoImg {
+  from { transform: scale(1.06); }
+  to { transform: none; }
+}
+@keyframes bookLabel {
+  from { opacity: 0; transform: translateY(4px); filter: blur(2px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[book"] { animation: none !important; }
+}
+
+/* ── Bella loader (components/host/BellaLoader.tsx) ─────────────────────────────
+   A terminal-style check-in on grape. Repeat visits in the same session get
+   .loader-skip on <html> before paint (layout.tsx), so it never flashes. */
+.loader-skip .bella-loader { display: none; }
+/* Midnight screen, vanilla text and highlight bar. The screen colour is on the two
+   curtain halves, so the page shows through as they part. */
+.bella-loader { --ld-bg: #1e0525; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #1e0525; color: var(--ld-ink); }
+.bella-loader-curtain { position: absolute; inset: 0; background: var(--ld-bg); }
+/* Bella's own ground shadow is hidden here: she stands in a soft pool of light with a
+   tight contact shadow under her base */
+.bella-loader-bella .host > ellipse { display: none; }
+.bella-loader-pool {
+  position: absolute;
+  left: 50%;
+  width: 180px;
+  height: 32px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(236, 229, 216, 0.09), rgba(236, 229, 216, 0.03) 60%, transparent);
+}
+.bella-loader-contact {
+  position: absolute;
+  left: 50%;
+  width: 88px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(12, 1, 16, 0.9), rgba(12, 1, 16, 0));
+}
+/* The chores drift upward forever: the list is doubled, and one loop moves it by
+   six rows (16px line + 12px gap each) */
+.bella-loader-items { animation: bella-loader-drift 9s linear infinite; }
+@keyframes bella-loader-drift { to { transform: translateY(-168px); } }
+/* The chore under way: a vanilla bar behind it and the text turns blackcurrant */
+.bella-loader-item::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -4px;
+  right: -4px;
+  top: -2px;
+  bottom: -2px;
+  background: var(--ld-bar);
+  opacity: 0;
+}
+.bella-loader-item.is-active { color: var(--ld-bar-ink); }
+.bella-loader-item.is-active::before { opacity: 1; }
+.bella-loader-list ul { isolation: isolate; }
+/* A letter arriving in the note: a solid block in the text colour */
+.bella-loader-block { position: relative; display: inline-block; color: transparent; }
+.bella-loader-block::after { content: ""; position: absolute; left: 0; top: 0; width: 1ch; height: 100%; background: var(--ld-ink); }
+.bella-loader-cursor { animation: bella-loader-blink 600ms steps(1, end) infinite; }
+@keyframes bella-loader-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .bella-loader-items, .bella-loader-cursor { animation: none; }
 }

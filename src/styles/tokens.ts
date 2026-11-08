@@ -1,27 +1,106 @@
 export const tokens = {
   colors: {
-    primary: "#000000",
-    secondary: "#666666",
-    background: "#FFFFFF",
-    text: "#000000",
-    heading: "#091624",
-    muted: "#717379",
-    accent: "#e96f18",
+    // ── Brand ─────────────────────────────────────────────────────────
+    primary:        "#32073e",  // Blackcurrant — CTAs, badges, tags, shipped pill
+    midnight:       "#1e0525",  // Deep dark — footer, reel hero, modal bg
+    grape:          "#9D136A",  // Interactive accent, hover, handwritten tags
+    "grape-light":  "#F9E4FF",  // Soft purple — light accents, active nav (was lilac)
+
+    // ── Text ──────────────────────────────────────────────────────────
+    text:           "#1e0525",  // Primary body text
+    heading:        "#32073e",  // Headings H1–H6 — same as primary
+    secondary:      "#524555",  // Secondary body text
+    muted:          "#8e8292",  // Labels, captions, eyebrows
+
+    // ── Surfaces ──────────────────────────────────────────────────────
+    background:     "#FFFFFF",  // Page background
+    surface:        "#f8f9fa",  // Light cards, sidebar bg
+    card:           "#f3f3f2",  // Work cards on the home page — a warm grey that shows on white
+    placeholder:    "#f0f0f0",  // Image placeholder bg
+    vanilla:        "#ece5d8",  // Warm alternative surface
+
+    // ── Lines / borders ───────────────────────────────────────────────
+    "line-soft":    "#edf0f3",  // Subtle dividers
+    line:           "#c8ccd4",  // Image borders, stronger dividers
+
+    // ── Soft accents ──────────────────────────────────────────────────
+    pink:           "#f8c2f7",  // Soft pink tints
+
+    // ── Status ────────────────────────────────────────────────────────
+    success:        "#0E9A49",  // Positive — pros, trend arrows
+    "success-bg":   "#e7f8f2",  // Light success bg (Impact metric cards)
+    warning:        "#c5444a",  // Negative — cons, alerts
   },
   fontFamily: {
-    // Geist Mono — nav links, CTA (loaded via next/font/google)
+    // Geist Mono — nav links, CTA chips (self-hosted via next/font/local in layout.tsx)
     brand: ["var(--font-brand)", "monospace"],
-    // Geist Sans — body / subtext (loaded via next/font/google)
-    body: ["var(--font-body)", "sans-serif"],
-    // GT Alpina Trial — headings (loaded via @font-face in globals.css)
-    // Add font files to public/fonts/: GTAlpinaTrial-Regular.woff2 + GTAlpinaTrial-RegularItalic.woff2
-    heading: ["GT Alpina Trial", "serif"],
-    // Inter — card titles, buttons (loaded via next/font/google)
-    ui: ["var(--font-ui)", "sans-serif"],
+    // Geist — plain UI sans, used for the host's tooltip (self-hosted via next/font/local in layout.tsx)
+    geist: ["var(--font-geist)", "sans-serif"],
+    // Geist — the secondary font: body / lead / captions, and the page default (next/font/local in layout.tsx)
+    body: ["var(--font-geist)", "sans-serif"],
+    // Source Serif 4 — the primary font, for display headings (next/font/local in layout.tsx).
+    // GT Alpina Trial (public/fonts/, @font-face in globals.css) is the fallback; drop the var to go back.
+    heading: ["var(--font-serif)", "GT Alpina Trial", "serif"],
+    // Nanum Pen Script — handwritten decorative tags (self-hosted via next/font/local in layout.tsx)
+    // Exposed under tailwind.config.ts as `font-handwriting`.
   },
+  // Corner radius — one scale for the whole site, every step even:
+  //   xs  2px  tiny marks (swatches, tooltip tips)
+  //   sm  4px  work cards, tags, small media
+  //   md  8px  chips, bars, inline code, small images
+  //   lg  12px buttons, inputs, image figures
+  //   xl  16px panels and large cards
+  //   2xl 24px feature cards
+  //   3xl 32px full-bleed bands
   borderRadius: {
+    xs: "2px",
     sm: "4px",
-    md: "7px",
+    md: "8px",
     lg: "12px",
+    xl: "16px",
+    "2xl": "24px",
+    "3xl": "32px",
+  },
+  // Typography scale — Scale B (Expressive, modular ratio ~1.333)
+  // Each role has mobile / -md (≥768px) / -lg (≥1024px) variants.
+  // Tuple shape: [size, { lineHeight, letterSpacing? }] — Tailwind fontSize format.
+  fontSize: {
+    // Headings
+    h1:        ["32px", { lineHeight: "1.1",  letterSpacing: "-1.6px" }],
+    "h1-md":   ["40px", { lineHeight: "1.1",  letterSpacing: "-2px"   }],
+    "h1-lg":   ["44px", { lineHeight: "1.1",  letterSpacing: "-2.2px" }],
+
+    h2:        ["24px", { lineHeight: "1.15", letterSpacing: "-1.2px" }],
+    "h2-md":   ["32px", { lineHeight: "1.15", letterSpacing: "-1.6px" }],
+    "h2-lg":   ["32px", { lineHeight: "1.15", letterSpacing: "-1.6px" }],
+
+    h3:        ["18px", { lineHeight: "1.25", letterSpacing: "-0.7px" }],
+    "h3-md":   ["22px", { lineHeight: "1.25", letterSpacing: "-0.9px" }],
+    "h3-lg":   ["24px", { lineHeight: "1.25", letterSpacing: "-1px"   }],
+
+    h4:        ["18px", { lineHeight: "1.3",  letterSpacing: "-0.5px" }],
+    "h4-md":   ["20px", { lineHeight: "1.3",  letterSpacing: "-0.5px" }],
+    "h4-lg":   ["22px", { lineHeight: "1.3",  letterSpacing: "-0.6px" }],
+
+    // Body (Geist) — explicit even px line heights, no tracking
+    // Lead paragraphs (intro under headings)
+    lead:      ["16px", { lineHeight: "26px" }],
+    "lead-md": ["18px", { lineHeight: "28px" }],
+    "lead-lg": ["18px", { lineHeight: "28px" }],
+
+    // Secondary / card content
+    body:      ["14px", { lineHeight: "22px" }],
+    "body-md": ["16px", { lineHeight: "26px" }],
+    "body-lg": ["16px", { lineHeight: "26px" }],
+
+    // Captions, status labels
+    caption:      ["12px", { lineHeight: "16px" }],
+    "caption-md": ["12px", { lineHeight: "16px" }],
+    "caption-lg": ["14px", { lineHeight: "20px" }],
+
+    // Display number (metric stats)
+    stat:      ["48px", { lineHeight: "1", letterSpacing: "-2.4px" }],
+    "stat-md": ["56px", { lineHeight: "1", letterSpacing: "-2.8px" }],
+    "stat-lg": ["56px", { lineHeight: "1", letterSpacing: "-2.8px" }],
   },
 } as const;

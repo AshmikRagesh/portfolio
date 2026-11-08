@@ -1,0 +1,51 @@
+// Project tags for the Works cards — two per card: one Type, one Discipline.
+// One shape for every tag (the Figma "Tags" component, scaled up: 24px tall, 8px side
+// padding, Geist Mono 12/16 uppercase, 2px corners). Works cards use two colours; both
+// clear 4.5:1 at this size.
+//
+//   Type        grape fill (the button hover colour), white text   (7.7:1)
+//   Discipline  light grey, blackcurrant text (the brand primary)
+//
+// Case studies use the same shape in Geist, plus a warning tone for results not yet in
+// our favour.
+
+export type ProjectType = "Case study" | "Side project" | "Exploration" | "Taste note";
+export type Discipline = "Design systems" | "Product design" | "Interaction design" | "UX research" | "AI";
+
+const BASE =
+  "inline-flex h-[24px] shrink-0 items-center whitespace-nowrap px-[8px] text-[12px] leading-[16px]";
+
+// Taste notes keep Geist Mono capitals in the 2px-corner shape; case studies use a pill
+// in Geist capitals (a touch of tracking so the caps don't crowd), with a little more side room
+const FACES = {
+  mono: "rounded-xs font-brand uppercase tracking-[0px]",
+  geist: "rounded-full px-[10px] font-geist font-medium uppercase tracking-[0.5px]",
+};
+
+const TONES = {
+  grape: "bg-grape text-white",
+  grey: "bg-[#E5E7EB] text-primary",
+  // A number not yet in our favour, in case study results
+  warning: "bg-warning text-white",
+};
+
+/** Any label in the tag shape — case studies use it (in Geist) for iteration / option labels */
+export function Tag({
+  tone,
+  face = "mono",
+  children,
+}: {
+  tone: keyof typeof TONES;
+  face?: keyof typeof FACES;
+  children: React.ReactNode;
+}) {
+  return <span className={`${BASE} gap-[4px] ${FACES[face]} ${TONES[tone]}`}>{children}</span>;
+}
+
+export function TypeTag({ type, face }: { type: ProjectType; face?: keyof typeof FACES }) {
+  return <Tag tone="grape" face={face}>{type}</Tag>;
+}
+
+export function DisciplineTag({ discipline, face }: { discipline: Discipline; face?: keyof typeof FACES }) {
+  return <Tag tone="grey" face={face}>{discipline}</Tag>;
+}
