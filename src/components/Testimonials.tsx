@@ -17,8 +17,8 @@ interface Testimonial {
   signature: string[]; // SVG path strokes, drawn in a 168×72 box
 }
 
-// Amlan's quote is the recommendation as written, with the pronouns corrected to he/him; Sneha's is lightly edited.
-// TODO: Anish's is a draft; confirm it with Anish before publishing. The signature strokes are drawn to read as each name,
+// Amlan's quote is the recommendation as written, with the pronouns corrected to he/him.
+// TODO: Junaid's and Anish's are drafts; confirm each with them before publishing. The signature strokes are drawn to read as each name,
 // scribbles, not their real signatures.
 const testimonials: Testimonial[] = [
   {
@@ -34,12 +34,13 @@ const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "I've collaborated with Ashmik on multiple projects, and every time the designs went further than I'd asked for. Working together has been a genuine pleasure.",
-    name: "Sneha",
-    role: "Senior Visual Designer, Meesho",
+      "Ashmik designs with our real components and writes the code himself, so what he hands over is what we ship. He knows the system well enough that reviews with him are short and handoffs rarely need a second pass.",
+    name: "Junaid",
+    role: "Senior Software Developer, Travelopia",
     signature: [
-      "M40 16C36 11 26 11 21 17C16 25 30 30 34 36C38 44 31 54 21 54C15 54 12 50 14 46",
-      "M36 54C38 48 40 44 43 45C46 46 45 52 47 54C50 52 56 48 56 44C56 41 51 41 50 46C49 52 54 55 60 52C64 44 68 30 70 18C70 14 66 15 66 22C66 32 66 46 67 54C69 48 72 44 75 45C78 46 77 52 80 54C82 50 84 46 88 45C92 44 92 52 89 54C86 55 84 51 88 48C90 47 92 51 96 54C112 50 132 44 154 34",
+      "M22 14C30 12 40 12 46 13M36 13C36 28 36 44 32 54C28 62 16 62 14 54",
+      "M44 40C45 46 46 52 50 53C54 54 56 46 57 40C57 46 58 52 62 53C64 48 66 42 70 41C74 40 74 48 75 53C78 46 84 42 88 44C84 40 78 46 80 52C82 55 88 52 89 46C89 50 90 53 93 53C95 50 96 45 97 41C97 47 98 52 102 53C106 50 110 44 114 43C108 42 104 50 106 53C108 55 114 50 116 44C118 32 119 22 120 14C120 28 119 42 121 53C130 52 145 46 158 38",
+      "M98 32C98.5 31.5 99 31.5 99 32",
     ],
   },
   {
