@@ -79,7 +79,7 @@ const BOARD_SHOWN_KEY = "ash.curiosity.boardShown"; // sessionStorage
 //             when the pointer leaves.
 //   touch     there's no hover, so nothing happens until a tap. A tap on the bell rings
 //             it and brings the board down; it stays until another tap on the bell or
-//             the board. The bell doesn't navigate home on touch screens. The board
+//             the board. Off the home page, a tap on the bell goes home. The board
 //             also comes down once by itself, after the first line of the visit.
 //
 // The board is out of the layout and above everything on the page, so nothing around
@@ -196,9 +196,15 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
 
   useEffect(primeBell, []);
 
-  // Touch: a tap on the bell or the board toggles the board. Pointer: the bell is a link home.
+  // The bell is the way home. On touch, once you're home, a tap on it (or on the board)
+  // toggles the board instead, since there's no hover to bring it down.
+  const pathname = usePathname();
+  const home = pathname === "/";
+  useEffect(() => setOpen(false), [pathname]);
   const toggle = (e: React.MouseEvent) => {
     if (!touch || ducked) return;
+    // Off the home page the tap just goes home (the board, if it's down, goes back up)
+    if (!home && e.currentTarget.tagName === "A") return;
     e.preventDefault();
     if (!open) ringBell();
     setOpen((o) => !o);
@@ -220,8 +226,8 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
       {/* Above the board, so the hands overlap the rings they hold it by */}
       <Link
         href="/"
-        aria-label={touch ? "Bella, measuring your curiosity — show your time" : "Home — Bella, measuring your curiosity"}
-        aria-expanded={touch ? holding : undefined}
+        aria-label={touch && home ? "Bella, measuring your curiosity — show your time" : "Home — Bella, measuring your curiosity"}
+        aria-expanded={touch && home ? holding : undefined}
         onClick={toggle}
         className="relative z-10 block select-none"
         // Clipped along the bottom of the spot while ducking and popping, so the bell can
