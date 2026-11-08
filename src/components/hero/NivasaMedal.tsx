@@ -13,6 +13,7 @@
 import { useCallback, useId, useRef, useState } from "react";
 import HoverTip from "./HoverTip";
 import Cta from "@/components/Cta";
+import { Tag } from "@/components/Tag";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 import { useCursorLight } from "./light";
 
@@ -171,10 +172,11 @@ function MedalIcon() {
   );
 }
 
+/** One figure in the stats row: the number, and what it counts under it, both left-aligned */
 function Stat({ value, label }: { value: React.ReactNode; label: string }) {
   return (
-    <div className="flex flex-1 flex-col items-center gap-1 px-2 text-center">
-      <span className="font-heading text-[28px] leading-none tracking-[-0.8px] tabular-nums text-heading">{value}</span>
+    <div className="flex min-w-0 flex-1 flex-col items-start gap-1 px-4 text-left first:pl-0">
+      <span className="font-heading text-h3-lg tabular-nums text-heading">{value}</span>
       <span className="font-geist text-caption text-muted">{label}</span>
     </div>
   );
@@ -197,37 +199,40 @@ function PixelField() {
   );
 }
 
+// Hierarchy, top to bottom: who (the name, with Superhost beside it) → where and who
+// runs it → the numbers → about the hosts → the way out to Airbnb. Everything reads from
+// one left edge.
 function HostCard() {
   return (
-    <div className="w-[calc(100vw-24px)] max-w-[480px] overflow-hidden rounded-[20px] bg-background shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]">
+    <div className="w-[calc(100vw-32px)] max-w-[440px] overflow-hidden rounded-[20px] bg-background text-left shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]">
       {/* Header band */}
-      <div className="relative h-[80px] overflow-hidden sm:h-[88px]" style={{ background: "linear-gradient(120deg, #32073e 0%, #6e0d4b 55%, #9D136A 100%)" }}>
+      <div className="relative h-[72px] overflow-hidden sm:h-[80px]" style={{ background: "linear-gradient(120deg, #32073e 0%, #6e0d4b 55%, #9D136A 100%)" }}>
         <PixelField />
-        <span className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-background/10 px-2.5 py-1 font-geist text-caption font-medium text-background ring-1 ring-background/20 backdrop-blur sm:right-5 sm:top-5">
-          <MedalIcon /> Superhost
-        </span>
       </div>
-      <div className="px-5 pb-5 sm:px-7 sm:pb-7">
-        <div className="-mt-11 flex flex-col items-start gap-3 sm:-mt-12">
-          <div className="relative shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/hero/nivasa-hosts.png" alt="Nandagopal and Ashmik, the hosts of Nivasa" width={96} height={96} className="h-[88px] w-[88px] rounded-full object-cover ring-4 ring-background sm:h-24 sm:w-24" />
-            <span className="absolute bottom-0.5 right-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-background shadow-[0_1px_3px_rgba(30,5,37,0.25)]" title="Identity verified">
-              <Shield className="h-4 w-4 text-grape" />
-            </span>
-          </div>
-          <div>
-            <p className="font-heading text-[30px] leading-none tracking-[-1px] text-heading sm:text-[32px]">Nivasa</p>
-            <p className="mt-1.5 font-geist text-body text-secondary">Short stays in Bengaluru · Nandagopal &amp; Ashmik</p>
-          </div>
+      <div className="px-5 pb-6 sm:px-6">
+        {/* Who */}
+        <div className="relative -mt-10 w-fit">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/hero/nivasa-hosts.png" alt="Nandagopal and Ashmik, the hosts of Nivasa" width={80} height={80} className="h-20 w-20 rounded-full object-cover ring-4 ring-background" />
+          <span className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-background shadow-[0_1px_3px_rgba(30,5,37,0.25)]" title="Identity verified">
+            <Shield className="h-3.5 w-3.5 text-grape" />
+          </span>
         </div>
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <h2 className="m-0 font-heading text-h2 text-heading sm:text-h2-md">Nivasa</h2>
+          <Tag tone="grey" face="geist">
+            <MedalIcon /> Superhost
+          </Tag>
+        </div>
+        <p className="mt-1 text-pretty font-geist text-body text-secondary sm:text-body-md">Short stays in Bengaluru · Nandagopal &amp; Ashmik</p>
 
-        <div className="mt-5 flex items-stretch divide-x divide-line-soft rounded-xl bg-surface py-4 sm:mt-6">
+        {/* The numbers */}
+        <div className="mt-5 flex items-stretch divide-x divide-line-soft border-y border-line-soft py-4">
           <Stat value="30" label="Reviews" />
           <Stat
             value={
               <span className="inline-flex items-baseline gap-1">
-                4.97<span className="text-[18px] text-grape">★</span>
+                4.97<span className="text-[16px] text-grape">★</span>
               </span>
             }
             label="Rating"
@@ -235,14 +240,14 @@ function HostCard() {
           <Stat value="3" label="Months hosting" />
         </div>
 
-        <div className="mt-5 sm:mt-6">
-          <p className="font-geist text-caption font-medium text-muted">About the hosts</p>
-          <p className="mt-2 font-geist text-body-lg text-text-base">We’re Nandagopal and Ashmik, the two behind Nivasa.</p>
-          <p className="mt-1 font-geist text-body-lg text-secondary">Between us, someone’s always reachable, usually within the hour.</p>
-        </div>
+        {/* About the hosts */}
+        <p className="mt-5 font-geist text-caption font-medium uppercase tracking-[0.5px] text-muted">About the hosts</p>
+        <p className="mt-2 text-pretty font-geist text-body text-secondary sm:text-body-md">
+          <span className="text-text-base">We’re Nandagopal and Ashmik, the two behind Nivasa.</span> Between us, someone’s always reachable, usually within the hour.
+        </p>
 
         {/* The work cards' CTA, smaller: grape on hover, and the arrow circle slides out */}
-        <Cta href={PROFILE} external size="sm" className="mt-6 sm:mt-7">
+        <Cta href={PROFILE} external size="sm" className="mt-6">
           View Nivasa on Airbnb
         </Cta>
       </div>
