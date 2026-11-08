@@ -13,11 +13,11 @@ export default function Hero() {
       {/* Text */}
       <div className="flex flex-col items-center gap-6 text-center w-full">
         <h1 className="font-heading font-normal text-[36px] leading-[40px] tracking-[-0.36px] text-heading whitespace-normal md:whitespace-pre-wrap md:text-[44px] md:leading-[48px] md:tracking-[-0.44px] lg:text-[48px] lg:leading-[56px] lg:tracking-[-0.48px] lg:whitespace-pre-wrap">
-          {`I'm Ashmik, a product designer\nwho ships with vision.`}
+          {`I'm Ashmik, Design Engineer\nwho ships with vision.`}
         </h1>
         <p className="font-body font-normal text-[16px] leading-[24px] text-secondary w-full md:text-[20px] md:leading-[32px] md:max-w-[652px] lg:text-[20px] lg:leading-[32px] lg:max-w-[652px]">
-          I design travel and data-heavy products, and build them in code so
-          the team can try them before committing.
+          I make data-heavy products easy to understand—and build working
+          prototypes so teams can try an idea before they commit to it.
         </p>
       </div>
 
