@@ -34,21 +34,8 @@ const COLORS = {
   chelsea: "#034694",
 };
 
-// Each pill plays a soft note on hover (the DS "note" sound, components/SoundLayer); the
-// pitches climb a pentatonic scale in reading order, so running across the paragraph
-// sounds like a little tune rather than the same blip
-const PITCH: Record<string, number> = {
-  [COLORS.orange]: 1,
-  [COLORS.violet]: 1.125,
-  [COLORS.teal]: 1.25,
-  [COLORS.ink]: 1.5,
-  [COLORS.pink]: 1.667,
-  [COLORS.coral]: 1.667,
-  [COLORS.green]: 2,
-  [COLORS.yellow]: 2.25,
-  [COLORS.chelsea]: 2.5,
-};
-
+// Every pill plays the same DS tick on hover as the links do (the workflow pill is a
+// link), so the paragraph sounds consistent (components/SoundLayer)
 const canHover = () => window.matchMedia("(hover: hover)").matches;
 const still = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const wait = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
@@ -106,7 +93,7 @@ const PILL =
 type PlayProps = ReturnType<typeof usePlay>["props"];
 function Pill({ color, play, className = "", children }: { color: string; play?: PlayProps; className?: string; children: React.ReactNode }) {
   return (
-    <span {...play} data-sound="note" data-pitch={PITCH[color] ?? 1} className={`${PILL} ${className}`} style={{ ["--pill" as string]: color }}>
+    <span {...play} data-sound="tick" className={`${PILL} ${className}`} style={{ ["--pill" as string]: color }}>
       {children}
     </span>
   );
