@@ -39,17 +39,6 @@ html[data-leaving] .page-enter {
   -webkit-tap-highlight-color: transparent;
 }
 .sound-toggle[data-muted] { color: rgba(30, 5, 37, 0.45); }
-/* The soft disc behind it, growing in on hover */
-.sound-toggle::before {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  border-radius: inherit;
-  background: #f9e4ff;
-  opacity: 0;
-  transform: scale(0.6);
-  transition: opacity 200ms ease, transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
-}
 .sound-toggle svg { position: relative; overflow: visible; }
 .sound-toggle:active { transform: scale(0.9); }
 .sound-toggle:focus-visible { outline: 2px solid #9D136A; outline-offset: 2px; }
@@ -66,14 +55,27 @@ html[data-leaving] .page-enter {
 }
 .sound-toggle[data-muted] .sound-toggle-wave { opacity: 0; transform: scale(0.4); transition-delay: 0ms; }
 .sound-toggle[data-muted] .sound-toggle-cross { stroke-dashoffset: 0; opacity: 1; transition-delay: 120ms; }
+/* Hover, no background: with sound on, the waves ripple outwards one after the other, as
+   if it's playing; muted, the speaker darkens and the cross gives a small shake */
+@keyframes sound-ripple {
+  0%, 100% { opacity: 1; transform: none; }
+  40% { opacity: 0.35; transform: translateX(2px) scale(1.08); }
+}
+@keyframes sound-shake {
+  0%, 100% { transform: none; }
+  30% { transform: rotate(-12deg); }
+  60% { transform: rotate(8deg); }
+}
+.sound-toggle-cross { transform-origin: 18px 12px; }
 @media (hover: hover) and (pointer: fine) {
-  .sound-toggle:hover::before { opacity: 1; transform: scale(1); }
   .sound-toggle:hover { color: #9D136A; }
-  .sound-toggle:not([data-muted]):hover .sound-toggle-wave { transform: translateX(1px); }
-  .sound-toggle:not([data-muted]):hover .sound-toggle-wave-2 { transform: translateX(2px); }
+  .sound-toggle:not([data-muted]):hover .sound-toggle-wave { animation: sound-ripple 900ms cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+  .sound-toggle:not([data-muted]):hover .sound-toggle-wave-2 { animation-delay: 140ms; }
+  .sound-toggle[data-muted]:hover { color: rgba(30, 5, 37, 0.8); }
+  .sound-toggle[data-muted]:hover .sound-toggle-cross { animation: sound-shake 360ms ease-out; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sound-toggle, .sound-toggle::before, .sound-toggle-wave, .sound-toggle-cross { transition-duration: 1ms; }
+  .sound-toggle, .sound-toggle-wave, .sound-toggle-cross { transition-duration: 1ms; animation: none !important; }
 }
 
 @layer utilities {

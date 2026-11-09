@@ -2,10 +2,10 @@
 
 // ── Sound toggle ──────────────────────────────────────────────────────────────
 // The speaker in the navbar: turns every site sound on or off (lib/sound/ui). The choice
-// is remembered. Its own click plays the switch sound, so turning sounds on is audible.
+// is remembered. Its own click plays the switch sound both ways.
 //
-// Kept minimal: hovering fills a soft disc in behind it and nudges the sound waves out a
-// step; pressing dips it. Switching off folds the waves away and draws a small cross in
+// Kept minimal, no background: hovering ripples the sound waves outwards (or, muted, gives
+// the cross a small shake) with the DS tick; pressing dips it. Switching off folds the waves away and draws a small cross in
 // their place; switching on brings the waves back one after the other. (.sound-toggle in
 // globals.css)
 
@@ -22,6 +22,8 @@ export default function SoundToggle({ className = "" }: { className?: string }) 
 
   const toggle = () => {
     const next = !muted;
+    // The switch is heard both ways: played before muting, and after unmuting
+    if (next) playSound("toggle");
     setSoundsMuted(next);
     if (!next) playSound("toggle");
   };
@@ -33,7 +35,7 @@ export default function SoundToggle({ className = "" }: { className?: string }) 
       aria-pressed={!muted}
       aria-label={muted ? "Turn sounds on" : "Turn sounds off"}
       title={muted ? "Sounds off" : "Sounds on"}
-      data-sound="none"
+      data-sound="tick"
       data-muted={muted || undefined}
       className={`sound-toggle ${className}`}
     >
