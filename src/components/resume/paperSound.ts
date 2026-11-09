@@ -9,6 +9,7 @@
 //            each hole as the tear passes it, and a soft tick as it comes free.
 //   restock  a fresh stub sliding in: a short, soft brush of paper.
 
+import { soundsMuted } from "@/lib/sound/ui";
 type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
 
 let ctx: AudioContext | null = null;
@@ -88,6 +89,7 @@ function flap(c: AudioContext, out: AudioNode, at: number, level: number) {
 }
 
 function play(volume: number, delayMs: number, score: (c: AudioContext, out: AudioNode, t: number) => void) {
+  if (soundsMuted()) return;
   const c = audio();
   if (!c) return;
   if (c.state === "suspended") c.resume().catch(() => {});
@@ -141,6 +143,7 @@ export type TearVoice = { set: (speed: number) => void; stop: () => void };
  * when it stops. Paired with tearTick() at each perforation.
  */
 export function tearVoice(): TearVoice | null {
+  if (soundsMuted()) return null;
   const c = audio();
   if (!c) return null;
   if (c.state === "suspended") c.resume().catch(() => {});
@@ -191,6 +194,7 @@ export function preloadOpen() {
 }
 
 export function playOpen(volume = 0.55) {
+  if (soundsMuted()) return;
   preloadOpen();
   if (!openClip) return;
   openClip.volume = volume;

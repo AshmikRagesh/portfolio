@@ -313,6 +313,7 @@ function Player({
       tabIndex={0}
       role="region"
       aria-label={`Video: ${label}`}
+      data-sound="whisper"
       onKeyDown={onKey}
       onPointerMove={wake}
       onPointerLeave={() => setActive(false)}
@@ -542,7 +543,7 @@ export default function Media({
 
   return (
     <>
-      <button type="button" onClick={() => setImage(true)} aria-label={`Expand: ${label}`} className="block w-full cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-grape">
+      <button type="button" onClick={() => setImage(true)} aria-label={`Expand: ${label}`} data-sound="whisper" data-sound-click="pop" className="block w-full cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-grape">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import useInView from "./useInView";
+import { pitchFor } from "@/lib/sound/ui";
 
 /**
  * A rollout told in a few steps, all in Geist. One column per phase: a lane that holds the
@@ -173,6 +174,9 @@ export default function RolloutPhases({ phases, perPhase = 4 }: { phases: Phase[
                 }}
                 type="button"
                 aria-pressed={on}
+                data-sound="note"
+                data-pitch={pitchFor(col + 1, phases.length)}
+                data-sound-click="toggle"
                 tabIndex={on ? 0 : -1}
                 onClick={() => pick(col)}
                 className="group flex flex-col gap-[12px] rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-4"

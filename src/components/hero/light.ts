@@ -9,6 +9,7 @@
 //
 // It also leans the element a few degrees towards the pointer while it's close.
 
+import { soundsMuted } from "@/lib/sound/ui";
 import { useEffect, type RefObject } from "react";
 
 export function useCursorLight(
@@ -70,6 +71,7 @@ export function useCursorLight(
 /** A faint metallic clink, synthesised: two bright partials that ring and die fast */
 let ctx: AudioContext | null = null;
 export function clink(volume = 0.035) {
+  if (soundsMuted()) return;
   try {
     ctx ??= new AudioContext();
     const t = ctx.currentTime;

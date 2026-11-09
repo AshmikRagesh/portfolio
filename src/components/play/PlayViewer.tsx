@@ -16,6 +16,7 @@ import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { playItems } from "@/content/play";
 import PlayMedia from "./PlayMedia";
 import type { Opened } from "./PlayGrid";
+import { playSound } from "@/lib/sound/ui";
 
 const N = playItems.length;
 const MS = 560;
@@ -66,6 +67,7 @@ export default function PlayViewer({
     reduce.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     setVp({ w: window.innerWidth, h: window.innerHeight });
     returnFocus.current = document.activeElement as HTMLElement | null;
+    playSound("pop");
     // Two frames: the first paints the box over the tile, the second lets it travel
     let b = 0;
     const a = requestAnimationFrame(() => (b = requestAnimationFrame(() => setPhase("open"))));
@@ -98,6 +100,7 @@ export default function PlayViewer({
   const step = (d: number) => {
     if (phase !== "open") return;
     setDir(d);
+    playSound("toggle");
     onStep(((opened.at + d) % N + N) % N);
   };
 

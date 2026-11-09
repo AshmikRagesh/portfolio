@@ -12,6 +12,7 @@
 // so the bell stays silent on hover until their first click, tap or key press —
 // primeBell() listens for that and wakes the audio up.
 
+import { soundsMuted } from "@/lib/sound/ui";
 type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
 
 const FUNDAMENTAL = 2090; // Hz — a small desk bell rings around here
@@ -73,6 +74,7 @@ function strike(c: AudioContext, at: number, level: number, fundamental = FUNDAM
 
 /** Ring the bell — ding ding. Silent until the page has had a click, tap or key press. */
 export function ringBell() {
+  if (soundsMuted()) return;
   const c = audio();
   if (!c || c.state !== "running") return;
   const now = performance.now();
@@ -84,6 +86,7 @@ export function ringBell() {
 
 /** A rising two-note chime for a celebration: the bell's note, then a fifth above. */
 export function chimeBell() {
+  if (soundsMuted()) return;
   const c = audio();
   if (!c || c.state !== "running") return;
   lastRing = performance.now();

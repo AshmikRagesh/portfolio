@@ -12,6 +12,7 @@ import { useMoment, type Moment } from "@/lib/bella/progress";
 import BellaLine from "@/components/bella/BellaLine";
 import { openResume, RESUME_PDF } from "@/lib/resume";
 import { MenuToggle, MobileMenu } from "@/components/MobileMenu";
+import SoundToggle from "@/components/SoundToggle";
 
 type QueuedMoment = Moment & { id: number };
 
@@ -246,6 +247,7 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
         aria-label={touch && home ? "Bella, measuring your curiosity — show your time" : "Home — Bella, measuring your curiosity"}
         aria-expanded={touch && home ? holding : undefined}
         onClick={toggle}
+        data-sound="none"
         className="relative z-10 block select-none"
         // Clipped along the bottom of the spot while ducking and popping, so the bell can
         // go out of sight through it. Off otherwise: the hands reach below to hold the board.
@@ -434,10 +436,14 @@ export default function Navbar() {
               <NavTab {...link} pathname={pathname} inView={inView} />
             </li>
           ))}
+          <li className="-ml-[4px]">
+            <SoundToggle />
+          </li>
         </ul>
 
         {/* Phones: the menu toggle */}
-        <div className="md:hidden flex items-center">
+        <div className="md:hidden flex items-center gap-[4px]">
+          <SoundToggle />
           <MenuToggle open={menuOpen} onToggle={() => setMenuOpen((o) => !o)} />
         </div>
       </nav>

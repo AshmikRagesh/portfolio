@@ -318,6 +318,7 @@ export default function PlayGrid() {
             key={`${c},${r}`}
             type="button"
             data-cell={`${c},${r}`}
+            data-sound="whisper"
             className="play-tile"
             style={{ left: c * cell, top: r * cell, width: geo.tile, height: geo.tile, "--d": `${Math.round(delay)}ms` } as React.CSSProperties}
             aria-label={`${item.title}, ${item.kind}. Open`}
