@@ -66,29 +66,3 @@ export function useCursorLight(
     };
   }, [svg, view.w, view.h, tilt, tiltDeg, reduced]);
 }
-
-/** A faint metallic clink, synthesised: two bright partials that ring and die fast */
-let ctx: AudioContext | null = null;
-export function clink(volume = 0.035) {
-  try {
-    ctx ??= new AudioContext();
-    const t = ctx.currentTime;
-    const out = ctx.createGain();
-    out.gain.value = volume;
-    out.connect(ctx.destination);
-    [2860, 4210, 6020].forEach((f, i) => {
-      const o = ctx!.createOscillator();
-      const g = ctx!.createGain();
-      o.type = "sine";
-      o.frequency.value = f;
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(1 / (i + 1), t + 0.004);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35 / (i + 1));
-      o.connect(g).connect(out);
-      o.start(t);
-      o.stop(t + 0.4);
-    });
-  } catch {
-    // No audio: stay silent
-  }
-}

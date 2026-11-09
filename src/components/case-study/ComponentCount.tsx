@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { pitchFor } from "@/lib/sound/ui";
 import useInView from "./useInView";
 
 /**
@@ -78,7 +79,7 @@ export default function ComponentCount({
       <dl className="m-0 flex flex-col gap-[20px]">
         {parts.map((p, i) => (
           // Name (and note) on the left, the count on the right, the bar underneath across both
-          <div key={p.name} className="grid grid-cols-[1fr_auto] items-baseline gap-x-[16px] gap-y-[8px]">
+          <div key={p.name} data-sound="note" data-pitch={pitchFor(p.count, max)} className="grid grid-cols-[1fr_auto] items-baseline gap-x-[16px] gap-y-[8px]">
             <dt className="text-[16px] leading-[24px] text-heading">
               {p.name}
               {p.note && <span className="ml-[8px] text-[14px] text-muted">{p.note}</span>}

@@ -28,6 +28,7 @@ export default function MoreDetail({
         type="button"
         aria-expanded={open}
         aria-controls={id}
+        data-sound-click="pop"
         onClick={() => setOpen((o) => !o)}
         className={`group/more flex items-center gap-[8px] whitespace-nowrap rounded-xs py-[8px] font-body text-[16px] font-medium leading-[24px] transition-colors duration-200 hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${
           open ? "text-grape" : "text-heading"

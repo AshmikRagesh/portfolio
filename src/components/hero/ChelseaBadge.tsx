@@ -7,12 +7,12 @@
 // enamel, gold eye and staff ring, and a small gold bar underneath, "CFC · LDN", in
 // gold on grape. A point light follows the pointer so the polish moves across the gold.
 //
-// Hover leans it towards the pointer. Click (with a very quiet clink) and it comes to
+// Hover leans it towards the pointer. Click and it comes to
 // the middle of the screen and turns over into Chelsea's next match, live from ESPN.
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { LION_BODY, LION_EYE, LION_RING, LION_STAFF, LION_TRANSFORM, LION_VIEWBOX } from "./lionPath";
-import { clink, useCursorLight } from "./light";
+import { useCursorLight } from "./light";
 import { Tag } from "@/components/Tag";
 import HoverTip from "./HoverTip";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
@@ -324,10 +324,7 @@ export default function ChelseaBadge({ className = "" }: { className?: string })
       <button
         ref={btn}
         type="button"
-        onClick={() => {
-          clink();
-          setOpen(true);
-        }}
+        onClick={() => setOpen(true)}
         aria-label="Chelsea lion pin. See the next match"
         aria-haspopup="dialog"
         className={`group group/tip relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}

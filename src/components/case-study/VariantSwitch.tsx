@@ -69,6 +69,7 @@ function VariantSwitch({
             type="button"
             role="radio"
             aria-checked={on}
+            data-sound-click="toggle"
             aria-label={v.label}
             title={v.label}
             onClick={() => onChange(v.id)}

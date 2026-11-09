@@ -54,6 +54,7 @@ export default function StepStory({ steps, start = 0 }: { steps: Step[]; start?:
                 type="button"
                 role="tab"
                 aria-selected={on}
+                data-sound-click="toggle"
                 tabIndex={on ? 0 : -1}
                 onClick={() => setActive(i)}
                 className="group relative flex flex-1 flex-row items-start gap-[12px] rounded-xs text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape md:flex-col md:pr-[12px]"

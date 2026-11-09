@@ -13,9 +13,10 @@
 // the marks stay silent until their first click, tap or key press; primeMarker()
 // listens for that. Marks that draw together share one sound (a short cooldown).
 
+import { soundsMuted } from "@/lib/sound/ui";
 type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
 
-const VOLUME = 0.03; // very low, on purpose (the stroke's shape keeps most of it quieter still)
+const VOLUME = 0.012; // very low, on purpose (the stroke's shape keeps most of it quieter still)
 const STROKE_S = 0.48;
 const COOLDOWN_MS = 500;
 
@@ -32,6 +33,7 @@ function audio() {
 
 /** One stroke of the marker. Silent until the page has had a click, tap or key press. */
 export function playMarker() {
+  if (soundsMuted()) return;
   const c = ctx;
   if (!c || c.state !== "running") return;
   const now = performance.now();

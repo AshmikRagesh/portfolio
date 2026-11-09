@@ -4,6 +4,7 @@ import { useEffect, useState, type KeyboardEvent } from "react";
 import { ArrowDown, ArrowUp, TrendUp, WarningCircle } from "@phosphor-icons/react/dist/ssr";
 import { Tag } from "@/components/Tag";
 import useInView from "./useInView";
+import { pitchFor } from "@/lib/sound/ui";
 
 /**
  * A results card, sized to sit in the text column: the headline number with what it
@@ -173,6 +174,8 @@ function Chart({ metric, shown: inView }: { metric: Metric; shown: boolean }) {
                 type="button"
                 tabIndex={-1}
                 aria-label={`${p.label}: ${p.value}%`}
+                data-sound="note"
+                data-pitch={pitchFor(p.value, top)}
                 onMouseEnter={() => pick(i)}
                 onFocus={() => pick(i)}
                 onClick={() => pick(i)}
@@ -345,6 +348,7 @@ export default function ResultsCard({
                   type="button"
                   role="tab"
                   aria-selected={i === tab}
+                  data-sound-click="toggle"
                   onClick={() => setTab(i)}
                   className={`rounded-full px-[12px] py-[4px] font-geist text-caption transition-colors duration-200 ${
                     i === tab ? "bg-primary text-white" : "bg-white text-secondary hover:text-heading"

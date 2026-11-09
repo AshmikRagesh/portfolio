@@ -148,6 +148,7 @@ export default function ModalTokens() {
             onPointerOver={onPoint}
             onPointerLeave={() => setFocus(null)}
             data-part="panel"
+            data-sound="whisper"
             className={`relative w-full max-w-[420px] rounded-[16px] bg-white outline-dashed outline-2 transition-[outline-color,outline-offset,box-shadow] duration-300 ${EASE} ${
               litPart("panel") ? "outline-grape outline-offset-[8px]" : "outline-transparent outline-offset-[2px]"
             }`}
