@@ -3,9 +3,13 @@
 // ── Sound toggle ──────────────────────────────────────────────────────────────
 // The speaker in the navbar: turns every site sound on or off (lib/sound/ui). The choice
 // is remembered. Its own click plays the switch sound, so turning sounds on is audible.
+//
+// Kept minimal: hovering fills a soft disc in behind it and nudges the sound waves out a
+// step; pressing dips it. Switching off folds the waves away and draws a small cross in
+// their place; switching on brings the waves back one after the other. (.sound-toggle in
+// globals.css)
 
 import { useEffect, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
 import { onSoundsMuted, playSound, setSoundsMuted, soundsMuted } from "@/lib/sound/ui";
 
 export default function SoundToggle({ className = "" }: { className?: string }) {
@@ -30,11 +34,15 @@ export default function SoundToggle({ className = "" }: { className?: string }) 
       aria-label={muted ? "Turn sounds on" : "Turn sounds off"}
       title={muted ? "Sounds off" : "Sounds on"}
       data-sound="none"
-      className={`grid h-[40px] w-[40px] place-items-center rounded-full transition-colors hover:bg-grape-light/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape ${
-        muted ? "text-text-base/40" : "text-grape"
-      } ${className}`}
+      data-muted={muted || undefined}
+      className={`sound-toggle ${className}`}
     >
-      {muted ? <VolumeX size={20} strokeWidth={1.8} aria-hidden="true" /> : <Volume2 size={20} strokeWidth={1.8} aria-hidden="true" />}
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path className="sound-toggle-body" d="M4 9.5h3.2L11.5 6v12l-4.3-3.5H4z" />
+        <path className="sound-toggle-wave" d="M15 9.6a3.4 3.4 0 0 1 0 4.8" />
+        <path className="sound-toggle-wave sound-toggle-wave-2" d="M17.6 7a7 7 0 0 1 0 10" />
+        <path className="sound-toggle-cross" d="M15.5 9.5l5 5M20.5 9.5l-5 5" pathLength={1} />
+      </svg>
     </button>
   );
 }

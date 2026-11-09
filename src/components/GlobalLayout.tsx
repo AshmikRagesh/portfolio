@@ -11,6 +11,7 @@ import BellaDirector from "@/components/bella/BellaDirector";
 import ResumeOverlay from "@/components/resume/ResumeOverlay";
 import BellaLoader from "@/components/host/BellaLoader";
 import SoundLayer from "@/components/SoundLayer";
+import PageTransition from "@/components/PageTransition";
 
 export default function GlobalLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -26,6 +27,7 @@ export default function GlobalLayout({ children }: { children: ReactNode }) {
       <TabPresence />
       {/* The DS interface sounds: ticks on links, notes on bars, a page-turn between pages */}
       <SoundLayer />
+      <PageTransition />
       <BellaDirector />
       {/* The navbar and footer bells take turns — only one is up at a time */}
       <BellStageProvider>

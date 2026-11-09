@@ -27,7 +27,7 @@ const navLinks = [
   { label: "Works", href: "#works" },
   { label: "About", href: "/about" },
   { label: "Fancy paper", href: RESUME_PDF },
-  { label: "Play", href: "/play" },
+  // Play is held back until the page is ready: { label: "Play", href: "/play" },
 ];
 
 // On the home page, the section tab whose section crosses the middle of the screen

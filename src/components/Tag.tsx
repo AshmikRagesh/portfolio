@@ -16,10 +16,14 @@ const BASE =
   "inline-flex h-[24px] shrink-0 items-center whitespace-nowrap px-[8px] text-[12px] leading-[16px]";
 
 // Taste notes keep Geist Mono capitals in the 2px-corner shape; case studies use a pill
-// in Geist capitals (a touch of tracking so the caps don't crowd), with a little more side room
+// in Geist capitals (a touch of tracking so the caps don't crowd), with a little more side room.
+// In the pill, a leading icon sits in its own small round chip (16px, 4px from the edge), so
+// it reads as the marker and the word as the label, and a hairline light along the top edge
+// lifts the filled tones off the card.
 const FACES = {
-  mono: "rounded-xs font-brand uppercase tracking-[0px]",
-  geist: "rounded-full px-[10px] font-geist font-medium uppercase tracking-[0.5px]",
+  mono: "gap-[4px] rounded-xs font-brand uppercase tracking-[0px]",
+  geist:
+    "gap-[6px] rounded-full px-[10px] font-geist font-medium uppercase tracking-[0.6px] has-[>svg:first-child]:pl-[4px] [&>svg:first-child]:box-content [&>svg:first-child]:size-[12px] [&>svg:first-child]:rounded-full [&>svg:first-child]:p-[2px]",
 };
 
 const TONES = {
@@ -27,6 +31,13 @@ const TONES = {
   grey: "bg-[#E5E7EB] text-primary",
   // A number not yet in our favour, in case study results
   warning: "bg-warning text-white",
+};
+
+// The pill's finish per tone: the icon chip and the edge light
+const GEIST_TONES = {
+  grape: "shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(30,5,37,0.12)] [&>svg:first-child]:bg-white/20",
+  grey: "shadow-[inset_0_0_0_1px_rgba(30,5,37,0.04)] [&>svg:first-child]:bg-white [&>svg:first-child]:text-grape",
+  warning: "shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_1px_2px_rgba(30,5,37,0.12)] [&>svg:first-child]:bg-white/20",
 };
 
 /** Any label in the tag shape — case studies use it (in Geist) for iteration / option labels */
@@ -39,7 +50,7 @@ export function Tag({
   face?: keyof typeof FACES;
   children: React.ReactNode;
 }) {
-  return <span className={`${BASE} gap-[4px] ${FACES[face]} ${TONES[tone]}`}>{children}</span>;
+  return <span className={`${BASE} ${FACES[face]} ${TONES[tone]} ${face === "geist" ? GEIST_TONES[tone] : ""}`}>{children}</span>;
 }
 
 export function TypeTag({ type, face }: { type: ProjectType; face?: keyof typeof FACES }) {

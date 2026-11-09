@@ -16,7 +16,7 @@
 import { soundsMuted } from "@/lib/sound/ui";
 type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
 
-const VOLUME = 0.03; // very low, on purpose (the stroke's shape keeps most of it quieter still)
+const VOLUME = 0.012; // very low, on purpose (the stroke's shape keeps most of it quieter still)
 const STROKE_S = 0.48;
 const COOLDOWN_MS = 500;
 
