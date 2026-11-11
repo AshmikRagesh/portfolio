@@ -20,6 +20,18 @@ export const reels = {
       "A design-system skill for Claude Code that lets designers build straight from our components and tokens, so what we design is what developers ship.",
     href: "/works/helix",
   },
+  "tcs-search": {
+    youtubeId: PLACEHOLDER,
+    title: "From every trip at once to the few that fit: filters for TCS search",
+    description: "Filters, a result count and a no-results page that always leads somewhere. Live since July 2026.",
+    href: "/works/tcs-search",
+  },
+  bella: {
+    youtubeId: PLACEHOLDER,
+    title: "Designing Bella, the desk bell that hosts this portfolio, in Claude Code",
+    description: "A front-desk bell in the navbar that tracks how long you actually spend here.",
+    href: "/works/bella",
+  },
   "tcs-find-a-trip": {
     youtubeId: PLACEHOLDER,
     title: "Letting TCS travellers explore a destination before they browse trips",

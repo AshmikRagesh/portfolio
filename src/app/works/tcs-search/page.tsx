@@ -6,6 +6,7 @@ import {
   MapTrifold,
   SlidersHorizontal,
 } from "@phosphor-icons/react/dist/ssr";
+import { reels } from "@/content/reels";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import {
   Hero,
@@ -592,7 +593,7 @@ function Reflection() {
 
 export default function TcsSearchPage() {
   return (
-    <CaseStudyLayout sections={SECTIONS}>
+    <CaseStudyLayout sections={SECTIONS} reel={reels["tcs-search"]}>
       <Hero
         title="From every trip at once to the few that fit: filters for TCS search"
         date="May 2026"

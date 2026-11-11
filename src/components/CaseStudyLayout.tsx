@@ -26,7 +26,8 @@ export default function CaseStudyLayout({ sections, reel, children }: CaseStudyL
       <SectionPill sections={sections} />
       {/* Room keys and where the reader is, for Bella */}
       <CaseStudyTracker sections={sections} />
-      {reel && <ReelPlayer reels={[reel]} pill />}
+      {/* Tablet and desktop only; on a phone it would cover the reading */}
+      {reel && <ReelPlayer reels={[reel]} pill desktopOnly />}
       <Footer />
     </>
   );

@@ -131,11 +131,14 @@ interface Gesture {
 export default function ReelPlayer({
   reels,
   browse = false,
+  desktopOnly = false,
   pill = false,
   startAt,
 }: {
   reels: Reel[];
   browse?: boolean;
+  /** Hidden on phones (under 768px wide): the case studies */
+  desktopOnly?: boolean;
   pill?: boolean;
   /** A selector: the reel stays out of sight until this section scrolls into view */
   startAt?: string;
@@ -407,7 +410,7 @@ export default function ReelPlayer({
     };
   }); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!geo || !reel) return null;
+  if (!geo || !reel || (desktopOnly && geo.small)) return null;
 
   return (
     <>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { reels } from "@/content/reels";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { Palette, Shapes, Eye, Sparkle } from "@phosphor-icons/react/dist/ssr";
 import {
@@ -480,7 +481,7 @@ function Purpose() {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function BellaPage() {
   return (
-    <CaseStudyLayout sections={SECTIONS}>
+    <CaseStudyLayout sections={SECTIONS} reel={reels.bella}>
       <Hero
         title="A desk bell that shows how long people really read my portfolio, designed in Claude Code"
         date="October 2026"
