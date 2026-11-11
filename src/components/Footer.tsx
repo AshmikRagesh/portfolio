@@ -14,52 +14,6 @@ import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
 import PaperTooth from "@/components/PaperTooth";
 
-/** "Bella only measures time", with an info button that shows the detail on hover, focus or tap. */
-function MeasureNote() {
-  const [open, setOpen] = useState(false);
-  const wrap = useRef<HTMLParagraphElement>(null);
-  // A tap anywhere else closes it again
-  useEffect(() => {
-    if (!open) return;
-    const close = (e: PointerEvent) => {
-      if (!wrap.current?.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("pointerdown", close);
-    return () => document.removeEventListener("pointerdown", close);
-  }, [open]);
-  return (
-    <p
-      ref={wrap}
-      className="group/note relative z-10 -mt-[32px] flex items-center gap-[4px] font-body text-caption text-white/50 md:-mt-[40px] md:text-caption-lg lg:-mt-[32px]"
-    >
-      Bella only measures time
-      <button
-        type="button"
-        aria-label="What Bella measures"
-        aria-describedby="measure-note"
-        aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
-        className="grid size-[24px] place-items-center rounded-full text-white/50 transition-colors hover:text-white focus-visible:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
-      >
-        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
-          <circle cx="8" cy="8" r="6.3" />
-          <path d="M8 7.4v3.6" />
-          <circle cx="8" cy="5" r="0.4" fill="currentColor" />
-        </svg>
-      </button>
-      <span
-        id="measure-note"
-        role="tooltip"
-        data-open={open || undefined}
-        className="pointer-events-none absolute bottom-full left-1/2 mb-[8px] w-[280px] -translate-x-1/2 translate-y-[4px] rounded-md bg-white px-[12px] py-[8px] text-center font-geist text-[14px] leading-[20px] text-midnight opacity-0 shadow-[0_8px_20px_rgba(0,0,0,0.24)] transition-[opacity,transform] duration-200 group-hover/note:translate-y-0 group-hover/note:opacity-100 group-focus-within/note:translate-y-0 group-focus-within/note:opacity-100 data-[open]:translate-y-0 data-[open]:opacity-100"
-      >
-        How long you stay, using a random ID saved in your browser. No names, emails or tracking cookies.
-        <span aria-hidden="true" className="absolute -bottom-[4px] left-1/2 -ml-[4px] h-[8px] w-[8px] rotate-45 rounded-xs bg-white" />
-      </span>
-    </p>
-  );
-}
-
 const socialLinks = [
   {
     label: "LinkedIn",
@@ -661,8 +615,6 @@ export default function Footer() {
             </button>
           </div>
 
-          {/* What the curiosity clock keeps: a short line, the detail in a tooltip */}
-          <MeasureNote />
         </div>
       </div>
     </footer>
