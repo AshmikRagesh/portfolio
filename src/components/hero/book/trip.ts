@@ -1,19 +1,16 @@
 // ── The trips in the book ─────────────────────────────────────────────────────
 // Four of Ashmik's trips, from the itineraries they were booked on: the stops, days and
-// what was planned at each. Distances (`leg`) are only given where the itinerary gave
-// them. The book reads only this file. Photos are from Wikimedia Commons (mostly the lead
+// what was planned at each. The book reads only this file. Photos are from Wikimedia Commons (mostly the lead
 // image of each place's Wikipedia article), saved small in /public/images/trips; Himachal's
 // are Ashmik's own, from the trip, spread across the stops. Himachal's route is a common
 // Parvati Valley plan built round the places visited (Kasol, Grahan, Pulga, Tulga); its
-// distances are the usual ones given for it, and its pins are approximate.
+// pins are approximate.
 
 export type Photo = { src: string; caption: string };
 
 export type Stop = {
   name: string;
   days: string;
-  /** How far from the stop before */
-  leg?: string;
   line: string;
   lon: number;
   lat: number;
@@ -38,12 +35,12 @@ export const TRIPS: Trip[] = [
     when: "6 days · Parvati Valley",
     labels: [["Parvati River", 77.372, 32.018, true]],
     stops: [
-      { name: "Kasol", days: "Day 1", line: "Into the valley, with an evening by the Parvati at the riverside cafés.", lon: 77.315, lat: 32.01, photos: p("kasol", ["Morning chai under prayer flags", "Under the deodars"]) },
-      { name: "Grahan", days: "Days 2–3", leg: "about 8–10 km on foot from Kasol", line: "A forest trek up to the village, and a night in a homestay.", lon: 77.372, lat: 32.042, photos: p("grahan", ["On the trail", "Crossing a stream on the way up", "Evening over the village"]) },
-      { name: "Manikaran", days: "Day 4", leg: "about 4 km from Kasol", line: "Back down the valley for the gurudwara and its hot springs.", lon: 77.348, lat: 32.027, photos: p("manikaran", ["A quiet moment in the pines"]) },
-      { name: "Kalga", days: "Day 5", leg: "about 15 km by road to Barshaini, then a short climb", line: "Orchards and wooden houses on the hill above Barshaini.", lon: 77.433, lat: 32.036, photos: p("kalga", ["Looking down the valley", "Three of us on the climb"]) },
-      { name: "Pulga", days: "Day 5", leg: "a short walk from Kalga", line: "On through the village to the old pine forest beside it.", lon: 77.446, lat: 32.032, photos: p("pulga", ["A break in the forest"]) },
-      { name: "Tulga", days: "Day 6", leg: "across the stream from Pulga", line: "A slow walk through the forest, then down to Barshaini for the ride back.", lon: 77.455, lat: 32.04, photos: p("tulga", ["By the waterfall"]) },
+      { name: "Kasol", days: "Day 1", line: "Into the valley, with an evening by the Parvati at the riverside cafés.", lon: 77.315, lat: 32.01, photos: p("kasol", ["Three of us on the climb", "A break in the forest"]) },
+      { name: "Grahan", days: "Days 2–3", line: "A forest trek up to the village, and a night in a homestay.", lon: 77.372, lat: 32.042, photos: p("grahan", ["By the waterfall", "Looking down the valley", "Evening over the village"]) },
+      { name: "Manikaran", days: "Day 4", line: "Back down the valley for the gurudwara and its hot springs.", lon: 77.348, lat: 32.027, photos: p("manikaran", ["Morning chai under prayer flags"]) },
+      { name: "Kalga", days: "Day 5", line: "Orchards and wooden houses on the hill above Barshaini.", lon: 77.433, lat: 32.036, photos: p("kalga", ["Crossing a stream", "A quiet moment in the pines"]) },
+      { name: "Pulga", days: "Day 5", line: "On through the village to the old pine forest beside it.", lon: 77.446, lat: 32.032, photos: p("pulga", ["Under the deodars"]) },
+      { name: "Tulga", days: "Day 6", line: "A slow walk through the forest, then down to Barshaini for the ride back.", lon: 77.455, lat: 32.04, photos: p("tulga", ["On the trail"]) },
     ],
   },
   {
@@ -78,10 +75,10 @@ export const TRIPS: Trip[] = [
     labels: [],
     stops: [
       { name: "Srinagar", days: "Day 1", line: "Shalimar, Nishat and Chashme Shahi gardens, then Hazratbal and Pari Mahal.", lon: 74.876, lat: 34.149, photos: p("srinagar", ["Shalimar Bagh", "Nishat Bagh", "Hazratbal Shrine"]) },
-      { name: "Sonmarg", days: "Day 2", leg: "about 80 km from Srinagar", line: "A walk or a pony ride up to the Thajiwas glacier.", lon: 75.293, lat: 34.304, photos: p("sonmarg", ["Sonmarg"]) },
-      { name: "Pahalgam", days: "Day 3", leg: "about 90 km from Srinagar", line: "A drive along the Lidder River, with Betaab Valley, Aru and Chandanwari close by.", lon: 75.315, lat: 34.016, photos: p("pahalgam", ["Pahalgam", "Betaab Valley", "Aru Valley"]) },
-      { name: "Gulmarg", days: "Day 4", leg: "about 142 km from Pahalgam", line: "The Gondola up the mountain, then a horse ride in the meadow.", lon: 74.38, lat: 34.048, photos: p("gulmarg", ["Gulmarg", "Gulmarg Gondola"]) },
-      { name: "Dal Lake", days: "Days 5–6", leg: "about 51 km from Gulmarg", line: "A night on a houseboat, and a shikara ride on the lake.", lon: 74.836, lat: 34.075, photos: p("dal-lake", ["Dal Lake", "A shikara"]) },
+      { name: "Sonmarg", days: "Day 2", line: "A walk or a pony ride up to the Thajiwas glacier.", lon: 75.293, lat: 34.304, photos: p("sonmarg", ["Sonmarg"]) },
+      { name: "Pahalgam", days: "Day 3", line: "A drive along the Lidder River, with Betaab Valley, Aru and Chandanwari close by.", lon: 75.315, lat: 34.016, photos: p("pahalgam", ["Pahalgam", "Betaab Valley", "Aru Valley"]) },
+      { name: "Gulmarg", days: "Day 4", line: "The Gondola up the mountain, then a horse ride in the meadow.", lon: 74.38, lat: 34.048, photos: p("gulmarg", ["Gulmarg", "Gulmarg Gondola"]) },
+      { name: "Dal Lake", days: "Days 5–6", line: "A night on a houseboat, and a shikara ride on the lake.", lon: 74.836, lat: 34.075, photos: p("dal-lake", ["Dal Lake", "A shikara"]) },
     ],
   },
 ];

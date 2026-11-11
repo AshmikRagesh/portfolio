@@ -90,7 +90,6 @@ function Itinerary({ trip, index, active, setActive, openPhoto }: { trip: Trip; 
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span className="truncate font-geist text-caption text-muted">
                     {s.days}
-                    {s.leg ? ` · ${s.leg}` : ""}
                   </span>
                   <span className="flex items-center gap-1.5 font-geist text-body-lg font-medium text-heading">
                     {s.name}
@@ -127,41 +126,53 @@ function EndPaper() {
   );
 }
 
+// After abhisekmishra.com's trip notes: the photo sits inset on the page's paper with
+// rounded corners, a round close button in its corner, and dots over a centred caption at
+// the foot. Tap the left or right half (or a dot) to move between a stop's photos.
 function PhotoViewer({ trip, at, onMove, onClose }: { trip: Trip; at: { s: number; p: number }; onMove: (d: number) => void; onClose: () => void }) {
   const stop = trip.stops[at.s];
   const ph = stop.photos[at.p];
   const many = stop.photos.length > 1;
   return (
-    <div className="absolute inset-0 animate-[bookPhotoIn_420ms_cubic-bezier(0.22,1,0.36,1)] overflow-hidden rounded-r-[6px] bg-midnight">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img key={ph.src} src={ph.src} alt={`${stop.name}: ${ph.caption}`} draggable={false} className="absolute inset-0 h-full w-full animate-[bookPhotoImg_600ms_ease-out] object-cover" />
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-midnight/85 via-midnight/40 to-transparent px-5 pb-5 pt-16">
-        <p className="font-geist text-[10px] font-medium uppercase tracking-[1.6px] text-background/70">
-          {stop.name} · {at.p + 1} / {stop.photos.length}
-        </p>
-        <p className="mt-1 font-geist text-body-lg text-background">{ph.caption}</p>
-      </div>
-      <div className="absolute right-3 top-3 flex gap-1">
+    <div className="absolute inset-0 animate-[bookPhotoIn_420ms_cubic-bezier(0.22,1,0.36,1)] rounded-r-[6px] bg-[#fdfcfa] p-3">
+      <div className="relative h-full w-full overflow-hidden rounded-[12px] bg-midnight">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img key={ph.src} src={ph.src} alt={`${stop.name}: ${ph.caption}`} draggable={false} className="absolute inset-0 h-full w-full animate-[bookPhotoImg_600ms_ease-out] object-cover" />
         {many && (
           <>
-            <ViewerButton label="Previous photo" onClick={() => onMove(-1)}>‹</ViewerButton>
-            <ViewerButton label="Next photo" onClick={() => onMove(1)}>›</ViewerButton>
+            <button type="button" aria-label="Previous photo" onClick={() => onMove(-1)} className="absolute inset-y-0 left-0 w-1/2 cursor-w-resize outline-none" />
+            <button type="button" aria-label="Next photo" onClick={() => onMove(1)} className="absolute inset-y-0 right-0 w-1/2 cursor-e-resize outline-none" />
           </>
         )}
-        <ViewerButton label="Close photo" onClick={onClose}>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 bg-gradient-to-t from-midnight/70 via-midnight/25 to-transparent px-5 pb-4 pt-14 text-center">
+          {many && (
+            <div className="pointer-events-auto flex gap-1.5">
+              {stop.photos.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`Photo ${i + 1} of ${stop.photos.length}`}
+                  aria-current={i === at.p || undefined}
+                  onClick={() => onMove(i - at.p)}
+                  className={`h-1.5 w-1.5 rounded-full transition-colors duration-200 ${i === at.p ? "bg-background" : "bg-background/45 hover:bg-background/70"}`}
+                />
+              ))}
+            </div>
+          )}
+          <p className="font-geist text-body font-medium text-background">{ph.caption}</p>
+        </div>
+        <button
+          type="button"
+          aria-label="Close photo"
+          onClick={onClose}
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-midnight/60 text-background backdrop-blur-md transition-colors hover:bg-midnight/80"
+        >
           <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
             <path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
-        </ViewerButton>
+        </button>
       </div>
     </div>
-  );
-}
-function ViewerButton({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
-  return (
-    <button type="button" aria-label={label} onClick={onClick} className="flex h-8 w-8 items-center justify-center rounded-full bg-midnight/45 text-[16px] leading-none text-background backdrop-blur-md transition-colors hover:bg-midnight/70">
-      {children}
-    </button>
   );
 }
 
