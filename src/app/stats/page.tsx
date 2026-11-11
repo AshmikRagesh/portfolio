@@ -90,7 +90,7 @@ function Tile({ label, value }: { label: string; value: string }) {
   );
 }
 
-function KeyForm({ wrong }: { wrong: boolean }) {
+function KeyForm({ wrong }: { wrong: string | undefined }) {
   return (
     <main className="page-container pt-[96px] pb-[96px]">
       <form action={unlock} className="mx-auto flex max-w-[360px] flex-col gap-4">
@@ -105,7 +105,8 @@ function KeyForm({ wrong }: { wrong: boolean }) {
             className="h-[44px] rounded-md border border-line px-3 font-brand text-body text-text-base outline-none focus:border-grape"
           />
         </label>
-        {wrong && <p className="text-caption text-warning">That key didn&apos;t match.</p>}
+        {wrong === "1" && <p className="text-caption text-warning">That key didn&apos;t match.</p>}
+        {wrong === "wait" && <p className="text-caption text-warning">Too many wrong tries. Try again in 15 minutes.</p>}
         <Cta type="submit">Open stats</Cta>
       </form>
     </main>
@@ -114,7 +115,7 @@ function KeyForm({ wrong }: { wrong: boolean }) {
 
 export default async function StatsPage({ searchParams }: { searchParams: Promise<{ wrong?: string }> }) {
   if (!process.env.STATS_KEY) notFound();
-  if (!(await hasAccess())) return <KeyForm wrong={(await searchParams).wrong === "1"} />;
+  if (!(await hasAccess())) return <KeyForm wrong={(await searchParams).wrong} />;
 
   const s = await readStats();
   const updated = new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" });
