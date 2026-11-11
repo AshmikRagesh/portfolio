@@ -118,7 +118,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
   if (!(await hasAccess())) return <KeyForm wrong={(await searchParams).wrong} />;
 
   const s = await readStats();
-  const updated = new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" });
+  const updated = new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" });
 
   return (
     <main className="page-container pt-[48px] pb-[96px] md:pt-[64px]">
@@ -127,7 +127,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           <div className="flex flex-col gap-2">
             <h1 className="font-heading font-medium text-h2 text-heading md:text-h2-md lg:text-h2-lg">Curiosity stats</h1>
             <p className="text-caption text-muted">
-              {s.configured ? `Updated ${updated} UTC. Days are counted in UTC.` : "Upstash is not configured, so there is nothing to show."}
+              {s.configured ? `Updated ${updated} IST. Days are counted in India time (IST); days before v1.2 were counted in UTC.` : "Upstash is not configured, so there is nothing to show."}
             </p>
           </div>
           <form action={lock}>

@@ -3,6 +3,7 @@
 // it talks to Upstash with the token, which must never reach the browser.
 
 import { BELLA_EVENTS } from "./config";
+import { dayBefore, istDay } from "./day";
 import { NS, pipeline, storeConfigured } from "./store";
 
 /** Visit length buckets for the distribution, as [label, upper bound in seconds). */
@@ -33,7 +34,7 @@ export interface Stats {
   averageSeconds: number;
   medianSeconds: number;
   distribution: Tally[];
-  /** Oldest first, one entry per UTC day, zero-filled. */
+  /** Oldest first, one entry per IST day, zero-filled. */
   days: Tally[];
   referrers: Tally[];
   devices: Tally[];
@@ -96,8 +97,9 @@ export async function readStats(): Promise<Stats> {
 
   const perDay = new Map(hashToTallies(days as string[]).map((t) => [t.label, t.count]));
   const dayList: Tally[] = [];
+  const today = istDay();
   for (let i = STATS_DAYS - 1; i >= 0; i--) {
-    const key = new Date(Date.now() - i * 86_400_000).toISOString().slice(0, 10);
+    const key = dayBefore(today, i);
     dayList.push({ label: key, count: perDay.get(key) ?? 0 });
   }
 

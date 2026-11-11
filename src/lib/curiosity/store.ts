@@ -10,7 +10,7 @@
 // Redis layout (keys shown with the production prefix; see NS below):
 //   curiosity:visit:<visitId>        hash, the latest numbers for one visit (90-day TTL)
 //   curiosity:board:alltime          sorted set, visitorId → best single-visit seconds
-//   curiosity:board:<YYYY-MM>        sorted set, same but for this month only
+//   curiosity:board:<YYYY-MM>        sorted set, same but for this month only (IST month)
 //   curiosity:lifetime               sorted set, visitorId → lifetime seconds
 //   curiosity:visits                 counter, visits seen (bumped once per visit)
 //
@@ -19,10 +19,11 @@
 //   curiosity:recent                 sorted set, visitId → start time in ms; the stats page
 //                                    reads the newest visit hashes from here for exit pages
 //                                    (capped at RECENT_KEEP)
-//   curiosity:days                   hash, YYYY-MM-DD (UTC) → visits started that day
+//   curiosity:days                   hash, YYYY-MM-DD (IST; UTC before v1.2) → visits started that day
 //   curiosity:referrers              hash, referrer host or "direct" → visits
 //   curiosity:devices                hash, mobile | tablet | desktop → visits
 //   curiosity:events                 hash, Bella event → visits that did it (once per visit)
+//   curiosity:snapshot:<YYYY-MM-DD>  string, the totals at the end of that IST day (see snapshot.ts)
 //
 // For the Front desk page:
 //   curiosity:present                sorted set, visitorId → time of their latest report (ms);
@@ -34,6 +35,7 @@
 // stayed longer than N% of visitors" in a single round trip.
 
 import { MIN_RANK_SAMPLE, type BellaEvent, type CuriosityPayload, type RankResult } from "./config";
+import { istDay, istMonth } from "./day";
 
 /**
  * Key prefix. Production writes "curiosity:…"; next dev (NODE_ENV=development)
@@ -87,7 +89,7 @@ export async function recordVisit(p: CuriosityPayload, opts: { canStartVisit?: (
     return;
   }
 
-  const month = new Date().toISOString().slice(0, 7);
+  const month = istMonth();
   const visitKey = `${NS}:visit:${p.visitId}`;
 
   // What the server already knows about this visit, to keep the claim plausible
@@ -141,7 +143,7 @@ export async function recordVisit(p: CuriosityPayload, opts: { canStartVisit?: (
       ["INCR", `${NS}:visits`],
       ["ZADD", `${NS}:recent`, now, p.visitId],
       ["ZREMRANGEBYRANK", `${NS}:recent`, 0, -(RECENT_KEEP + 1)],
-      ["HINCRBY", `${NS}:days`, new Date(now).toISOString().slice(0, 10), 1],
+      ["HINCRBY", `${NS}:days`, istDay(now), 1],
       ["HINCRBY", `${NS}:referrers`, p.referrer || "direct", 1],
       ["HINCRBY", `${NS}:devices`, p.viewport, 1],
     ]);
@@ -200,7 +202,7 @@ export async function rankFor(visitorId: string, seconds: number): Promise<RankR
   if (!storeConfigured) return { percentile: null, others: 0, leader: null };
 
   const board = `${NS}:board:alltime`;
-  const month = `${NS}:board:${new Date().toISOString().slice(0, 7)}`;
+  const month = `${NS}:board:${istMonth()}`;
   const [{ result: total }, { result: below }, { result: own }, { result: monthTotal }, { result: monthOwn }, { result: top }] = await pipeline([
     ["ZCARD", board],
     ["ZCOUNT", board, "-inf", `(${seconds}`],
