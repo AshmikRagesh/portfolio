@@ -2,7 +2,10 @@
 // Four of Ashmik's trips, from the itineraries they were booked on: the stops, days and
 // what was planned at each. Distances (`leg`) are only given where the itinerary gave
 // them. The book reads only this file. Photos are from Wikimedia Commons (mostly the lead
-// image of each place's Wikipedia article), saved small in /public/images/trips.
+// image of each place's Wikipedia article), saved small in /public/images/trips; Himachal's
+// are Ashmik's own, from the trip, spread across the stops. Himachal's route is a common
+// Parvati Valley plan built round the places visited (Kasol, Grahan, Pulga, Tulga); its
+// distances are the usual ones given for it, and its pins are approximate.
 
 export type Photo = { src: string; caption: string };
 
@@ -18,7 +21,7 @@ export type Stop = {
 };
 
 export type Trip = {
-  key: "dubai" | "azerbaijan" | "bali" | "kashmir";
+  key: "himachal" | "azerbaijan" | "bali" | "kashmir";
   title: string;
   when: string;
   /** Labels for what's round the place on the map: [text, lon, lat, italic for water] */
@@ -30,16 +33,17 @@ const p = (slug: string, captions: string[]): Photo[] => captions.map((caption, 
 
 export const TRIPS: Trip[] = [
   {
-    key: "dubai",
-    title: "Dubai",
-    when: "6 days · Nov 2026",
-    labels: [["Persian Gulf", 54.78, 25.2, true]],
+    key: "himachal",
+    title: "Himachal",
+    when: "6 days · Parvati Valley",
+    labels: [["Parvati River", 77.372, 32.018, true]],
     stops: [
-      { name: "Dubai Marina", days: "Day 1", line: "A dinner cruise along the Marina on the first evening.", lon: 55.14, lat: 25.08, photos: p("dubai-marina", ["Dubai Marina", "Ain Dubai on Bluewaters"]) },
-      { name: "Downtown", days: "Day 2", line: "A city tour, the aquarium in Dubai Mall, then Burj Khalifa from floors 124 and 125.", lon: 55.274, lat: 25.197, photos: p("downtown-dubai", ["Burj Khalifa at dusk", "Dubai Mall"]) },
-      { name: "The desert", days: "Day 3", line: "A desert safari, with a barbecue dinner at the camp.", lon: 55.62, lat: 24.98, photos: p("dubai-desert", ["The desert at Lahbab"]) },
-      { name: "Miracle Garden", days: "Day 4", line: "Miracle Garden in the day, Global Village at night.", lon: 55.244, lat: 25.06, photos: p("miracle-garden", ["Dubai Miracle Garden", "Global Village"]) },
-      { name: "Abu Dhabi", days: "Day 5", line: "A day trip for a city tour of the capital.", lon: 54.43, lat: 24.45, photos: p("abu-dhabi", ["Sheikh Zayed Grand Mosque", "Qasr Al Watan", "Louvre Abu Dhabi"]) },
+      { name: "Kasol", days: "Day 1", line: "Into the valley, with an evening by the Parvati at the riverside cafés.", lon: 77.315, lat: 32.01, photos: p("kasol", ["Morning chai under prayer flags", "Under the deodars"]) },
+      { name: "Grahan", days: "Days 2–3", leg: "about 8–10 km on foot from Kasol", line: "A forest trek up to the village, and a night in a homestay.", lon: 77.372, lat: 32.042, photos: p("grahan", ["On the trail", "Crossing a stream on the way up", "Evening over the village"]) },
+      { name: "Manikaran", days: "Day 4", leg: "about 4 km from Kasol", line: "Back down the valley for the gurudwara and its hot springs.", lon: 77.348, lat: 32.027, photos: p("manikaran", ["A quiet moment in the pines"]) },
+      { name: "Kalga", days: "Day 5", leg: "about 15 km by road to Barshaini, then a short climb", line: "Orchards and wooden houses on the hill above Barshaini.", lon: 77.433, lat: 32.036, photos: p("kalga", ["Looking down the valley", "Three of us on the climb"]) },
+      { name: "Pulga", days: "Day 5", leg: "a short walk from Kalga", line: "On through the village to the old pine forest beside it.", lon: 77.446, lat: 32.032, photos: p("pulga", ["A break in the forest"]) },
+      { name: "Tulga", days: "Day 6", leg: "across the stream from Pulga", line: "A slow walk through the forest, then down to Barshaini for the ride back.", lon: 77.455, lat: 32.04, photos: p("tulga", ["By the waterfall"]) },
     ],
   },
   {
