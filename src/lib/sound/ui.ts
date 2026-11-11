@@ -54,8 +54,7 @@ const RECIPES = {
   toggle: {
     gain: 0.22,
     layers: [
-      { kind: "noise", filter: "bandpass", freq: 2000, q: 1.5, attack: 0.001, decay: 0.016, peak: 0.12 },
-      { kind: "noise", filter: "bandpass", freq: 3700, q: 1.5, offset: 0.024, attack: 0.001, decay: 0.02, peak: 0.1 },
+      { kind: "noise", filter: "bandpass", freq: 2600, q: 1.5, attack: 0.001, decay: 0.018, peak: 0.12 },
     ],
   },
   page: {
