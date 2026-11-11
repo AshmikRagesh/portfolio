@@ -3,7 +3,8 @@
 // it talks to Upstash with the token, which must never reach the browser.
 
 import { BELLA_EVENTS } from "./config";
-import { pipeline, storeConfigured } from "./store";
+import { dayBefore, istDay } from "./day";
+import { NS, pipeline, storeConfigured } from "./store";
 
 /** Visit length buckets for the distribution, as [label, upper bound in seconds). */
 const BUCKETS: [string, number][] = [
@@ -33,7 +34,7 @@ export interface Stats {
   averageSeconds: number;
   medianSeconds: number;
   distribution: Tally[];
-  /** Oldest first, one entry per UTC day, zero-filled. */
+  /** Oldest first, one entry per IST day, zero-filled. */
   days: Tally[];
   referrers: Tally[];
   devices: Tally[];
@@ -75,16 +76,16 @@ export async function readStats(): Promise<Stats> {
   if (!storeConfigured) return empty;
 
   const [visits, visitors, durations, days, referrers, devices, top, recent, events] = await pipeline([
-    ["GET", "curiosity:visits"],
-    ["ZCARD", "curiosity:board:alltime"],
+    ["GET", `${NS}:visits`],
+    ["ZCARD", `${NS}:board:alltime`],
     // ZRANGE comes back ascending by score, so the scores are already sorted for the median
-    ["ZRANGE", "curiosity:durations", 0, -1, "WITHSCORES"],
-    ["HGETALL", "curiosity:days"],
-    ["HGETALL", "curiosity:referrers"],
-    ["HGETALL", "curiosity:devices"],
-    ["ZREVRANGE", "curiosity:board:alltime", 0, 0, "WITHSCORES"],
-    ["ZREVRANGE", "curiosity:recent", 0, EXIT_SAMPLE - 1],
-    ["HGETALL", "curiosity:events"],
+    ["ZRANGE", `${NS}:durations`, 0, -1, "WITHSCORES"],
+    ["HGETALL", `${NS}:days`],
+    ["HGETALL", `${NS}:referrers`],
+    ["HGETALL", `${NS}:devices`],
+    ["ZREVRANGE", `${NS}:board:alltime`, 0, 0, "WITHSCORES"],
+    ["ZREVRANGE", `${NS}:recent`, 0, EXIT_SAMPLE - 1],
+    ["HGETALL", `${NS}:events`],
   ]).then((rows: { result: unknown }[]) => rows.map((r) => r.result));
 
   const flat = (durations as string[]) ?? [];
@@ -96,8 +97,9 @@ export async function readStats(): Promise<Stats> {
 
   const perDay = new Map(hashToTallies(days as string[]).map((t) => [t.label, t.count]));
   const dayList: Tally[] = [];
+  const today = istDay();
   for (let i = STATS_DAYS - 1; i >= 0; i--) {
-    const key = new Date(Date.now() - i * 86_400_000).toISOString().slice(0, 10);
+    const key = dayBefore(today, i);
     dayList.push({ label: key, count: perDay.get(key) ?? 0 });
   }
 
@@ -105,7 +107,7 @@ export async function readStats(): Promise<Stats> {
   // so anything older simply drops out of the sample.
   const ids = (recent as string[]) ?? [];
   const paths: (string | null)[] = ids.length
-    ? (await pipeline(ids.map((id) => ["HGET", `curiosity:visit:${id}`, "lastPath"]))).map(
+    ? (await pipeline(ids.map((id) => ["HGET", `${NS}:visit:${id}`, "lastPath"]))).map(
         (r: { result: string | null }) => r.result,
       )
     : [];

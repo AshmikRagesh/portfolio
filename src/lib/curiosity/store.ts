@@ -7,10 +7,10 @@
 //   Dev log         otherwise. Prints each report to the server console and keeps
 //                   nothing — fine locally, a no-op if it ever ships unconfigured.
 //
-// Redis layout:
+// Redis layout (keys shown with the production prefix; see NS below):
 //   curiosity:visit:<visitId>        hash, the latest numbers for one visit (90-day TTL)
 //   curiosity:board:alltime          sorted set, visitorId → best single-visit seconds
-//   curiosity:board:<YYYY-MM>        sorted set, same but for this month only
+//   curiosity:board:<YYYY-MM>        sorted set, same but for this month only (IST month)
 //   curiosity:lifetime               sorted set, visitorId → lifetime seconds
 //   curiosity:visits                 counter, visits seen (bumped once per visit)
 //
@@ -19,10 +19,11 @@
 //   curiosity:recent                 sorted set, visitId → start time in ms; the stats page
 //                                    reads the newest visit hashes from here for exit pages
 //                                    (capped at RECENT_KEEP)
-//   curiosity:days                   hash, YYYY-MM-DD (UTC) → visits started that day
+//   curiosity:days                   hash, YYYY-MM-DD (IST; UTC before v1.2) → visits started that day
 //   curiosity:referrers              hash, referrer host or "direct" → visits
 //   curiosity:devices                hash, mobile | tablet | desktop → visits
 //   curiosity:events                 hash, Bella event → visits that did it (once per visit)
+//   curiosity:snapshot:<YYYY-MM-DD>  string, the totals at the end of that IST day (see snapshot.ts)
 //
 // For the Front desk page:
 //   curiosity:present                sorted set, visitorId → time of their latest report (ms);
@@ -34,6 +35,15 @@
 // stayed longer than N% of visitors" in a single round trip.
 
 import { MIN_RANK_SAMPLE, type BellaEvent, type CuriosityPayload, type RankResult } from "./config";
+import { istDay, istMonth } from "./day";
+
+/**
+ * Key prefix. Production writes "curiosity:…"; next dev (NODE_ENV=development)
+ * writes "dev:curiosity:…", so local testing never lands in the live numbers even
+ * when .env.local points at the same Upstash database. A local `next start` runs as
+ * production, so set CURIOSITY_NS=dev:curiosity for that. CURIOSITY_NS overrides it.
+ */
+export const NS = process.env.CURIOSITY_NS || (process.env.NODE_ENV === "production" ? "curiosity" : "dev:curiosity");
 
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -60,7 +70,14 @@ export async function pipeline(commands: Command[]) {
   return res.json();
 }
 
-export async function recordVisit(p: CuriosityPayload) {
+/** Seconds of active time the first report of a visit may claim. */
+const FIRST_REPORT_SLACK = 60;
+
+/**
+ * Store one report. Returns "rejected" when the visit belongs to another visitor or a new
+ * visit isn't allowed (opts.canStartVisit, the per-IP limit on new visits).
+ */
+export async function recordVisit(p: CuriosityPayload, opts: { canStartVisit?: () => Promise<boolean> } = {}) {
   if (!storeConfigured) {
     if (process.env.NODE_ENV !== "production") {
       console.log(
@@ -72,8 +89,26 @@ export async function recordVisit(p: CuriosityPayload) {
     return;
   }
 
-  const month = new Date().toISOString().slice(0, 7);
-  const visitKey = `curiosity:visit:${p.visitId}`;
+  const month = istMonth();
+  const visitKey = `${NS}:visit:${p.visitId}`;
+
+  // What the server already knows about this visit, to keep the claim plausible
+  const [{ result: startedAt }, { result: owner }, { result: prevLifetime }] = await pipeline([
+    ["HGET", visitKey, "startedAt"],
+    ["HGET", visitKey, "visitorId"],
+    ["ZSCORE", `${NS}:lifetime`, p.visitorId],
+  ]);
+  // A visit belongs to the visitor who started it
+  if (owner !== null && owner !== p.visitorId) return "rejected";
+  if (startedAt === null && opts.canStartVisit && !(await opts.canStartVisit())) return "rejected";
+
+  // Active time can't outrun the wall clock since the server first saw this visit.
+  // The first report gets FIRST_REPORT_SLACK seconds, since the clock runs before it.
+  const elapsed = startedAt === null ? 0 : Math.max(0, (Date.now() - Number(startedAt)) / 1000);
+  const activeSeconds = Math.min(p.activeSeconds, Math.floor(elapsed) + FIRST_REPORT_SLACK);
+  // Lifetime can't grow by more than this visit's active time
+  const lifetimeSeconds = Math.max(activeSeconds, Math.min(p.lifetimeSeconds, Number(prevLifetime ?? 0) + activeSeconds));
+  p = { ...p, activeSeconds, lifetimeSeconds };
 
   await pipeline([
     // HSETNX first-seen fields so later reports don't overwrite where the visit began
@@ -91,13 +126,13 @@ export async function recordVisit(p: CuriosityPayload) {
     ],
     ["EXPIRE", visitKey, VISIT_TTL_SECONDS],
     // GT: a score only ever moves up, so a stale or out-of-order report can't lower it
-    ["ZADD", "curiosity:board:alltime", "GT", p.activeSeconds, p.visitorId],
-    ["ZADD", `curiosity:board:${month}`, "GT", p.activeSeconds, p.visitorId],
-    ["ZADD", "curiosity:lifetime", "GT", p.lifetimeSeconds, p.visitorId],
-    ["ZADD", "curiosity:durations", "GT", p.activeSeconds, p.visitId],
+    ["ZADD", `${NS}:board:alltime`, "GT", p.activeSeconds, p.visitorId],
+    ["ZADD", `${NS}:board:${month}`, "GT", p.activeSeconds, p.visitorId],
+    ["ZADD", `${NS}:lifetime`, "GT", p.lifetimeSeconds, p.visitorId],
+    ["ZADD", `${NS}:durations`, "GT", p.activeSeconds, p.visitId],
     // In the house: refreshed by every heartbeat, gone on the closing report
-    p.final ? ["ZREM", "curiosity:present", p.visitorId] : ["ZADD", "curiosity:present", Date.now(), p.visitorId],
-    ["ZREMRANGEBYSCORE", "curiosity:present", "-inf", Date.now() - PRESENT_KEEP_MS],
+    p.final ? ["ZREM", `${NS}:present`, p.visitorId] : ["ZADD", `${NS}:present`, Date.now(), p.visitorId],
+    ["ZREMRANGEBYSCORE", `${NS}:present`, "-inf", Date.now() - PRESENT_KEEP_MS],
   ]);
 
   // Count each visit once — SET NX on a marker means only the first report wins
@@ -105,27 +140,36 @@ export async function recordVisit(p: CuriosityPayload) {
   if (result === "OK") {
     const now = Date.now();
     await pipeline([
-      ["INCR", "curiosity:visits"],
-      ["ZADD", "curiosity:recent", now, p.visitId],
-      ["ZREMRANGEBYRANK", "curiosity:recent", 0, -(RECENT_KEEP + 1)],
-      ["HINCRBY", "curiosity:days", new Date(now).toISOString().slice(0, 10), 1],
-      ["HINCRBY", "curiosity:referrers", p.referrer || "direct", 1],
-      ["HINCRBY", "curiosity:devices", p.viewport, 1],
+      ["INCR", `${NS}:visits`],
+      ["ZADD", `${NS}:recent`, now, p.visitId],
+      ["ZREMRANGEBYRANK", `${NS}:recent`, 0, -(RECENT_KEEP + 1)],
+      ["HINCRBY", `${NS}:days`, istDay(now), 1],
+      ["HINCRBY", `${NS}:referrers`, p.referrer || "direct", 1],
+      ["HINCRBY", `${NS}:devices`, p.viewport, 1],
     ]);
   }
+  return "stored";
+}
+
+/** True once this visitor has a stored report (every report sets their lifetime score). */
+async function seen(visitorId: string) {
+  const [{ result }] = await pipeline([["ZSCORE", `${NS}:lifetime`, visitorId]]);
+  return result !== null;
 }
 
 /** The Front desk: this visitor's guest number (handed out on first ask) and how many are here now. */
 export async function deskFor(visitorId: string): Promise<{ guestNo: number | null; guestsNow: number | null }> {
   if (!storeConfigured) return { guestNo: null, guestsNow: null };
-  const key = `curiosity:guestno:${visitorId}`;
+  const key = `${NS}:guestno:${visitorId}`;
   const [{ result: existing }, { result: now }] = await pipeline([
     ["GET", key],
-    ["ZCOUNT", "curiosity:present", Date.now() - PRESENT_NOW_MS, "+inf"],
+    ["ZCOUNT", `${NS}:present`, Date.now() - PRESENT_NOW_MS, "+inf"],
   ]);
   let guestNo = existing === null ? null : Number(existing);
+  // Numbers only go to visitors whose clock has already reported, so a made-up ID gets none
+  if (guestNo === null && !(await seen(visitorId))) return { guestNo: null, guestsNow: Math.max(1, Number(now)) };
   if (guestNo === null) {
-    const [{ result: next }] = await pipeline([["INCR", "curiosity:guests"]]);
+    const [{ result: next }] = await pipeline([["INCR", `${NS}:guests`]]);
     const [{ result: set }] = await pipeline([["SET", key, next, "NX"]]);
     // Another request got there first: use the number it set
     guestNo = set === "OK" ? Number(next) : Number((await pipeline([["GET", key]]))[0].result);
@@ -133,62 +177,18 @@ export async function deskFor(visitorId: string): Promise<{ guestNo: number | nu
   return { guestNo, guestsNow: Math.max(1, Number(now)) };
 }
 
-/**
- * The house, for the dashboard on the pass page: who's here now, everyone so far, this
- * month's guests and stays, where this visit sits among them, visits per day for the last
- * two weeks, and how many visits found each stamp.
- */
-export async function houseStats(visitorId: string, seconds: number) {
-  if (!storeConfigured) return null;
-  const now = Date.now();
-  const month = new Date().toISOString().slice(0, 7);
-  const [{ result: here }, { result: guests }, { result: visits }, { result: scores }, { result: days }, { result: events }] = await pipeline([
-    ["ZCOUNT", "curiosity:present", now - PRESENT_NOW_MS, "+inf"],
-    ["GET", "curiosity:guests"],
-    ["GET", "curiosity:visits"],
-    ["ZRANGE", `curiosity:board:${month}`, 0, -1, "WITHSCORES"],
-    ["HGETALL", "curiosity:days"],
-    ["HGETALL", "curiosity:events"],
-  ]);
-  const flat = (scores as string[]) ?? [];
-  const others: number[] = [];
-  for (let i = 0; i < flat.length; i += 2) if (flat[i] !== visitorId) others.push(Number(flat[i + 1]));
-  const perDay = new Map<string, number>();
-  const dayFlat = (days as string[]) ?? [];
-  for (let i = 0; i < dayFlat.length; i += 2) perDay.set(dayFlat[i], Number(dayFlat[i + 1]));
-  const lastDays = Array.from({ length: 14 }, (_, i) => {
-    const key = new Date(now - (13 - i) * 86_400_000).toISOString().slice(0, 10);
-    return { day: key, visits: perDay.get(key) ?? 0 };
-  });
-  const ev = new Map<string, number>();
-  const evFlat = (events as string[]) ?? [];
-  for (let i = 0; i < evFlat.length; i += 2) ev.set(evFlat[i], Number(evFlat[i + 1]));
-  const totalVisits = Number(visits ?? 0);
-  return {
-    hereNow: Math.max(1, Number(here)),
-    guests: Number(guests ?? 0),
-    visits: totalVisits,
-    month: {
-      guests: others.length + 1,
-      averageSeconds: others.length ? Math.round(others.reduce((a, b) => a + b, 0) / others.length) : null,
-      longestSeconds: others.length ? Math.max(...others) : null,
-      // Share of this month's other guests this visit has out-stayed
-      beaten: others.length ? Math.round((others.filter((s) => s < seconds).length / others.length) * 100) : null,
-    },
-    lastDays,
-    stamps: Object.fromEntries(["ring", "screen", "desk", "two", "back"].map((k) => [k, totalVisits ? Math.round(((ev.get(`stamp_${k}`) ?? 0) / totalVisits) * 100) : 0])),
-  };
-}
-export type HouseStats = NonNullable<Awaited<ReturnType<typeof houseStats>>>;
-
 /** Count a Bella event once per visit — SET NX on a per-visit marker, like visits. */
-export async function recordEvent(visitId: string, event: BellaEvent) {
+/** Only counts events for a visit the server has seen, from the visitor who owns it. */
+export async function recordEvent(visitId: string, visitorId: string, event: BellaEvent): Promise<boolean> {
   if (!storeConfigured) {
     if (process.env.NODE_ENV !== "production") console.log(`[curiosity] event ${event} visit=${visitId.slice(0, 8)}`);
-    return;
+    return true;
   }
-  const [{ result }] = await pipeline([["SET", `curiosity:visit:${visitId}:event:${event}`, 1, "NX", "EX", VISIT_TTL_SECONDS]]);
-  if (result === "OK") await pipeline([["HINCRBY", "curiosity:events", event, 1]]);
+  const [{ result: owner }] = await pipeline([["HGET", `${NS}:visit:${visitId}`, "visitorId"]]);
+  if (owner === null || owner !== visitorId) return false;
+  const [{ result }] = await pipeline([["SET", `${NS}:visit:${visitId}:event:${event}`, 1, "NX", "EX", VISIT_TTL_SECONDS]]);
+  if (result === "OK") await pipeline([["HINCRBY", `${NS}:events`, event, 1]]);
+  return true;
 }
 
 /**
@@ -201,8 +201,8 @@ export async function recordEvent(visitId: string, event: BellaEvent) {
 export async function rankFor(visitorId: string, seconds: number): Promise<RankResult> {
   if (!storeConfigured) return { percentile: null, others: 0, leader: null };
 
-  const board = "curiosity:board:alltime";
-  const month = `curiosity:board:${new Date().toISOString().slice(0, 7)}`;
+  const board = `${NS}:board:alltime`;
+  const month = `${NS}:board:${istMonth()}`;
   const [{ result: total }, { result: below }, { result: own }, { result: monthTotal }, { result: monthOwn }, { result: top }] = await pipeline([
     ["ZCARD", board],
     ["ZCOUNT", board, "-inf", `(${seconds}`],

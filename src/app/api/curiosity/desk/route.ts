@@ -4,6 +4,7 @@
 // (approximate, from the IP, which is never stored). Nothing here is saved by city.
 
 import { deskFor } from "@/lib/curiosity/store";
+import { allow, ipHash, tooMany } from "@/lib/curiosity/guard";
 
 const ID = /^[a-z0-9-]{8,64}$/i;
 
@@ -18,6 +19,7 @@ function header(req: Request, name: string) {
 }
 
 export async function GET(req: Request) {
+  if (!(await allow("desk", ipHash(req.headers), 20, 60))) return tooMany();
   const v = new URL(req.url).searchParams.get("v") ?? "";
   if (!ID.test(v)) return Response.json({ error: "bad visitor" }, { status: 400 });
   let desk: Awaited<ReturnType<typeof deskFor>> = { guestNo: null, guestsNow: null };

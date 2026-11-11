@@ -5,22 +5,25 @@
 
 import { BELLA_EVENTS, type BellaEvent } from "@/lib/curiosity/config";
 import { recordEvent } from "@/lib/curiosity/store";
+import { allow, ipHash, tooMany } from "@/lib/curiosity/guard";
 
 const ID = /^[a-z0-9-]{8,64}$/i;
 
 export async function POST(req: Request) {
+  if (!(await allow("event", ipHash(req.headers), 60, 60))) return tooMany();
   let body: Record<string, unknown>;
   try {
     body = await req.json();
   } catch {
     return new Response(null, { status: 400 });
   }
-  const { visitId, event } = body ?? {};
+  const { visitorId, visitId, event } = body ?? {};
   if (typeof visitId !== "string" || !ID.test(visitId)) return new Response(null, { status: 400 });
   if (typeof event !== "string" || !(event in BELLA_EVENTS)) return new Response(null, { status: 400 });
 
   try {
-    await recordEvent(visitId, event as BellaEvent);
+    const ok = await recordEvent(visitId, typeof visitorId === "string" ? visitorId : "", event as BellaEvent);
+    if (!ok) return new Response(null, { status: 403 });
   } catch (err) {
     console.error("[curiosity] event store failed", err);
   }

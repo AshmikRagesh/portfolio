@@ -322,9 +322,10 @@ function NavTab({ label, href, pathname, inView }: { label: string; href: string
       {inner}
     </a>
   ) : (
-    <a href={linkHref(href, pathname)} aria-current={page ? "page" : current ? "location" : undefined} className={className}>
+    // Next's Link, so moving between pages swaps the page in place instead of reloading the site
+    <Link href={linkHref(href, pathname)} aria-current={page ? "page" : current ? "location" : undefined} className={className}>
       {inner}
-    </a>
+    </Link>
   );
 }
 

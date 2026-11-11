@@ -57,18 +57,6 @@ const Texture = memo(function Texture() {
 // ── Flag stickers ──
 // Each flag in its real proportions, drawn flat; the sticker adds the vinyl look.
 const FLAGS = {
-  uae: {
-    label: "United Arab Emirates",
-    ratio: 2,
-    art: (
-      <svg viewBox="0 0 12 6" className="block h-full w-full">
-        <rect width="12" height="2" fill="#00732F" />
-        <rect y="2" width="12" height="2" fill="#fff" />
-        <rect y="4" width="12" height="2" fill="#000" />
-        <rect width="3" height="6" fill="#EF3340" />
-      </svg>
-    ),
-  },
   azerbaijan: {
     label: "Azerbaijan",
     ratio: 2,
@@ -177,8 +165,7 @@ function Stickers() {
     <div className="pointer-events-none absolute inset-0">
       {/* Clustered at the right edge, overlapping a little, the way stickers pile up */}
       <Sticker flag="azerbaijan" width={70} left={206} top={194} rotate={5} peel />
-      <Sticker flag="uae" width={66} left={226} top={242} rotate={-6} />
-      <Sticker flag="indonesia" width={56} left={200} top={284} rotate={8} lift="left" />
+      <Sticker flag="indonesia" width={56} left={214} top={244} rotate={8} lift="left" />
     </div>
   );
 }

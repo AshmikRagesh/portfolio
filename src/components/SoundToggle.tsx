@@ -4,8 +4,9 @@
 // The speaker in the navbar: turns every site sound on or off (lib/sound/ui). The choice
 // is remembered. Its own click plays the switch sound both ways.
 //
-// Kept minimal, no background: hovering ripples the sound waves outwards (or, muted, gives
-// the cross a small shake) with the DS tick; pressing dips it. Switching off folds the waves away and draws a small cross in
+// A 24px speaker in a 40px round target, no background. Hovering ripples the sound waves
+// outwards (or, muted, gives the cross a small shake) with the
+// DS tick; pressing dips it. Switching off folds the waves away and draws a small cross in
 // their place; switching on brings the waves back one after the other. (.sound-toggle in
 // globals.css)
 
@@ -39,7 +40,7 @@ export default function SoundToggle({ className = "" }: { className?: string }) 
       data-muted={muted || undefined}
       className={`sound-toggle ${className}`}
     >
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path className="sound-toggle-body" d="M4 9.5h3.2L11.5 6v12l-4.3-3.5H4z" />
         <path className="sound-toggle-wave" d="M15 9.6a3.4 3.4 0 0 1 0 4.8" />
         <path className="sound-toggle-wave sound-toggle-wave-2" d="M17.6 7a7 7 0 0 1 0 10" />

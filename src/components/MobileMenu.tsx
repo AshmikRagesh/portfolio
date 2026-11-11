@@ -13,6 +13,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 import { openResume, RESUME_PDF } from "@/lib/resume";
 import { spring } from "@/components/resume/motion";
 
@@ -33,7 +34,7 @@ export function MenuToggle({ open, onToggle }: { open: boolean; onToggle: () => 
       aria-expanded={open}
       aria-controls="mobile-menu"
       aria-label={open ? "Close menu" : "Open menu"}
-      className="mobile-toggle group flex h-[40px] items-center gap-[10px] rounded-[6px] pl-[14px] pr-[12px]"
+      className="mobile-toggle group flex h-[40px] items-center gap-[8px] pl-[16px] pr-[14px]"
       data-open={open || undefined}
     >
       <span className="relative block h-[20px] overflow-hidden font-geist text-[14px] font-medium leading-[20px] tracking-[0px]">
@@ -126,6 +127,7 @@ export function MobileMenu({ open, onClose, links, pathname, inView = null }: { 
   }, [open, onClose]);
 
   // A tap draws the pen loop round the link, then goes there
+  const router = useRouter();
   const go = useCallback(
     (e: React.MouseEvent, link: Link, to: string) => {
       e.preventDefault();
@@ -133,10 +135,11 @@ export function MobileMenu({ open, onClose, links, pathname, inView = null }: { 
       window.setTimeout(() => {
         onClose();
         if (link.href === RESUME_PDF) window.setTimeout(openResume, 160);
-        else window.setTimeout(() => (window.location.href = to), 120);
+        // The router, not location.href, so the site isn't reloaded from scratch
+        else window.setTimeout(() => router.push(to), 120);
       }, 340);
     },
-    [onClose],
+    [onClose, router],
   );
 
   if (!shown || typeof document === "undefined") return null;
@@ -174,6 +177,7 @@ export function MobileMenu({ open, onClose, links, pathname, inView = null }: { 
                     href={to}
                     aria-current={current ? "page" : undefined}
                     onClick={(e) => go(e, link, to)}
+                    data-no-transition
                     className="mobile-menu-link group flex items-center gap-[16px] py-[16px] pl-[4px] outline-none"
                     data-marked={marked || undefined}
                     data-tapped={tapped === link.label || undefined}

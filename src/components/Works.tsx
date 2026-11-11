@@ -132,7 +132,7 @@ export default function Works() {
             Selected work.
           </h2>
           <p className="m-0 text-pretty font-body text-[16px] leading-[26px] text-secondary">
-            A collection of my recent work, from a design-system skill on Claude Code to search and trip planning for TCS World Travel.
+            A few projects I&apos;m proud of, and the thinking behind each one.
           </p>
         </header>
 
