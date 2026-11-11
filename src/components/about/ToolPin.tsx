@@ -81,12 +81,12 @@ function PinArt({ tool, id, svgRef }: { tool: ToolKey; id: string; svgRef: React
           </feSpecularLighting>
           <feComposite in="spec" in2="SourceAlpha" operator="in" result="specIn" />
           <feComposite in="SourceGraphic" in2="specIn" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="lit" />
-          {/* Age: fine speckles of rust and dark tarnish worn into the metal */}
+          {/* Age: a light speckle of rust and soft tarnish worn into the metal */}
           <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed={seed} result="noise" />
-          <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0.45  0 0 0 0 0.22  0 0 0 0 0.08  -3 0 0 0 1.55" result="rust" />
+          <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.3  0 0 0 0 0.12  -3 0 0 0 1.3" result="rust" />
           <feComposite in="rust" in2="SourceAlpha" operator="in" result="rustIn" />
           <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed={seed + 3} result="blotch" />
-          <feColorMatrix in="blotch" type="matrix" values="0 0 0 0 0.18  0 0 0 0 0.1  0 0 0 0 0.04  0 -2.2 0 0 1.05" result="tarnish" />
+          <feColorMatrix in="blotch" type="matrix" values="0 0 0 0 0.2  0 0 0 0 0.12  0 0 0 0 0.05  0 -2 0 0 0.82" result="tarnish" />
           <feComposite in="tarnish" in2="SourceAlpha" operator="in" result="tarnishIn" />
           <feMerge>
             <feMergeNode in="lit" />
