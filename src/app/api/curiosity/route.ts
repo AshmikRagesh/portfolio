@@ -6,6 +6,11 @@
 
 import { MAX_LIFETIME_SECONDS, MAX_VISIT_SECONDS, type CuriosityPayload } from "@/lib/curiosity/config";
 import { recordVisit } from "@/lib/curiosity/store";
+import { allow, ipHash, tooMany } from "@/lib/curiosity/guard";
+
+// A tab sends a heartbeat every 20s; this leaves room for several tabs or a shared office IP
+const REPORTS_PER_MIN = 30;
+const NEW_VISITS_PER_HOUR = 20;
 
 const ID = /^[a-z0-9-]{8,64}$/i;
 const VIEWPORTS = new Set(["mobile", "tablet", "desktop"]);
@@ -36,6 +41,8 @@ function clean(raw: unknown): CuriosityPayload | null {
 }
 
 export async function POST(req: Request) {
+  const ip = ipHash(req.headers);
+  if (!(await allow("ingest", ip, REPORTS_PER_MIN, 60))) return tooMany();
   let body: unknown;
   try {
     body = await req.json();
@@ -47,7 +54,8 @@ export async function POST(req: Request) {
   if (!payload) return new Response(null, { status: 400 });
 
   try {
-    await recordVisit(payload);
+    const outcome = await recordVisit(payload, { canStartVisit: () => allow("newvisit", ip, NEW_VISITS_PER_HOUR, 3600) });
+    if (outcome === "rejected") return new Response(null, { status: 403 });
   } catch (err) {
     console.error("[curiosity] store failed", err);
   }

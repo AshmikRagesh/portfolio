@@ -86,7 +86,8 @@ export function CuriosityProvider({ children }: { children: ReactNode }) {
       lastTick: now,
       lastActivity: now,
       lastPersist: now,
-      lastBeat: now,
+      // First report goes out ~2s in, so the server knows the visit before any event or desk ask
+      lastBeat: now - HEARTBEAT_MS + 2_000,
       lastReported: 0, // nothing worth sending until there's at least a second
     };
     clock.current = s;

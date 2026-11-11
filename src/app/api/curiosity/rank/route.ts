@@ -5,11 +5,13 @@
 
 import { MAX_VISIT_SECONDS, type RankResult } from "@/lib/curiosity/config";
 import { rankFor } from "@/lib/curiosity/store";
+import { allow, ipHash, tooMany } from "@/lib/curiosity/guard";
 
 const ID = /^[a-z0-9-]{8,64}$/i;
 const NO_DATA: RankResult = { percentile: null, others: 0, leader: null };
 
 export async function GET(req: Request) {
+  if (!(await allow("rank", ipHash(req.headers), 60, 60))) return tooMany();
   const params = new URL(req.url).searchParams;
   const visitorId = params.get("v") ?? "";
   const seconds = Math.min(Math.max(Math.floor(Number(params.get("s"))), 0), MAX_VISIT_SECONDS);
