@@ -17,7 +17,7 @@ html, body { overflow-x: clip; }
 html[data-leaving] .page-enter {
   opacity: 0;
   transform: translateY(-8px);
-  transition: opacity 200ms ease-in, transform 240ms cubic-bezier(0.4, 0, 1, 1);
+  transition: opacity 160ms ease-in, transform 180ms cubic-bezier(0.4, 0, 1, 1);
   pointer-events: none;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -39,6 +39,19 @@ html[data-leaving] .page-enter {
   -webkit-tap-highlight-color: transparent;
 }
 .sound-toggle[data-muted] { color: rgba(30, 5, 37, 0.45); }
+/* The hover circle: a soft tint that grows in from the centre */
+.sound-toggle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(157, 19, 106, 0.08);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 200ms ease, transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.sound-toggle[data-muted]::before { background: rgba(30, 5, 37, 0.06); }
+.sound-toggle:focus-visible::before { opacity: 1; transform: none; }
 .sound-toggle svg { position: relative; overflow: visible; }
 .sound-toggle:active { transform: scale(0.9); }
 .sound-toggle:focus-visible { outline: 2px solid #9D136A; outline-offset: 2px; }
@@ -69,13 +82,14 @@ html[data-leaving] .page-enter {
 .sound-toggle-cross { transform-origin: 18px 12px; }
 @media (hover: hover) and (pointer: fine) {
   .sound-toggle:hover { color: #9D136A; }
+  .sound-toggle:hover::before { opacity: 1; transform: none; }
   .sound-toggle:not([data-muted]):hover .sound-toggle-wave { animation: sound-ripple 900ms cubic-bezier(0.22, 1, 0.36, 1) infinite; }
   .sound-toggle:not([data-muted]):hover .sound-toggle-wave-2 { animation-delay: 140ms; }
   .sound-toggle[data-muted]:hover { color: rgba(30, 5, 37, 0.8); }
   .sound-toggle[data-muted]:hover .sound-toggle-cross { animation: sound-shake 360ms ease-out; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sound-toggle, .sound-toggle-wave, .sound-toggle-cross { transition-duration: 1ms; animation: none !important; }
+  .sound-toggle, .sound-toggle::before, .sound-toggle-wave, .sound-toggle-cross { transition-duration: 1ms; animation: none !important; }
 }
 
 @layer utilities {
