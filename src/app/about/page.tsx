@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import TornNetFrame from "@/components/about/TornNetFrame";
-import ChelseaBadge from "@/components/hero/ChelseaBadge";
-import NivasaMedal from "@/components/hero/NivasaMedal";
+import ToolPin from "@/components/about/ToolPin";
 import Tossed from "@/components/hero/Tossed";
 import { Highlight } from "@/components/case-study/Marks";
 import {
@@ -64,14 +63,18 @@ export default function AboutPage() {
             matchHeightOf="about-text"
             className="w-full max-w-[360px] md:max-w-[440px] xl:max-w-none xl:justify-self-end"
           >
-            {/* Beside the frame, outside it: the Chelsea pin off its top-left corner, the
-                Superhost medal off its bottom-right. On a phone there's no room beside it, so
-                they hang just over the corners. Both can be picked up and moved, as in the hero. */}
-            <Tossed rotate={-6} delay={200} className="absolute -left-2 -top-8 z-20 md:-left-[72px] md:top-2 xl:-left-[92px] xl:top-[72px]">
-              <ChelseaBadge className="w-[56px] md:w-[64px] xl:w-[80px]" />
+            {/* Beside the frame, outside it: enamel pins of the tools I build with. Figma off the
+                top-left corner, Cursor off the right edge, Claude off the bottom-right. On a phone
+                there's no room beside it, so they hang just over the corners. Each can be picked
+                up and moved, as in the hero. */}
+            <Tossed rotate={-8} delay={200} className="absolute -left-2 -top-8 z-20 md:-left-[72px] md:top-2 xl:-left-[92px] xl:top-[72px]">
+              <ToolPin tool="figma" className="w-[56px] md:w-[64px] xl:w-[80px]" />
             </Tossed>
-            <Tossed rotate={5} delay={320} className="absolute -bottom-8 -right-2 z-20 md:-right-[80px] md:bottom-10 xl:-right-[96px]">
-              <NivasaMedal className="w-[56px] md:w-[64px] xl:w-[80px]" />
+            <Tossed rotate={6} delay={320} className="absolute -right-2 top-[36%] z-20 md:-right-[72px] xl:-right-[88px]">
+              <ToolPin tool="cursor" className="w-[48px] md:w-[56px] xl:w-[64px]" />
+            </Tossed>
+            <Tossed rotate={-4} delay={440} className="absolute -bottom-8 -right-2 z-20 md:-right-[80px] md:bottom-10 xl:-right-[96px]">
+              <ToolPin tool="claude" className="w-[56px] md:w-[64px] xl:w-[80px]" />
             </Tossed>
           </TornNetFrame>
         </section>
