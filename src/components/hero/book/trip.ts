@@ -4,7 +4,8 @@
 // image of each place's Wikipedia article), saved small in /public/images/trips; Himachal's
 // are Ashmik's own, from the trip, spread across the stops. Himachal's route is a common
 // Parvati Valley plan built round the places visited (Kasol, Grahan, Pulga, Tulga); its
-// pins are approximate.
+// pins are approximate, and Kalga, Pulga and Tulga (a kilometre or two apart) are set
+// slightly apart so their pins don't overlap.
 
 export type Photo = { src: string; caption: string };
 
@@ -33,14 +34,14 @@ export const TRIPS: Trip[] = [
     key: "himachal",
     title: "Himachal",
     when: "6 days · Parvati Valley",
-    labels: [["Parvati River", 77.372, 32.018, true]],
+    labels: [["LAHAUL & SPITI", 77.518, 32.274], ["KULLU", 77.308, 32.141], ["Parvati River", 77.4, 31.997, true]],
     stops: [
-      { name: "Kasol", days: "Day 1", line: "Into the valley, with an evening by the Parvati at the riverside cafés.", lon: 77.315, lat: 32.01, photos: p("kasol", ["Three of us on the climb", "A break in the forest"]) },
-      { name: "Grahan", days: "Days 2–3", line: "A forest trek up to the village, and a night in a homestay.", lon: 77.372, lat: 32.042, photos: p("grahan", ["By the waterfall", "Looking down the valley", "Evening over the village"]) },
-      { name: "Manikaran", days: "Day 4", line: "Back down the valley for the gurudwara and its hot springs.", lon: 77.348, lat: 32.027, photos: p("manikaran", ["Morning chai under prayer flags"]) },
-      { name: "Kalga", days: "Day 5", line: "Orchards and wooden houses on the hill above Barshaini.", lon: 77.433, lat: 32.036, photos: p("kalga", ["Crossing a stream", "A quiet moment in the pines"]) },
-      { name: "Pulga", days: "Day 5", line: "On through the village to the old pine forest beside it.", lon: 77.446, lat: 32.032, photos: p("pulga", ["Under the deodars"]) },
-      { name: "Tulga", days: "Day 6", line: "A slow walk through the forest, then down to Barshaini for the ride back.", lon: 77.455, lat: 32.04, photos: p("tulga", ["On the trail"]) },
+      { name: "Kasol", days: "Day 1", line: "Into the valley, with an evening by the Parvati at the riverside cafés.", lon: 77.315, lat: 32.01, photos: p("kasol", ["Setting off from Kasol", "Pine forest outside Kasol"]) },
+      { name: "Grahan", days: "Days 2–3", line: "A forest trek up to the village, and a night in a homestay.", lon: 77.372, lat: 32.045, photos: p("grahan", ["The waterfall on the Grahan trail", "Looking down the valley on the way to Grahan", "Evening in Grahan village"]) },
+      { name: "Manikaran", days: "Day 4", line: "Back down the valley for the gurudwara and its hot springs.", lon: 77.348, lat: 32.024, photos: p("manikaran", ["Chai at a camp in Manikaran"]) },
+      { name: "Kalga", days: "Day 5", line: "Orchards and wooden houses on the hill above Barshaini.", lon: 77.42, lat: 32.05, photos: p("kalga", ["Crossing a stream below Kalga", "Resting in the pines at Kalga"]) },
+      { name: "Pulga", days: "Day 5", line: "On through the village to the old pine forest beside it.", lon: 77.445, lat: 32.026, photos: p("pulga", ["Under the deodars at Pulga"]) },
+      { name: "Tulga", days: "Day 6", line: "A slow walk through the forest, then down to Barshaini for the ride back.", lon: 77.468, lat: 32.05, photos: p("tulga", ["The trek to Tulga"]) },
     ],
   },
   {
