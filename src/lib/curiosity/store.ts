@@ -7,7 +7,7 @@
 //   Dev log         otherwise. Prints each report to the server console and keeps
 //                   nothing — fine locally, a no-op if it ever ships unconfigured.
 //
-// Redis layout:
+// Redis layout (keys shown with the production prefix; see NS below):
 //   curiosity:visit:<visitId>        hash, the latest numbers for one visit (90-day TTL)
 //   curiosity:board:alltime          sorted set, visitorId → best single-visit seconds
 //   curiosity:board:<YYYY-MM>        sorted set, same but for this month only
@@ -34,6 +34,13 @@
 // stayed longer than N% of visitors" in a single round trip.
 
 import { MIN_RANK_SAMPLE, type BellaEvent, type CuriosityPayload, type RankResult } from "./config";
+
+/**
+ * Key prefix. Production writes "curiosity:…"; anything else (next dev, local builds)
+ * writes "dev:curiosity:…", so local testing never lands in the live numbers even
+ * when .env.local points at the same Upstash database. CURIOSITY_NS overrides it.
+ */
+export const NS = process.env.CURIOSITY_NS || (process.env.NODE_ENV === "production" ? "curiosity" : "dev:curiosity");
 
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -73,7 +80,7 @@ export async function recordVisit(p: CuriosityPayload) {
   }
 
   const month = new Date().toISOString().slice(0, 7);
-  const visitKey = `curiosity:visit:${p.visitId}`;
+  const visitKey = `${NS}:visit:${p.visitId}`;
 
   await pipeline([
     // HSETNX first-seen fields so later reports don't overwrite where the visit began
@@ -91,13 +98,13 @@ export async function recordVisit(p: CuriosityPayload) {
     ],
     ["EXPIRE", visitKey, VISIT_TTL_SECONDS],
     // GT: a score only ever moves up, so a stale or out-of-order report can't lower it
-    ["ZADD", "curiosity:board:alltime", "GT", p.activeSeconds, p.visitorId],
-    ["ZADD", `curiosity:board:${month}`, "GT", p.activeSeconds, p.visitorId],
-    ["ZADD", "curiosity:lifetime", "GT", p.lifetimeSeconds, p.visitorId],
-    ["ZADD", "curiosity:durations", "GT", p.activeSeconds, p.visitId],
+    ["ZADD", `${NS}:board:alltime`, "GT", p.activeSeconds, p.visitorId],
+    ["ZADD", `${NS}:board:${month}`, "GT", p.activeSeconds, p.visitorId],
+    ["ZADD", `${NS}:lifetime`, "GT", p.lifetimeSeconds, p.visitorId],
+    ["ZADD", `${NS}:durations`, "GT", p.activeSeconds, p.visitId],
     // In the house: refreshed by every heartbeat, gone on the closing report
-    p.final ? ["ZREM", "curiosity:present", p.visitorId] : ["ZADD", "curiosity:present", Date.now(), p.visitorId],
-    ["ZREMRANGEBYSCORE", "curiosity:present", "-inf", Date.now() - PRESENT_KEEP_MS],
+    p.final ? ["ZREM", `${NS}:present`, p.visitorId] : ["ZADD", `${NS}:present`, Date.now(), p.visitorId],
+    ["ZREMRANGEBYSCORE", `${NS}:present`, "-inf", Date.now() - PRESENT_KEEP_MS],
   ]);
 
   // Count each visit once — SET NX on a marker means only the first report wins
@@ -105,12 +112,12 @@ export async function recordVisit(p: CuriosityPayload) {
   if (result === "OK") {
     const now = Date.now();
     await pipeline([
-      ["INCR", "curiosity:visits"],
-      ["ZADD", "curiosity:recent", now, p.visitId],
-      ["ZREMRANGEBYRANK", "curiosity:recent", 0, -(RECENT_KEEP + 1)],
-      ["HINCRBY", "curiosity:days", new Date(now).toISOString().slice(0, 10), 1],
-      ["HINCRBY", "curiosity:referrers", p.referrer || "direct", 1],
-      ["HINCRBY", "curiosity:devices", p.viewport, 1],
+      ["INCR", `${NS}:visits`],
+      ["ZADD", `${NS}:recent`, now, p.visitId],
+      ["ZREMRANGEBYRANK", `${NS}:recent`, 0, -(RECENT_KEEP + 1)],
+      ["HINCRBY", `${NS}:days`, new Date(now).toISOString().slice(0, 10), 1],
+      ["HINCRBY", `${NS}:referrers`, p.referrer || "direct", 1],
+      ["HINCRBY", `${NS}:devices`, p.viewport, 1],
     ]);
   }
 }
@@ -118,14 +125,14 @@ export async function recordVisit(p: CuriosityPayload) {
 /** The Front desk: this visitor's guest number (handed out on first ask) and how many are here now. */
 export async function deskFor(visitorId: string): Promise<{ guestNo: number | null; guestsNow: number | null }> {
   if (!storeConfigured) return { guestNo: null, guestsNow: null };
-  const key = `curiosity:guestno:${visitorId}`;
+  const key = `${NS}:guestno:${visitorId}`;
   const [{ result: existing }, { result: now }] = await pipeline([
     ["GET", key],
-    ["ZCOUNT", "curiosity:present", Date.now() - PRESENT_NOW_MS, "+inf"],
+    ["ZCOUNT", `${NS}:present`, Date.now() - PRESENT_NOW_MS, "+inf"],
   ]);
   let guestNo = existing === null ? null : Number(existing);
   if (guestNo === null) {
-    const [{ result: next }] = await pipeline([["INCR", "curiosity:guests"]]);
+    const [{ result: next }] = await pipeline([["INCR", `${NS}:guests`]]);
     const [{ result: set }] = await pipeline([["SET", key, next, "NX"]]);
     // Another request got there first: use the number it set
     guestNo = set === "OK" ? Number(next) : Number((await pipeline([["GET", key]]))[0].result);
@@ -143,12 +150,12 @@ export async function houseStats(visitorId: string, seconds: number) {
   const now = Date.now();
   const month = new Date().toISOString().slice(0, 7);
   const [{ result: here }, { result: guests }, { result: visits }, { result: scores }, { result: days }, { result: events }] = await pipeline([
-    ["ZCOUNT", "curiosity:present", now - PRESENT_NOW_MS, "+inf"],
-    ["GET", "curiosity:guests"],
-    ["GET", "curiosity:visits"],
-    ["ZRANGE", `curiosity:board:${month}`, 0, -1, "WITHSCORES"],
-    ["HGETALL", "curiosity:days"],
-    ["HGETALL", "curiosity:events"],
+    ["ZCOUNT", `${NS}:present`, now - PRESENT_NOW_MS, "+inf"],
+    ["GET", `${NS}:guests`],
+    ["GET", `${NS}:visits`],
+    ["ZRANGE", `${NS}:board:${month}`, 0, -1, "WITHSCORES"],
+    ["HGETALL", `${NS}:days`],
+    ["HGETALL", `${NS}:events`],
   ]);
   const flat = (scores as string[]) ?? [];
   const others: number[] = [];
@@ -187,8 +194,8 @@ export async function recordEvent(visitId: string, event: BellaEvent) {
     if (process.env.NODE_ENV !== "production") console.log(`[curiosity] event ${event} visit=${visitId.slice(0, 8)}`);
     return;
   }
-  const [{ result }] = await pipeline([["SET", `curiosity:visit:${visitId}:event:${event}`, 1, "NX", "EX", VISIT_TTL_SECONDS]]);
-  if (result === "OK") await pipeline([["HINCRBY", "curiosity:events", event, 1]]);
+  const [{ result }] = await pipeline([["SET", `${NS}:visit:${visitId}:event:${event}`, 1, "NX", "EX", VISIT_TTL_SECONDS]]);
+  if (result === "OK") await pipeline([["HINCRBY", `${NS}:events`, event, 1]]);
 }
 
 /**
@@ -201,8 +208,8 @@ export async function recordEvent(visitId: string, event: BellaEvent) {
 export async function rankFor(visitorId: string, seconds: number): Promise<RankResult> {
   if (!storeConfigured) return { percentile: null, others: 0, leader: null };
 
-  const board = "curiosity:board:alltime";
-  const month = `curiosity:board:${new Date().toISOString().slice(0, 7)}`;
+  const board = `${NS}:board:alltime`;
+  const month = `${NS}:board:${new Date().toISOString().slice(0, 7)}`;
   const [{ result: total }, { result: below }, { result: own }, { result: monthTotal }, { result: monthOwn }, { result: top }] = await pipeline([
     ["ZCARD", board],
     ["ZCOUNT", board, "-inf", `(${seconds}`],

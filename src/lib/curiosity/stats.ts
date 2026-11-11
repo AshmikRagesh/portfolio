@@ -3,7 +3,7 @@
 // it talks to Upstash with the token, which must never reach the browser.
 
 import { BELLA_EVENTS } from "./config";
-import { pipeline, storeConfigured } from "./store";
+import { NS, pipeline, storeConfigured } from "./store";
 
 /** Visit length buckets for the distribution, as [label, upper bound in seconds). */
 const BUCKETS: [string, number][] = [
@@ -75,16 +75,16 @@ export async function readStats(): Promise<Stats> {
   if (!storeConfigured) return empty;
 
   const [visits, visitors, durations, days, referrers, devices, top, recent, events] = await pipeline([
-    ["GET", "curiosity:visits"],
-    ["ZCARD", "curiosity:board:alltime"],
+    ["GET", `${NS}:visits`],
+    ["ZCARD", `${NS}:board:alltime`],
     // ZRANGE comes back ascending by score, so the scores are already sorted for the median
-    ["ZRANGE", "curiosity:durations", 0, -1, "WITHSCORES"],
-    ["HGETALL", "curiosity:days"],
-    ["HGETALL", "curiosity:referrers"],
-    ["HGETALL", "curiosity:devices"],
-    ["ZREVRANGE", "curiosity:board:alltime", 0, 0, "WITHSCORES"],
-    ["ZREVRANGE", "curiosity:recent", 0, EXIT_SAMPLE - 1],
-    ["HGETALL", "curiosity:events"],
+    ["ZRANGE", `${NS}:durations`, 0, -1, "WITHSCORES"],
+    ["HGETALL", `${NS}:days`],
+    ["HGETALL", `${NS}:referrers`],
+    ["HGETALL", `${NS}:devices`],
+    ["ZREVRANGE", `${NS}:board:alltime`, 0, 0, "WITHSCORES"],
+    ["ZREVRANGE", `${NS}:recent`, 0, EXIT_SAMPLE - 1],
+    ["HGETALL", `${NS}:events`],
   ]).then((rows: { result: unknown }[]) => rows.map((r) => r.result));
 
   const flat = (durations as string[]) ?? [];
@@ -105,7 +105,7 @@ export async function readStats(): Promise<Stats> {
   // so anything older simply drops out of the sample.
   const ids = (recent as string[]) ?? [];
   const paths: (string | null)[] = ids.length
-    ? (await pipeline(ids.map((id) => ["HGET", `curiosity:visit:${id}`, "lastPath"]))).map(
+    ? (await pipeline(ids.map((id) => ["HGET", `${NS}:visit:${id}`, "lastPath"]))).map(
         (r: { result: string | null }) => r.result,
       )
     : [];
