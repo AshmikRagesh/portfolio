@@ -615,7 +615,10 @@ export default function Footer() {
             </button>
           </div>
 
-
+          {/* What the curiosity clock keeps, in one line */}
+          <p className="relative z-10 -mt-[32px] max-w-[320px] text-balance text-center font-body text-caption text-white/50 md:-mt-[40px] md:max-w-[480px] md:text-caption-lg lg:-mt-[32px]">
+            I measure how long you stay, using a random ID saved in your browser. No names, emails or tracking cookies.
+          </p>
         </div>
       </div>
     </footer>
