@@ -1,12 +1,11 @@
 // ── The trips in the book ─────────────────────────────────────────────────────
 // Four of Ashmik's trips, from the itineraries they were booked on: the stops, days and
 // what was planned at each. The book reads only this file. Photos are saved small in
-// /public/images/trips. Himachal's, Azerbaijan's and Bali's are Ashmik's own, from the
-// trips; Kashmir's and Nusa Penida's are from Wikimedia Commons (mostly the lead image of
-// each place's Wikipedia article). Himachal's route is a common Parvati Valley plan built
-// round the places visited (Kasol, Grahan, Pulga, Tulga); its pins are approximate, and
-// Kalga, Pulga and Tulga (a kilometre or two apart) are set slightly apart so their pins
-// don't overlap.
+// /public/images/trips. Nearly all are Ashmik's own, from the trips; Nusa Penida's and
+// Dal Lake's are from Wikimedia Commons (the lead image of each place's Wikipedia
+// article). Himachal's route is a common Parvati Valley plan built round the places
+// visited (Kasol, Grahan, Pulga, Tulga); its pins are approximate, and Kalga, Pulga and
+// Tulga (a kilometre or two apart) are set slightly apart so their pins don't overlap.
 
 export type Photo = { src: string; caption: string };
 
@@ -63,11 +62,11 @@ export const TRIPS: Trip[] = [
     when: "7 days · Jun 2024",
     labels: [["Bali Sea", 115.1, -8.0, true], ["Indian Ocean", 114.85, -8.95, true]],
     stops: [
-      { name: "Uluwatu", days: "Day 1", line: "Uluwatu Temple on the cliff, and the Kecak dance.", lon: 115.085, lat: -8.829, photos: p("uluwatu", ["The temple gates at Uluwatu", "Under the frangipani at Uluwatu"]) },
-      { name: "Tanah Lot", days: "Day 2", line: "Ulun Danu on Lake Bratan, then Tanah Lot on its rock in the sea.", lon: 115.087, lat: -8.621, photos: p("tanah-lot", ["On the rocks at Tanah Lot"]) },
+      { name: "Uluwatu", days: "Day 1", line: "Uluwatu Temple on the cliff, and the Kecak dance.", lon: 115.085, lat: -8.829, photos: p("uluwatu", ["Under the frangipani at Uluwatu"]) },
+      { name: "Tanah Lot", days: "Day 2", line: "Ulun Danu on Lake Bratan, then Tanah Lot on its rock in the sea.", lon: 115.087, lat: -8.621, photos: p("tanah-lot", ["On the rocks at Tanah Lot", "The temple gates at Tanah Lot", "Back at the villa"]) },
       { name: "Lempuyang", days: "Day 3", line: "The gates of Lempuyang Temple, then the water palace at Tirta Gangga.", lon: 115.631, lat: -8.391, photos: p("lempuyang", ["The Gates of Heaven at Lempuyang", "A heart between the gates"]) },
       { name: "Nusa Penida", days: "Day 4", line: "Broken Beach, Angel’s Billabong, Kelingking and Crystal Bay, and a night on the island.", lon: 115.474, lat: -8.751, photos: p("nusa-penida", ["Kelingking Beach", "Broken Beach"]) },
-      { name: "Ubud", days: "Days 5–6", line: "Rafting on the Ayung River, then the volcano from Kintamani, the monkey forest and the Bali Swing.", lon: 115.263, lat: -8.507, photos: p("ubud", ["Rafts lined up on the Ayung", "In the gorge on the Ayung", "Under a waterfall on the Ayung", "On the Bali Swing"]) },
+      { name: "Ubud", days: "Days 5–6", line: "Rafting on the Ayung River, then the volcano from Kintamani, the monkey forest and the Bali Swing.", lon: 115.263, lat: -8.507, photos: p("ubud", ["The main street in Ubud", "Rafts lined up on the Ayung", "In the gorge on the Ayung", "Under a waterfall on the Ayung", "On the Bali Swing"]) },
     ],
   },
   {
@@ -76,10 +75,10 @@ export const TRIPS: Trip[] = [
     when: "6 days · Nov 2023",
     labels: [],
     stops: [
-      { name: "Srinagar", days: "Day 1", line: "Shalimar, Nishat and Chashme Shahi gardens, then Hazratbal and Pari Mahal.", lon: 74.876, lat: 34.149, photos: p("srinagar", ["Shalimar Bagh", "Nishat Bagh", "Hazratbal Shrine"]) },
-      { name: "Sonmarg", days: "Day 2", line: "A walk or a pony ride up to the Thajiwas glacier.", lon: 75.293, lat: 34.304, photos: p("sonmarg", ["Sonmarg"]) },
-      { name: "Pahalgam", days: "Day 3", line: "A drive along the Lidder River, with Betaab Valley, Aru and Chandanwari close by.", lon: 75.315, lat: 34.016, photos: p("pahalgam", ["Pahalgam", "Betaab Valley", "Aru Valley"]) },
-      { name: "Gulmarg", days: "Day 4", line: "The Gondola up the mountain, then a horse ride in the meadow.", lon: 74.38, lat: 34.048, photos: p("gulmarg", ["Gulmarg", "Gulmarg Gondola"]) },
+      { name: "Srinagar", days: "Day 1", line: "Shalimar, Nishat and Chashme Shahi gardens, then Hazratbal and Pari Mahal.", lon: 74.876, lat: 34.149, photos: p("srinagar", ["Chinar leaves in Srinagar"]) },
+      { name: "Sonmarg", days: "Day 2", line: "A walk or a pony ride up to the Thajiwas glacier.", lon: 75.293, lat: 34.304, photos: p("sonmarg", ["Resting in the snow at Sonmarg", "The three of us at Sonmarg"]) },
+      { name: "Pahalgam", days: "Day 3", line: "A drive along the Lidder River, with Betaab Valley, Aru and Chandanwari close by.", lon: 75.315, lat: 34.016, photos: p("pahalgam", ["Sunset over the river at Pahalgam", "By the Lidder River"]) },
+      { name: "Gulmarg", days: "Day 4", line: "The Gondola up the mountain, then a horse ride in the meadow.", lon: 74.38, lat: 34.048, photos: p("gulmarg", ["Climbing from the Gondola", "At the top of the Gondola", "Above the clouds at Gulmarg", "Up on Apharwat", "Snow angels at Gulmarg", "Lying in the Gulmarg snow"]) },
       { name: "Dal Lake", days: "Days 5–6", line: "A night on a houseboat, and a shikara ride on the lake.", lon: 74.836, lat: 34.075, photos: p("dal-lake", ["Dal Lake", "A shikara"]) },
     ],
   },
