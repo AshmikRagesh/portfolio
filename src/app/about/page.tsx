@@ -63,17 +63,23 @@ export default function AboutPage() {
             matchHeightOf="about-text"
             className="w-full max-w-[360px] md:max-w-[440px] xl:max-w-none xl:justify-self-end"
           >
-            {/* Beside the frame, outside it: enamel pins of the tools I build with. Figma off the
-                top-left corner, Cursor off the right edge, Claude off the bottom-right. On a phone
+            {/* Beside the frame, outside it: enamel pins of the tools I build with: Figma and Framer
+                down the left, Cursor, Codex and Claude down the right. On a phone
                 there's no room beside it, so they hang just over the corners. Each can be picked
                 up and moved, as in the hero. */}
             <Tossed rotate={-8} delay={200} className="absolute -left-2 -top-8 z-20 md:-left-[72px] md:top-2 xl:-left-[92px] xl:top-[72px]">
               <ToolPin tool="figma" className="w-[56px] md:w-[64px] xl:w-[80px]" />
             </Tossed>
-            <Tossed rotate={6} delay={320} className="absolute -right-2 top-[36%] z-20 md:-right-[72px] xl:-right-[88px]">
+            <Tossed rotate={5} delay={280} className="absolute -left-2 top-[56%] z-20 md:-left-[64px] xl:-left-[80px]">
+              <ToolPin tool="framer" className="w-[48px] md:w-[56px] xl:w-[64px]" />
+            </Tossed>
+            <Tossed rotate={6} delay={360} className="absolute -right-2 top-[20%] z-20 md:-right-[72px] xl:-right-[88px]">
               <ToolPin tool="cursor" className="w-[48px] md:w-[56px] xl:w-[64px]" />
             </Tossed>
-            <Tossed rotate={-4} delay={440} className="absolute -bottom-8 -right-2 z-20 md:-right-[80px] md:bottom-10 xl:-right-[96px]">
+            <Tossed rotate={-6} delay={440} className="absolute -right-2 top-[48%] z-20 md:-right-[64px] xl:-right-[80px]">
+              <ToolPin tool="codex" className="w-[48px] md:w-[56px] xl:w-[64px]" />
+            </Tossed>
+            <Tossed rotate={-4} delay={520} className="absolute -bottom-8 -right-2 z-20 md:-right-[80px] md:bottom-10 xl:-right-[96px]">
               <ToolPin tool="claude" className="w-[56px] md:w-[64px] xl:w-[80px]" />
             </Tossed>
           </TornNetFrame>
