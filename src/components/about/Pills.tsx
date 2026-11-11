@@ -20,7 +20,6 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Highlight } from "@/components/case-study/Marks";
 
 const COLORS = {
   orange: "#F2541B",
@@ -576,13 +575,11 @@ export function ChelseaPill() {
   );
 }
 
-/** The closing line, marked with the highlighter, and its heart. */
+/** The closing line and its heart. */
 export function ChelseaLine() {
   return (
     <>
-      <Highlight>
-        <span className="font-medium text-heading">Chelsea till God calls upon my name.</span>
-      </Highlight>{" "}
+      <span className="font-medium text-heading">Chelsea till God calls upon my name.</span>{" "}
       <span data-chelsea-heart className="relative inline-block" role="img" aria-label="blue heart">
         💙
       </span>
