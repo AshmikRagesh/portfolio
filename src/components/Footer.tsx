@@ -552,7 +552,7 @@ function FooterBell() {
                 <div className="pointer-events-none absolute left-1/2 top-full mt-[12px] -translate-x-1/2">
                   <p className="host-tip relative whitespace-nowrap rounded-md bg-midnight px-[12px] py-[8px] font-geist font-normal text-[14px] leading-[20px] text-white shadow-[0_8px_20px_rgba(30,5,37,0.22)]">
                     <span aria-hidden="true" className="absolute -top-[4px] left-1/2 -ml-[4px] h-[8px] w-[8px] rotate-45 rounded-xs bg-midnight" />
-                    Click me, or double-click
+                    Ring me, or double-click for a backflip
                   </p>
                 </div>
               )
