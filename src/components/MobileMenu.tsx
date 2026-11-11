@@ -34,7 +34,7 @@ export function MenuToggle({ open, onToggle }: { open: boolean; onToggle: () => 
       aria-expanded={open}
       aria-controls="mobile-menu"
       aria-label={open ? "Close menu" : "Open menu"}
-      className="mobile-toggle group flex h-[40px] items-center gap-[10px] rounded-[6px] pl-[14px] pr-[12px]"
+      className="mobile-toggle group flex h-[40px] items-center gap-[8px] pl-[16px] pr-[14px]"
       data-open={open || undefined}
     >
       <span className="relative block h-[20px] overflow-hidden font-geist text-[14px] font-medium leading-[20px] tracking-[0px]">
