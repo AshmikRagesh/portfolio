@@ -4,8 +4,8 @@
 // The speaker in the navbar: turns every site sound on or off (lib/sound/ui). The choice
 // is remembered. Its own click plays the switch sound both ways.
 //
-// A 24px speaker in a 40px round target. Hovering fills in a soft tinted circle behind it
-// and ripples the sound waves outwards (or, muted, gives the cross a small shake) with the
+// A 24px speaker in a 40px round target, no background. Hovering ripples the sound waves
+// outwards (or, muted, gives the cross a small shake) with the
 // DS tick; pressing dips it. Switching off folds the waves away and draws a small cross in
 // their place; switching on brings the waves back one after the other. (.sound-toggle in
 // globals.css)
