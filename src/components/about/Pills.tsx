@@ -33,6 +33,11 @@ const COLORS = {
   chelsea: "#034694",
 };
 
+/** Trial (Nov 2026): every pill in the one brand grape instead of its own colour. Set to
+ *  null to bring the per-pill colours back. */
+const ONE_COLOUR: string | null = "#9D136A";
+const pillColour = (c: string) => ONE_COLOUR ?? c;
+
 // Every pill plays the same DS tick on hover as the links do (the workflow pill is a
 // link), so the paragraph sounds consistent (components/SoundLayer)
 const canHover = () => window.matchMedia("(hover: hover)").matches;
@@ -92,7 +97,7 @@ const PILL =
 type PlayProps = ReturnType<typeof usePlay>["props"];
 function Pill({ color, play, className = "", children }: { color: string; play?: PlayProps; className?: string; children: React.ReactNode }) {
   return (
-    <span {...play} data-sound="tick" className={`${PILL} ${className}`} style={{ ["--pill" as string]: color }}>
+    <span {...play} data-sound="tick" className={`${PILL} ${className}`} style={{ ["--pill" as string]: pillColour(color) }}>
       {children}
     </span>
   );
@@ -274,7 +279,7 @@ export function WorkflowPill() {
     <Link
       href="/works/helix"
       className={`${PILL} outline-none focus-visible:ring-2 focus-visible:ring-[#E8137A]/40 focus-visible:ring-offset-2`}
-      style={{ ["--pill" as string]: COLORS.pink }}
+      style={{ ["--pill" as string]: pillColour(COLORS.pink) }}
     >
       a workflow
       <span aria-hidden="true" className="pointer-events-none absolute bottom-full left-0 z-20 mb-[8px] flex items-center">
@@ -501,7 +506,7 @@ export function BadmintonPill() {
     s.remove();
   });
   return (
-    <Pill color={COLORS.yellow} play={props} className="!text-[#16121A]">
+    <Pill color={COLORS.yellow} play={props} className={ONE_COLOUR ? "" : "!text-[#16121A]"}>
       badminton
     </Pill>
   );
