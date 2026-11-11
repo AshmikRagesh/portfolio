@@ -35,7 +35,7 @@ const COLORS = {
 
 /** Trial (Nov 2026): every pill in the one brand grape instead of its own colour. Set to
  *  null to bring the per-pill colours back. */
-const ONE_COLOUR: string | null = "#9D136A";
+const ONE_COLOUR: string | null = null;
 const pillColour = (c: string) => ONE_COLOUR ?? c;
 
 // Every pill plays the same DS tick on hover as the links do (the workflow pill is a
