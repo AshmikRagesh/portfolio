@@ -123,8 +123,8 @@ export function VariantFigure({
 /**
  * Two versions at equal weight: side by side in one row (stacked on a phone), playing
  * together. For designs in a test, where a switch would show one first and hide the other.
- * Each sits in a white card (hairline, soft low shadow; the recording in a framed well),
- * with a footer row under it: the design's name on the left in the heading serif, like a
+ * Each sits in a white card (8px corners, hairline, soft low shadow) with an 8px inset, so
+ * the recording's 4px frame nests evenly inside it. A footer row sits under it: the design's name on the left in the heading serif, like a
  * Works card title, and its variant number quiet on the right in small Geist capitals. A
  * label like "Variant 2 · Text links" splits into those two. Recordings are 16:9 (1920 × 1080).
  */
@@ -145,8 +145,8 @@ export function VariantPair({
         const video = videos[v.id];
         const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
         return (
-          <li key={v.id} className="cs-pair-card flex min-w-0 flex-col rounded-xl p-[12px] pb-[16px]">
-            <div className="cs-pair-media relative overflow-hidden rounded-lg">
+          <li key={v.id} className="cs-pair-card flex min-w-0 flex-col rounded-md p-[8px]">
+            <div className="cs-pair-media relative overflow-hidden rounded-sm">
               <Figure
                 name={names[v.id]}
                 alt={video ? `Screen recording: ${names[v.id]}` : undefined}
@@ -154,8 +154,8 @@ export function VariantPair({
                 aspect={aspect}
               />
             </div>
-            <div className="flex items-center justify-between gap-[12px] px-[4px] pt-[16px]">
-              <p className="m-0 font-heading text-h4-md text-heading md:text-h4-lg">{name}</p>
+            <div className="flex items-center justify-between gap-[12px] px-[8px] pb-[8px] pt-[12px]">
+              <p className="m-0 font-heading text-h4 text-heading">{name}</p>
               {kicker && (
                 <p className="m-0 shrink-0 font-geist text-caption-md font-medium uppercase tracking-[0.8px] tabular-nums text-muted">
                   {kicker}
