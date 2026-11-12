@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useLayoutEffect, useRef, useState } from "react";
 import { Figure } from "./Blocks";
+import { Tag } from "@/components/Tag";
 
 /**
  * Visuals that show two or more versions side by side in time: two designs, or the same
@@ -116,6 +117,43 @@ export function VariantFigure({
       <div className="absolute right-[12px] top-[12px] z-10 md:right-[16px] md:top-[16px]">
         <VariantSwitch variants={variants} current={current} onChange={setCurrent} />
       </div>
+    </div>
+  );
+}
+
+/**
+ * Two versions at equal weight: side by side in one row (stacked on a phone), each with
+ * the same neutral tag and the same frame, playing together. For designs in a test, where
+ * a switch would show one first and hide the other. Phone recordings sit in a square frame
+ * (export them at 1080 × 1080) so the phone fills a half-width card.
+ */
+export function VariantPair({
+  names,
+  videos = {},
+  aspect = "aspect-square",
+}: {
+  names: Record<string, string>;
+  videos?: Record<string, string | undefined>;
+  aspect?: string;
+}) {
+  const variants = useContext(VariantContext);
+  if (!variants) throw new Error("VariantPair needs a VariantProvider");
+  return (
+    <div className="grid grid-cols-1 gap-[24px] sm:grid-cols-2">
+      {variants.map((v) => {
+        const video = videos[v.id];
+        return (
+          <div key={v.id} className="flex min-w-0 flex-col gap-[12px]">
+            <span className="self-start"><Tag face="geist" tone="grey">{v.label}</Tag></span>
+            <Figure
+              name={names[v.id]}
+              alt={video ? `Screen recording: ${names[v.id]}` : undefined}
+              video={video}
+              aspect={aspect}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }
