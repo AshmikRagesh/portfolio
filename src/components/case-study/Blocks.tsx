@@ -404,7 +404,7 @@ const NOTE = "flex gap-[12px] font-body text-[16px] leading-[26px] text-secondar
 
 const NOTE_HEAD = "font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted";
 
-// One column of notes inside the option card's grey well, headed in the body face
+// One column of notes under the option card's media, headed in the body face
 function NotePanel({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-[16px] px-[12px] pb-[12px] pt-[20px] md:px-[16px] md:pb-[16px]">
@@ -457,8 +457,9 @@ export function Reasons({ items }: { items: string[] }) {
  * An iteration or design option, every one laid out the same, top to bottom: label, title
  * and an optional note; the preview across the full width at one 16:9 size (a clip plays
  * in the case study player); then the notes. Stacking keeps every card's preview the same
- * size, whatever the length of its notes. The media and the notes sit together in one grey
- * well, so each option reads as a single object. A chosen option has a dark border and a
+ * size, whatever the length of its notes. It shares the VariantPair card (white, 8px corners,
+ * soft low shadow, the media's 4px frame nested in an 8px inset); the label sits over the
+ * title in small Geist capitals, not a tag. A chosen option has a dark outline and a
  * stamp pressed onto the media's corner — SHIPPED, or `stamp` for another status such as
  * "Selected" or "In test".
  */
@@ -489,37 +490,24 @@ export function OptionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className={`group relative rounded-xl bg-white p-[8px] ${
-        shipped ? "border-2 border-primary" : "border border-line-soft"
-      }`}
-    >
-      <div className={`flex min-h-[64px] flex-col gap-[12px] px-[12px] pb-[4px] pt-[12px] md:px-[16px] md:pt-[16px] ${shipped ? "pr-[136px] md:pr-[248px]" : ""}`}>
-        <div className="flex flex-wrap items-center gap-[8px]">
-          <Tag face="geist" tone="grey">{label}</Tag>
-        </div>
-        {title && (
-          <p className="font-heading text-[24px] font-medium leading-[32px] text-heading md:text-[28px] md:leading-[36px]">
-            {title}
-          </p>
-        )}
+    <div className={`cs-pair-card group relative rounded-md p-[8px] ${shipped ? "cs-pair-card--chosen" : ""}`}>
+      <div className={`flex min-h-[64px] flex-col gap-[8px] px-[12px] pb-[16px] pt-[12px] md:px-[16px] md:pb-[20px] md:pt-[16px] ${shipped ? "pb-[28px] md:pr-[248px]" : ""}`}>
+        <p className="m-0 font-geist text-caption-md font-medium uppercase tracking-[0.8px] text-muted">{label}</p>
+        {title && <p className="m-0 font-heading text-h3 text-heading md:text-h3-md lg:text-h3-lg">{title}</p>}
         {note && <p className={NOTE_HEAD}>{note}</p>}
       </div>
       {/* The stamp is pressed onto the media's top-right corner, half on the work and half
-          above it, and the well takes a small thud as it lands */}
-      <div className="relative mt-[16px]">
-        <div className={`rounded-lg bg-surface p-[8px] ring-1 ring-inset ring-line-soft ${shipped ? "stamp-thud" : ""}`}>
-          <div className="overflow-hidden rounded-md">
-            {video ? (
-              <Media video={video} poster={poster} label={image} />
-            ) : src ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={src} alt={image} className="aspect-[16/9] w-full bg-white object-contain p-[32px]" />
-            ) : (
-              <ImagePlaceholder label={image} aspect="aspect-[16/9]" radius="rounded-md" />
-            )}
-          </div>
-          {children}
+          above it, and the frame takes a small thud as it lands */}
+      <div className="relative">
+        <div className={`cs-pair-media relative overflow-hidden rounded-sm ${shipped ? "stamp-thud" : ""}`}>
+          {video ? (
+            <Media video={video} poster={poster} label={image} />
+          ) : src ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={src} alt={image} className="aspect-[16/9] w-full bg-surface object-contain p-[32px]" />
+          ) : (
+            <ImagePlaceholder label={image} aspect="aspect-[16/9]" radius="rounded-sm" />
+          )}
         </div>
         {shipped && (
           <ShippedStamp
@@ -528,6 +516,7 @@ export function OptionCard({
           />
         )}
       </div>
+      <div className="mt-[4px]">{children}</div>
     </div>
   );
 }
