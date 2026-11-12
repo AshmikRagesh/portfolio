@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useLayoutEffect, useRef, useState } from "react";
-import { Figure } from "./Blocks";
+import { CardKicker, Figure } from "./Blocks";
 
 /**
  * Visuals that show two or more versions side by side in time: two designs, or the same
@@ -121,12 +121,12 @@ export function VariantFigure({
 }
 
 /**
- * Two versions at equal weight: one card below the other at full width, playing
- * together. For designs in a test, where a switch would show one first and hide the other.
- * Each sits in a white card (8px corners, hairline, soft low shadow) with an 8px inset, so
- * the recording's 4px frame nests evenly inside it. A footer row sits under it: the design's name on the left in the heading serif, like a
- * Works card title, and its variant number quiet on the right in small Geist capitals. A
- * label like "Variant 2 · Text links" splits into those two. Recordings are 16:9 (1920 × 1080).
+ * Two versions at equal weight: one card below the other at full width, playing together.
+ * For designs in a test, where a switch would show one first and hide the other. Each card
+ * has the OptionCard layout and finish: white, 8px corners, soft low shadow; the variant
+ * label (CardKicker) and the design's name in the heading serif on top, then the recording
+ * in a 4px frame nested in the 8px inset. A label like "Variant 2 · Text links" splits into
+ * those two. Recordings are 16:9 (1920 × 1080).
  */
 export function VariantPair({
   names,
@@ -146,6 +146,10 @@ export function VariantPair({
         const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
         return (
           <li key={v.id} className="cs-pair-card flex min-w-0 flex-col rounded-md p-[8px]">
+            <div className="flex flex-col gap-[8px] px-[12px] pb-[16px] pt-[12px] md:px-[16px] md:pb-[20px] md:pt-[16px]">
+              {kicker && <CardKicker>{kicker}</CardKicker>}
+              <p className="m-0 font-heading text-h3 text-heading md:text-h3-md lg:text-h3-lg">{name}</p>
+            </div>
             <div className="cs-pair-media relative overflow-hidden rounded-sm">
               <Figure
                 name={names[v.id]}
@@ -153,14 +157,6 @@ export function VariantPair({
                 video={video}
                 aspect={aspect}
               />
-            </div>
-            <div className="flex items-center justify-between gap-[12px] px-[8px] pb-[8px] pt-[12px]">
-              <p className="m-0 font-heading text-h4 text-heading">{name}</p>
-              {kicker && (
-                <p className="m-0 shrink-0 font-geist text-caption-md font-medium uppercase tracking-[0.8px] tabular-nums text-muted">
-                  {kicker}
-                </p>
-              )}
             </div>
           </li>
         );

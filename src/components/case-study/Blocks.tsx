@@ -454,12 +454,26 @@ export function Reasons({ items }: { items: string[] }) {
 }
 
 /**
+ * The small label over a card's title ("Variant 2", "Option C"): Geist capitals in the grape
+ * accent with a 6px grape dot before it. Plain text, not a tag. Shared by OptionCard and
+ * VariantPair so every option and variant is named the same way.
+ */
+export function CardKicker({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="m-0 flex items-center gap-[8px] font-geist text-caption-md font-medium uppercase tracking-[1px] text-grape">
+      <span aria-hidden="true" className="size-[6px] shrink-0 rounded-full bg-grape" />
+      {children}
+    </p>
+  );
+}
+
+/**
  * An iteration or design option, every one laid out the same, top to bottom: label, title
  * and an optional note; the preview across the full width at one 16:9 size (a clip plays
  * in the case study player); then the notes. Stacking keeps every card's preview the same
  * size, whatever the length of its notes. It shares the VariantPair card (white, 8px corners,
- * soft low shadow, the media's 4px frame nested in an 8px inset); the label sits over the
- * title in small Geist capitals, not a tag. A chosen option has a dark outline and a
+ * soft low shadow, the media's 4px frame nested in an 8px inset); the label (CardKicker) sits
+ * over the title, not a tag. A chosen option has a dark outline and a
  * stamp pressed onto the media's corner — SHIPPED, or `stamp` for another status such as
  * "Selected" or "In test".
  */
@@ -492,7 +506,7 @@ export function OptionCard({
   return (
     <div className={`cs-pair-card group relative rounded-md p-[8px] ${shipped ? "cs-pair-card--chosen" : ""}`}>
       <div className={`flex min-h-[64px] flex-col gap-[8px] px-[12px] pb-[16px] pt-[12px] md:px-[16px] md:pb-[20px] md:pt-[16px] ${shipped ? "pb-[28px] md:pr-[248px]" : ""}`}>
-        <p className="m-0 font-geist text-caption-md font-medium uppercase tracking-[0.8px] text-muted">{label}</p>
+        <CardKicker>{label}</CardKicker>
         {title && <p className="m-0 font-heading text-h3 text-heading md:text-h3-md lg:text-h3-lg">{title}</p>}
         {note && <p className={NOTE_HEAD}>{note}</p>}
       </div>
