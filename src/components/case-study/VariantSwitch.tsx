@@ -123,8 +123,8 @@ export function VariantFigure({
 /**
  * Two versions at equal weight: side by side in one row (stacked on a phone), playing
  * together. For designs in a test, where a switch would show one first and hide the other.
- * Each sits in the same white card as the Exploration options (hairline edge, 12px inset),
- * with a footer row under the recording: the design's name on the left, where the eye
+ * Each sits in a card with the Works card finish (top-lit surface, hairline edge; the
+ * recording in a framed well), without its hover lift, with a footer row under it: the design's name on the left, where the eye
  * lands, and its variant number quiet on the right. A label like "Variant 2 · Text links"
  * splits into those two. Recordings are 16:9 (1920 × 1080).
  */
@@ -145,16 +145,18 @@ export function VariantPair({
         const video = videos[v.id];
         const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
         return (
-          <li key={v.id} className="flex min-w-0 flex-col rounded-lg border border-line-soft bg-white p-[12px]">
-            <Figure
-              name={names[v.id]}
-              alt={video ? `Screen recording: ${names[v.id]}` : undefined}
-              video={video}
-              aspect={aspect}
-            />
-            <div className="flex items-baseline justify-between gap-[12px] px-[8px] pb-[4px] pt-[16px]">
+          <li key={v.id} className="cs-pair-card flex min-w-0 flex-col rounded-xl p-[12px] pb-[16px]">
+            <div className="cs-pair-media relative overflow-hidden rounded-lg">
+              <Figure
+                name={names[v.id]}
+                alt={video ? `Screen recording: ${names[v.id]}` : undefined}
+                video={video}
+                aspect={aspect}
+              />
+            </div>
+            <div className="flex items-baseline justify-between gap-[12px] px-[4px] pt-[16px]">
               <p className="m-0 font-body text-body-md font-medium text-heading">{name}</p>
-              {kicker && <p className="m-0 shrink-0 font-geist text-caption-lg text-muted">{kicker}</p>}
+              {kicker && <p className="m-0 shrink-0 font-geist text-caption-lg tabular-nums text-muted">{kicker}</p>}
             </div>
           </li>
         );

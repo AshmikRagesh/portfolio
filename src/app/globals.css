@@ -1072,7 +1072,8 @@ html[data-leaving] .page-enter {
 /* Polish: a top-lit surface with a hairline edge and a highlight along the top; hover lifts the
    card 4px onto a long soft shadow. The image sits in a framed well (hairline + soft drop) and
    eases in a touch on hover. */
-.work-card {
+/* Case study VariantPair cards share the surface, without the hover lift (they aren't links) */
+.work-card, .cs-pair-card {
   background: linear-gradient(180deg, #f6f6f5 0%, #f1f1ef 100%);
   box-shadow: inset 0 0 0 1px rgba(30, 5, 37, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(30, 5, 37, 0.04);
 }
@@ -1082,8 +1083,8 @@ html[data-leaving] .page-enter {
     box-shadow: inset 0 0 0 1px rgba(30, 5, 37, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 16px -8px rgba(30, 5, 37, 0.1), 0 28px 56px -28px rgba(30, 5, 37, 0.28);
   }
 }
-.work-media { box-shadow: 0 1px 2px rgba(30, 5, 37, 0.06), 0 12px 24px -16px rgba(30, 5, 37, 0.24); }
-.work-media::after {
+.work-media, .cs-pair-media { box-shadow: 0 1px 2px rgba(30, 5, 37, 0.06), 0 12px 24px -16px rgba(30, 5, 37, 0.24); }
+.work-media::after, .cs-pair-media::after {
   content: "";
   position: absolute;
   inset: 0;
