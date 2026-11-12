@@ -49,7 +49,7 @@ export const featuredWorks: FeaturedWork[] = [
   {
     type: "Case study",
     discipline: "Product design",
-    title: "Letting TCS travellers explore a destination before they browse trips",
+    title: "Letting TCS travellers explore a destination before they book",
     description:
       "A two-path choice in the Find a Trip menu, so travellers still exploring can learn about a place first.",
     image: "/images/tcs-find-a-trip/cover.webp",

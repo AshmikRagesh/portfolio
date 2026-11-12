@@ -172,7 +172,7 @@ export function CardGrid({
   const layout =
     items.length === 5
       ? "md:grid-cols-6 md:[&>*:nth-child(-n+3)]:col-span-2 md:[&>*]:col-span-3"
-      : items.length === 3
+      : items.length % 3 === 0
         ? "md:grid-cols-3"
         : "md:grid-cols-2";
   return (

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { ArrowsSplit, ClockCounterClockwise, FileX, HourglassMedium, Image as ImageIcon, Images, ListBullets, Users } from "@phosphor-icons/react/dist/ssr";
+import { ArrowsSplit, ClockCounterClockwise, FileX, HourglassMedium, Images, DeviceMobile, ArrowsClockwise, ListBullets, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -33,7 +33,7 @@ import {
 // figures are placeholders until the Figma exports are in.
 
 export const metadata: Metadata = {
-  title: "Not everyone is ready to book · Ashmik Ragesh",
+  title: "Letting TCS travellers explore a destination before they book · Ashmik Ragesh",
   description:
     "Designed and built a two-path choice in the TCS World Travel “Find a Trip” menu, so travellers still exploring can learn about a destination first and those ready to compare go straight to trips. Both variants are built for an A/B/C test.",
 };
@@ -192,7 +192,7 @@ function MenuMap() {
   );
 }
 
-// Three on top (the people and the choice), two below (the constraints)
+// Three on top (the people and the choice), three below (the constraints, all from the ticket)
 const CONTEXT_CARDS = [
   {
     icon: <HourglassMedium size={28} weight="fill" className="text-grape" />,
@@ -204,7 +204,7 @@ const CONTEXT_CARDS = [
     icon: <Users size={28} weight="fill" className="text-grape" />,
     title: "Two kinds of visitor, one path",
     description:
-      "The team believed visitors came in two moods: exploring a place, or planning a trip. The menu only served the planners.",
+      "The ticket named two kinds of visitor: people exploring a place, and people planning a trip. The menu only served the planners.",
   },
   {
     icon: <ArrowsSplit size={28} weight="fill" className="text-grape" />,
@@ -219,10 +219,16 @@ const CONTEXT_CARDS = [
       "North America and Golf only have trips. The design had to fall back cleanly, with no broken or empty option.",
   },
   {
-    icon: <ImageIcon size={28} weight="fill" className="text-grape" />,
-    title: "The images had to exist first",
+    icon: <DeviceMobile size={28} weight="fill" className="text-grape" />,
+    title: "It had to work on a phone too",
     description:
-      "The photo-card version needed an approved image for every continent. It couldn't be finished until the content team supplied them.",
+      "The test runs on desktop, iPhone and Android. Two paths had to fit a narrow menu, with taps big enough to hit.",
+  },
+  {
+    icon: <ArrowsClockwise size={28} weight="fill" className="text-grape" />,
+    title: "No page reloads inside the menu",
+    description:
+      "Closing the menu or switching to another continent had to work instantly, without reloading the page.",
   },
 ];
 
@@ -231,15 +237,18 @@ function Context() {
     <Chapter id="discovery" num={2} title="What we knew going in">
       <Copy>
         <p>
-          Rohit&apos;s CRO team, who look after how many visitors go on to
-          book, brought me a hypothesis about the menu. Before designing
-          anything, <Highlight>I checked the live menu to see how big the gap really was</Highlight>.
+          The CRO ticket came with a hypothesis. Before designing
+          anything, <Highlight>I checked the live menu to see how big the gap was</Highlight>.
         </p>
         <PullQuote
           text="If travellers get a clear choice after picking a continent, more of them will keep going,"
           emphasis="because explorers can learn about the place first, and planners can go straight to trips."
         />
       </Copy>
+      <Visual>
+        {/* The two paths side by side: a destination page is about the place, a trip list is what you can book */}
+        <Figure label="Where each path lands: the Africa destination page (the place, when to go, highlights) and the Africa trip list (dates, length, price)" />
+      </Visual>
       {/* Subsections sit one step apart (.cs-sub), like the solutions below */}
       <div className="cs-sub">
         <Copy>
@@ -247,9 +256,7 @@ function Context() {
           <p>
             The live menu made this easy to check. Every continent link pointed
             to a trip search. <Highlight>Not one pointed to a destination page, even though
-            most continents already had one.</Highlight> The CRO team&apos;s analytics
-            showed what that cost: 38% of people left the trip list without
-            opening a single trip.
+            most continents already had one.</Highlight>
           </p>
           <MoreDetail label="See where every menu link goes" className="mt-[20px]">
             <div className="flex flex-col gap-[32px]">
@@ -261,7 +268,7 @@ function Context() {
               </div>
               <Footnote>
                 Menu links and prices from tcsworldtravel.com, October 2026. The
-                38% drop-off was measured and shared by the TCS CRO team.
+                drop-off figure was measured and shared by the TCS CRO team.
               </Footnote>
             </div>
           </MoreDetail>
@@ -274,9 +281,8 @@ function Context() {
         <Copy>
           <h3>What shaped the design</h3>
           <p>
-            Before drawing anything, five things set the rules: three about the
-            people using the menu, and two constraints the design had to work
-            within.
+            Before drawing anything, six things set the rules: three about the
+            people using the menu, and three constraints from the ticket.
           </p>
         </Copy>
         <Visual>
@@ -284,9 +290,10 @@ function Context() {
         </Visual>
         <Copy>
           <p>
-            <strong>What success looked like:</strong> <Highlight>more people reaching a
-            real next page</Highlight> after picking a continent, either a destination page
-            or a list of trips.
+            <strong>What success looked like:</strong> <Highlight>more people getting
+            past the menu</Highlight>. After picking a continent, more of them should land
+            on a destination page or a trip list, and fewer should leave without
+            choosing. A visit counts only when that page loads, not on the click.
           </p>
         </Copy>
       </div>
@@ -348,14 +355,12 @@ const ITERATIONS: IterationItem[] = [
   },
 ];
 
-// What the business asked for, in order: Sharayu before the prototypes (24 Jun), then
-// Rohit's three asks from the design review (29 Jun). As they gave them, not word-for-word.
+// The three asks, as they were given (not word-for-word quotes). Sharayu's rename came
+// before the review; Rohit's two came in it. Senders alternate, like a chat.
 const REVIEW_FEEDBACK = [
-  { text: "Treat both paths as equal; don\u2019t lean towards Destinations.", from: "Sharayu Jadhav, Product Manager" },
-  { text: "Call them \u201ctrips\u201d, not \u201cexpeditions\u201d.", from: "Sharayu Jadhav, Product Manager" },
   { text: "Add a version with the two paths side by side, not stacked.", from: "Rohit Rayala, CRO" },
-  { text: "Rename \u201cFind Trips\u201d to \u201cExplore Trips\u201d.", from: "Rohit Rayala, CRO" },
-  { text: "List Explore Trips first, then Explore Destination.", from: "Rohit Rayala, CRO" },
+  { text: "Call them \u201ctrips\u201d, not \u201cexpeditions\u201d.", from: "Sharayu Jadhav, Product Manager" },
+  { text: "Rename \u201cFind Trips\u201d to \u201cExplore Trips\u201d, and list it first.", from: "Rohit Rayala, CRO" },
 ];
 
 // Numbered points, not cards, in the reading column: the takeaway after the variant cards
@@ -382,10 +387,9 @@ function Exploration() {
           not how it should look</Highlight>. I built them with <HelixLink />, so the
           business could click through each one. The two paths
           open right under the continent you click, so the menu never jumps
-          away. Sharayu set two rules before the prototypes, and in review Rohit asked
-          for three changes.
+          away. The business asked for three changes.
         </p>
-        <ChatQuotes label="What Sharayu and Rohit asked for" items={REVIEW_FEEDBACK} />
+        <ChatQuotes label="What the business asked for" items={REVIEW_FEEDBACK} />
         <p>
           The side-by-side version is where the phone problem showed up. In the
           end, two designs were strong enough that we chose to test both.
@@ -665,7 +669,7 @@ export default function TcsFindATripPage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels["tcs-find-a-trip"]}>
       <Hero
-        title="Not everyone is ready to book. Letting travellers choose: explore a destination, or browse trips"
+        title="Letting TCS travellers explore a destination before they book"
         date="July 2026"
         image="/images/tcs-find-a-trip/cover.webp"
       />
