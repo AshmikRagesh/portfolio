@@ -121,7 +121,7 @@ export function VariantFigure({
 }
 
 /**
- * Two versions at equal weight: side by side in one row (stacked on a phone), playing
+ * Two versions at equal weight: one card below the other at full width, playing
  * together. For designs in a test, where a switch would show one first and hide the other.
  * Each sits in a white card (8px corners, hairline, soft low shadow) with an 8px inset, so
  * the recording's 4px frame nests evenly inside it. A footer row sits under it: the design's name on the left in the heading serif, like a
@@ -140,7 +140,7 @@ export function VariantPair({
   const variants = useContext(VariantContext);
   if (!variants) throw new Error("VariantPair needs a VariantProvider");
   return (
-    <ul className="m-0 grid list-none grid-cols-1 gap-[16px] p-0 sm:grid-cols-2 md:gap-[24px]">
+    <ul className="m-0 flex list-none flex-col gap-[24px] p-0 md:gap-[32px]">
       {variants.map((v) => {
         const video = videos[v.id];
         const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
