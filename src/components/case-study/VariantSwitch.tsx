@@ -123,10 +123,10 @@ export function VariantFigure({
 /**
  * Two versions at equal weight: side by side in one row (stacked on a phone), playing
  * together. For designs in a test, where a switch would show one first and hide the other.
- * Each sits in a card with the Works card finish (top-lit surface, hairline edge; the
- * recording in a framed well), without its hover lift, with a footer row under it: the design's name on the left, where the eye
- * lands, and its variant number quiet on the right. A label like "Variant 2 · Text links"
- * splits into those two. Recordings are 16:9 (1920 × 1080).
+ * Each sits in a white card (hairline, soft low shadow; the recording in a framed well),
+ * with a footer row under it: the design's name on the left in the heading serif, like a
+ * Works card title, and its variant number quiet on the right in small Geist capitals. A
+ * label like "Variant 2 · Text links" splits into those two. Recordings are 16:9 (1920 × 1080).
  */
 export function VariantPair({
   names,
@@ -154,9 +154,13 @@ export function VariantPair({
                 aspect={aspect}
               />
             </div>
-            <div className="flex items-baseline justify-between gap-[12px] px-[4px] pt-[16px]">
-              <p className="m-0 font-body text-body-md font-medium text-heading">{name}</p>
-              {kicker && <p className="m-0 shrink-0 font-geist text-caption-lg tabular-nums text-muted">{kicker}</p>}
+            <div className="flex items-center justify-between gap-[12px] px-[4px] pt-[16px]">
+              <p className="m-0 font-heading text-h4-md text-heading md:text-h4-lg">{name}</p>
+              {kicker && (
+                <p className="m-0 shrink-0 font-geist text-caption-md font-medium uppercase tracking-[0.8px] tabular-nums text-muted">
+                  {kicker}
+                </p>
+              )}
             </div>
           </li>
         );
