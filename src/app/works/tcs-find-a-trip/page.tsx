@@ -652,7 +652,7 @@ export default function TcsFindATripPage() {
       <Hero
         title="Letting TCS travellers explore a destination before they book"
         date="July 2026"
-        image="/images/tcs-find-a-trip/cover.webp"
+        image="/images/tcs-find-a-trip/cover-lime.webp"
       />
       <Overview />
       <TheProblem />
