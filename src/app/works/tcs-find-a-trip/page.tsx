@@ -84,7 +84,7 @@ function Overview() {
         </p>
         <Meta
           role="End-to-end Design & Front-end Build"
-          team="Rohit Rayala (CRO), Sharayu Jadhav (Product Owner), Hriday Gami (Design), Sandy Tang (Content)"
+          team="Rohit Rayala (CRO), Sharayu Jadhav (Product Manager), Hriday Gami (Design), Sandy Tang (Content)"
           timeline={<>June – July 2026<br />Briefed in June · Designs approved 15 Jul · Built for an A/B/C test</>}
         />
       </Copy>
@@ -114,12 +114,6 @@ function TheProblem() {
         <ProblemStatement
           situation="Picking a continent sent every visitor straight to a list of trips, even people still deciding where to go."
           consequence="The CRO team measured that 38% left the trip list without opening a single trip, so TCS lost them at the very first step."
-        />
-        <Figure
-          label="Walkthrough: the navigation problem, explained"
-          video="/videos/tcs-find-a-trip/overview.mp4"
-          poster="/images/tcs-find-a-trip/overview-poster.jpg"
-          narrated
         />
       </Visual>
     </Chapter>
@@ -354,8 +348,11 @@ const ITERATIONS: IterationItem[] = [
   },
 ];
 
-// Rohit's three asks from the design review, as he gave them (not word-for-word quotes)
+// What the business asked for, in order: Sharayu before the prototypes (24 Jun), then
+// Rohit's three asks from the design review (29 Jun). As they gave them, not word-for-word.
 const REVIEW_FEEDBACK = [
+  { text: "Treat both paths as equal; don\u2019t lean towards Destinations.", from: "Sharayu Jadhav, Product Manager" },
+  { text: "Call them \u201ctrips\u201d, not \u201cexpeditions\u201d.", from: "Sharayu Jadhav, Product Manager" },
   { text: "Add a version with the two paths side by side, not stacked.", from: "Rohit Rayala, CRO" },
   { text: "Rename \u201cFind Trips\u201d to \u201cExplore Trips\u201d.", from: "Rohit Rayala, CRO" },
   { text: "List Explore Trips first, then Explore Destination.", from: "Rohit Rayala, CRO" },
@@ -385,9 +382,10 @@ function Exploration() {
           not how it should look</Highlight>. I built them with <HelixLink />, so the
           business could click through each one. The two paths
           open right under the continent you click, so the menu never jumps
-          away. In review, Rohit asked for three changes.
+          away. Sharayu set two rules before the prototypes, and in review Rohit asked
+          for three changes.
         </p>
-        <ChatQuotes label="What Rohit asked for in the design review" items={REVIEW_FEEDBACK} />
+        <ChatQuotes label="What Sharayu and Rohit asked for" items={REVIEW_FEEDBACK} />
         <p>
           The side-by-side version is where the phone problem showed up. In the
           end, two designs were strong enough that we chose to test both.

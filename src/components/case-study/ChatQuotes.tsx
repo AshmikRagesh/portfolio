@@ -65,6 +65,9 @@ export default function ChatQuotes({ items, label }: { items: Message[]; label: 
     };
   }, [items]);
 
+  // One tint per person, so two messages from the same sender share a colour
+  const senders = Array.from(new Set(items.map((m) => m.from)));
+
   return (
     <ol ref={ref} aria-label={label} className="my-[32px] flex list-none flex-col gap-[28px] p-0 md:my-[40px]">
       {items.map(({ text, from }, i) => {
@@ -76,7 +79,7 @@ export default function ChatQuotes({ items, label }: { items: Message[]; label: 
             <span
               aria-hidden="true"
               className={`flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
-                TONES[i % TONES.length]
+                TONES[senders.indexOf(from) % TONES.length]
               } ${here ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}
             >
               <User size={18} weight="fill" />
