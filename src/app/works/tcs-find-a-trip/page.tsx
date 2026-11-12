@@ -308,6 +308,7 @@ type IterationItem = {
   label: string;
   title: string;
   chosen?: boolean;
+  video: string;
   worked: string[];
   didntWork: string[];
 };
@@ -316,6 +317,7 @@ type IterationItem = {
 const ITERATIONS: IterationItem[] = [
   {
     label: "Variant 1",
+    video: "/videos/tcs-find-a-trip/option-1.mp4",
     title: "Text links side by side, on every screen",
     worked: [
       "On desktop, both paths sit next to each other at equal weight",
@@ -327,6 +329,7 @@ const ITERATIONS: IterationItem[] = [
   },
   {
     label: "Variant 2",
+    video: "/videos/tcs-find-a-trip/option-2.mp4",
     title: "Text links that open under the continent",
     chosen: true,
     worked: [
@@ -341,6 +344,7 @@ const ITERATIONS: IterationItem[] = [
   },
   {
     label: "Variant 3",
+    video: "/videos/tcs-find-a-trip/option-3.mp4",
     title: "Image cards that open under the continent",
     chosen: true,
     worked: [
@@ -395,7 +399,7 @@ function Exploration() {
           end, two designs were strong enough that we chose to test both.
         </p>
       </Copy>
-      {ITERATIONS.map(({ label, title, chosen, worked, didntWork }) => (
+      {ITERATIONS.map(({ label, title, chosen, video, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
             <OptionCard
@@ -403,7 +407,8 @@ function Exploration() {
               title={title}
               shipped={chosen}
               stamp="In test"
-              image={`${label} — ${title}`}
+              video={video}
+              image={`${label}: ${title}, clickable prototype`}
             >
               <ProsCons pros={worked} cons={didntWork} />
             </OptionCard>
