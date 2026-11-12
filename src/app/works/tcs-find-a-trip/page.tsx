@@ -441,6 +441,14 @@ const TEST_VARIANTS = [
   { id: "cards", label: "Variant 3 · Image cards", short: "V3" },
 ];
 
+// Recordings per Solution point, one per design (the rest still show placeholders)
+const SOLUTION_VIDEOS: Record<number, Record<string, string>> = {
+  1: {
+    links: "/videos/tcs-find-a-trip/solution-1-links.mp4",
+    cards: "/videos/tcs-find-a-trip/solution-1-cards.mp4",
+  },
+};
+
 function Solution() {
   return (
     <Chapter id="solution" num={4} title="How the final designs work">
@@ -461,6 +469,7 @@ function Solution() {
             </Copy>
             <Visual>
               <VariantPair
+                videos={SOLUTION_VIDEOS[num]}
                 names={
                   num === 4
                     ? {
