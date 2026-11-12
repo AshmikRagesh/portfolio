@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { ArrowsSplit, ClockCounterClockwise, FileX, HourglassMedium, Images, DeviceMobile, ArrowsClockwise, ListBullets, Users } from "@phosphor-icons/react/dist/ssr";
+import { ArrowsSplit, ClockCounterClockwise, FileX, HourglassMedium, Images, DeviceMobile, ListBullets, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -16,7 +16,7 @@ import {
   ChatQuotes,
   StatTiles,
   MoreDetail,
-  PreviewLink,
+  HelixLink,
   NextCase,
   ProsCons,
   NumberedPoints,
@@ -38,24 +38,6 @@ export const metadata: Metadata = {
     "Designed and built a two-path choice in the TCS World Travel “Find a Trip” menu, so travellers still exploring can learn about a destination first and those ready to compare go straight to trips. Both variants are built for an A/B/C test.",
 };
 
-// Helix, the design-system skill on Claude Code — linked to its own case study, which it
-// previews on hover. The case study isn't published yet, so the preview says so.
-const HELIX_CASE_STUDY = "/works/helix";
-
-function HelixLink() {
-  return (
-    <PreviewLink
-      href={HELIX_CASE_STUDY}
-      preview={{
-        tag: "Coming soon",
-        title: "Helix: our design system, in code",
-        description: "How a Claude Code skill keeps every design built from the TCS components and tokens.",
-      }}
-    >
-      Helix on Claude Code
-    </PreviewLink>
-  );
-}
 
 const SECTIONS: CaseStudySection[] = [
   { id: "overview",    label: "Overview"    },
@@ -192,7 +174,7 @@ function MenuMap() {
   );
 }
 
-// Three on top (the people and the choice), three below (the constraints, all from the ticket)
+// Three on top (the people and the choice), two below (the constraints from the ticket)
 const CONTEXT_CARDS = [
   {
     icon: <HourglassMedium size={28} weight="fill" className="text-grape" />,
@@ -223,12 +205,6 @@ const CONTEXT_CARDS = [
     title: "It had to work on a phone too",
     description:
       "The test runs on desktop, iPhone and Android. Two paths had to fit a narrow menu, with taps big enough to hit.",
-  },
-  {
-    icon: <ArrowsClockwise size={28} weight="fill" className="text-grape" />,
-    title: "No page reloads inside the menu",
-    description:
-      "Closing the menu or switching to another continent had to work instantly, without reloading the page.",
   },
 ];
 
@@ -281,8 +257,8 @@ function Context() {
         <Copy>
           <h3>What shaped the design</h3>
           <p>
-            Before drawing anything, six things set the rules: three about the
-            people using the menu, and three constraints from the ticket.
+            Before drawing anything, five things set the rules: three about the
+            people using the menu, and two constraints from the ticket.
           </p>
         </Copy>
         <Visual>
