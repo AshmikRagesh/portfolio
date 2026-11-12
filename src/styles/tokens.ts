@@ -68,7 +68,7 @@ export const tokens = {
     // Headings
     h1:        ["32px", { lineHeight: "1.1",  letterSpacing: "-1.6px" }],
     "h1-md":   ["40px", { lineHeight: "1.1",  letterSpacing: "-2px"   }],
-    "h1-lg":   ["44px", { lineHeight: "1.1",  letterSpacing: "-2.2px" }],
+    "h1-lg":   ["48px", { lineHeight: "1.1",  letterSpacing: "-2.4px" }],
 
     h2:        ["24px", { lineHeight: "1.15", letterSpacing: "-1.2px" }],
     "h2-md":   ["32px", { lineHeight: "1.15", letterSpacing: "-1.6px" }],

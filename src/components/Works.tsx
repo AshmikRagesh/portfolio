@@ -124,16 +124,13 @@ export default function Works() {
     >
       <div className="w-full">
         {/* Header */}
-        <header className="mb-8 grid grid-cols-1 items-end gap-4 md:mb-10 md:grid-cols-[minmax(0,1fr)_320px] md:gap-12 lg:grid-cols-[minmax(0,1fr)_400px]">
+        <header className="mb-8 md:mb-10">
           <h2
             id="works-heading"
             className="m-0 text-balance font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[44px] md:leading-[44px]"
           >
             Selected work.
           </h2>
-          <p className="m-0 text-pretty font-body text-[16px] leading-[26px] text-secondary">
-            A few projects I&apos;m proud of, and the thinking behind each one.
-          </p>
         </header>
 
         {/* Cards — while one is hovered or focused, the rest blur back (see .works-list) */}

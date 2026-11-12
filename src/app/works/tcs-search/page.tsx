@@ -22,7 +22,7 @@ import {
   Highlight,
   ResultsCard,
   ChangeList,
-  PreviewLink,
+  HelixLink,
   MoreDetail,
   NextCase,
   ProsCons,
@@ -41,21 +41,6 @@ export const metadata: Metadata = {
     "Redesigned the TCS World Travel search page with filters, a result count and trip cards that show the route, so travellers can narrow a long list to the trips that fit.",
 };
 
-// Helix, the design-system skill on Claude Code, linked to its own case study
-function HelixLink() {
-  return (
-    <PreviewLink
-      href="/works/helix"
-      preview={{
-        tag: "Coming soon",
-        title: "Helix: our design system, in code",
-        description: "How a Claude Code skill keeps every design built from the TCS components and tokens.",
-      }}
-    >
-      Helix on Claude Code
-    </PreviewLink>
-  );
-}
 
 const SECTIONS: CaseStudySection[] = [
   { id: "overview",    label: "Overview"    },
