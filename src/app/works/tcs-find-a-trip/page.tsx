@@ -447,6 +447,11 @@ const SOLUTION_VIDEOS: Record<number, Record<string, string>> = {
     links: "/videos/tcs-find-a-trip/solution-1-links.mp4",
     cards: "/videos/tcs-find-a-trip/solution-1-cards.mp4",
   },
+  // The phone recordings: the point about layout on every screen (point 1 stays desktop only)
+  3: {
+    links: "/videos/tcs-find-a-trip/solution-phone-links.mp4",
+    cards: "/videos/tcs-find-a-trip/solution-phone-cards.mp4",
+  },
 };
 
 function Solution() {
