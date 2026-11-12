@@ -121,17 +121,18 @@ export function VariantFigure({
 }
 
 /**
- * Two versions at equal weight: one below the other at full width, each in the
+ * Two versions at equal weight: side by side in one row (stacked on a phone), each in the
  * same frame with the same label under it, playing together. For designs in a test, where
  * a switch would show one first and hide the other. Each card's label is one caption line
  * under it, smaller than the section heading: "Variant 2 ·" quiet, the design's name in
- * medium weight, so the name reads first. Recordings are 16:9 (1920 × 1080).
- * It keeps the usual 1000px Visual edge, like every other visual on the page.
+ * medium weight, so the name reads first. Phone
+ * recordings sit in a square frame (export them at 1080 × 1080), so the phone fills the
+ * card. It keeps the usual 1000px Visual edge, like every other visual on the page.
  */
 export function VariantPair({
   names,
   videos = {},
-  aspect = "aspect-[16/9]",
+  aspect = "aspect-square",
 }: {
   names: Record<string, string>;
   videos?: Record<string, string | undefined>;
@@ -140,7 +141,7 @@ export function VariantPair({
   const variants = useContext(VariantContext);
   if (!variants) throw new Error("VariantPair needs a VariantProvider");
   return (
-    <div className="flex flex-col gap-[40px] md:gap-[48px]">
+    <div className="grid grid-cols-1 gap-x-[24px] gap-y-[40px] sm:grid-cols-2">
       {variants.map((v) => {
         const video = videos[v.id];
         const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
