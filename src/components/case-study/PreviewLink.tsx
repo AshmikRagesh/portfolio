@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { CtaPill } from "@/components/Cta";
 
 /**
  * An inline link to another case study that previews it on hover or keyboard focus: a
  * small version of the Works card (no pointer) springs in under the link — rising and
- * scaling up from its top-left with a slight overshoot — with the case study's cover, its
- * title and the "Read case study" pill. The card stays open while the pointer moves onto it, and it
+ * scaling up from its top-left with a slight overshoot — with the case study's cover, and its
+ * title. The card stays open while the pointer moves onto it, and it
  * closes a beat after leaving. Built from spans so it can sit inside a paragraph. On
  * touch screens the link simply navigates.
  */
@@ -51,11 +50,11 @@ export default function PreviewLink({
             : "pointer-events-none translate-y-[8px] scale-[0.92] opacity-0 duration-[180ms] ease-out"
         }`}
       >
-        {/* The Works card in miniature: soft grey surface, framed cover, serif title, pill */}
+        {/* The Works card in miniature: soft grey surface, framed cover, serif title */}
         <Link
           href={href}
           tabIndex={-1}
-          className="work-card group flex flex-col gap-[14px] rounded-xl p-[12px] pb-[16px] shadow-[0_16px_40px_rgba(30,5,37,0.12)]"
+          className="work-card group flex flex-col gap-[12px] rounded-xl p-[12px] pb-[16px] shadow-[0_16px_40px_rgba(30,5,37,0.12)]"
         >
           <span className="work-media relative block aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder">
             {preview.image && (
@@ -64,9 +63,6 @@ export default function PreviewLink({
             )}
           </span>
           <span className="block px-[4px] text-balance font-heading text-[20px] leading-[26px] tracking-[-0.5px] text-heading">{preview.title}</span>
-          <span className="block px-[4px]">
-            <CtaPill size="sm">Read case study</CtaPill>
-          </span>
         </Link>
       </span>
     </span>
