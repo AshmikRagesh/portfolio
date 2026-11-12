@@ -66,7 +66,7 @@ export default function Hero({
             </Cta>
           )}
         </div>
-        <h1 className="text-balance text-left font-heading text-h1 font-normal text-white [text-shadow:0_2px_24px_rgba(18,2,15,0.4)] md:text-h1-md lg:text-h1-lg">
+        <h1 className="text-balance text-left font-heading text-h1-md font-normal text-white [text-shadow:0_2px_24px_rgba(18,2,15,0.4)] md:text-h1-lg">
           {title}
         </h1>
       </div>
