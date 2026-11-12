@@ -123,8 +123,9 @@ export function VariantFigure({
 /**
  * Two versions at equal weight: side by side in one row (stacked on a phone), each in the
  * same frame with the same label under it, playing together. For designs in a test, where
- * a switch would show one first and hide the other. A label like "Variant 2 · Text links"
- * splits into a quiet line ("Variant 2") over the design's name ("Text links"). Phone
+ * a switch would show one first and hide the other. Each card's label is one caption line
+ * under it, smaller than the section heading: "Variant 2 ·" quiet, the design's name in
+ * medium weight, so the name reads first. Phone
  * recordings sit in a square frame (export them at 1080 × 1080), so the phone fills the
  * card. It keeps the usual 1000px Visual edge, like every other visual on the page.
  */
@@ -145,18 +146,16 @@ export function VariantPair({
         const video = videos[v.id];
         const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
         return (
-          <div key={v.id} className="flex min-w-0 flex-col gap-[16px]">
+          <div key={v.id} className="flex min-w-0 flex-col gap-[12px]">
             <Figure
               name={names[v.id]}
               alt={video ? `Screen recording: ${names[v.id]}` : undefined}
               video={video}
               aspect={aspect}
             />
-            <p className="m-0 flex flex-col items-center gap-[4px] text-center">
-              {kicker && (
-                <span className="font-geist text-caption-md text-muted md:text-caption-lg">{kicker}</span>
-              )}
-              <span className="font-heading text-h4-md text-heading md:text-h4-lg">{name}</span>
+            <p className="m-0 text-center font-body text-body md:text-body-md">
+              {kicker && <span className="text-muted">{kicker} · </span>}
+              <span className="font-medium text-primary">{name}</span>
             </p>
           </div>
         );
