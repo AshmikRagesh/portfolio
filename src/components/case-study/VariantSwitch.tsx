@@ -121,18 +121,17 @@ export function VariantFigure({
 }
 
 /**
- * Two versions at equal weight: side by side in one row (stacked on a phone), each in the
- * same frame with the same label under it, playing together. For designs in a test, where
- * a switch would show one first and hide the other. Each card's label is one caption line
- * under it, smaller than the section heading: "Variant 2 ·" quiet, the design's name in
- * medium weight, so the name reads first. Phone
- * recordings sit in a square frame (export them at 1080 × 1080), so the phone fills the
- * card. It keeps the usual 1000px Visual edge, like every other visual on the page.
+ * Two versions at equal weight: side by side in one row (stacked on a phone), playing
+ * together. For designs in a test, where a switch would show one first and hide the other.
+ * Each sits in the same white card as the Exploration options (hairline edge, 12px inset),
+ * with a footer row under the recording: the design's name on the left, where the eye
+ * lands, and its variant number quiet on the right. A label like "Variant 2 · Text links"
+ * splits into those two. Recordings are 16:9 (1920 × 1080).
  */
 export function VariantPair({
   names,
   videos = {},
-  aspect = "aspect-square",
+  aspect = "aspect-[16/9]",
 }: {
   names: Record<string, string>;
   videos?: Record<string, string | undefined>;
@@ -141,25 +140,25 @@ export function VariantPair({
   const variants = useContext(VariantContext);
   if (!variants) throw new Error("VariantPair needs a VariantProvider");
   return (
-    <div className="grid grid-cols-1 gap-x-[24px] gap-y-[40px] sm:grid-cols-2">
+    <ul className="m-0 grid list-none grid-cols-1 gap-[16px] p-0 sm:grid-cols-2 md:gap-[24px]">
       {variants.map((v) => {
         const video = videos[v.id];
         const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
         return (
-          <div key={v.id} className="flex min-w-0 flex-col gap-[12px]">
+          <li key={v.id} className="flex min-w-0 flex-col rounded-lg border border-line-soft bg-white p-[12px]">
             <Figure
               name={names[v.id]}
               alt={video ? `Screen recording: ${names[v.id]}` : undefined}
               video={video}
               aspect={aspect}
             />
-            <p className="m-0 text-center font-body text-body md:text-body-md">
-              {kicker && <span className="text-muted">{kicker} · </span>}
-              <span className="font-medium text-primary">{name}</span>
-            </p>
-          </div>
+            <div className="flex items-baseline justify-between gap-[12px] px-[8px] pb-[4px] pt-[16px]">
+              <p className="m-0 font-body text-body-md font-medium text-heading">{name}</p>
+              {kicker && <p className="m-0 shrink-0 font-geist text-caption-lg text-muted">{kicker}</p>}
+            </div>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 }
