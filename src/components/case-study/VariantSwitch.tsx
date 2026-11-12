@@ -124,9 +124,9 @@ export function VariantFigure({
  * Two versions at equal weight: one card below the other at full width, playing together.
  * For designs in a test, where a switch would show one first and hide the other. Each card
  * has the OptionCard layout and finish: white, 8px corners, soft low shadow; the variant
- * label (CardKicker) and the design's name in the heading serif on top, then the recording
- * in a 4px frame nested in the 8px inset. A label like "Variant 2 · Text links" splits into
- * those two. Recordings are 16:9 (1920 × 1080).
+ * one small label on top (CardKicker: "Text links · Variant 2", the name first), then the
+ * recording in a 4px frame nested in the 8px inset. No title: the point's own heading sits
+ * just above, so a repeated serif name would only add bulk. Recordings are 16:9 (1920 × 1080).
  */
 export function VariantPair({
   names,
@@ -146,9 +146,11 @@ export function VariantPair({
         const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
         return (
           <li key={v.id} className="cs-pair-card flex min-w-0 flex-col rounded-md p-[8px]">
-            <div className="flex flex-col gap-[8px] px-[12px] pb-[16px] pt-[12px] md:px-[16px] md:pb-[20px] md:pt-[16px]">
-              {kicker && <CardKicker>{kicker}</CardKicker>}
-              <p className="m-0 font-heading text-h3 text-heading md:text-h3-md lg:text-h3-lg">{name}</p>
+            <div className="px-[12px] pb-[12px] pt-[8px] md:px-[16px] md:pb-[16px] md:pt-[12px]">
+              <CardKicker>
+                {name}
+                {kicker && <span className="text-muted">· {kicker}</span>}
+              </CardKicker>
             </div>
             <div className="cs-pair-media relative overflow-hidden rounded-sm">
               <Figure
