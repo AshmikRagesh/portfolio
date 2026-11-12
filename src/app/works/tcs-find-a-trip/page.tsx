@@ -25,7 +25,7 @@ import {
   OptionCard,
   Footnote,
   VariantProvider,
-  VariantFigure,
+  VariantPair,
   Highlight,
 } from "@/components/case-study";
 
@@ -435,11 +435,19 @@ const SOLUTION_ITEMS = [
   },
 ];
 
-// The two designs in test; each Solution visual carries a switch between them
+// The two designs in test; each Solution visual shows both side by side, at equal weight
 const TEST_VARIANTS = [
   { id: "links", label: "Variant 2 · Text links", short: "V2" },
   { id: "cards", label: "Variant 3 · Image cards", short: "V3" },
 ];
+
+// Recordings per Solution point, one per design (the rest still show placeholders)
+const SOLUTION_VIDEOS: Record<number, Record<string, string>> = {
+  1: {
+    links: "/videos/tcs-find-a-trip/solution-1-links.mp4",
+    cards: "/videos/tcs-find-a-trip/solution-1-cards.mp4",
+  },
+};
 
 function Solution() {
   return (
@@ -449,8 +457,8 @@ function Solution() {
           <p>
             Both test designs share one flow: pick a continent, choose how to
             explore it, and land on the right page. These four details make
-            that flow work. Each detail has a switch in its corner to flip
-            between Variant 2 (text links) and Variant 3 (image cards).
+            that flow work. Each detail shows both designs side by side:
+            Variant 2 (text links) and Variant 3 (image cards).
           </p>
         </Copy>
         {SOLUTION_ITEMS.map(({ num, title, body }) => (
@@ -460,7 +468,8 @@ function Solution() {
               <p>{body}</p>
             </Copy>
             <Visual>
-              <VariantFigure
+              <VariantPair
+                videos={SOLUTION_VIDEOS[num]}
                 names={
                   num === 4
                     ? {

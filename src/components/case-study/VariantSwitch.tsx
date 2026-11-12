@@ -119,3 +119,52 @@ export function VariantFigure({
     </div>
   );
 }
+
+/**
+ * Two versions at equal weight: side by side in one row (stacked on a phone), playing
+ * together. For designs in a test, where a switch would show one first and hide the other.
+ * Each sits in a white card (8px corners, hairline, soft low shadow) with an 8px inset, so
+ * the recording's 4px frame nests evenly inside it. A footer row sits under it: the design's name on the left in the heading serif, like a
+ * Works card title, and its variant number quiet on the right in small Geist capitals. A
+ * label like "Variant 2 · Text links" splits into those two. Recordings are 16:9 (1920 × 1080).
+ */
+export function VariantPair({
+  names,
+  videos = {},
+  aspect = "aspect-[16/9]",
+}: {
+  names: Record<string, string>;
+  videos?: Record<string, string | undefined>;
+  aspect?: string;
+}) {
+  const variants = useContext(VariantContext);
+  if (!variants) throw new Error("VariantPair needs a VariantProvider");
+  return (
+    <ul className="m-0 grid list-none grid-cols-1 gap-[16px] p-0 sm:grid-cols-2 md:gap-[24px]">
+      {variants.map((v) => {
+        const video = videos[v.id];
+        const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
+        return (
+          <li key={v.id} className="cs-pair-card flex min-w-0 flex-col rounded-md p-[8px]">
+            <div className="cs-pair-media relative overflow-hidden rounded-sm">
+              <Figure
+                name={names[v.id]}
+                alt={video ? `Screen recording: ${names[v.id]}` : undefined}
+                video={video}
+                aspect={aspect}
+              />
+            </div>
+            <div className="flex items-center justify-between gap-[12px] px-[8px] pb-[8px] pt-[12px]">
+              <p className="m-0 font-heading text-h4 text-heading">{name}</p>
+              {kicker && (
+                <p className="m-0 shrink-0 font-geist text-caption-md font-medium uppercase tracking-[0.8px] tabular-nums text-muted">
+                  {kicker}
+                </p>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}

@@ -1082,6 +1082,13 @@ html[data-leaving] .page-enter {
     box-shadow: inset 0 0 0 1px rgba(30, 5, 37, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 16px -8px rgba(30, 5, 37, 0.1), 0 28px 56px -28px rgba(30, 5, 37, 0.28);
   }
 }
+/* Case study VariantPair: a white card lifted off the light page by a hairline and a soft,
+   low shadow (no hover lift; it isn't a link). The recording sits in a framed well. */
+.cs-pair-card {
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(30, 5, 37, 0.06), 0 1px 2px rgba(30, 5, 37, 0.04), 0 12px 32px -20px rgba(30, 5, 37, 0.16);
+}
+.cs-pair-media { box-shadow: 0 0 0 1px rgba(30, 5, 37, 0.06); }
 .work-media { box-shadow: 0 1px 2px rgba(30, 5, 37, 0.06), 0 12px 24px -16px rgba(30, 5, 37, 0.24); }
 .work-media::after {
   content: "";
