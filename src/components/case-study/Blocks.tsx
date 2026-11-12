@@ -75,6 +75,8 @@ export function Figure({
   poster,
   narrated,
   aspect = "aspect-[16/9]",
+  card,
+  kicker,
 }: {
   label?: string;
   name?: string;
@@ -86,8 +88,43 @@ export function Figure({
   poster?: string;
   narrated?: boolean;
   aspect?: string;
+  /** Set the media in the white case study card (as in Solution sections): 8px inset, the
+   *  media's 4px frame nested inside, caption and impact under it inside the card */
+  card?: boolean;
+  /** A small label over the media in a card (CardKicker) — only when it adds something the
+   *  heading above doesn't say, such as which design a recording shows */
+  kicker?: React.ReactNode;
 }) {
   const title = name ?? label ?? "Image";
+  const media =
+    video || src ? (
+      <Media src={src} video={video} poster={poster} label={alt ?? title} narrated={narrated} />
+    ) : (
+      <ImagePlaceholder label={title} aspect={aspect} />
+    );
+  if (card) {
+    return (
+      <figure className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px]">
+        {kicker && (
+          <div className="px-[12px] pb-[12px] pt-[8px] md:px-[16px] md:pb-[16px] md:pt-[12px]">
+            <CardKicker>{kicker}</CardKicker>
+          </div>
+        )}
+        <div className="cs-pair-media relative overflow-hidden rounded-sm bg-grape-light/40">{media}</div>
+        {(label || caption || impact) && (
+          <div className="flex flex-col gap-[8px] px-[12px] pb-[8px] pt-[16px] md:px-[16px]">
+            {label && <p className="m-0 font-body text-caption-md font-medium text-muted">{label}</p>}
+            {caption && (
+              <figcaption className="font-body text-body text-secondary md:text-body-md">{caption}</figcaption>
+            )}
+            {impact && (
+              <figcaption className="font-body text-body uppercase text-success">{impact}</figcaption>
+            )}
+          </div>
+        )}
+      </figure>
+    );
+  }
   return (
     <figure className="m-0 min-w-0">
       <div className="overflow-hidden rounded-sm bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]">

@@ -414,6 +414,7 @@ function Solution() {
           </Copy>
           <Visual>
             <Figure
+              card
               name={`Recording: ${title}`}
               alt={`Screen recording: ${title}`}
               video={`/videos/tcs-search/solution-${num}.mp4`}

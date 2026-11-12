@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useLayoutEffect, useRef, useState } from "react";
-import { CardKicker, Figure } from "./Blocks";
+import { Figure } from "./Blocks";
 
 /**
  * Visuals that show two or more versions side by side in time: two designs, or the same
@@ -94,10 +94,13 @@ export function VariantFigure({
   names,
   videos = {},
   captions = {},
+  card,
 }: {
   names: Record<string, string>;
   videos?: Record<string, string | undefined>;
   captions?: Record<string, React.ReactNode>;
+  /** Set it in the white case study card, like the other Solution visuals */
+  card?: boolean;
 }) {
   const variants = useContext(VariantContext);
   if (!variants) throw new Error("VariantFigure needs a VariantProvider");
@@ -111,6 +114,7 @@ export function VariantFigure({
           alt={video ? `Screen recording: ${names[current]}` : undefined}
           video={video}
           caption={captions[current]}
+          card={card}
         />
       </div>
       <div className="absolute right-[12px] top-[12px] z-10 md:right-[16px] md:top-[16px]">
@@ -145,21 +149,20 @@ export function VariantPair({
         const video = videos[v.id];
         const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
         return (
-          <li key={v.id} className="cs-pair-card flex min-w-0 flex-col rounded-md p-[8px]">
-            <div className="px-[12px] pb-[12px] pt-[8px] md:px-[16px] md:pb-[16px] md:pt-[12px]">
-              <CardKicker>
-                {name}
-                {kicker && <span className="text-muted">· {kicker}</span>}
-              </CardKicker>
-            </div>
-            <div className="cs-pair-media relative overflow-hidden rounded-sm">
-              <Figure
-                name={names[v.id]}
-                alt={video ? `Screen recording: ${names[v.id]}` : undefined}
-                video={video}
-                aspect={aspect}
-              />
-            </div>
+          <li key={v.id} className="min-w-0">
+            <Figure
+              card
+              kicker={
+                <>
+                  {name}
+                  {kicker && <span className="text-muted">· {kicker}</span>}
+                </>
+              }
+              name={names[v.id]}
+              alt={video ? `Screen recording: ${names[v.id]}` : undefined}
+              video={video}
+              aspect={aspect}
+            />
           </li>
         );
       })}
