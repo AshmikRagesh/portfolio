@@ -52,7 +52,7 @@ export const featuredWorks: FeaturedWork[] = [
     title: "Letting TCS travellers explore a destination before they book",
     description:
       "A two-path choice in the Find a Trip menu, so travellers still exploring can learn about a place first.",
-    image: "/images/tcs-find-a-trip/cover.webp",
+    image: "/images/tcs-find-a-trip/cover-lime.webp",
     imageAlt: "The TCS World Travel Find a Trip menu, with Africa open to Explore Trips and Explore Destination",
     href: "/works/tcs-find-a-trip",
     layout: "flagship",
