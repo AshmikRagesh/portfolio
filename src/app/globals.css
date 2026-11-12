@@ -472,6 +472,10 @@ html[data-leaving] .page-enter {
   .cs-visual.cs-narrow {
     @apply w-[720px];
   }
+  /* Two things side by side that each need room (VariantPair) */
+  .cs-visual.cs-wide {
+    @apply w-[1280px];
+  }
 
   .cs-chapter {
     @apply mt-[104px] scroll-mt-[128px] md:mt-[160px];

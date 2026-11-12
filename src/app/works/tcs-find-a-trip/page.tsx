@@ -467,7 +467,7 @@ function Solution() {
               <h3>{num}. {title}</h3>
               <p>{body}</p>
             </Copy>
-            <Visual>
+            <Visual wide>
               <VariantPair
                 videos={SOLUTION_VIDEOS[num]}
                 names={

@@ -52,8 +52,8 @@ export function Meta({
   );
 }
 
-export function Visual({ narrow, children }: { narrow?: boolean; children: React.ReactNode }) {
-  return <div className={`cs-visual ${narrow ? "cs-narrow" : ""}`}>{children}</div>;
+export function Visual({ narrow, wide, children }: { narrow?: boolean; wide?: boolean; children: React.ReactNode }) {
+  return <div className={`cs-visual ${narrow ? "cs-narrow" : ""} ${wide ? "cs-wide" : ""}`}>{children}</div>;
 }
 
 /**

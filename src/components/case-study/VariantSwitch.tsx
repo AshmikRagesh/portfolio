@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useLayoutEffect, useRef, useState } from "react";
 import { Figure } from "./Blocks";
-import { Tag } from "@/components/Tag";
 
 /**
  * Visuals that show two or more versions side by side in time: two designs, or the same
@@ -122,10 +121,12 @@ export function VariantFigure({
 }
 
 /**
- * Two versions at equal weight: side by side in one row (stacked on a phone), each with
- * the same neutral tag and the same frame, playing together. For designs in a test, where
- * a switch would show one first and hide the other. Phone recordings sit in a square frame
- * (export them at 1080 × 1080) so the phone fills a half-width card.
+ * Two versions at equal weight: side by side in one row (stacked on a phone), each in the
+ * same frame with the same label under it, playing together. For designs in a test, where
+ * a switch would show one first and hide the other. A label like "Variant 2 · Text links"
+ * splits into a quiet line ("Variant 2") over the design's name ("Text links"). Phone
+ * recordings sit in a square frame (export them at 1080 × 1080). Put it in a wide Visual
+ * so each card gets more room.
  */
 export function VariantPair({
   names,
@@ -139,18 +140,24 @@ export function VariantPair({
   const variants = useContext(VariantContext);
   if (!variants) throw new Error("VariantPair needs a VariantProvider");
   return (
-    <div className="grid grid-cols-1 gap-[24px] sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-x-[24px] gap-y-[40px] sm:grid-cols-2">
       {variants.map((v) => {
         const video = videos[v.id];
+        const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
         return (
-          <div key={v.id} className="flex min-w-0 flex-col gap-[12px]">
-            <span className="self-start"><Tag face="geist" tone="grey">{v.label}</Tag></span>
+          <div key={v.id} className="flex min-w-0 flex-col gap-[16px]">
             <Figure
               name={names[v.id]}
               alt={video ? `Screen recording: ${names[v.id]}` : undefined}
               video={video}
               aspect={aspect}
             />
+            <p className="m-0 flex flex-col items-center gap-[4px] text-center">
+              {kicker && (
+                <span className="font-geist text-caption-md text-muted md:text-caption-lg">{kicker}</span>
+              )}
+              <span className="font-heading text-h4-md text-heading md:text-h4-lg">{name}</span>
+            </p>
           </div>
         );
       })}
