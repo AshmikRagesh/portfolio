@@ -125,8 +125,8 @@ export function VariantFigure({
  * same frame with the same label under it, playing together. For designs in a test, where
  * a switch would show one first and hide the other. A label like "Variant 2 · Text links"
  * splits into a quiet line ("Variant 2") over the design's name ("Text links"). Phone
- * recordings sit in a square frame (export them at 1080 × 1080). Put it in a wide Visual
- * so each card gets more room.
+ * recordings sit in a square frame (export them at 1080 × 1080), so the phone fills the
+ * card. It keeps the usual 1000px Visual edge, like every other visual on the page.
  */
 export function VariantPair({
   names,
