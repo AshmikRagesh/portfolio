@@ -75,6 +75,8 @@ export function Figure({
   poster,
   narrated,
   aspect = "aspect-[16/9]",
+  card,
+  kicker,
 }: {
   label?: string;
   name?: string;
@@ -86,8 +88,43 @@ export function Figure({
   poster?: string;
   narrated?: boolean;
   aspect?: string;
+  /** Set the media in the white case study card (as in Solution sections): 8px inset, the
+   *  media's 4px frame nested inside, caption and impact under it inside the card */
+  card?: boolean;
+  /** A small label over the media in a card (CardKicker) — only when it adds something the
+   *  heading above doesn't say, such as which design a recording shows */
+  kicker?: React.ReactNode;
 }) {
   const title = name ?? label ?? "Image";
+  const media =
+    video || src ? (
+      <Media src={src} video={video} poster={poster} label={alt ?? title} narrated={narrated} />
+    ) : (
+      <ImagePlaceholder label={title} aspect={aspect} />
+    );
+  if (card) {
+    return (
+      <figure className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px]">
+        {kicker && (
+          <div className="px-[12px] pb-[12px] pt-[8px] md:px-[16px] md:pb-[16px] md:pt-[12px]">
+            <CardKicker>{kicker}</CardKicker>
+          </div>
+        )}
+        <div className="cs-pair-media relative overflow-hidden rounded-sm bg-grape-light/40">{media}</div>
+        {(label || caption || impact) && (
+          <div className="flex flex-col gap-[8px] px-[12px] pb-[8px] pt-[16px] md:px-[16px]">
+            {label && <p className="m-0 font-body text-caption-md font-medium text-muted">{label}</p>}
+            {caption && (
+              <figcaption className="font-body text-body text-secondary md:text-body-md">{caption}</figcaption>
+            )}
+            {impact && (
+              <figcaption className="font-body text-body uppercase text-success">{impact}</figcaption>
+            )}
+          </div>
+        )}
+      </figure>
+    );
+  }
   return (
     <figure className="m-0 min-w-0">
       <div className="overflow-hidden rounded-sm bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]">
@@ -404,7 +441,7 @@ const NOTE = "flex gap-[12px] font-body text-[16px] leading-[26px] text-secondar
 
 const NOTE_HEAD = "font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted";
 
-// One column of notes inside the option card's grey well, headed in the body face
+// One column of notes under the option card's media, headed in the body face
 function NotePanel({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-[16px] px-[12px] pb-[12px] pt-[20px] md:px-[16px] md:pb-[16px]">
@@ -454,11 +491,26 @@ export function Reasons({ items }: { items: string[] }) {
 }
 
 /**
+ * The small label over a card's title ("Variant 2", "Option C"): Geist capitals in the grape
+ * accent with a 6px grape dot before it. Plain text, not a tag. Shared by OptionCard and
+ * VariantPair so every option and variant is named the same way.
+ */
+export function CardKicker({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="m-0 flex items-center gap-[8px] font-geist text-caption-md font-medium uppercase tracking-[1px] text-grape">
+      <span aria-hidden="true" className="size-[6px] shrink-0 rounded-full bg-grape" />
+      {children}
+    </p>
+  );
+}
+
+/**
  * An iteration or design option, every one laid out the same, top to bottom: label, title
  * and an optional note; the preview across the full width at one 16:9 size (a clip plays
  * in the case study player); then the notes. Stacking keeps every card's preview the same
- * size, whatever the length of its notes. The media and the notes sit together in one grey
- * well, so each option reads as a single object. A chosen option has a dark border and a
+ * size, whatever the length of its notes. It shares the VariantPair card (white, 8px corners,
+ * soft low shadow, the media's 4px frame nested in an 8px inset); the label (CardKicker) sits
+ * over the title, not a tag. A chosen option has a dark outline and a
  * stamp pressed onto the media's corner — SHIPPED, or `stamp` for another status such as
  * "Selected" or "In test".
  */
@@ -489,37 +541,24 @@ export function OptionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className={`group relative rounded-xl bg-white p-[8px] ${
-        shipped ? "border-2 border-primary" : "border border-line-soft"
-      }`}
-    >
-      <div className={`flex min-h-[64px] flex-col gap-[12px] px-[12px] pb-[4px] pt-[12px] md:px-[16px] md:pt-[16px] ${shipped ? "pr-[136px] md:pr-[248px]" : ""}`}>
-        <div className="flex flex-wrap items-center gap-[8px]">
-          <Tag face="geist" tone="grey">{label}</Tag>
-        </div>
-        {title && (
-          <p className="font-heading text-[24px] font-medium leading-[32px] text-heading md:text-[28px] md:leading-[36px]">
-            {title}
-          </p>
-        )}
+    <div className={`cs-pair-card group relative rounded-md p-[8px] ${shipped ? "cs-pair-card--chosen" : ""}`}>
+      <div className={`flex min-h-[64px] flex-col gap-[8px] px-[12px] pb-[16px] pt-[12px] md:px-[16px] md:pb-[20px] md:pt-[16px] ${shipped ? "pb-[28px] md:pr-[248px]" : ""}`}>
+        <CardKicker>{label}</CardKicker>
+        {title && <p className="m-0 font-heading text-h3 text-heading md:text-h3-md lg:text-h3-lg">{title}</p>}
         {note && <p className={NOTE_HEAD}>{note}</p>}
       </div>
       {/* The stamp is pressed onto the media's top-right corner, half on the work and half
-          above it, and the well takes a small thud as it lands */}
-      <div className="relative mt-[16px]">
-        <div className={`rounded-lg bg-surface p-[8px] ring-1 ring-inset ring-line-soft ${shipped ? "stamp-thud" : ""}`}>
-          <div className="overflow-hidden rounded-md">
-            {video ? (
-              <Media video={video} poster={poster} label={image} />
-            ) : src ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={src} alt={image} className="aspect-[16/9] w-full bg-white object-contain p-[32px]" />
-            ) : (
-              <ImagePlaceholder label={image} aspect="aspect-[16/9]" radius="rounded-md" />
-            )}
-          </div>
-          {children}
+          above it, and the frame takes a small thud as it lands */}
+      <div className="relative">
+        <div className={`cs-pair-media relative overflow-hidden rounded-sm ${shipped ? "stamp-thud" : ""}`}>
+          {video ? (
+            <Media video={video} poster={poster} label={image} />
+          ) : src ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={src} alt={image} className="aspect-[16/9] w-full bg-surface object-contain p-[32px]" />
+          ) : (
+            <ImagePlaceholder label={image} aspect="aspect-[16/9]" radius="rounded-sm" />
+          )}
         </div>
         {shipped && (
           <ShippedStamp
@@ -528,6 +567,7 @@ export function OptionCard({
           />
         )}
       </div>
+      <div className="mt-[4px]">{children}</div>
     </div>
   );
 }

@@ -94,10 +94,13 @@ export function VariantFigure({
   names,
   videos = {},
   captions = {},
+  card,
 }: {
   names: Record<string, string>;
   videos?: Record<string, string | undefined>;
   captions?: Record<string, React.ReactNode>;
+  /** Set it in the white case study card, like the other Solution visuals */
+  card?: boolean;
 }) {
   const variants = useContext(VariantContext);
   if (!variants) throw new Error("VariantFigure needs a VariantProvider");
@@ -111,6 +114,7 @@ export function VariantFigure({
           alt={video ? `Screen recording: ${names[current]}` : undefined}
           video={video}
           caption={captions[current]}
+          card={card}
         />
       </div>
       <div className="absolute right-[12px] top-[12px] z-10 md:right-[16px] md:top-[16px]">
@@ -121,12 +125,12 @@ export function VariantFigure({
 }
 
 /**
- * Two versions at equal weight: side by side in one row (stacked on a phone), playing
- * together. For designs in a test, where a switch would show one first and hide the other.
- * Each sits in a white card (8px corners, hairline, soft low shadow) with an 8px inset, so
- * the recording's 4px frame nests evenly inside it. A footer row sits under it: the design's name on the left in the heading serif, like a
- * Works card title, and its variant number quiet on the right in small Geist capitals. A
- * label like "Variant 2 · Text links" splits into those two. Recordings are 16:9 (1920 × 1080).
+ * Two versions at equal weight: one card below the other at full width, playing together.
+ * For designs in a test, where a switch would show one first and hide the other. Each card
+ * has the OptionCard layout and finish: white, 8px corners, soft low shadow; the variant
+ * one small label on top (CardKicker: "Text links · Variant 2", the name first), then the
+ * recording in a 4px frame nested in the 8px inset. No title: the point's own heading sits
+ * just above, so a repeated serif name would only add bulk. Recordings are 16:9 (1920 × 1080).
  */
 export function VariantPair({
   names,
@@ -140,28 +144,25 @@ export function VariantPair({
   const variants = useContext(VariantContext);
   if (!variants) throw new Error("VariantPair needs a VariantProvider");
   return (
-    <ul className="m-0 grid list-none grid-cols-1 gap-[16px] p-0 sm:grid-cols-2 md:gap-[24px]">
+    <ul className="m-0 flex list-none flex-col gap-[24px] p-0 md:gap-[32px]">
       {variants.map((v) => {
         const video = videos[v.id];
         const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
         return (
-          <li key={v.id} className="cs-pair-card flex min-w-0 flex-col rounded-md p-[8px]">
-            <div className="cs-pair-media relative overflow-hidden rounded-sm">
-              <Figure
-                name={names[v.id]}
-                alt={video ? `Screen recording: ${names[v.id]}` : undefined}
-                video={video}
-                aspect={aspect}
-              />
-            </div>
-            <div className="flex items-center justify-between gap-[12px] px-[8px] pb-[8px] pt-[12px]">
-              <p className="m-0 font-heading text-h4 text-heading">{name}</p>
-              {kicker && (
-                <p className="m-0 shrink-0 font-geist text-caption-md font-medium uppercase tracking-[0.8px] tabular-nums text-muted">
-                  {kicker}
-                </p>
-              )}
-            </div>
+          <li key={v.id} className="min-w-0">
+            <Figure
+              card
+              kicker={
+                <>
+                  {name}
+                  {kicker && <span className="text-muted">· {kicker}</span>}
+                </>
+              }
+              name={names[v.id]}
+              alt={video ? `Screen recording: ${names[v.id]}` : undefined}
+              video={video}
+              aspect={aspect}
+            />
           </li>
         );
       })}
