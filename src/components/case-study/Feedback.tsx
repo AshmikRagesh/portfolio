@@ -191,6 +191,10 @@ const CATEGORY_ICONS: Record<FeedbackCategory, LucideIcon> = {
   bug: Bug,
 };
 
+/** Lucide is an outline set; these shapes still read when filled, so they're drawn solid */
+const FILLED = new Set<LucideIcon>([Tag, MessageSquare, Bug, Quote, Video]);
+const fill = (I: LucideIcon) => (FILLED.has(I) ? { fill: "currentColor" } : {});
+
 const KIND_ICONS: Record<string, LucideIcon> = {
   Heading: Heading,
   Paragraph: AlignLeft,
@@ -254,7 +258,7 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
           }
         }}
       >
-        <Current size={12} aria-hidden="true" />
+        <Current size={12} aria-hidden="true" {...fill(Current)} />
         {value ? CATEGORIES[value] : "Category"}
         <ChevronDown size={10} aria-hidden="true" className="fb-select-caret" />
       </button>
@@ -291,7 +295,7 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
                 onPointerEnter={() => setActive(i)}
                 onClick={() => choose(o.value)}
               >
-                <OptionIcon size={14} aria-hidden="true" />
+                <OptionIcon size={12} aria-hidden="true" {...fill(OptionIcon)} />
                 <span>{o.label}</span>
                 {o.value === value && o.value && <Check size={12} aria-hidden="true" className="fb-menu-check" />}
               </li>
@@ -728,7 +732,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
             {view === "notes" ? (
               allItems.length === 0 ? (
                 <div className="fb-empty">
-                  <MessageSquare size={24} aria-hidden="true" />
+                  <MessageSquare size={24} aria-hidden="true" fill="currentColor" />
                   <p className="fb-empty-title">No notes yet</p>
                   <p className="fb-empty-text">Notes you leave on any case study show up here.</p>
                   <button type="button" className="fb-empty-action" onClick={() => setPanel("compose")}>
@@ -762,7 +766,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                                 </time>
                                 <button type="button" className="fb-note" onClick={() => goToNote(n)}>
                                   <span className="fb-note-where">
-                                    <KindIcon size={14} aria-hidden="true" />
+                                    <KindIcon size={14} aria-hidden="true" {...fill(KindIcon)} />
                                     <span className="fb-note-kind">{n.label}</span>
                                     <span className="fb-note-section">in {n.sectionLabel}</span>
                                     {!here && <span className="sr-only">, opens {pageName(n)}</span>}
@@ -803,7 +807,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                 }
                 onClick={() => about.el?.scrollIntoView({ behavior: "smooth", block: "center" })}
               >
-                <TargetIcon size={14} aria-hidden="true" />
+                <TargetIcon size={14} aria-hidden="true" {...fill(TargetIcon)} />
                 <span className="fb-target-kind">{about.label}</span>
                 {about.el && <span className="fb-target-where">in {about.sectionLabel}</span>}
               </button>

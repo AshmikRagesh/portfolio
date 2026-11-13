@@ -1891,7 +1891,9 @@ html[data-feedback="on"] [data-cs-main] * {
 }
 .fb-select:hover,
 .fb-select[aria-expanded="true"] { background: #4a1c57; color: #fff; }
-.fb-select[data-filled="true"] { background: theme("colors.grape-light"); color: theme("colors.primary"); }
+/* Chosen: same size and weight, just lit — white text and a pink icon */
+.fb-select[data-filled="true"] { background: #4a1c57; color: #fff; }
+.fb-select[data-filled="true"] svg:first-child { color: theme("colors.pink"); }
 .fb-select:focus-visible { outline: 2px solid rgba(248, 194, 247, 0.6); outline-offset: 2px; }
 .fb-select-caret { opacity: 0.72; transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1); }
 .fb-select[aria-expanded="true"] .fb-select-caret { transform: rotate(180deg); }
@@ -1914,7 +1916,7 @@ html[data-feedback="on"] [data-cs-main] * {
 .fb-menu li {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   height: 32px;
   padding: 0 10px;
   border-radius: theme("borderRadius.sm");
