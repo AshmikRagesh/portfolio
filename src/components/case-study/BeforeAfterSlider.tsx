@@ -18,9 +18,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *
  * Look: the picture sits in the case study card (white, 8px inset, 4px frame) like the other
  * visuals. The handle is a thin white line with a round grip that lifts on hover and presses
- * in while dragged. No labels on the picture: the caption says which side is which.
+ * in while dragged. No labels on the picture: the footer names each side under its own half
+ * (before left, after right) with a quiet "Drag to compare" between them.
  */
 type Shot = { src: string; alt: string };
+type Side = { title: string; note: string };
 
 const clamp = (n: number) => Math.min(100, Math.max(0, n));
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -32,7 +34,7 @@ export default function BeforeAfterSlider({
   height,
   start = 50,
   sweepTo,
-  caption,
+  labels,
 }: {
   before: Shot;
   after: Shot;
@@ -43,7 +45,8 @@ export default function BeforeAfterSlider({
   start?: number;
   /** Where the first-view sweep turns back, in % from the left (no sweep without it) */
   sweepTo?: number;
-  caption?: React.ReactNode;
+  /** The footer under the picture: each side named under its own half */
+  labels?: { before: Side; after: Side };
 }) {
   const [pos, setPosState] = useState(start);
   const [dragging, setDragging] = useState(false);
@@ -182,9 +185,22 @@ export default function BeforeAfterSlider({
           </div>
         </div>
       </div>
-      {caption && (
-        <figcaption className="px-[12px] pb-[8px] pt-[16px] text-center font-body text-body text-secondary md:px-[16px] md:text-body-md [text-wrap:balance]">
-          {caption}
+      {labels && (
+        <figcaption className="grid grid-cols-2 items-start gap-[16px] px-[12px] pb-[8px] pt-[16px] md:grid-cols-[1fr_auto_1fr] md:px-[16px]">
+          <span className="flex flex-col gap-[2px]">
+            <span className="font-body text-body font-medium text-heading md:text-body-md">{labels.before.title}</span>
+            <span className="font-body text-caption-lg text-muted">{labels.before.note}</span>
+          </span>
+          <span aria-hidden="true" className="hidden items-center gap-[6px] self-center font-geist text-caption-md font-medium uppercase tracking-[1px] text-muted md:flex">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m8 7-5 5 5 5M16 7l5 5-5 5M3 12h18" />
+            </svg>
+            Drag to compare
+          </span>
+          <span className="flex flex-col items-end gap-[2px] text-right">
+            <span className="font-body text-body font-medium text-heading md:text-body-md">{labels.after.title}</span>
+            <span className="font-body text-caption-lg text-muted">{labels.after.note}</span>
+          </span>
         </figcaption>
       )}
     </figure>
