@@ -640,17 +640,7 @@ html[data-leaving] .page-enter {
   cursor: pointer;
   outline-offset: 4px;
   box-shadow: rgba(0, 0, 0, 0.15) 0 4px 16px;
-  transition: background-color 0.2s ease, transform 0.2s var(--ease-out);
-  /* Its own layer, so the small expand doesn't make the text shimmer */
-  will-change: transform;
-  backface-visibility: hidden;
 }
-/* Hover: the same small expand as the feedback button beside it (a smaller
-   ratio, since the pill is wider) */
-@media (hover: hover) {
-  .cs-pill-button:hover { background: #3a1046; transform: scale(1.03); }
-}
-.cs-pill-button:active { transform: scale(0.97); }
 .cs-pill-button .cs-pill-num {
   opacity: 0.55;
 }
@@ -2117,8 +2107,8 @@ html[data-feedback="on"] .owner-badge {
   opacity: 0;
 }
 @media (prefers-reduced-motion: reduce) {
-  .cs-pill-button, .fb-dot-face { transition: background-color 0.2s ease; }
-  .cs-pill-button:hover, .cs-pill-button:active, .fb-dot:hover .fb-dot-face, .fb-dot:active .fb-dot-face { transform: none; }
+  .fb-dot-face { transition: background-color 0.2s ease; }
+  .fb-dot:hover .fb-dot-face, .fb-dot:active .fb-dot-face { transform: none; }
   .fb-card, .fb-card[data-open="true"] { transition: none; animation: none; }
 }
 
