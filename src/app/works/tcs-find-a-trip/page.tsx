@@ -284,7 +284,7 @@ const ITERATIONS: IterationItem[] = [
   },
 ];
 
-// The business feedback on Variant 1, as given (not a word-for-word quote). The wording asks
+// The ask that led to Variant 1, as given (not a word-for-word quote). The wording asks
 // ("trips" not "expeditions", "Explore Trips" first) were already in every prototype, so
 // they aren't shown as feedback here.
 const REVIEW_FEEDBACK = [
@@ -334,21 +334,13 @@ function Exploration() {
           not how it should look</Highlight>. I built them with <HelixLink />, so the
           business could click through each one. The two paths
           open right under the continent you click, so the menu never jumps
-          away.
+          away. Variant 1 is where the phone problem showed up, so I made two
+          more variants. The business liked both, so we chose to test both.
         </p>
+        {/* The ask that led to Variant 1, on its own just before it */}
+        <ChatQuotes label="What the business asked for" items={REVIEW_FEEDBACK} />
       </Copy>
-      {ITERATIONS.slice(0, 1).map(renderIteration)}
-      {/* The feedback on Variant 1, which shaped Variants 2 and 3 */}
-      <div className="cs-sub">
-        <Copy>
-          <p>
-            The side-by-side version is where the phone problem showed up.
-          </p>
-          <ChatQuotes label="What the business asked for" items={REVIEW_FEEDBACK} />
-          <p>In the end, two designs were strong enough that we chose to test both.</p>
-        </Copy>
-      </div>
-      {ITERATIONS.slice(1).map(renderIteration)}
+      {ITERATIONS.map(renderIteration)}
       <div className="cs-sub">
         <Copy>
           <h3>Why we tested both instead of choosing</h3>
