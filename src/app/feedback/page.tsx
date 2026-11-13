@@ -74,17 +74,21 @@ export default async function FeedbackPage({
   const real = everything.filter((i) => !i.test);
   const testCount = everything.length - real.length;
 
+  // Jira-style keys, FB-1, FB-2…, in the order comments arrived
+  const keys = new Map([...everything].sort((a, b) => a.createdAt - b.createdAt).map((i, n) => [i.id, `FB-${n + 1}`]));
+
   const cards: BoardCard[] = everything
     .filter((i) => i.test === tests && (!cat || i.category === cat))
     .map((i) => ({
       id: i.id,
+      key: keys.get(i.id) ?? "FB",
       status: i.status,
       caseStudy: i.pageTitle || TITLES.get(i.page) || i.page.replace("/works/", ""),
       where: i.anchor.startsWith("page|") ? "Whole case study" : `${i.sectionLabel} · ${i.label}`,
       snippet: i.snippet,
       text: i.text,
       name: i.name || "Anonymous",
-      category: i.category ? CATEGORIES[i.category] : "",
+      category: i.category,
       image: i.image ? `/feedback/image?p=${encodeURIComponent(i.image)}` : "",
       link: `${i.page}?fb=${encodeURIComponent(i.anchor)}`,
       createdAt: i.createdAt,
@@ -99,7 +103,7 @@ export default async function FeedbackPage({
           <div className="flex flex-col gap-2">
             <h1 className="font-heading font-medium text-h2 text-heading md:text-h2-md lg:text-h2-lg">Feedback inbox</h1>
             <p className="text-caption text-muted">
-              {open} to do or in progress, {real.length} in all. Drag a card to move it, or use its Move menu.
+              {open} to do or in progress, {real.length} in all. Drag a card to move it, or open it to change its status.
             </p>
           </div>
           {!owner && (
