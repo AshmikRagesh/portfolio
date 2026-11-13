@@ -143,13 +143,13 @@ export function VariantPair({
     <ul className="m-0 flex list-none flex-col gap-[24px] p-0 md:gap-[32px]">
       {variants.map((v) => {
         const video = videos[v.id];
-        // "Variant 2 · Text links": the variant as the small label, its name as the title
-        const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
+        // "Variant 2 · Text links": only the variant shows, as the small label. Every point's
+        // cards are the same two designs, so a repeated title would add nothing
+        const variant = v.label.split(" · ")[0];
         return (
           <li key={v.id} className="min-w-0">
             <Figure
-              kicker={kicker}
-              title={name}
+              kicker={variant}
               name={names[v.id]}
               alt={video ? `Screen recording: ${names[v.id]}` : undefined}
               video={video}
