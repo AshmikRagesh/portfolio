@@ -55,6 +55,9 @@ type Target = ReturnType<typeof describe> & { el: HTMLElement | null };
 type Panel = "closed" | "compose" | "notes";
 
 /** Feedback about the case study as a whole, before (or instead of) picking a block */
+/** Remembers a ?fb-theme preview (dark | light) in this browser */
+const THEME_KEY = "ash.feedback.theme";
+
 /** How long "Note deleted · Undo" stays before the note is really deleted */
 const UNDO_MS = 5000;
 
@@ -365,6 +368,15 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
   const items = useMemo(() => allItems.filter((i) => i.page === page), [allItems, page]);
 
   useEffect(() => setName(storageGet(NAME_KEY) ?? ""), []);
+
+  // Card colours: dark by default. Preview the light version with ?fb-theme=light
+  // (remembered in this browser; ?fb-theme=dark switches back).
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  useEffect(() => {
+    const asked = new URLSearchParams(window.location.search).get("fb-theme");
+    if (asked === "light" || asked === "dark") storageSet(THEME_KEY, asked);
+    setTheme(storageGet(THEME_KEY) === "light" ? "light" : "dark");
+  }, []);
 
   const root = () => document.querySelector<HTMLElement>("[data-cs-main]");
 
@@ -742,6 +754,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
       <div
         ref={cardRef}
         className="fb-card"
+        data-theme={theme}
         data-open={open}
         inert={!open}
         role="dialog"
