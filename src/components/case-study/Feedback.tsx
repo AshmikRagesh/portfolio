@@ -709,13 +709,14 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
 
   return (
     <>
-      {on && (
+      {/* A small reminder only while the card is closed; the open card says it already */}
+      {on && !open && (
         <div className="fb-strip" role="status">
           <span className="fb-strip-dot" aria-hidden="true" />
-          <span className="fb-strip-wide">Feedback mode · click any block to comment</span>
-          <span className="fb-strip-narrow">Tap any block to comment</span>
-          <button type="button" className="fb-strip-exit" onClick={() => setOn?.(false)}>
-            Exit <kbd>Esc</kbd>
+          <span className="fb-strip-wide">Click a block to comment</span>
+          <span className="fb-strip-narrow">Tap a block to comment</span>
+          <button type="button" className="fb-strip-exit" onClick={() => setOn?.(false)} aria-label="Exit feedback mode">
+            Exit
           </button>
         </div>
       )}

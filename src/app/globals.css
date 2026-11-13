@@ -1405,53 +1405,58 @@ html[data-feedback="on"] [data-cs-main] * {
   z-index: 45;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 6px 6px 14px;
+  gap: 8px;
+  height: 28px;
+  padding: 0 4px 0 10px;
   border-radius: 999px;
   background: theme("colors.midnight");
   color: #fff;
-  font-size: 14px;
-  line-height: 18px;
-  white-space: nowrap;
-  box-shadow: rgba(0, 0, 0, 0.15) 0 4px 16px;
-  transform: translateX(-50%);
-  animation: fb-drop 0.4s cubic-bezier(0.23, 1, 0.32, 1) both;
-}
-@keyframes fb-drop { from { opacity: 0; transform: translate(-50%, -8px); } }
-.fb-strip-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: theme("colors.pink");
-  box-shadow: 0 0 0 4px rgba(248, 194, 247, 0.2);
-}
-.fb-strip-exit {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 6px 4px 10px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  font-size: 12px;
-  cursor: pointer;
-}
-.fb-strip-exit kbd {
-  padding: 0 4px;
-  border-radius: theme("borderRadius.sm");
-  background: rgba(255, 255, 255, 0.16);
-  font-family: inherit;
   font-size: 12px;
   line-height: 16px;
+  white-space: nowrap;
+  box-shadow: rgba(30, 5, 37, 0.16) 0 4px 12px;
+  transform: translateX(-50%);
+  animation: fb-drop 0.3s cubic-bezier(0.23, 1, 0.32, 1) both;
 }
+@keyframes fb-drop { from { opacity: 0; transform: translate(-50%, -6px); } }
+.fb-strip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: theme("colors.pink");
+}
+.fb-strip-exit {
+  height: 20px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(249, 228, 255, 0.14);
+  color: #fff;
+  font-size: 12px;
+  line-height: 16px;
+  cursor: pointer;
+}
+.fb-strip-exit:hover { background: rgba(249, 228, 255, 0.24); }
 .fb-strip-narrow { display: none; }
 @media (max-width: 767px) {
-  .fb-strip { top: 96px; font-size: 12px; }
-  .fb-strip-wide, .fb-strip-exit kbd { display: none; }
+  .fb-strip { top: 96px; }
+  .fb-strip-wide { display: none; }
   .fb-strip-narrow { display: inline; }
-  .fb-strip-exit { padding: 4px 10px; }
-  .fb-hint-keys { display: none; }
+}
+@media (pointer: coarse) {
+  .fb-strip { height: 36px; }
+  .fb-strip-exit { height: 28px; padding: 0 12px; }
+}
+
+/* While feedback mode is on, one thing at a time: the reel, Bella's speech bubbles
+   and the owner badge step aside, leaving the page, the dock and the card */
+html[data-feedback="on"] .reel,
+html[data-feedback="on"] .host-tip,
+html[data-feedback="on"] .owner-badge {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 0.2s ease, visibility 0s 0.2s;
 }
 
 .fb-overlay {
