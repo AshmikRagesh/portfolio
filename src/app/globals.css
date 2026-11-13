@@ -640,20 +640,12 @@ html[data-leaving] .page-enter {
   cursor: pointer;
   outline-offset: 4px;
   box-shadow: rgba(0, 0, 0, 0.15) 0 4px 16px;
-  transition: background-color 0.2s ease, scale 0.25s var(--ease-out), box-shadow 0.25s ease;
+  transition: background-color 0.16s ease;
 }
-/* Hover: the same lift as the feedback button beside it — a touch lighter and
-   larger, the chevron nudging up towards the list it opens */
+/* Hover: just a touch lighter — no size change, so nothing shifts or flickers */
 @media (hover: hover) {
-  .cs-pill-button:hover {
-    background: #3a1046;
-    scale: 1.03;
-    box-shadow: rgba(0, 0, 0, 0.2) 0 8px 20px;
-  }
-  .cs-pill-button:hover .cs-pill-chevron { translate: 0 -2px; }
-  .cs-pill[data-open="true"] .cs-pill-button:hover .cs-pill-chevron { translate: 0 2px; }
+  .cs-pill-button:hover { background: #3a1046; }
 }
-.cs-pill-button:active { scale: 0.98; }
 .cs-pill-button .cs-pill-num {
   opacity: 0.55;
 }
@@ -712,7 +704,7 @@ html[data-leaving] .page-enter {
   background: #fff;
 }
 .cs-pill-chevron {
-  transition: transform 0.25s var(--ease-out), translate 0.25s var(--ease-out);
+  transition: transform 0.25s var(--ease-out);
 }
 .cs-pill[data-open="true"] .cs-pill-chevron {
   transform: rotate(180deg);
@@ -1477,24 +1469,16 @@ html[data-feedback="on"] .owner-badge {
   cursor: pointer;
   opacity: 0;
   box-shadow: rgba(0, 0, 0, 0.15) 0 2px 6px;
-  /* Grows from its point (bottom-left). scale is separate from the transform
-     that places the pin, so the two don't fight */
-  transform-origin: 0 100%;
-  transition: opacity 0.12s ease, scale 0.2s cubic-bezier(0.34, 1.36, 0.64, 1), background-color 0.16s ease, box-shadow 0.2s ease;
+  transition: opacity 0.12s ease, background-color 0.16s ease, box-shadow 0.16s ease;
 }
+/* Hover: a brighter grape and a slightly deeper shadow — no size change */
 @media (hover: hover) {
   .fb-dot:hover {
-    scale: 1.25;
     background: #b2177a;
-    box-shadow: rgba(30, 5, 37, 0.28) 0 4px 10px;
+    box-shadow: rgba(30, 5, 37, 0.28) 0 3px 8px;
   }
 }
-.fb-dot:active { scale: 1.1; }
 .fb-dot:focus-visible { outline: 2px solid theme("colors.grape"); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) {
-  .fb-dot, .cs-pill-button { transition: background-color 0.16s ease; }
-  .fb-dot:hover, .cs-pill-button:hover, .cs-pill-button:active, .fb-dot:active { scale: none; }
-}
 
 .fb-card {
   /* A plum palette drawn from midnight and grape — no neutral greys */
