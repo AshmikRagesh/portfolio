@@ -57,10 +57,10 @@ export function Visual({ narrow, children }: { narrow?: boolean; children: React
 }
 
 /**
- * Template A, the media card: every screenshot, clip and placeholder in a case study sits in
- * the same white card. Top to bottom: an optional small `kicker` (CardKicker) and the
- * `label` naming what's shown, the media, then a `caption` only when it adds a fact the label
- * doesn't. Media opens larger on click (see Media). `video` plays a muted loop while on screen (with `poster` as
+ * The media card: every screenshot, clip and placeholder in a case study sits in the same
+ * white card. A plain one has its text centred below the media (CardFooter): the `label`
+ * naming what's shown, a `caption` only when it adds a fact. A named design (`kicker` and
+ * `title`) takes the OptionCard header on top instead. Media opens larger on click. `video` plays a muted loop while on screen (with `poster` as
  * its first frame) — or, with `narrated`, waits for the reader and plays with sound; either
  * way it has play / pause and speed controls. `src` shows an image; with neither it shows a
  * placeholder named `name` (defaults to the label).
@@ -79,6 +79,7 @@ export function Figure({
   speed,
   aspect = "aspect-[16/9]",
   kicker,
+  title,
 }: {
   label?: string;
   name?: string;
@@ -92,36 +93,48 @@ export function Figure({
   /** Starting playback speed for the clip (1 by default) */
   speed?: number;
   aspect?: string;
-  /** A small label over the media in a card (CardKicker) — only when it adds something the
-   *  heading above doesn't say, such as which design a recording shows */
+  /** With `title`, a header on top like OptionCard (for named designs, e.g. "Variant 2" over
+   *  "Text links"); without them the card's text sits centred below the media */
   kicker?: React.ReactNode;
+  title?: React.ReactNode;
 }) {
-  const title = name ?? label ?? "Image";
+  const called = name ?? label ?? "Image";
   const media =
     video || src ? (
-      <Media src={src} video={video} poster={poster} label={alt ?? title} narrated={narrated} speed={speed} />
+      <Media src={src} video={video} poster={poster} label={alt ?? called} narrated={narrated} speed={speed} />
     ) : (
-      <ImagePlaceholder label={title} aspect={aspect} />
+      <ImagePlaceholder label={called} aspect={aspect} />
     );
-  // One card for every image, clip and slider (Template A): the name on top, then the media
-  // in its 4px frame nested in the 8px inset, then a caption only when it adds a fact
-  const head = kicker || label;
   return (
     <figure className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px]">
-      {head && (
-        <div className="flex flex-col gap-[6px] px-[12px] pb-[12px] pt-[8px] md:px-[16px] md:pb-[16px] md:pt-[12px]">
-          {kicker && <CardKicker>{kicker}</CardKicker>}
-          {label && <p className="m-0 font-body text-body font-medium text-heading md:text-body-md">{label}</p>}
-        </div>
-      )}
+      {(kicker || title) && <CardHeader kicker={kicker} title={title} />}
       <div className="cs-pair-media relative overflow-hidden rounded-sm bg-grape-light/40">{media}</div>
-      {(caption || impact) && (
-        <div className="flex flex-col gap-[8px] px-[12px] pb-[8px] pt-[16px] md:px-[16px]">
-          {caption && <figcaption className="font-body text-body text-secondary md:text-body-md">{caption}</figcaption>}
-          {impact && <figcaption className="font-body text-body uppercase text-success">{impact}</figcaption>}
-        </div>
-      )}
+      <CardFooter label={label} caption={caption} impact={impact} />
     </figure>
+  );
+}
+
+/**
+ * The text under a card's media, centred (media cards and the before/after slider): the
+ * label naming what's shown, then a caption only when it adds a fact, then a green impact
+ * line. Body font throughout, so it reads as a sentence, not a tag.
+ */
+export function CardFooter({
+  label,
+  caption,
+  impact,
+}: {
+  label?: React.ReactNode;
+  caption?: React.ReactNode;
+  impact?: string;
+}) {
+  if (!label && !caption && !impact) return null;
+  return (
+    <figcaption className="flex flex-col items-center gap-[4px] px-[12px] pb-[8px] pt-[16px] text-center [text-wrap:balance] md:px-[16px]">
+      {label && <span className="font-body text-body font-medium text-heading md:text-body-md">{label}</span>}
+      {caption && <span className="font-body text-body text-secondary">{caption}</span>}
+      {impact && <span className="mt-[4px] font-body text-body uppercase text-success">{impact}</span>}
+    </figcaption>
   );
 }
 
@@ -479,6 +492,30 @@ export function CardKicker({ children }: { children: React.ReactNode }) {
 }
 
 /**
+ * The header of a card that shows a named design (OptionCard, and Figure with a title): the
+ * small grape label, the serif title, and an optional note.
+ */
+export function CardHeader({
+  kicker,
+  title,
+  note,
+  className = "",
+}: {
+  kicker?: React.ReactNode;
+  title?: React.ReactNode;
+  note?: string;
+  className?: string;
+}) {
+  return (
+    <div className={`flex flex-col gap-[8px] px-[12px] pb-[16px] pt-[12px] md:px-[16px] md:pb-[20px] md:pt-[16px] ${className}`}>
+      {kicker && <CardKicker>{kicker}</CardKicker>}
+      {title && <p className="m-0 font-heading text-h3 text-heading md:text-h3-md lg:text-h3-lg">{title}</p>}
+      {note && <p className={NOTE_HEAD}>{note}</p>}
+    </div>
+  );
+}
+
+/**
  * An iteration or design option, every one laid out the same, top to bottom: label, title
  * and an optional note; the preview across the full width at one 16:9 size (a clip plays
  * in the case study player); then the notes. Stacking keeps every card's preview the same
@@ -516,11 +553,7 @@ export function OptionCard({
 }) {
   return (
     <div className={`cs-pair-card group relative rounded-md p-[8px] ${shipped ? "cs-pair-card--chosen" : ""}`}>
-      <div className={`flex min-h-[64px] flex-col gap-[8px] px-[12px] pb-[16px] pt-[12px] md:px-[16px] md:pb-[20px] md:pt-[16px] ${shipped ? "pb-[28px] md:pr-[248px]" : ""}`}>
-        <CardKicker>{label}</CardKicker>
-        {title && <p className="m-0 font-heading text-h3 text-heading md:text-h3-md lg:text-h3-lg">{title}</p>}
-        {note && <p className={NOTE_HEAD}>{note}</p>}
-      </div>
+      <CardHeader kicker={label} title={title} note={note} className={`min-h-[64px] ${shipped ? "pb-[28px] md:pr-[248px]" : ""}`} />
       {/* The stamp is pressed onto the media's top-right corner, half on the work and half
           above it, and the frame takes a small thud as it lands */}
       <div className="relative">

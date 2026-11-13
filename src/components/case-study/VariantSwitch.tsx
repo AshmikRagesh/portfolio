@@ -143,16 +143,13 @@ export function VariantPair({
     <ul className="m-0 flex list-none flex-col gap-[24px] p-0 md:gap-[32px]">
       {variants.map((v) => {
         const video = videos[v.id];
+        // "Variant 2 · Text links": the variant as the small label, its name as the title
         const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
         return (
           <li key={v.id} className="min-w-0">
             <Figure
-              kicker={
-                <>
-                  {name}
-                  {kicker && <span className="text-muted">· {kicker}</span>}
-                </>
-              }
+              kicker={kicker}
+              title={name}
               name={names[v.id]}
               alt={video ? `Screen recording: ${names[v.id]}` : undefined}
               video={video}
