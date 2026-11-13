@@ -41,9 +41,13 @@ import { istDay, istMonth } from "./day";
  * Key prefix. Production writes "curiosity:…"; next dev (NODE_ENV=development)
  * writes "dev:curiosity:…", so local testing never lands in the live numbers even
  * when .env.local points at the same Upstash database. A local `next start` runs as
- * production, so set CURIOSITY_NS=dev:curiosity for that. CURIOSITY_NS overrides it.
+ * production, so set CURIOSITY_NS=dev:curiosity for that. Vercel preview deployments
+ * also write dev keys. CURIOSITY_NS overrides it.
  */
-export const NS = process.env.CURIOSITY_NS || (process.env.NODE_ENV === "production" ? "curiosity" : "dev:curiosity");
+// Vercel preview deployments run as production too, so they're sent to the dev keys
+export const NS =
+  process.env.CURIOSITY_NS ||
+  (process.env.NODE_ENV === "production" && process.env.VERCEL_ENV !== "preview" ? "curiosity" : "dev:curiosity");
 
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;

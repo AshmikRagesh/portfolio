@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ArrowRight } from "lucide-react";
 import { ArrowsSplit, ClockCounterClockwise, FileX, HourglassMedium, Images, DeviceMobile, ListBullets, Users } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
@@ -15,7 +14,6 @@ import {
   PullQuote,
   ChatQuotes,
   StatTiles,
-  MoreDetail,
   HelixLink,
   NextCase,
   ProsCons,
@@ -26,6 +24,7 @@ import {
   Footnote,
   VariantProvider,
   VariantPair,
+  BeforeAfterSlider,
   Highlight,
 } from "@/components/case-study";
 
@@ -71,8 +70,22 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        {/* The finished work up front; the problem walkthrough sits in The Problem */}
-        <Figure label="The final designs: Variant 2 (text links) and Variant 3 (image cards) in the menu" />
+        {/* Both frames are the live site at 1470 wide: the before as it is (Africa hovered), the
+            after with Africa open and the two image cards added under it, so only the change moves.
+            The handle rests left of the continent column, so the new choice shows first; the
+            first-view sweep crosses Africa and back */}
+        <BeforeAfterSlider
+          width={2000}
+          height={1076}
+          start={24}
+          sweepTo={64}
+          before={{ src: "/images/tcs-find-a-trip/compare-before.jpg", alt: "today's menu, where Africa goes straight to a list of trips" }}
+          after={{ src: "/images/tcs-find-a-trip/compare-after.jpg", alt: "the new menu, where Africa opens Explore Trips and Explore Destination" }}
+          labels={{
+            before: { title: "Today's menu", note: "Africa goes straight to trips" },
+            after: { title: "With the new choice", note: "Africa opens two paths" },
+          }}
+        />
       </Visual>
     </Chapter>
   );
@@ -105,74 +118,11 @@ function TheProblem() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Discovery  (research / inputs)
 // ─────────────────────────────────────────────────────────────────────────────
-// The Find a Trip menu as it is live (tcsworldtravel.com, Oct 2026): every category links
-// to a trip search; the destination pages come from the ticket's image mapping
-const MENU = [
-  { name: "Around the World", page: true },
-  { name: "Africa", page: true },
-  { name: "Asia", page: true },
-  { name: "Australia & The Pacific", page: true },
-  { name: "Central America & Caribbean", page: true },
-  { name: "Europe", page: true },
-  { name: "India & The Middle East", page: true },
-  { name: "North America", page: false },
-  { name: "Polar Regions", page: true },
-  { name: "South America", page: true },
-  { name: "Golf", page: false },
-];
-
 const MENU_TILES: Parameters<typeof StatTiles>[0]["items"] = [
   { tag: "Trip search", stat: "11 of 11", label: "menu links take you straight to a list of trips" },
   { tag: "Destination pages", stat: "0", label: "menu links lead to a destination page, though 9 continents already have one" },
   { tag: "Drop-off", stat: "38%", label: "of people leave the trip list without opening a trip, measured by the CRO team", tone: "key", meter: 38 },
 ];
-
-/** Each menu category, where its link goes, and whether a destination page was waiting */
-function MenuMap() {
-  const th = "pb-[12px] pr-[16px] font-brand text-[12px] font-normal uppercase leading-[16px] text-muted";
-  const td = "py-[14px] pr-[16px] align-top";
-  return (
-    <table className="w-full border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]">
-      <thead>
-        <tr className="border-b border-line">
-          <th scope="col" className={th}>Menu category</th>
-          <th scope="col" className={th}>Link goes to</th>
-          <th scope="col" className={`${th} pr-0`}>Destination page</th>
-        </tr>
-      </thead>
-      <tbody>
-        {MENU.map(({ name, page }) => (
-          <tr key={name} className="border-b border-line-soft">
-            <th scope="row" className={`${td} font-normal text-heading`}>{name}</th>
-            <td className={`${td} text-secondary`}>
-              <span className="inline-flex items-center gap-[6px] whitespace-nowrap">
-                <ArrowRight size={14} aria-hidden="true" className="text-muted" />
-                Trip list
-              </span>
-            </td>
-            <td className={`${td} pr-0`}>
-              {page ? (
-                <span className="inline-flex items-center gap-[8px] text-grape">
-                  <span aria-hidden="true" className="size-[8px] shrink-0 rounded-full bg-grape" />
-                  Exists, not linked
-                </span>
-              ) : (
-                <span className="text-muted">No page</span>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <tr>
-          <th scope="row" className="pt-[16px] pr-[16px] text-left font-medium text-heading">Total</th>
-          <td className="pt-[16px] pr-[16px] font-medium text-heading">11 to trips</td>
-          <td className="pt-[16px] font-medium text-grape">9 not linked</td>
-        </tr>
-      </tfoot>
-    </table>
-  );
-}
 
 // Three on top (the people and the choice), two below (the constraints from the ticket)
 const CONTEXT_CARDS = [
@@ -234,23 +184,13 @@ function Context() {
             to a trip search. <Highlight>Not one pointed to a destination page, even though
             most continents already had one.</Highlight>
           </p>
-          <MoreDetail label="See where every menu link goes" className="mt-[20px]">
-            <div className="flex flex-col gap-[32px]">
-              <div>
-                <h4 className="mb-[16px] font-body text-[18px] font-medium leading-[28px] text-heading">
-                  Where each menu link goes
-                </h4>
-                <MenuMap />
-              </div>
-              <Footnote>
-                Menu links and prices from tcsworldtravel.com, October 2026. The
-                drop-off figure was measured and shared by the TCS CRO team.
-              </Footnote>
-            </div>
-          </MoreDetail>
         </Copy>
         <Visual>
           <StatTiles items={MENU_TILES} />
+          <Footnote>
+            Menu links and prices from tcsworldtravel.com, October 2026. The
+            drop-off figure was measured and shared by the TCS CRO team.
+          </Footnote>
         </Visual>
       </div>
       <div className="cs-sub">

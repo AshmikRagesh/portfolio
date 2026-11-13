@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { readStats, STATS_DAYS, type Tally } from "@/lib/curiosity/stats";
-import { hasAccess, lock, unlock } from "./actions";
+import { hasAccess, lock, markOwner, unlock, unmarkOwner } from "./actions";
+import { isOwner } from "@/lib/owner";
 import Cta from "@/components/Cta";
 
 // ── /stats ────────────────────────────────────────────────────────────────────
@@ -90,6 +91,25 @@ function Tile({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Mark this browser as Ashmik's, so his own visits and test comments don't count. */
+function OwnerSwitch({ owner }: { owner: boolean }) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-line-soft p-4 md:px-6">
+      <div className="flex flex-col gap-1">
+        <p className="text-body text-text-base">{owner ? "This browser is marked as yours" : "This browser is counted as a visitor"}</p>
+        <p className="text-caption text-muted">
+          {owner
+            ? "Your visits, time and downloads aren't counted here, and feedback you leave goes to the Test list in the inbox."
+            : "Mark it as yours to browse and try feedback without changing the real numbers. Do this once in each browser you use."}
+        </p>
+      </div>
+      <form action={owner ? unmarkOwner : markOwner}>
+        <Cta type="submit">{owner ? "Count this browser again" : "Mark as mine"}</Cta>
+      </form>
+    </div>
+  );
+}
+
 function KeyForm({ wrong }: { wrong: string | undefined }) {
   return (
     <main className="page-container pt-[96px] pb-[96px]">
@@ -136,6 +156,8 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
             </button>
           </form>
         </header>
+
+        <OwnerSwitch owner={await isOwner()} />
 
         <div className="grid grid-cols-2 gap-2 md:grid-cols-5 md:gap-4">
           <Tile label="Visits" value={String(s.visits)} />
