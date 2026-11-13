@@ -1,5 +1,5 @@
 // ── /api/feedback ─────────────────────────────────────────────────────────────
-// GET  ?page=/works/x&author=<id>  → that reviewer's own comments on that page
+// GET  ?author=<id>[&page=/works/x] → that reviewer's own comments (on that page, or all)
 // POST FeedbackInput (+ "website", a honeypot real people never fill) → the saved comment
 //
 // Reviewers only ever see their own comments; everything lands in the private
@@ -30,9 +30,9 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const page = url.searchParams.get("page") ?? "";
   const author = url.searchParams.get("author") ?? "";
-  if (!PAGE_RE.test(page) || !AUTHOR_RE.test(author)) return new Response(null, { status: 400 });
+  if ((page && !PAGE_RE.test(page)) || !AUTHOR_RE.test(author)) return new Response(null, { status: 400 });
   try {
-    const items = await listForAuthor(author, page);
+    const items = await listForAuthor(author, page || undefined);
     return Response.json(items.map(forReviewer));
   } catch (err) {
     console.error("[feedback] read failed", err);
@@ -55,6 +55,7 @@ export async function POST(req: Request) {
   const text = typeof body.text === "string" ? body.text.trim().slice(0, LIMITS.text) : "";
   const input: FeedbackInput = {
     page: clean(body.page, 80),
+    pageTitle: clean(body.pageTitle, LIMITS.label),
     section: clean(body.section, LIMITS.section),
     sectionLabel: clean(body.sectionLabel, LIMITS.label),
     anchor: clean(body.anchor, LIMITS.anchor),

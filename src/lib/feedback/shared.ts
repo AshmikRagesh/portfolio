@@ -39,6 +39,8 @@ export interface FeedbackItem {
   id: string;
   /** Case study path, e.g. /works/helix */
   page: string;
+  /** Its title when the comment was left, e.g. "Helix" */
+  pageTitle: string;
   /** Section id from the page's SECTIONS, or "top" above the first chapter */
   section: string;
   /** Section label, e.g. "The Problem" */

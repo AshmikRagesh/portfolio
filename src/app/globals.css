@@ -1571,10 +1571,41 @@ html[data-feedback="on"] [data-cs-main] * {
   justify-content: space-between;
   gap: 12px;
 }
-.fb-card-title {
-  font-size: 16px;
+/* Comment | Your notes */
+.fb-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 999px;
+  background: var(--fb-raise);
+}
+.fb-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fb-text-3);
+  font-size: 14px;
   font-weight: 500;
-  line-height: 24px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: background-color 0.16s ease, color 0.16s ease;
+}
+.fb-tabs button:hover { color: #fff; }
+.fb-tabs button[aria-selected="true"] { background: var(--fb-raise-2); color: #fff; }
+.fb-tab-count {
+  min-width: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(249, 228, 255, 0.12);
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 .fb-icon-button {
   display: grid;
@@ -1591,58 +1622,6 @@ html[data-feedback="on"] [data-cs-main] * {
 }
 .fb-icon-button:hover { background: var(--fb-raise-2); color: #fff; }
 
-/* The reviewer's earlier comments on this block: a quiet list, not boxes */
-.fb-thread {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(249, 228, 255, 0.08);
-}
-.fb-thread-heading {
-  color: var(--fb-text-3);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 16px;
-}
-.fb-thread ul {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.fb-thread li {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
-  gap: 10px;
-}
-.fb-avatar {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  background: theme("colors.grape-light");
-  color: theme("colors.primary");
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1;
-}
-.fb-thread-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 8px;
-  min-height: 24px;
-  color: var(--fb-text-3);
-  font-size: 12px;
-  line-height: 16px;
-}
-.fb-thread-name {
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
-}
 .fb-chip {
   padding: 0 8px;
   border-radius: 999px;
@@ -1650,24 +1629,6 @@ html[data-feedback="on"] [data-cs-main] * {
   color: theme("colors.pink");
   line-height: 20px;
 }
-.fb-thread-text {
-  margin-top: 2px;
-  color: var(--fb-text-2);
-  font-size: 14px;
-  line-height: 20px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-.fb-thread-attach {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  color: var(--fb-text-3);
-  font-size: 12px;
-  line-height: 16px;
-}
-
 /* One composer: the block it's about, the text, an image, then its tools */
 .fb-composer {
   display: flex;
@@ -1675,16 +1636,13 @@ html[data-feedback="on"] [data-cs-main] * {
   border: 1px solid var(--fb-line);
   border-radius: theme("borderRadius.xl");
   background: var(--fb-raise);
-  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+  transition: border-color 0.16s ease;
 }
-.fb-composer:focus-within {
-  border-color: rgba(248, 194, 247, 0.56);
-  box-shadow: 0 0 0 4px rgba(157, 19, 106, 0.24);
-}
+.fb-composer:focus-within { border-color: rgba(248, 194, 247, 0.56); }
 .fb-composer[data-dragging="true"] { border-color: theme("colors.pink"); border-style: dashed; }
 .fb-composer-text {
-  min-height: 64px;
-  padding: 8px 14px 4px;
+  min-height: 72px;
+  padding: 12px 14px 4px;
   border: 0;
   background: transparent;
   color: #fff;
@@ -1728,27 +1686,130 @@ html[data-feedback="on"] [data-cs-main] * {
   padding: 8px 8px 8px 10px;
 }
 
-/* The block this comment is about — same grape as its outline on the page */
+/* What the note is about: the picked block (or the whole case study), above the
+   composer so the field holds only writing tools */
+.fb-about {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
 .fb-target {
   display: flex;
   align-items: center;
   gap: 6px;
-  max-width: calc(100% - 24px);
-  height: 24px;
-  margin: 12px 12px 0;
-  padding: 0 8px;
-  border: 0;
-  border-radius: theme("borderRadius.sm");
-  align-self: flex-start;
-  background: theme("colors.grape");
-  color: #fff;
+  max-width: 100%;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px dashed rgba(248, 194, 247, 0.48);
+  border-radius: theme("borderRadius.md");
+  background: transparent;
+  color: theme("colors.pink");
   font-size: 12px;
   line-height: 16px;
   white-space: nowrap;
   cursor: pointer;
 }
 .fb-target-kind { font-weight: 500; }
-.fb-target-where { overflow: hidden; color: rgba(255, 255, 255, 0.76); text-overflow: ellipsis; }
+.fb-target-where { overflow: hidden; color: var(--fb-text-2); text-overflow: ellipsis; }
+.fb-about-hint {
+  color: var(--fb-text-3);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* Your notes */
+.fb-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 -8px;
+}
+.fb-notes-heading {
+  margin: 0 8px 4px;
+  color: var(--fb-text-3);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+.fb-notes ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.fb-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: theme("borderRadius.lg");
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.16s ease;
+}
+.fb-note:hover { background: var(--fb-raise); }
+.fb-note[data-active="true"] { background: var(--fb-raise-2); }
+.fb-note-where {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+.fb-note-where svg { flex: 0 0 auto; color: theme("colors.pink"); }
+.fb-note-section { overflow: hidden; color: var(--fb-text-3); font-weight: 400; white-space: nowrap; text-overflow: ellipsis; }
+.fb-note-out { margin-left: auto; color: var(--fb-text-3) !important; }
+.fb-note-text {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--fb-text-2);
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.fb-note-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fb-text-3);
+  font-size: 12px;
+  line-height: 16px;
+}
+.fb-note-meta .fb-chip { line-height: 18px; }
+.fb-note-image { display: flex; align-items: center; gap: 4px; }
+.fb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 8px 16px;
+  color: var(--fb-text-3);
+  text-align: center;
+}
+.fb-empty svg { margin-bottom: 4px; color: theme("colors.pink"); }
+.fb-empty-title { color: #fff; font-size: 14px; font-weight: 500; line-height: 20px; }
+.fb-empty-text { font-size: 12px; line-height: 16px; }
+.fb-empty-action {
+  margin-top: 10px;
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--fb-raise-2);
+  color: #fff;
+  font-size: 14px;
+  line-height: 20px;
+  cursor: pointer;
+}
+.fb-empty-action:hover { background: #4a1c57; }
 
 /* Category: a small pill opening a list above itself */
 .fb-menu-wrap { position: relative; }
@@ -1770,7 +1831,7 @@ html[data-feedback="on"] [data-cs-main] * {
 }
 .fb-select:hover,
 .fb-select[aria-expanded="true"] { background: #4a1c57; color: #fff; }
-.fb-select[data-filled="true"] { background: theme("colors.grape"); color: #fff; }
+.fb-select[data-filled="true"] { background: theme("colors.grape-light"); color: theme("colors.primary"); }
 .fb-select:focus-visible { outline: 2px solid rgba(248, 194, 247, 0.6); outline-offset: 2px; }
 .fb-select-caret { opacity: 0.72; transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1); }
 .fb-select[aria-expanded="true"] .fb-select-caret { transform: rotate(180deg); }
@@ -1863,13 +1924,9 @@ html[data-feedback="on"] [data-cs-main] * {
   border-radius: theme("borderRadius.lg");
   background: var(--fb-raise);
   color: var(--fb-text-3);
-  transition: border-color 0.16s ease, box-shadow 0.16s ease, color 0.16s ease;
+  transition: border-color 0.16s ease, color 0.16s ease;
 }
-.fb-name-field:focus-within {
-  border-color: rgba(248, 194, 247, 0.56);
-  box-shadow: 0 0 0 4px rgba(157, 19, 106, 0.24);
-  color: #fff;
-}
+.fb-name-field:focus-within { border-color: rgba(248, 194, 247, 0.56); color: #fff; }
 .fb-name-field input {
   width: 100%;
   min-width: 0;

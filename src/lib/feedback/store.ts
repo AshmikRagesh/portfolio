@@ -35,6 +35,7 @@ function fromHash(flat: string[] | null): FeedbackItem | null {
   return {
     id: h.id,
     page: h.page,
+    pageTitle: h.pageTitle ?? "",
     section: h.section,
     sectionLabel: h.sectionLabel,
     anchor: h.anchor,
@@ -72,13 +73,14 @@ export async function addFeedback(input: FeedbackInput, opts: { test?: boolean }
   return item;
 }
 
-/** One reviewer's comments on one page, oldest first. */
-export async function listForAuthor(author: string, page: string) {
+/** One reviewer's comments, oldest first — on one page, or every page when page is omitted. */
+export async function listForAuthor(author: string, page?: string) {
+  const keep = (i: FeedbackItem) => !page || i.page === page;
   if (!storeConfigured) {
-    return [...memory.values()].filter((i) => i.author === author && i.page === page).sort((a, b) => a.createdAt - b.createdAt);
+    return [...memory.values()].filter((i) => i.author === author && keep(i)).sort((a, b) => a.createdAt - b.createdAt);
   }
   const [{ result: ids }] = await pipeline([["ZRANGE", `${FB_NS}:author:${author}`, 0, READ_LIMIT - 1]]);
-  return (await readItems(ids ?? [])).filter((i) => i.page === page);
+  return (await readItems(ids ?? [])).filter(keep);
 }
 
 /** Every comment, newest first — for the inbox. */

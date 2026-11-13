@@ -1,9 +1,10 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   ArrowUp,
+  ArrowUpRight,
   Bug,
   CaretDown,
   ChatCircleDots,
@@ -22,6 +23,8 @@ import {
   VideoCamera,
   Wheelchair,
   X,
+  XCircle,
+  IconContext,
   type Icon,
 } from "@phosphor-icons/react";
 import type { CaseStudySection } from "@/components/case-study/SectionPill";
@@ -47,7 +50,23 @@ import { playSound } from "@/lib/sound/ui";
 // everything goes to the private /feedback inbox. Styles: .fb-* in globals.css.
 
 type Saved = Omit<FeedbackItem, "author" | "test" | "image"> & { hasImage?: boolean };
-type Target = ReturnType<typeof describe> & { el: HTMLElement };
+type Target = ReturnType<typeof describe> & { el: HTMLElement | null };
+type Panel = "closed" | "compose" | "notes";
+
+/** Feedback about the case study as a whole, before (or instead of) picking a block */
+const PAGE_TARGET: Target = {
+  el: null,
+  section: "page",
+  sectionLabel: "This case study",
+  anchor: "page|page|0",
+  label: "Whole case study",
+  snippet: "",
+};
+
+/** "Helix · Ashmik Ragesh" → "Helix"; falls back to the slug */
+const pageName = (item: { page: string; pageTitle?: string }) =>
+  item.pageTitle ||
+  item.page.replace("/works/", "").replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase());
 
 interface FeedbackState {
   on: boolean;
@@ -111,25 +130,24 @@ async function toJpeg(file: Blob): Promise<Blob> {
 }
 
 export function FeedbackProvider({ children, imagesEnabled = false }: { children: React.ReactNode; imagesEnabled?: boolean }) {
-  const page = usePathname();
   const [on, setOn] = useState(false);
   const [items, setItems] = useState<Saved[]>([]);
   const [author, setAuthor] = useState("");
 
   useEffect(() => setAuthor(authorId()), []);
 
-  // This reviewer's earlier comments on this page
+  // All of this reviewer's earlier comments, on every case study
   useEffect(() => {
     if (!author) return;
     let live = true;
-    fetch(`${FEEDBACK_PATH}?page=${encodeURIComponent(page)}&author=${author}`)
+    fetch(`${FEEDBACK_PATH}?author=${author}`)
       .then((r) => (r.ok ? r.json() : []))
       .then((list: Saved[]) => live && setItems(list))
       .catch(() => {});
     return () => {
       live = false;
     };
-  }, [author, page]);
+  }, [author]);
 
   const add = useCallback((item: Saved) => setItems((list) => [...list, item]), []);
 
@@ -139,8 +157,10 @@ export function FeedbackProvider({ children, imagesEnabled = false }: { children
 /** The round button that sits beside the section pill. */
 export function FeedbackButton() {
   const fb = useFeedback();
+  const page = usePathname();
   if (!fb) return null;
-  const { on, setOn, items } = fb;
+  const { on, setOn } = fb;
+  const items = fb.items.filter((i) => i.page === page);
   return (
     <button
       type="button"
@@ -233,9 +253,9 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
           }
         }}
       >
-        <Current size={14} weight={value ? "fill" : "regular"} aria-hidden="true" />
+        <Current size={14} aria-hidden="true" />
         {value ? CATEGORIES[value] : "Category"}
-        <CaretDown size={10} weight="bold" aria-hidden="true" className="fb-select-caret" />
+        <CaretDown size={10} aria-hidden="true" className="fb-select-caret" />
       </button>
       {open && (
         <ul
@@ -258,7 +278,7 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
           }}
         >
           {options.map((o, i) => {
-            const OptionIcon = o.value ? CATEGORY_ICONS[o.value] : X;
+            const OptionIcon = o.value ? CATEGORY_ICONS[o.value] : XCircle;
             return (
               <li
                 key={o.value || "none"}
@@ -294,6 +314,12 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error" | "image-error">("idle");
   const fileRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
+  const [panel, setPanel] = useState<Panel>("closed");
+  const [activeNote, setActiveNote] = useState<string | null>(null);
+  const panelRef = useRef<Panel>("closed");
+  const lastPanel = useRef<Panel>("compose");
+  const lastTarget = useRef<Target | null>(null);
+  panelRef.current = panel;
   const hoverRef = useRef<HTMLDivElement>(null);
   const pickedRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -306,7 +332,9 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
 
   const on = fb?.on ?? false;
   const setOn = fb?.setOn;
-  const items = fb?.items ?? NONE;
+  const allItems = fb?.items ?? NONE;
+  // Dots and block lookups are for this page; the Your notes tab lists every page
+  const items = useMemo(() => allItems.filter((i) => i.page === page), [allItems, page]);
 
   useEffect(() => setName(storageGet(NAME_KEY) ?? ""), []);
 
@@ -317,6 +345,8 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
       const main = root();
       if (!main) return;
       setTarget({ el, ...describe(el, main, sections) });
+      setPanel("compose");
+      setActiveNote(null);
       setState("idle");
       // Phones: the card is a bottom sheet, so lift the block into the space above it
       if (!window.matchMedia("(min-width: 768px)").matches) {
@@ -362,10 +392,13 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
       const el = blockFor(e.target, main);
       if (el) pick(el);
     };
+    // Esc closes the card first, then leaves feedback mode
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      if (targetRef.current) setTarget(null);
-      else setOn?.(false);
+      if (panelRef.current !== "closed") {
+        setPanel("closed");
+        setTarget(null);
+      } else setOn?.(false);
     };
 
     document.addEventListener("pointermove", onMove, { passive: true });
@@ -382,11 +415,20 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     };
   }, [on, pick, setOn]);
 
-  // Leaving feedback mode closes the card (only on the switch off, so a deep link
-  // that opens the mode and picks a block in the same pass keeps its card)
+  // Turning feedback mode on opens the card straight away, ready for a note on the
+  // whole case study (a deep link that picks a block in the same pass keeps it).
+  // Turning it off closes the card.
   const wasOn = useRef(on);
   useEffect(() => {
-    if (wasOn.current && !on) setTarget(null);
+    if (!wasOn.current && on) {
+      if (!targetRef.current) setTarget(PAGE_TARGET);
+      setPanel((p) => (p === "closed" ? "compose" : p));
+    }
+    if (wasOn.current && !on) {
+      setTarget(null);
+      setPanel("closed");
+      setActiveNote(null);
+    }
     wasOn.current = on;
   }, [on]);
 
@@ -447,15 +489,49 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     return () => cancelAnimationFrame(frame);
   }, [on, target]);
 
-  // Focus the comment box when a block is picked
+  // Focus the comment box when the card opens or a block is picked
   useEffect(() => {
-    if (target) textRef.current?.focus({ preventScroll: true });
-  }, [target]);
+    if (target && panel === "compose") textRef.current?.focus({ preventScroll: true });
+  }, [target, panel]);
 
   if (!fb) return null;
 
-  const thread = target ? items.filter((i) => i.anchor === target.anchor) : [];
-  const TargetIcon = (target && KIND_ICONS[target.label]) || TextT;
+  const open = on && panel !== "closed";
+  // While the card fades out, keep showing what it showed, so it never collapses to an empty bar
+  if (panel !== "closed") lastPanel.current = panel;
+  if (target) lastTarget.current = target;
+  const view: Panel = open ? panel : lastPanel.current;
+  const about = target ?? lastTarget.current;
+  const TargetIcon = about?.el ? KIND_ICONS[about.label] || TextT : ChatCircleDots;
+
+  // Your notes: this page first, then the other case studies, newest first in each
+  const groups = (() => {
+    const map = new Map<string, Saved[]>();
+    for (const n of [...allItems].sort((a, b) => b.createdAt - a.createdAt)) {
+      map.set(n.page, [...(map.get(n.page) ?? []), n]);
+    }
+    return [...map].sort(([a], [b]) => Number(b === page) - Number(a === page));
+  })();
+
+  const closeCard = () => {
+    setPanel("closed");
+    setTarget(null);
+    setActiveNote(null);
+  };
+
+  const goToNote = (n: Saved) => {
+    if (n.page !== page) {
+      window.location.href = `${n.page}?fb=${encodeURIComponent(n.anchor)}`;
+      return;
+    }
+    setActiveNote(n.id);
+    const main = root();
+    const el = located.current.get(n.id) ?? (main ? locate(n.anchor, n.snippet, main) : null);
+    if (!el || !main) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+    setTarget({ el, ...describe(el, main, sections) });
+  };
   // Number the dots in reading order of when they were left
   const blocks = Array.from(new Set(items.map((i) => i.anchor)));
 
@@ -498,6 +574,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           page,
+          pageTitle: document.title.split(" · ")[0],
           section: target.section,
           sectionLabel: target.sectionLabel,
           anchor: target.anchor,
@@ -567,47 +644,90 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
           </button>
         ))}
 
-      <div ref={cardRef} className="fb-card" data-open={Boolean(on && target)} inert={!(on && target)}>
-        {target && (
+      <div ref={cardRef} className="fb-card" data-open={open} inert={!open}>
+        <IconContext.Provider value={{ weight: "fill" }}>
+        {about && (
           <form onSubmit={send} className="fb-card-form">
             <header className="fb-card-head">
-              <p className="fb-card-title">Leave feedback</p>
-              <button type="button" className="fb-icon-button" onClick={() => setTarget(null)}>
-                <X size={16} aria-hidden="true" />
+              <div className="fb-tabs" role="tablist" aria-label="Feedback">
+                <button type="button" role="tab" aria-selected={view === "compose"} onClick={() => setPanel("compose")}>
+                  Comment
+                </button>
+                <button type="button" role="tab" aria-selected={view === "notes"} onClick={() => setPanel("notes")}>
+                  Your notes
+                  {allItems.length > 0 && <span className="fb-tab-count">{allItems.length}</span>}
+                </button>
+              </div>
+              <button type="button" className="fb-icon-button" onClick={closeCard}>
+                <X size={14} weight="bold" aria-hidden="true" />
                 <span className="sr-only">Close</span>
               </button>
             </header>
 
-            {thread.length > 0 && (
-              <section className="fb-thread" aria-label="Your earlier feedback on this block">
-                <p className="fb-thread-heading">
-                  {thread.length === 1 ? "Your earlier note here" : `Your ${thread.length} earlier notes here`}
-                </p>
-                <ul>
-                  {thread.map((c) => (
-                    <li key={c.id}>
-                      <span className="fb-avatar" aria-hidden="true">
-                        {(c.name || "You").trim().charAt(0).toUpperCase()}
-                      </span>
-                      <div className="min-w-0">
-                      <p className="fb-thread-meta">
-                        <span className="fb-thread-name">{c.name || "You"}</span>
-                        <span>{new Date(c.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
-                        {c.category && <span className="fb-chip">{CATEGORIES[c.category]}</span>}
-                      </p>
-                      <p className="fb-thread-text">{c.text}</p>
-                      {c.hasImage && (
-                        <p className="fb-thread-attach">
-                          <ImageSquare size={14} aria-hidden="true" />
-                          Image attached
-                        </p>
-                      )}
-                      </div>
-                    </li>
+            {view === "notes" ? (
+              allItems.length === 0 ? (
+                <div className="fb-empty">
+                  <ChatCircleDots size={24} aria-hidden="true" />
+                  <p className="fb-empty-title">No notes yet</p>
+                  <p className="fb-empty-text">Notes you leave on any case study show up here.</p>
+                  <button type="button" className="fb-empty-action" onClick={() => setPanel("compose")}>
+                    Write a note
+                  </button>
+                </div>
+              ) : (
+                <div className="fb-notes">
+                  {groups.map(([notePage, notes]) => (
+                    <section key={notePage} aria-label={notePage === page ? "On this page" : pageName(notes[0])}>
+                      <p className="fb-notes-heading">{notePage === page ? "On this page" : pageName(notes[0])}</p>
+                      <ul>
+                        {notes.map((n) => {
+                          const KindIcon = n.anchor.startsWith("page|") ? ChatCircleDots : KIND_ICONS[n.label] || TextT;
+                          return (
+                            <li key={n.id}>
+                              <button type="button" className="fb-note" data-active={activeNote === n.id} onClick={() => goToNote(n)}>
+                                <span className="fb-note-where">
+                                  <KindIcon size={14} aria-hidden="true" />
+                                  {n.label}
+                                  <span className="fb-note-section">· {n.sectionLabel}</span>
+                                  {n.page !== page && <ArrowUpRight size={12} aria-hidden="true" className="fb-note-out" />}
+                                </span>
+                                <span className="fb-note-text">{n.text}</span>
+                                <span className="fb-note-meta">
+                                  {new Date(n.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                                  {n.category && <span className="fb-chip">{CATEGORIES[n.category]}</span>}
+                                  {n.hasImage && (
+                                    <span className="fb-note-image">
+                                      <ImageSquare size={12} aria-hidden="true" />
+                                      Image
+                                    </span>
+                                  )}
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </section>
                   ))}
-                </ul>
-              </section>
-            )}
+                </div>
+              )
+            ) : (
+            <>
+            <div className="fb-about">
+              <button
+                type="button"
+                className="fb-target"
+                title={about.el ? "Show this block" : undefined}
+                onClick={() => about.el?.scrollIntoView({ behavior: "smooth", block: "center" })}
+              >
+                <TargetIcon size={14} aria-hidden="true" />
+                <span className="fb-target-kind">{about.label}</span>
+                {about.el && <span className="fb-target-where">in {about.sectionLabel}</span>}
+              </button>
+              <p className="fb-about-hint">
+                {about.el ? "Click another block to switch" : "Or click a block on the page"}
+              </p>
+            </div>
 
             <div
               className="fb-composer"
@@ -625,16 +745,6 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                 attach(Array.from(e.dataTransfer.files).find((f) => f.type.startsWith("image/")));
               }}
             >
-              <button
-                type="button"
-                className="fb-target"
-                title="Show this block"
-                onClick={() => target.el.scrollIntoView({ behavior: "smooth", block: "center" })}
-              >
-                <TargetIcon size={14} weight="bold" aria-hidden="true" />
-                <span className="fb-target-kind">{target.label}</span>
-                <span className="fb-target-where">in {target.sectionLabel}</span>
-              </button>
               <label className="sr-only" htmlFor="fb-text">
                 Your feedback
               </label>
@@ -685,7 +795,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                       onClick={() => fileRef.current?.click()}
                       title="Add an image (or paste or drop one)"
                     >
-                      <ImageSquare size={16} weight={image ? "fill" : "regular"} aria-hidden="true" />
+                      <ImageSquare size={16} aria-hidden="true" />
                       <span className="sr-only">Add an image</span>
                     </button>
                     <input
@@ -705,7 +815,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                   aria-disabled={!draft.trim() || state === "sending"}
                   title="Send (⌘↵)"
                 >
-                  <ArrowUp size={16} weight="bold" aria-hidden="true" />
+                  <ArrowUp size={16} aria-hidden="true" />
                   <span className="sr-only">Send feedback</span>
                 </button>
               </div>
@@ -738,8 +848,11 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                           : ""}
               </p>
             </div>
+            </>
+            )}
           </form>
         )}
+        </IconContext.Provider>
       </div>
     </>
   );
