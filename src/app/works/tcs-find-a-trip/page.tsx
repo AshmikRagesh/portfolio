@@ -72,17 +72,17 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        {/* The finished work up front; the problem walkthrough sits in The Problem */}
-        {/* The handle starts left of the continent column, so the change shows first and
-            dragging right across Africa brings back today's menu */}
+        {/* Both stills come from the prototype at one window size, so only the change moves.
+            The handle rests left of the continent column, so the new choice shows first; the
+            first-view sweep crosses Africa and back */}
         <BeforeAfterSlider
+          width={2940}
+          height={1582}
           start={24}
-          label="Today's menu, and the two designs in test: the choice opens right under the continent"
-          before={{ src: "/images/tcs-find-a-trip/overview-before.jpg", alt: "Today's Find a Trip menu: every continent goes straight to a list of trips" }}
-          afters={[
-            { id: "links", label: "Variant 2 · Text links", short: "Text links", src: "/images/tcs-find-a-trip/overview-links.jpg", alt: "Variant 2: Africa open, with Explore Trips and Explore Destinations as links under it" },
-            { id: "cards", label: "Variant 3 · Image cards", short: "Image cards", src: "/images/tcs-find-a-trip/overview-cards.jpg", alt: "Variant 3: Africa open, with Explore Trips and Explore Destination as photo cards under it" },
-          ]}
+          sweepTo={56}
+          before={{ src: "/images/tcs-find-a-trip/compare-before.jpg", alt: "today's menu, where Africa goes straight to a list of trips" }}
+          after={{ src: "/images/tcs-find-a-trip/compare-after.jpg", alt: "the new menu, where Africa opens Explore Trips and Explore Destination" }}
+          caption="Drag to compare. Left: today's menu, where Africa goes straight to trips. Right: Africa opens two paths."
         />
       </Visual>
     </Chapter>

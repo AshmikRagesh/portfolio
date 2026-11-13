@@ -25,7 +25,7 @@ export function VariantProvider({ variants, children }: { variants: Variant[]; c
  * least 44px), and the thumb takes each one's width.
  * The full name goes to screen readers and shows on hover.
  */
-export function VariantSwitch({
+function VariantSwitch({
   variants,
   current,
   onChange,

@@ -1,115 +1,191 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
-import { VariantSwitch } from "./VariantSwitch";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
- * Before and after as one picture: the after sits underneath, the before on top, cut off at
- * a handle you drag (or move with the arrow keys; it's a range input underneath). Both
- * stills must be captured at the same size and framing so the edges line up.
+ * Before and after as one picture. The after sits underneath and the before on top, cut off
+ * at a handle. Both stills must be captured at the same size and framing (same page, same
+ * window) so only the change moves when the handle passes over it.
  *
- * `afters` can hold more than one version (two designs in a test): a switch in the top-right
- * corner picks which one the after side shows, so neither design is the default "after".
- * Labels sit in the top corners: "Before" on the left, the switch (or "After") on the right;
- * on a phone the switch moves under the picture so it doesn't cover it.
+ * Interaction
+ *  - Drag anywhere on the picture (mouse, pen or touch); a tap glides the handle there.
+ *    Vertical swipes still scroll the page on a phone.
+ *  - Keyboard: the grip is a slider (role="slider"): arrows move 2%, Shift+arrows 10%,
+ *    Home and End go to the ends.
+ *  - The first time it comes into view, the handle sweeps across the change and back once,
+ *    so the reader sees there's something to compare. Reduced motion skips the sweep and
+ *    every glide.
+ *
+ * Look: the picture sits in the case study card (white, 8px inset, 4px frame) like the other
+ * visuals. The handle is a thin white line with a round grip that lifts on hover and presses
+ * in while dragged. No labels on the picture: the caption says which side is which.
  */
 type Shot = { src: string; alt: string };
-type After = Shot & { id: string; label: string; short: string };
+
+const clamp = (n: number) => Math.min(100, Math.max(0, n));
+const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 export default function BeforeAfterSlider({
   before,
-  afters,
-  label,
+  after,
+  width,
+  height,
   start = 50,
+  sweepTo,
+  caption,
 }: {
   before: Shot;
-  afters: After[];
-  /** A short caption centred under the picture, as on Figure */
-  label?: string;
-  /** Where the handle starts, in % from the left */
+  after: Shot;
+  /** The stills' pixel size, so the frame keeps their exact shape */
+  width: number;
+  height: number;
+  /** Where the handle rests, in % from the left */
   start?: number;
+  /** Where the first-view sweep turns back, in % from the left (no sweep without it) */
+  sweepTo?: number;
+  caption?: React.ReactNode;
 }) {
-  const [pos, setPos] = useState(start);
-  const [current, setCurrent] = useState(afters[0].id);
+  const [pos, setPosState] = useState(start);
+  const [dragging, setDragging] = useState(false);
+  const posRef = useRef(start);
   const box = useRef<HTMLDivElement>(null);
-  const after = afters.find((a) => a.id === current) ?? afters[0];
+  const anim = useRef<number | null>(null);
+  const touched = useRef(false);
 
-  // Dragging anywhere on the picture moves the handle there
-  const moveTo = useCallback((clientX: number) => {
-    const r = box.current?.getBoundingClientRect();
-    if (!r) return;
-    setPos(Math.min(100, Math.max(0, ((clientX - r.left) / r.width) * 100)));
+  const setPos = (n: number) => {
+    posRef.current = n;
+    setPosState(n);
+  };
+  const stop = () => {
+    if (anim.current !== null) cancelAnimationFrame(anim.current);
+    anim.current = null;
+  };
+
+  // Glide the handle through one or more points, unless the reader prefers less motion
+  const glide = useCallback((stops: number[], ms: number) => {
+    stop();
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setPos(stops[stops.length - 1]);
+      return;
+    }
+    const path = [posRef.current, ...stops];
+    const leg = ms / stops.length;
+    const t0 = performance.now();
+    const step = (now: number) => {
+      const t = Math.min(ms, now - t0);
+      const i = Math.min(stops.length - 1, Math.floor(t / leg));
+      const k = Math.min(1, (t - i * leg) / leg);
+      setPos(path[i] + (path[i + 1] - path[i]) * ease(k));
+      anim.current = t < ms ? requestAnimationFrame(step) : null;
+    };
+    anim.current = requestAnimationFrame(step);
   }, []);
 
+  // The one-time sweep when the picture first comes into view
+  useEffect(() => {
+    const el = box.current;
+    if (!el || sweepTo === undefined) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        timer = setTimeout(() => {
+          if (!touched.current) glide([sweepTo, start], 2400);
+        }, 500);
+      },
+      { threshold: 0.6 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      clearTimeout(timer);
+      stop();
+    };
+  }, [glide, start, sweepTo]);
+
+  const at = (clientX: number) => {
+    const r = box.current!.getBoundingClientRect();
+    return clamp(((clientX - r.left) / r.width) * 100);
+  };
+
+  const onKey = (e: React.KeyboardEvent) => {
+    const big = e.shiftKey ? 10 : 2;
+    const next =
+      e.key === "ArrowLeft" || e.key === "ArrowDown" ? posRef.current - big
+      : e.key === "ArrowRight" || e.key === "ArrowUp" ? posRef.current + big
+      : e.key === "Home" ? 0
+      : e.key === "End" ? 100
+      : null;
+    if (next === null) return;
+    e.preventDefault();
+    touched.current = true;
+    stop();
+    setPos(clamp(next));
+  };
+
   return (
-    <figure className="m-0 min-w-0">
+    <figure className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px]">
       <div
         ref={box}
-        className="relative aspect-[16/9] touch-pan-y select-none overflow-hidden rounded-sm bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]"
+        className={`cs-pair-media group/ba relative touch-pan-y select-none overflow-hidden rounded-sm bg-grape-light/40 ${
+          dragging ? "cursor-grabbing" : "cursor-ew-resize"
+        }`}
+        style={{ aspectRatio: `${width} / ${height}` }}
         onPointerDown={(e) => {
-          if ((e.target as HTMLElement).closest("[role=radiogroup]")) return;
+          if (e.button !== 0) return;
+          touched.current = true;
           e.currentTarget.setPointerCapture(e.pointerId);
-          moveTo(e.clientX);
+          setDragging(true);
+          glide([at(e.clientX)], 240);
         }}
         onPointerMove={(e) => {
-          if (e.currentTarget.hasPointerCapture(e.pointerId)) moveTo(e.clientX);
+          if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+          stop();
+          setPos(at(e.clientX));
         }}
+        onPointerUp={() => setDragging(false)}
+        onPointerCancel={() => setDragging(false)}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img key={after.id} src={after.src} alt={after.alt} className="cs-fade absolute inset-0 h-full w-full object-cover" draggable={false} />
+        <img src={after.src} alt={after.alt} width={width} height={height} draggable={false} className="absolute inset-0 h-full w-full object-cover" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={before.src}
           alt={before.alt}
+          width={width}
+          height={height}
+          draggable={false}
           className="absolute inset-0 h-full w-full object-cover"
           style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
-          draggable={false}
         />
 
         {/* The handle: a hairline with a round grip */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-0" style={{ left: `${pos}%` }}>
-          <div className="absolute inset-y-0 -left-[1px] w-[2px] bg-white shadow-[0_0_0_1px_rgba(30,5,37,0.12)]" />
-          <div className="absolute left-1/2 top-1/2 flex size-[40px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-[0_4px_16px_rgba(30,5,37,0.24)] ring-1 ring-primary/10">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m9 6-6 6 6 6M15 6l6 6-6 6" />
+        <div className="pointer-events-none absolute inset-y-0 z-[1] w-0" style={{ left: `${pos}%` }}>
+          <div className="absolute inset-y-0 -left-[1px] w-[2px] bg-white shadow-[0_0_0_0.5px_rgba(30,5,37,0.16),0_0_12px_rgba(30,5,37,0.24)]" />
+          <div
+            role="slider"
+            tabIndex={0}
+            aria-label={`Compare. Left: ${before.alt}. Right: ${after.alt}`}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(pos)}
+            aria-valuetext={`${Math.round(pos)}% showing the before`}
+            onKeyDown={onKey}
+            className={`pointer-events-auto absolute left-0 top-1/2 flex size-[44px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.08),0_12px_28px_-8px_rgba(30,5,37,0.4)] outline-none transition-transform duration-200 ease-[cubic-bezier(0.2,0.7,0.2,1)] focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2 motion-reduce:transition-none ${
+              dragging ? "scale-[0.92]" : "group-hover/ba:scale-[1.08]"
+            }`}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m9.5 7-5 5 5 5M14.5 7l5 5-5 5" />
             </svg>
           </div>
         </div>
-
-        {/* Keyboard and screen readers: the same position as a range */}
-        <input
-          type="range"
-          min={0}
-          max={100}
-          step={1}
-          value={Math.round(pos)}
-          onChange={(e) => setPos(Number(e.target.value))}
-          aria-label="Before and after: move to compare"
-          className="peer absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
-        />
-        <div className="pointer-events-none absolute inset-0 rounded-sm ring-2 ring-inset ring-grape opacity-0 peer-focus-visible:opacity-100" />
-
-        <span className="pointer-events-none absolute left-[8px] top-[8px] rounded-full bg-white/90 px-[8px] py-[4px] font-geist text-caption-md font-medium uppercase tracking-[1px] text-primary shadow-[0_4px_16px_rgba(30,5,37,0.12)] backdrop-blur-md md:left-[16px] md:top-[16px] md:px-[12px] md:py-[6px]">
-          Before
-        </span>
-        {/* On a phone the switch would cover the picture, so it sits under it there */}
-        <div className={`absolute right-[12px] top-[12px] z-10 md:right-[16px] md:top-[16px] ${afters.length > 1 ? "hidden md:block" : ""}`}>
-          {afters.length > 1 ? (
-            <VariantSwitch variants={afters} current={current} onChange={setCurrent} />
-          ) : (
-            <span className="rounded-full bg-white/90 px-[12px] py-[6px] font-geist text-caption-md font-medium uppercase tracking-[1px] text-primary">
-              After
-            </span>
-          )}
-        </div>
       </div>
-      {afters.length > 1 && (
-        <div className="mt-[12px] flex justify-center md:hidden">
-          <VariantSwitch variants={afters} current={current} onChange={setCurrent} />
-        </div>
-      )}
-      {label && (
-        <p className="mt-[12px] text-center font-body text-[12px] font-medium leading-[16px] text-muted">{label}</p>
+      {caption && (
+        <figcaption className="px-[12px] pb-[8px] pt-[16px] text-center font-body text-body text-secondary md:px-[16px] md:text-body-md [text-wrap:balance]">
+          {caption}
+        </figcaption>
       )}
     </figure>
   );
