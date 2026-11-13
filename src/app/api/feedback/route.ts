@@ -3,18 +3,22 @@
 // POST FeedbackInput (+ "website", a honeypot real people never fill) → the saved comment
 //
 // Reviewers only ever see their own comments; everything lands in the private
-// /feedback inbox. Rate limited per hashed IP.
+// /feedback inbox. Rate limited per hashed IP. Comments from Ashmik's own browser
+// (lib/owner.ts) are saved as tests.
 
 import { addFeedback, listForAuthor } from "@/lib/feedback/store";
-import { ANCHOR_RE, AUTHOR_RE, LIMITS, PAGE_RE, type FeedbackInput, type FeedbackItem } from "@/lib/feedback/shared";
+import { ANCHOR_RE, AUTHOR_RE, IMAGE_RE, LIMITS, PAGE_RE, isCategory, type FeedbackInput, type FeedbackItem } from "@/lib/feedback/shared";
+import { isOwner } from "@/lib/owner";
 import { allow, ipHash, tooMany } from "@/lib/curiosity/guard";
 
 export const dynamic = "force-dynamic";
 
-/** The author ID stays on the browser that made it */
-function withoutAuthor(item: FeedbackItem) {
-  const rest: Partial<FeedbackItem> = { ...item };
+/** The author ID and the test flag stay on the server; the image path becomes a yes/no */
+function forReviewer(item: FeedbackItem) {
+  const rest: Partial<FeedbackItem> & { hasImage?: boolean } = { ...item, hasImage: Boolean(item.image) };
   delete rest.author;
+  delete rest.test;
+  delete rest.image;
   return rest;
 }
 
@@ -29,7 +33,7 @@ export async function GET(req: Request) {
   if (!PAGE_RE.test(page) || !AUTHOR_RE.test(author)) return new Response(null, { status: 400 });
   try {
     const items = await listForAuthor(author, page);
-    return Response.json(items.map(withoutAuthor));
+    return Response.json(items.map(forReviewer));
   } catch (err) {
     console.error("[feedback] read failed", err);
     return Response.json([]);
@@ -58,6 +62,8 @@ export async function POST(req: Request) {
     snippet: clean(body.snippet, LIMITS.snippet),
     text,
     name: clean(body.name, LIMITS.name),
+    category: isCategory(body.category) ? body.category : "",
+    image: typeof body.image === "string" && IMAGE_RE.test(body.image) ? body.image : "",
     author: clean(body.author, 64),
   };
   if (!PAGE_RE.test(input.page) || !AUTHOR_RE.test(input.author) || !ANCHOR_RE.test(input.anchor) || !text) {
@@ -65,7 +71,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    return Response.json(withoutAuthor(await addFeedback(input)), { status: 201 });
+    return Response.json(forReviewer(await addFeedback(input, { test: await isOwner() })), { status: 201 });
   } catch (err) {
     console.error("[feedback] store failed", err);
     return new Response(null, { status: 503 });

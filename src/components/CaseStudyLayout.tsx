@@ -25,7 +25,7 @@ export default function CaseStudyLayout({ sections, reel, children }: CaseStudyL
       {/* Every block rises in once as it's read */}
       <RevealOnScroll />
       {/* Section pill, the feedback button beside it, and feedback mode */}
-      <CaseStudyDock sections={sections} />
+      <CaseStudyDock sections={sections} imagesEnabled={Boolean(process.env.BLOB_READ_WRITE_TOKEN)} />
       {/* Room keys and where the reader is, for Bella */}
       <CaseStudyTracker sections={sections} />
       {/* Tablet and desktop only; on a phone it would cover the reading */}

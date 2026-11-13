@@ -5,6 +5,7 @@
 //   node scripts/feedback-report.mjs                 # open comments, grouped by case study
 //   node scripts/feedback-report.mjs all             # every comment
 //   node scripts/feedback-report.mjs since 7         # open comments from the last 7 days
+//   node scripts/feedback-report.mjs test            # comments Ashmik left from his own browser
 //   node scripts/feedback-report.mjs mark <id> done  # done | wontdo | open  (the only write)
 //
 // Namespace: FEEDBACK_NS env, default "feedback" (live). Use FEEDBACK_NS=dev:feedback
@@ -67,20 +68,26 @@ const items = rows
   .filter(Boolean);
 
 const since = mode === "since" ? Date.now() - Number(a || 7) * 86_400_000 : 0;
-const shown = items.filter((i) => (mode === "all" ? true : i.status === "open") && i.createdAt >= since);
+const CATS = { accessibility: "Accessibility", content: "Content", visual: "Visual design", bug: "Bug" };
+// Test comments (from Ashmik's own marked browser) only show in "test" mode
+const real = items.filter((i) => i.test !== "true");
+const shown = (mode === "test" ? items.filter((i) => i.test === "true") : real).filter(
+  (i) => (mode === "all" || mode === "test" ? true : i.status === "open") && i.createdAt >= since,
+);
 const nice = (ms) =>
   new Date(ms).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" });
 
-const open = items.filter((i) => i.status === "open").length;
+const open = real.filter((i) => i.status === "open").length;
 console.log(`# Case study feedback (${NS})\n`);
-console.log(`${open} open of ${items.length} total. Showing ${shown.length}${mode === "all" ? " (all)" : mode === "since" ? ` open from the last ${a || 7} days` : " open"}.\n`);
+console.log(`${open} open of ${real.length} total. Showing ${shown.length}${mode === "all" ? " (all)" : mode === "test" ? " test comments" : mode === "since" ? ` open from the last ${a || 7} days` : " open"}.\n`);
 
 const byPage = new Map();
 for (const i of shown) byPage.set(i.page, [...(byPage.get(i.page) ?? []), i]);
 for (const [page, list] of byPage) {
   console.log(`## ${page} (${list.length})\n`);
   for (const i of list.sort((x, y) => x.createdAt - y.createdAt)) {
-    console.log(`- **${i.sectionLabel} · ${i.label}** — ${i.name || "Anonymous"}, ${nice(i.createdAt)}${i.status !== "open" ? ` [${i.status}]` : ""}`);
+    const tags = [CATS[i.category], i.status !== "open" ? i.status : "", i.image ? "has image (see inbox)" : ""].filter(Boolean);
+    console.log(`- **${i.sectionLabel} · ${i.label}** — ${i.name || "Anonymous"}, ${nice(i.createdAt)}${tags.length ? ` [${tags.join(", ")}]` : ""}`);
     if (i.snippet) console.log(`  > ${i.snippet}`);
     console.log(`  ${i.text.replace(/\n/g, "\n  ")}`);
     console.log(`  id: \`${i.id}\` · anchor: \`${i.anchor}\` · ${SITE}${i.page}?fb=${encodeURIComponent(i.anchor)}\n`);

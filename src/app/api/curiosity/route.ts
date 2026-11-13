@@ -7,6 +7,7 @@
 import { MAX_LIFETIME_SECONDS, MAX_VISIT_SECONDS, type CuriosityPayload } from "@/lib/curiosity/config";
 import { recordVisit } from "@/lib/curiosity/store";
 import { allow, ipHash, tooMany } from "@/lib/curiosity/guard";
+import { isOwner } from "@/lib/owner";
 
 // A tab sends a heartbeat every 20s; this leaves room for several tabs or a shared office IP
 const REPORTS_PER_MIN = 30;
@@ -52,6 +53,8 @@ export async function POST(req: Request) {
 
   const payload = clean(body);
   if (!payload) return new Response(null, { status: 400 });
+  // Ashmik's own browser (owner switch on /stats) is never counted
+  if (await isOwner()) return new Response(null, { status: 204 });
 
   try {
     const outcome = await recordVisit(payload, { canStartVisit: () => allow("newvisit", ip, NEW_VISITS_PER_HOUR, 3600) });

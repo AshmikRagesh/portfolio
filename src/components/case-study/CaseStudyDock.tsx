@@ -4,9 +4,9 @@ import SectionPill, { type CaseStudySection } from "@/components/case-study/Sect
 import { FeedbackButton, FeedbackLayer, FeedbackProvider, useFeedbackOn } from "@/components/case-study/Feedback";
 
 /** The bottom dock of a case study: the section pill, the feedback button beside it, and feedback mode. */
-export default function CaseStudyDock({ sections }: { sections: CaseStudySection[] }) {
+export default function CaseStudyDock({ sections, imagesEnabled }: { sections: CaseStudySection[]; imagesEnabled: boolean }) {
   return (
-    <FeedbackProvider>
+    <FeedbackProvider imagesEnabled={imagesEnabled}>
       <Pill sections={sections} />
       <FeedbackLayer sections={sections} />
     </FeedbackProvider>

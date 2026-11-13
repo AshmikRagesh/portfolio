@@ -5,16 +5,22 @@
 //   feedback:all                sorted set, id → createdAt (ms); the inbox reads this
 //   feedback:author:<authorId>  sorted set, id → createdAt; a reviewer's own comments
 //
+// Attached images live in Vercel Blob (private), at feedback/<namespace>/<uuid>.jpg;
+// the comment keeps only that pathname. Comments from a browser marked as Ashmik's
+// (lib/owner.ts) are saved with test=true and kept out of the inbox's real lists.
+//
 // Production writes "feedback:…", next dev writes "dev:feedback:…" (FEEDBACK_NS
 // overrides), so local testing never lands in the real inbox. Without Upstash an
 // in-memory map stands in — enough for local testing, per server instance only.
 
 import { randomUUID } from "node:crypto";
 import { pipeline, storeConfigured } from "@/lib/curiosity/store";
-import type { FeedbackInput, FeedbackItem, FeedbackStatus } from "./shared";
+import { isCategory, type FeedbackInput, type FeedbackItem, type FeedbackStatus } from "./shared";
 
+// Vercel preview deployments run as production too, so they're sent to the dev keys
 export const FB_NS =
-  process.env.FEEDBACK_NS || (process.env.NODE_ENV === "production" ? "feedback" : "dev:feedback");
+  process.env.FEEDBACK_NS ||
+  (process.env.NODE_ENV === "production" && process.env.VERCEL_ENV !== "preview" ? "feedback" : "dev:feedback");
 
 /** The inbox and a reviewer's list never read more than this many. */
 const READ_LIMIT = 500;
@@ -36,9 +42,12 @@ function fromHash(flat: string[] | null): FeedbackItem | null {
     snippet: h.snippet ?? "",
     text: h.text,
     name: h.name ?? "",
+    category: isCategory(h.category) ? h.category : "",
+    image: h.image ?? "",
     author: h.author,
     createdAt: Number(h.createdAt),
     status: (h.status as FeedbackStatus) || "open",
+    test: h.test === "true",
   };
 }
 
@@ -48,8 +57,8 @@ async function readItems(ids: string[]) {
   return rows.map((r) => fromHash(r.result)).filter((x): x is FeedbackItem => x !== null);
 }
 
-export async function addFeedback(input: FeedbackInput): Promise<FeedbackItem> {
-  const item: FeedbackItem = { ...input, id: randomUUID(), createdAt: Date.now(), status: "open" };
+export async function addFeedback(input: FeedbackInput, opts: { test?: boolean } = {}): Promise<FeedbackItem> {
+  const item: FeedbackItem = { ...input, id: randomUUID(), createdAt: Date.now(), status: "open", test: Boolean(opts.test) };
   if (!storeConfigured) {
     memory.set(item.id, item);
     return item;

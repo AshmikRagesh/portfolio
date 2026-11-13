@@ -4,6 +4,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { allow, ipHash } from "@/lib/curiosity/guard";
+import { OWNER_COOKIE, OWNER_FLAG, OWNER_MAX_AGE, ownerToken } from "@/lib/owner";
 
 /** Wrong keys allowed per IP in WRONG_WINDOW seconds before every try is refused. */
 const WRONG_TRIES = 5;
@@ -53,5 +54,25 @@ export async function unlock(form: FormData) {
 
 export async function lock() {
   (await cookies()).delete({ name: COOKIE, path: "/stats" });
+  redirect("/stats");
+}
+
+// ── Owner switch (see lib/owner.ts) ───────────────────────────────────────────
+
+export async function markOwner() {
+  const token = ownerToken();
+  if (!token || !(await hasAccess())) redirect("/stats");
+  const jar = await cookies();
+  const base = { secure: process.env.NODE_ENV === "production", sameSite: "lax" as const, path: "/", maxAge: OWNER_MAX_AGE };
+  jar.set(OWNER_COOKIE, token, { ...base, httpOnly: true });
+  jar.set(OWNER_FLAG, "1", base);
+  redirect("/stats");
+}
+
+export async function unmarkOwner() {
+  if (!(await hasAccess())) redirect("/stats");
+  const jar = await cookies();
+  jar.delete({ name: OWNER_COOKIE, path: "/" });
+  jar.delete({ name: OWNER_FLAG, path: "/" });
   redirect("/stats");
 }

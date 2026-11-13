@@ -12,14 +12,15 @@ import ResumeOverlay from "@/components/resume/ResumeOverlay";
 import BellaLoader from "@/components/host/BellaLoader";
 import SoundLayer from "@/components/SoundLayer";
 import PageTransition from "@/components/PageTransition";
+import OwnerBadge from "@/components/OwnerBadge";
 
 export default function GlobalLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   // The /demo theme preview ships its own navbar, and /nav-lab shows the navbar ideas instead
   const isDemo = pathname.startsWith("/demo") || pathname.startsWith("/nav-lab");
 
-  // The private stats page stands alone: no navbar, and reading it isn't a visit
-  if (pathname.startsWith("/stats")) return <>{children}</>;
+  // The private stats and feedback pages stand alone: no navbar, and reading them isn't a visit
+  if (pathname.startsWith("/stats") || pathname.startsWith("/feedback")) return <>{children}</>;
 
   return (
     <CuriosityProvider>
@@ -37,6 +38,8 @@ export default function GlobalLayout({ children }: { children: ReactNode }) {
       </BellStageProvider>
       {/* Fancy paper: the résumé sheet, opened from the navbar */}
       <ResumeOverlay />
+      {/* Only on a browser Ashmik marked as his: a reminder it isn't being counted */}
+      <OwnerBadge />
       {/* First visit in a session: Bella does tricks while the site loads */}
       <BellaLoader />
     </CuriosityProvider>

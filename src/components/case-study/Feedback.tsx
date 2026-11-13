@@ -2,10 +2,21 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ArrowUp, ChatCircleDots, X } from "@phosphor-icons/react";
+import { ArrowUp, CaretDown, ChatCircleDots, ImageSquare, Tag, UserCircle, X } from "@phosphor-icons/react";
 import type { CaseStudySection } from "@/components/case-study/SectionPill";
 import { blockFor, describe, locate } from "@/lib/feedback/anchor";
-import { AUTHOR_KEY, FEEDBACK_PATH, LIMITS, NAME_KEY, type FeedbackItem } from "@/lib/feedback/shared";
+import {
+  AUTHOR_KEY,
+  CATEGORIES,
+  FEEDBACK_PATH,
+  IMAGE_EDGE,
+  IMAGE_MAX_BYTES,
+  IMAGE_PATH,
+  LIMITS,
+  NAME_KEY,
+  type FeedbackCategory,
+  type FeedbackItem,
+} from "@/lib/feedback/shared";
 import { playSound } from "@/lib/sound/ui";
 
 // ── Case study feedback ───────────────────────────────────────────────────────
@@ -14,7 +25,7 @@ import { playSound } from "@/lib/sound/ui";
 // leave a comment on it. Reviewers see only their own comments (numbered dots);
 // everything goes to the private /feedback inbox. Styles: .fb-* in globals.css.
 
-type Saved = Omit<FeedbackItem, "author">;
+type Saved = Omit<FeedbackItem, "author" | "test" | "image"> & { hasImage?: boolean };
 type Target = ReturnType<typeof describe> & { el: HTMLElement };
 
 interface FeedbackState {
@@ -23,6 +34,7 @@ interface FeedbackState {
   items: Saved[];
   add: (item: Saved) => void;
   author: string;
+  imagesEnabled: boolean;
 }
 
 const Ctx = createContext<FeedbackState | null>(null);
@@ -56,7 +68,28 @@ function authorId() {
   return id;
 }
 
-export function FeedbackProvider({ children }: { children: React.ReactNode }) {
+/** Shrink an image to a JPEG no wider or taller than IMAGE_EDGE and under IMAGE_MAX_BYTES */
+async function toJpeg(file: Blob): Promise<Blob> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, IMAGE_EDGE / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("no canvas");
+  // JPEG has no transparency: put see-through screenshots on white
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  for (const quality of [0.82, 0.7, 0.55]) {
+    const out = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+    if (out && out.size <= IMAGE_MAX_BYTES) return out;
+  }
+  throw new Error("too big");
+}
+
+export function FeedbackProvider({ children, imagesEnabled = false }: { children: React.ReactNode; imagesEnabled?: boolean }) {
   const page = usePathname();
   const [on, setOn] = useState(false);
   const [items, setItems] = useState<Saved[]>([]);
@@ -79,7 +112,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
 
   const add = useCallback((item: Saved) => setItems((list) => [...list, item]), []);
 
-  return <Ctx.Provider value={{ on, setOn, items, add, author }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ on, setOn, items, add, author, imagesEnabled }}>{children}</Ctx.Provider>;
 }
 
 /** The round button that sits beside the section pill. */
@@ -96,7 +129,7 @@ export function FeedbackButton() {
       data-sound-click="toggle"
       onClick={() => setOn(!on)}
     >
-      <ChatCircleDots size={20} weight={on ? "fill" : "regular"} aria-hidden="true" />
+      <ChatCircleDots size={20} weight="fill" aria-hidden="true" />
       <span className="sr-only">{on ? "Exit feedback mode" : "Leave feedback on this case study"}</span>
       {items.length > 0 && (
         <span className="fb-count" aria-hidden="true">
@@ -117,7 +150,10 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
   const [target, setTarget] = useState<Target | null>(null);
   const [draft, setDraft] = useState("");
   const [name, setName] = useState("");
-  const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [category, setCategory] = useState<FeedbackCategory | "">("");
+  const [image, setImage] = useState<{ blob: Blob; preview: string } | null>(null);
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "error" | "image-error">("idle");
+  const fileRef = useRef<HTMLInputElement>(null);
   const hoverRef = useRef<HTMLDivElement>(null);
   const pickedRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -282,6 +318,26 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
   // Number the dots in reading order of when they were left
   const blocks = Array.from(new Set(items.map((i) => i.anchor)));
 
+  const clearImage = () => {
+    setImage((current) => {
+      if (current) URL.revokeObjectURL(current.preview);
+      return null;
+    });
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const attach = async (file: File | null | undefined) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    try {
+      const blob = await toJpeg(file);
+      clearImage();
+      setImage({ blob, preview: URL.createObjectURL(blob) });
+      if (state !== "sending") setState("idle");
+    } catch {
+      setState("image-error");
+    }
+  };
+
   const send = async (e?: React.FormEvent) => {
     e?.preventDefault();
     const text = draft.trim();
@@ -289,6 +345,13 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     setState("sending");
     storageSet(NAME_KEY, name.trim());
     try {
+      // The image goes up first; the comment carries its private pathname
+      let imagePath = "";
+      if (image) {
+        const up = await fetch(IMAGE_PATH, { method: "POST", headers: { "Content-Type": "image/jpeg" }, body: image.blob });
+        if (!up.ok) throw new Error(String(up.status));
+        imagePath = (await up.json()).image;
+      }
       const res = await fetch(FEEDBACK_PATH, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -301,6 +364,8 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
           snippet: target.snippet,
           text,
           name: name.trim(),
+          category,
+          image: imagePath,
           author: fb.author,
           website: (e?.target as HTMLFormElement | undefined)?.website?.value ?? "",
         }),
@@ -308,6 +373,8 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
       if (!res.ok) throw new Error(String(res.status));
       if (res.status === 201) fb.add(await res.json());
       setDraft("");
+      setCategory("");
+      clearImage();
       setState("sent");
       playSound("done");
     } catch {
@@ -364,8 +431,12 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
           <form onSubmit={send} className="fb-card-form">
             <header className="fb-card-head">
               <div className="min-w-0">
-                <p className="fb-card-eyebrow">{target.sectionLabel}</p>
-                <p className="fb-card-title">{target.label}</p>
+                <p className="fb-card-title">Leave feedback</p>
+                <p className="fb-card-context">
+                  {target.sectionLabel}
+                  <span aria-hidden="true"> · </span>
+                  {target.label}
+                </p>
               </div>
               <button type="button" className="fb-icon-button" onClick={() => setTarget(null)}>
                 <X size={16} aria-hidden="true" />
@@ -373,70 +444,140 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
               </button>
             </header>
 
-            {target.snippet && <p className="fb-card-snippet">“{target.snippet}”</p>}
-
             {thread.length > 0 && (
-              <ul className="fb-thread">
-                {thread.map((c) => (
-                  <li key={c.id}>
-                    <p className="fb-thread-meta">
-                      {c.name || "You"} · {new Date(c.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
-                    </p>
-                    <p className="fb-thread-text">{c.text}</p>
-                  </li>
-                ))}
-              </ul>
+              <section className="fb-thread" aria-label="Your earlier feedback on this block">
+                <p className="fb-thread-heading">Your earlier feedback</p>
+                <ul>
+                  {thread.map((c) => (
+                    <li key={c.id}>
+                      <p className="fb-thread-meta">
+                        <span className="fb-thread-name">{c.name || "You"}</span>
+                        <span>{new Date(c.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
+                        {c.category && <span className="fb-chip">{CATEGORIES[c.category]}</span>}
+                      </p>
+                      <p className="fb-thread-text">{c.text}</p>
+                      {c.hasImage && (
+                        <p className="fb-thread-attach">
+                          <ImageSquare size={14} aria-hidden="true" />
+                          Image attached
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </section>
             )}
 
-            <label className="sr-only" htmlFor="fb-text">
-              Your feedback
-            </label>
-            <textarea
-              id="fb-text"
-              ref={textRef}
-              className="fb-input fb-textarea"
-              placeholder="What would make this clearer?"
-              maxLength={LIMITS.text}
-              rows={3}
-              value={draft}
-              onChange={(e) => {
-                setDraft(e.target.value);
-                if (state !== "sending") setState("idle");
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send();
-              }}
-            />
+            <div className="fb-composer">
+              <label className="sr-only" htmlFor="fb-text">
+                Your feedback
+              </label>
+              <textarea
+                id="fb-text"
+                ref={textRef}
+                className="fb-composer-text"
+                placeholder="What would make this clearer?"
+                maxLength={LIMITS.text}
+                rows={3}
+                value={draft}
+                onChange={(e) => {
+                  setDraft(e.target.value);
+                  if (state !== "sending") setState("idle");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send();
+                }}
+                onPaste={(e) => {
+                  if (!fb.imagesEnabled) return;
+                  const file = Array.from(e.clipboardData.files).find((f) => f.type.startsWith("image/"));
+                  if (file) {
+                    e.preventDefault();
+                    attach(file);
+                  }
+                }}
+              />
+
+              {image && (
+                <div className="fb-attachment">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- a local preview, not a site image */}
+                  <img src={image.preview} alt="Image to send with your feedback" />
+                  <button type="button" className="fb-attachment-remove" onClick={clearImage}>
+                    <X size={12} weight="bold" aria-hidden="true" />
+                    <span className="sr-only">Remove image</span>
+                  </button>
+                </div>
+              )}
+
+              <div className="fb-composer-bar">
+                <label className="fb-select">
+                  <Tag size={14} aria-hidden="true" />
+                  <span className="sr-only">Category (optional)</span>
+                  <select value={category} onChange={(e) => setCategory(e.target.value as FeedbackCategory | "")} data-sound-click="toggle">
+                    <option value="">Category</option>
+                    {Object.entries(CATEGORIES).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                  <CaretDown size={12} weight="bold" aria-hidden="true" />
+                </label>
+                {fb.imagesEnabled && (
+                  <>
+                    <button type="button" className="fb-tool" onClick={() => fileRef.current?.click()} title="Attach an image">
+                      <ImageSquare size={18} aria-hidden="true" />
+                      <span className="sr-only">Attach an image</span>
+                    </button>
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/gif"
+                      className="sr-only"
+                      tabIndex={-1}
+                      aria-hidden="true"
+                      onChange={(e) => attach(e.target.files?.[0])}
+                    />
+                  </>
+                )}
+                <button
+                  type="submit"
+                  className="fb-send"
+                  aria-disabled={!draft.trim() || state === "sending"}
+                  title="Send (⌘↵)"
+                >
+                  <ArrowUp size={16} weight="bold" aria-hidden="true" />
+                  <span className="sr-only">Send feedback</span>
+                </button>
+              </div>
+            </div>
             {/* Honeypot: hidden from people, filled by bots */}
             <input type="text" name="website" tabIndex={-1} autoComplete="off" className="fb-trap" aria-hidden="true" />
 
             <div className="fb-card-foot">
-              <label className="sr-only" htmlFor="fb-name">
-                Your name (optional)
+              <label className="fb-name-field">
+                <UserCircle size={16} aria-hidden="true" />
+                <span className="sr-only">Your name (optional)</span>
+                <input
+                  placeholder="Add your name (optional)"
+                  maxLength={LIMITS.name}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </label>
-              <input
-                id="fb-name"
-                className="fb-input fb-name"
-                placeholder="Your name (optional)"
-                maxLength={LIMITS.name}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <button type="submit" className="fb-send" aria-disabled={!draft.trim() || state === "sending"}>
-                <ArrowUp size={16} weight="bold" aria-hidden="true" />
-                <span className="sr-only">Send feedback</span>
-              </button>
+              <p className="fb-card-note" aria-live="polite" data-state={state}>
+                {state === "sent"
+                  ? "Sent. Thank you!"
+                  : state === "error"
+                    ? "Couldn't send. Try again."
+                    : state === "image-error"
+                      ? "That image didn't work. Try another."
+                      : state === "sending"
+                        ? "Sending…"
+                        : draft.length > LIMITS.text - 100
+                          ? `${draft.length}/${LIMITS.text}`
+                          : ""}
+              </p>
             </div>
-
-            <p className="fb-card-note" aria-live="polite" data-state={state}>
-              {state === "sent"
-                ? "Sent. Thank you, Ashmik will see this."
-                : state === "error"
-                  ? "Couldn't send that. Try again in a minute."
-                  : state === "sending"
-                    ? "Sending…"
-                    : <>{draft.length}/{LIMITS.text}<span className="fb-hint-keys"> · ⌘↵ to send</span></>}
-            </p>
           </form>
         )}
       </div>
