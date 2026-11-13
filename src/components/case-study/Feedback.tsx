@@ -359,16 +359,24 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     [sections],
   );
 
-  // Deep link from the inbox: /works/x?fb=<anchor> opens feedback mode on that block
+  // Deep link: /works/x?fb=<anchor> opens feedback mode on that block (from the inbox).
+  // With &note=<id> (from Your notes on another case study) it opens Your notes on that note.
   useEffect(() => {
-    const anchor = new URLSearchParams(window.location.search).get("fb");
+    const params = new URLSearchParams(window.location.search);
+    const anchor = params.get("fb");
+    const note = params.get("note");
     const main = root();
     if (!anchor || !main || !setOn) return;
     const el = locate(anchor, "", main);
-    if (!el) return;
     setOn(true);
-    el.scrollIntoView({ block: "center" });
-    pick(el);
+    if (el) {
+      el.scrollIntoView({ block: "center" });
+      pick(el);
+    }
+    if (note && /^[0-9a-f-]{36}$/.test(note)) {
+      setPanel("notes");
+      setActiveNote(note);
+    }
   }, [setOn, pick]);
 
   // Points and clicks inside the case study belong to feedback mode while it's on
@@ -525,7 +533,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
 
   const goToNote = (n: Saved) => {
     if (n.page !== page) {
-      window.location.href = `${n.page}?fb=${encodeURIComponent(n.anchor)}`;
+      window.location.href = `${n.page}?fb=${encodeURIComponent(n.anchor)}&note=${n.id}`;
       return;
     }
     setActiveNote(n.id);
@@ -729,44 +737,56 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                 </div>
               ) : (
                 <div className="fb-notes">
-                  {groups.map(([notePage, notes]) => (
-                    <section key={notePage} aria-label={notePage === page ? "On this page" : pageName(notes[0])}>
-                      <p className="fb-notes-heading">{notePage === page ? "On this page" : pageName(notes[0])}</p>
-                      <ul>
-                        {notes.map((n) => {
-                          const KindIcon = n.anchor.startsWith("page|") ? MessageSquare : KIND_ICONS[n.label] || Type;
-                          return (
-                            <li key={n.id}>
-                              <button type="button" className="fb-note" data-active={activeNote === n.id} onClick={() => goToNote(n)}>
-                                <span className="fb-note-where">
-                                  <KindIcon size={14} aria-hidden="true" />
-                                  {n.label}
-                                  <span className="fb-note-section">· {n.sectionLabel}</span>
-                                  {n.page !== page && (
-                                    <>
-                                      <ArrowUpRight size={14} aria-hidden="true" className="fb-note-out" />
-                                      <span className="sr-only">, opens {pageName(n)}</span>
-                                    </>
-                                  )}
-                                </span>
-                                <span className="fb-note-text">{n.text}</span>
-                                <span className="fb-note-meta">
-                                  {new Date(n.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
-                                  {n.category && <span className="fb-chip">{CATEGORIES[n.category]}</span>}
-                                  {n.hasImage && (
-                                    <span className="fb-note-image">
-                                      <ImageIcon size={12} aria-hidden="true" />
-                                      Image
+                  {groups.map(([notePage, notes]) => {
+                    const here = notePage === page;
+                    return (
+                      <section key={notePage} aria-label={here ? "Your notes on this case study" : `Your notes on ${pageName(notes[0])}`}>
+                        {/* This case study's notes need no heading; others are named, and open that case study */}
+                        {!here && (
+                          <p className="fb-notes-heading">
+                            {pageName(notes[0])}
+                            <ArrowUpRight size={14} aria-hidden="true" />
+                          </p>
+                        )}
+                        <ol className="fb-timeline">
+                          {notes.map((n) => {
+                            const KindIcon = n.anchor.startsWith("page|") ? MessageSquare : KIND_ICONS[n.label] || Type;
+                            const when = new Date(n.createdAt);
+                            return (
+                              <li key={n.id} data-active={activeNote === n.id}>
+                                <span className="fb-timeline-dot" aria-hidden="true" />
+                                <time className="fb-timeline-date" dateTime={when.toISOString()}>
+                                  {when.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                                  <span aria-hidden="true"> · </span>
+                                  {when.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
+                                </time>
+                                <button type="button" className="fb-note" onClick={() => goToNote(n)}>
+                                  <span className="fb-note-where">
+                                    <KindIcon size={14} aria-hidden="true" />
+                                    <span className="fb-note-kind">{n.label}</span>
+                                    <span className="fb-note-section">in {n.sectionLabel}</span>
+                                    {!here && <span className="sr-only">, opens {pageName(n)}</span>}
+                                  </span>
+                                  <span className="fb-note-text">{n.text}</span>
+                                  {(n.category || n.hasImage) && (
+                                    <span className="fb-note-meta">
+                                      {n.category && <span className="fb-chip">{CATEGORIES[n.category]}</span>}
+                                      {n.hasImage && (
+                                        <span className="fb-note-image">
+                                          <ImageIcon size={12} aria-hidden="true" />
+                                          Image attached
+                                        </span>
+                                      )}
                                     </span>
                                   )}
-                                </span>
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </section>
-                  ))}
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ol>
+                      </section>
+                    );
+                  })}
                 </div>
               )
             ) : (

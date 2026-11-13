@@ -1735,72 +1735,115 @@ html[data-feedback="on"] [data-cs-main] * {
 .fb-target-kind { font-weight: 500; }
 .fb-target-where { overflow: hidden; color: var(--fb-text-2); text-overflow: ellipsis; }
 
-/* Your notes */
+/* Your notes: a timeline per case study, newest first — date on the line, then
+   where the note sits, the note itself, and its tags */
 .fb-notes {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin: 0 -8px;
+  gap: 20px;
 }
 .fb-notes-heading {
-  margin: 0 8px 4px;
-  color: var(--fb-text-3);
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+  color: #fff;
+  font-size: 14px;
   font-weight: 500;
-  line-height: 16px;
+  line-height: 20px;
 }
-.fb-notes ul {
+.fb-notes-heading svg { color: var(--fb-text-3); }
+.fb-timeline {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+}
+.fb-timeline li {
+  position: relative;
+  padding: 0 0 16px 20px;
+}
+.fb-timeline li:last-child { padding-bottom: 0; }
+/* The line runs from this dot to the next one */
+.fb-timeline li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  bottom: -4px;
+  left: 3px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--fb-line);
+}
+.fb-timeline-dot {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--fb-text-3);
+  border-radius: 999px;
+  background: theme("colors.midnight");
+  transition: background-color 0.16s ease, border-color 0.16s ease;
+}
+.fb-timeline li[data-active="true"] .fb-timeline-dot {
+  border-color: theme("colors.pink");
+  background: theme("colors.pink");
+}
+.fb-timeline-date {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--fb-text-3);
+  font-size: 12px;
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
 }
 .fb-note {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   width: 100%;
-  padding: 10px 8px;
-  border: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--fb-line);
   border-radius: theme("borderRadius.md");
-  background: transparent;
+  background: var(--fb-raise);
   color: inherit;
   text-align: left;
   cursor: pointer;
-  transition: background-color 0.16s ease;
+  transition: background-color 0.16s ease, border-color 0.16s ease;
 }
-.fb-note:hover { background: var(--fb-raise); }
-.fb-note[data-active="true"] { background: var(--fb-raise-2); }
+.fb-note:hover { background: var(--fb-raise-2); }
+.fb-timeline li[data-active="true"] .fb-note { border-color: rgba(248, 194, 247, 0.56); background: var(--fb-raise-2); }
 .fb-note-where {
   display: flex;
   align-items: center;
   gap: 6px;
   min-width: 0;
-  color: #fff;
   font-size: 12px;
-  font-weight: 500;
   line-height: 16px;
 }
 .fb-note-where svg { flex: 0 0 auto; color: theme("colors.pink"); }
-.fb-note-section { overflow: hidden; color: var(--fb-text-3); font-weight: 400; white-space: nowrap; text-overflow: ellipsis; }
-.fb-note-out { margin-left: auto; color: var(--fb-text-3) !important; }
+.fb-note-kind { color: #fff; font-weight: 500; }
+.fb-note-section { overflow: hidden; color: var(--fb-text-3); white-space: nowrap; text-overflow: ellipsis; }
 .fb-note-text {
   display: -webkit-box;
   overflow: hidden;
   color: var(--fb-text-2);
   font-size: 14px;
   line-height: 20px;
-  -webkit-line-clamp: 2;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  -webkit-line-clamp: 6;
   -webkit-box-orient: vertical;
 }
 .fb-note-meta {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   color: var(--fb-text-3);
   font-size: 12px;
   line-height: 16px;
 }
-.fb-note-meta .fb-chip { line-height: 18px; }
+.fb-note-meta .fb-chip { line-height: 20px; }
 .fb-note-image { display: flex; align-items: center; gap: 4px; }
 .fb-empty {
   display: flex;
