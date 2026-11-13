@@ -82,10 +82,12 @@ const clock = (s: number) => {
   const m = Math.floor(s / 60);
   return `${m}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 };
+// The menu's speeds, plus a clip's own starting speed when it isn't one of them
+const speedsFor = (start = 1) => [...new Set([...SPEEDS, start])].sort((a, b) => a - b);
 const speedName = (r: number) => (r === 1 ? "Normal" : `${r}×`);
 
 // ─── Speed menu ──────────────────────────────────────────────────────────────
-function Speed({ rate, onPick }: { rate: number; onPick: (r: number) => void }) {
+function Speed({ rate, speeds, onPick }: { rate: number; speeds: number[]; onPick: (r: number) => void }) {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
 
@@ -130,7 +132,7 @@ function Speed({ rate, onPick }: { rate: number; onPick: (r: number) => void }) 
           className="cs-pop absolute bottom-[44px] right-0 z-10 w-[148px] origin-bottom-right rounded-lg bg-[#1e0525]/90 p-[6px] font-geist shadow-[0_12px_32px_rgba(0,0,0,0.32)] ring-1 ring-white/10 backdrop-blur-md"
         >
           <p className="px-[10px] pb-[4px] pt-[6px] text-[12px] font-medium text-white/50">Speed</p>
-          {[...SPEEDS].reverse().map((s) => (
+          {[...speeds].reverse().map((s) => (
             <button
               key={s}
               type="button"
@@ -158,6 +160,7 @@ function Player({
   poster,
   label,
   narrated,
+  speed = 1,
   expanded,
   place,
   hold,
@@ -168,6 +171,7 @@ function Player({
   poster?: string;
   label: string;
   narrated?: boolean;
+  speed?: number; // starting speed, kept through loads and replays
   expanded?: boolean;
   place?: Place | null; // where to pick up from
   hold?: boolean; // paused while the expanded view has the clip
@@ -179,7 +183,8 @@ function Player({
   const idle = useRef<ReturnType<typeof setTimeout>>(undefined);
   const [playing, setPlaying] = useState(false);
   const [waiting, setWaiting] = useState(false);
-  const [rate, setRate] = useState(1);
+  const [rate, setRate] = useState(speed);
+  const speeds = speedsFor(speed);
   const [muted, setMuted] = useState(!narrated);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -229,6 +234,17 @@ function Player({
     setRate(place.rate);
     if (place.playing) video.play().catch(() => {});
   }, [place, hold]);
+
+  // Start at the clip's own speed. defaultPlaybackRate is what the browser falls back to
+  // whenever it reloads the clip, so the speed doesn't slip back to 1×.
+  useEffect(() => {
+    const video = ref.current;
+    if (!video || place) return;
+    video.defaultPlaybackRate = speed;
+    video.playbackRate = speed;
+    setRate(speed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [speed]);
 
   // Smooth progress while playing
   useEffect(() => {
@@ -297,8 +313,8 @@ function Player({
       e.preventDefault();
       skip(k === "ArrowRight" ? 5 : -5);
     } else if (k === ">" || k === "<") {
-      const i = SPEEDS.indexOf(rate) + (k === ">" ? 1 : -1);
-      if (SPEEDS[i]) setSpeed(SPEEDS[i]);
+      const i = speeds.indexOf(rate) + (k === ">" ? 1 : -1);
+      if (speeds[i]) setSpeed(speeds[i]);
     } else if (k === "m" && narrated) setMuted((m) => !m);
     else if (k === "f" && !expanded) onOpen?.(where());
     else return;
@@ -336,6 +352,7 @@ function Player({
         onPlaying={() => setWaiting(false)}
         onLoadedMetadata={(e) => {
           const v = e.currentTarget;
+          v.playbackRate = rate; // a fresh load resets the speed; keep the reader's (or the clip's own)
           setDuration(v.duration);
           if (v.videoWidth) onRatio?.(v.videoWidth / v.videoHeight);
         }}
@@ -413,7 +430,7 @@ function Player({
             {clock(time)} <span className="text-white/50">/ {clock(duration)}</span>
           </span>
           <span className="flex-1" />
-          <Speed rate={rate} onPick={setSpeed} />
+          <Speed rate={rate} speeds={speeds} onPick={setSpeed} />
           {!expanded && (
             <button type="button" onClick={() => onOpen?.(where())} aria-label="Expand" className={ICON_BTN}>
               <ExpandIcon />
@@ -505,12 +522,15 @@ export default function Media({
   poster,
   label,
   narrated,
+  speed,
 }: {
   src?: string;
   video?: string;
   poster?: string;
   label: string;
   narrated?: boolean;
+  /** Starting speed, e.g. 1.2 for a narration that drags at normal speed */
+  speed?: number;
 }) {
   const [open, setOpen] = useState<Place | null>(null); // where the expanded clip starts
   const [back, setBack] = useState<Place | null>(null); // where the inline clip picks up
@@ -528,12 +548,12 @@ export default function Media({
     return (
       <>
         <div style={{ aspectRatio: ratio }}>
-          <Player src={video} poster={poster} label={label} narrated={narrated} place={back} hold={!!open} onOpen={setOpen} onRatio={setRatio} />
+          <Player src={video} poster={poster} label={label} narrated={narrated} speed={speed} place={back} hold={!!open} onOpen={setOpen} onRatio={setRatio} />
         </div>
         {open && (
           <Expanded label={label} ratio={ratio} onClose={shut}>
             <div ref={big} className="h-full w-full">
-              <Player src={video} poster={poster} label={label} narrated={narrated} expanded place={open} onRatio={setRatio} />
+              <Player src={video} poster={poster} label={label} narrated={narrated} speed={speed} expanded place={open} onRatio={setRatio} />
             </div>
           </Expanded>
         )}

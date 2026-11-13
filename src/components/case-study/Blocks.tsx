@@ -74,6 +74,7 @@ export function Figure({
   video,
   poster,
   narrated,
+  speed,
   aspect = "aspect-[16/9]",
   card,
   kicker,
@@ -87,6 +88,8 @@ export function Figure({
   video?: string;
   poster?: string;
   narrated?: boolean;
+  /** Starting playback speed for the clip (1 by default) */
+  speed?: number;
   aspect?: string;
   /** Set the media in the white case study card (as in Solution sections): 8px inset, the
    *  media's 4px frame nested inside, caption and impact under it inside the card */
@@ -98,7 +101,7 @@ export function Figure({
   const title = name ?? label ?? "Image";
   const media =
     video || src ? (
-      <Media src={src} video={video} poster={poster} label={alt ?? title} narrated={narrated} />
+      <Media src={src} video={video} poster={poster} label={alt ?? title} narrated={narrated} speed={speed} />
     ) : (
       <ImagePlaceholder label={title} aspect={aspect} />
     );
@@ -129,7 +132,7 @@ export function Figure({
     <figure className="m-0 min-w-0">
       <div className="overflow-hidden rounded-sm bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]">
         {video || src ? (
-          <Media src={src} video={video} poster={poster} label={alt ?? title} narrated={narrated} />
+          <Media src={src} video={video} poster={poster} label={alt ?? title} narrated={narrated} speed={speed} />
         ) : (
           <ImagePlaceholder label={title} aspect={aspect} />
         )}

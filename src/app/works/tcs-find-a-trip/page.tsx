@@ -172,8 +172,17 @@ function Context() {
         />
       </Copy>
       <Visual>
-        {/* The two paths side by side: a destination page is about the place, a trip list is what you can book */}
-        <Figure label="Where each path lands: the Africa destination page (the place, when to go, highlights) and the Africa trip list (dates, length, price)" />
+        {/* Ashmik walks through the live site: Africa in the menu opens a trip list, and the
+            Africa destination page has no menu link. Narrated, so it waits for a click and
+            starts at 1.2× */}
+        <Figure
+          video="/videos/tcs-find-a-trip/problem-walkthrough.mp4"
+          poster="/images/tcs-find-a-trip/problem-walkthrough-poster.jpg"
+          narrated
+          speed={1.2}
+          alt="Walkthrough of the TCS World Travel menu: choosing Africa opens a list of trips, and the Africa destination page has no menu link"
+          label="A walkthrough of the problem on the live site"
+        />
       </Visual>
       {/* Subsections sit one step apart (.cs-sub), like the solutions below */}
       <div className="cs-sub">
