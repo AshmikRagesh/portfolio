@@ -72,15 +72,15 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        {/* Before: the live site; after: the prototype laid out to match it at the same window
-            (1470 wide), so only the change moves.
+        {/* Both frames are the live site at 1470 wide: the before as it is (Africa hovered), the
+            after with Africa open and the two image cards added under it, so only the change moves.
             The handle rests left of the continent column, so the new choice shows first; the
             first-view sweep crosses Africa and back */}
         <BeforeAfterSlider
           width={2000}
-          height={1052}
+          height={1076}
           start={24}
-          sweepTo={56}
+          sweepTo={64}
           before={{ src: "/images/tcs-find-a-trip/compare-before.jpg", alt: "today's menu, where Africa goes straight to a list of trips" }}
           after={{ src: "/images/tcs-find-a-trip/compare-after.jpg", alt: "the new menu, where Africa opens Explore Trips and Explore Destination" }}
           labels={{

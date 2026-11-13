@@ -18,8 +18,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *
  * Look: the picture sits in the case study card (white, 8px inset, 4px frame) like the other
  * visuals. The handle is a thin white line with a round grip that lifts on hover and presses
- * in while dragged. No labels on the picture: the footer names each side under its own half
- * (before left, after right) with a quiet "Drag to compare" between them.
+ * in while dragged. No labels on the picture: one footer line names the side that fills most
+ * of it (past 55% the before, under 45% the after, "Drag to compare" between) and crossfades
+ * as the handle moves.
  */
 type Shot = { src: string; alt: string };
 type Side = { title: string; note: string };
@@ -54,6 +55,16 @@ export default function BeforeAfterSlider({
   const box = useRef<HTMLDivElement>(null);
   const anim = useRef<number | null>(null);
   const touched = useRef(false);
+  // Which side the footer names: the one that fills most of the picture. A 3% margin either
+  // side of each threshold keeps it from flickering when the handle rests on the line.
+  const [side, setSide] = useState<"before" | "after" | null>(start >= 55 ? "before" : start <= 45 ? "after" : null);
+  useEffect(() => {
+    setSide((s) => {
+      if (pos >= (s === "before" ? 52 : 55)) return "before";
+      if (pos <= (s === "after" ? 48 : 45)) return "after";
+      return null;
+    });
+  }, [pos]);
 
   const setPos = (n: number) => {
     posRef.current = n;
@@ -186,20 +197,36 @@ export default function BeforeAfterSlider({
         </div>
       </div>
       {labels && (
-        <figcaption className="grid grid-cols-2 items-start gap-[16px] px-[12px] pb-[8px] pt-[16px] md:grid-cols-[1fr_auto_1fr] md:px-[16px]">
-          <span className="flex flex-col gap-[2px]">
-            <span className="font-body text-body font-medium text-heading md:text-body-md">{labels.before.title}</span>
-            <span className="font-body text-caption-lg text-muted">{labels.before.note}</span>
-          </span>
-          <span aria-hidden="true" className="hidden items-center gap-[6px] self-center font-geist text-caption-md font-medium uppercase tracking-[1px] text-muted md:flex">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        // One line under the picture, naming the side that fills most of it; the three states
+        // share one grid cell and crossfade with a small lift
+        <figcaption aria-live="polite" className="grid px-[12px] pb-[8px] pt-[16px] md:px-[16px]">
+          {(
+            [
+              ["before", <>{"\u2190 "}{labels.before.title}</>, labels.before.note],
+              ["after", <>{labels.after.title}{" \u2192"}</>, labels.after.note],
+            ] as const
+          ).map(([key, title, note]) => (
+            <span
+              key={key}
+              aria-hidden={side !== key}
+              className={`col-start-1 row-start-1 flex flex-col items-center gap-[2px] text-center transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
+                side === key ? "translate-y-0 opacity-100 blur-0" : "pointer-events-none translate-y-[4px] opacity-0 blur-[2px]"
+              }`}
+            >
+              <span className="font-body text-body font-medium text-heading md:text-body-md">{title}</span>
+              <span className="font-body text-caption-lg text-muted">{note}</span>
+            </span>
+          ))}
+          <span
+            aria-hidden={side !== null}
+            className={`col-start-1 row-start-1 flex items-center justify-center gap-[6px] self-center font-geist text-caption-md font-medium uppercase tracking-[1px] text-muted transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
+              side === null ? "translate-y-0 opacity-100 blur-0" : "pointer-events-none translate-y-[4px] opacity-0 blur-[2px]"
+            }`}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="m8 7-5 5 5 5M16 7l5 5-5 5M3 12h18" />
             </svg>
             Drag to compare
-          </span>
-          <span className="flex flex-col items-end gap-[2px] text-right">
-            <span className="font-body text-body font-medium text-heading md:text-body-md">{labels.after.title}</span>
-            <span className="font-body text-caption-lg text-muted">{labels.after.note}</span>
           </span>
         </figcaption>
       )}
