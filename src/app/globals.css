@@ -1569,12 +1569,6 @@ html[data-feedback="on"] [data-cs-main] * {
   font-weight: 500;
   line-height: 22px;
 }
-.fb-card-context {
-  margin-top: 2px;
-  color: #a19dab;
-  font-size: 14px;
-  line-height: 20px;
-}
 .fb-icon-button {
   display: grid;
   place-items: center;
@@ -1665,8 +1659,8 @@ html[data-feedback="on"] [data-cs-main] * {
   background: rgba(255, 255, 255, 0.06);
 }
 .fb-composer-text {
-  min-height: 72px;
-  padding: 12px 14px 4px;
+  min-height: 64px;
+  padding: 8px 14px 4px;
   border: 0;
   background: transparent;
   color: #fff;
@@ -1707,39 +1701,74 @@ html[data-feedback="on"] [data-cs-main] * {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 8px;
+  padding: 8px 8px 8px 10px;
 }
+/* Category: a small pill opening a list above itself */
+.fb-menu-wrap { position: relative; }
 .fb-select {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 32px;
+  height: 28px;
   padding: 0 10px;
+  border: 0;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   color: #d6d0d9;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background-color 0.16s ease;
+  transition: background-color 0.16s ease, color 0.16s ease;
 }
-.fb-select:hover { background: rgba(255, 255, 255, 0.14); }
-.fb-select:focus-within { outline: 2px solid rgba(248, 194, 247, 0.6); outline-offset: 2px; }
-.fb-select select {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  color: inherit;
+.fb-select:hover,
+.fb-select[aria-expanded="true"] { background: rgba(255, 255, 255, 0.14); color: #fff; }
+.fb-select[data-filled="true"] { background: rgba(248, 194, 247, 0.16); color: theme("colors.pink"); }
+.fb-select:focus-visible { outline: 2px solid rgba(248, 194, 247, 0.6); outline-offset: 2px; }
+.fb-select-caret { opacity: 0.7; transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1); }
+.fb-select[aria-expanded="true"] .fb-select-caret { transform: rotate(180deg); }
+.fb-menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: 2;
+  min-width: 176px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: theme("borderRadius.lg");
+  background: #2a0b33;
+  box-shadow: rgba(0, 0, 0, 0.32) 0 8px 24px;
+  transform-origin: 0 100%;
+  animation: fb-menu-in 0.18s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+.fb-menu:focus { outline: none; }
+@keyframes fb-menu-in { from { opacity: 0; transform: translateY(4px) scale(0.96); } }
+.fb-menu li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: theme("borderRadius.md");
+  color: #d6d0d9;
   font-size: 14px;
   line-height: 20px;
   cursor: pointer;
-  color-scheme: dark;
 }
-.fb-select select:focus { outline: none; }
+.fb-menu li[data-active="true"] { background: rgba(255, 255, 255, 0.08); color: #fff; }
+.fb-menu li[aria-selected="true"] { color: theme("colors.pink"); }
+.fb-menu li[data-none="true"] {
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 0 theme("borderRadius.md") theme("borderRadius.md");
+  color: #a19dab;
+}
+.fb-menu-check { margin-left: auto; }
 .fb-tool {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border: 0;
   border-radius: 999px;
   background: transparent;
@@ -1748,6 +1777,30 @@ html[data-feedback="on"] [data-cs-main] * {
   transition: background-color 0.16s ease, color 0.16s ease;
 }
 .fb-tool:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.fb-tool[data-filled="true"] { color: theme("colors.pink"); }
+
+/* The block this comment is about — same grape as its outline on the page */
+.fb-target {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100% - 24px);
+  height: 24px;
+  margin: 12px 12px 0;
+  padding: 0 8px;
+  border: 0;
+  border-radius: theme("borderRadius.sm");
+  align-self: flex-start;
+  background: theme("colors.grape");
+  color: #fff;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.fb-target-kind { font-weight: 500; }
+.fb-target-where { overflow: hidden; color: rgba(255, 255, 255, 0.72); text-overflow: ellipsis; }
+.fb-composer[data-dragging="true"] { border-color: theme("colors.pink"); border-style: dashed; }
 .fb-send {
   display: grid;
   place-items: center;
@@ -1767,18 +1820,25 @@ html[data-feedback="on"] [data-cs-main] * {
 
 .fb-card-foot {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 0 4px;
+  flex-direction: column;
+  gap: 8px;
 }
 .fb-name-field {
   display: flex;
-  flex: 1;
   align-items: center;
   gap: 8px;
-  min-width: 0;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: theme("borderRadius.lg");
+  background: rgba(255, 255, 255, 0.04);
   color: #8e8292;
+  transition: border-color 0.16s ease, background-color 0.16s ease, color 0.16s ease;
+}
+.fb-name-field:focus-within {
+  border-color: rgba(248, 194, 247, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
 }
 .fb-name-field input {
   width: 100%;
@@ -1790,9 +1850,9 @@ html[data-feedback="on"] [data-cs-main] * {
   line-height: 20px;
 }
 .fb-name-field input:focus { outline: none; }
-.fb-name-field:focus-within { color: #fff; }
+.fb-card-note:empty { display: none; }
 .fb-card-note {
-  flex: 0 0 auto;
+  padding: 0 4px;
   color: #8e8292;
   font-size: 12px;
   line-height: 16px;

@@ -2,7 +2,28 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ArrowUp, CaretDown, ChatCircleDots, ImageSquare, Tag, UserCircle, X } from "@phosphor-icons/react";
+import {
+  ArrowUp,
+  Bug,
+  CaretDown,
+  ChatCircleDots,
+  Check,
+  ImageSquare,
+  ListBullets,
+  Palette,
+  Quotes,
+  Table,
+  Tag,
+  TextAa,
+  TextAlignLeft,
+  TextH,
+  TextT,
+  UserCircle,
+  VideoCamera,
+  Wheelchair,
+  X,
+  type Icon,
+} from "@phosphor-icons/react";
 import type { CaseStudySection } from "@/components/case-study/SectionPill";
 import { blockFor, describe, locate } from "@/lib/feedback/anchor";
 import {
@@ -143,6 +164,124 @@ export function FeedbackButton() {
   );
 }
 
+const CATEGORY_ICONS: Record<FeedbackCategory, Icon> = {
+  accessibility: Wheelchair,
+  content: TextAa,
+  visual: Palette,
+  bug: Bug,
+};
+
+const KIND_ICONS: Record<string, Icon> = {
+  Heading: TextH,
+  Paragraph: TextAlignLeft,
+  "List item": ListBullets,
+  Quote: Quotes,
+  Image: ImageSquare,
+  Video: VideoCamera,
+  Table: Table,
+};
+
+const MENU: { value: FeedbackCategory | ""; label: string }[] = [
+  ...(Object.entries(CATEGORIES) as [FeedbackCategory, string][]).map(([value, label]) => ({ value, label })),
+  { value: "", label: "No category" },
+];
+
+/** The category picker: a small pill that opens a list above itself. Arrow keys, Enter, Esc. */
+function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onChange: (v: FeedbackCategory | "") => void }) {
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const options = value ? MENU : MENU.slice(0, -1);
+  const Current = value ? CATEGORY_ICONS[value] : Tag;
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (e: PointerEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    listRef.current?.focus();
+    return () => document.removeEventListener("pointerdown", onPointer);
+  }, [open]);
+
+  const show = () => {
+    setActive(Math.max(0, options.findIndex((o) => o.value === value)));
+    setOpen(true);
+  };
+  const choose = (v: FeedbackCategory | "") => {
+    onChange(v);
+    setOpen(false);
+    buttonRef.current?.focus();
+  };
+
+  return (
+    <div ref={wrapRef} className="fb-menu-wrap">
+      <button
+        ref={buttonRef}
+        type="button"
+        className="fb-select"
+        data-filled={Boolean(value)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => (open ? setOpen(false) : show())}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            e.preventDefault();
+            show();
+          }
+        }}
+      >
+        <Current size={14} weight={value ? "fill" : "regular"} aria-hidden="true" />
+        {value ? CATEGORIES[value] : "Category"}
+        <CaretDown size={10} weight="bold" aria-hidden="true" className="fb-select-caret" />
+      </button>
+      {open && (
+        <ul
+          ref={listRef}
+          role="listbox"
+          aria-label="Category"
+          tabIndex={-1}
+          className="fb-menu"
+          aria-activedescendant={`fb-cat-${active}`}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowDown") setActive((a) => (a + 1) % options.length);
+            else if (e.key === "ArrowUp") setActive((a) => (a - 1 + options.length) % options.length);
+            else if (e.key === "Enter" || e.key === " ") choose(options[active].value);
+            else if (e.key === "Escape" || e.key === "Tab") {
+              setOpen(false);
+              if (e.key === "Escape") buttonRef.current?.focus();
+            } else return;
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          {options.map((o, i) => {
+            const OptionIcon = o.value ? CATEGORY_ICONS[o.value] : X;
+            return (
+              <li
+                key={o.value || "none"}
+                id={`fb-cat-${i}`}
+                role="option"
+                aria-selected={o.value === value}
+                data-active={i === active}
+                data-none={!o.value}
+                onPointerEnter={() => setActive(i)}
+                onClick={() => choose(o.value)}
+              >
+                <OptionIcon size={16} aria-hidden="true" />
+                <span>{o.label}</span>
+                {o.value === value && o.value && <Check size={14} weight="bold" aria-hidden="true" className="fb-menu-check" />}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 /** Outlines, dots and the comment card. Only does anything while feedback mode is on. */
 export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
   const fb = useFeedback();
@@ -154,6 +293,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
   const [image, setImage] = useState<{ blob: Blob; preview: string } | null>(null);
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error" | "image-error">("idle");
   const fileRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
   const hoverRef = useRef<HTMLDivElement>(null);
   const pickedRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -315,6 +455,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
   if (!fb) return null;
 
   const thread = target ? items.filter((i) => i.anchor === target.anchor) : [];
+  const TargetIcon = (target && KIND_ICONS[target.label]) || TextT;
   // Number the dots in reading order of when they were left
   const blocks = Array.from(new Set(items.map((i) => i.anchor)));
 
@@ -430,14 +571,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
         {target && (
           <form onSubmit={send} className="fb-card-form">
             <header className="fb-card-head">
-              <div className="min-w-0">
-                <p className="fb-card-title">Leave feedback</p>
-                <p className="fb-card-context">
-                  {target.sectionLabel}
-                  <span aria-hidden="true"> · </span>
-                  {target.label}
-                </p>
-              </div>
+              <p className="fb-card-title">Leave feedback</p>
               <button type="button" className="fb-icon-button" onClick={() => setTarget(null)}>
                 <X size={16} aria-hidden="true" />
                 <span className="sr-only">Close</span>
@@ -468,7 +602,32 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
               </section>
             )}
 
-            <div className="fb-composer">
+            <div
+              className="fb-composer"
+              data-dragging={dragging}
+              onDragOver={(e) => {
+                if (!fb.imagesEnabled || !Array.from(e.dataTransfer.types).includes("Files")) return;
+                e.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={(e) => {
+                if (!fb.imagesEnabled) return;
+                e.preventDefault();
+                setDragging(false);
+                attach(Array.from(e.dataTransfer.files).find((f) => f.type.startsWith("image/")));
+              }}
+            >
+              <button
+                type="button"
+                className="fb-target"
+                title="Show this block"
+                onClick={() => target.el.scrollIntoView({ behavior: "smooth", block: "center" })}
+              >
+                <TargetIcon size={14} weight="bold" aria-hidden="true" />
+                <span className="fb-target-kind">{target.label}</span>
+                <span className="fb-target-where">in {target.sectionLabel}</span>
+              </button>
               <label className="sr-only" htmlFor="fb-text">
                 Your feedback
               </label>
@@ -509,24 +668,18 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
               )}
 
               <div className="fb-composer-bar">
-                <label className="fb-select">
-                  <Tag size={14} aria-hidden="true" />
-                  <span className="sr-only">Category (optional)</span>
-                  <select value={category} onChange={(e) => setCategory(e.target.value as FeedbackCategory | "")} data-sound-click="toggle">
-                    <option value="">Category</option>
-                    {Object.entries(CATEGORIES).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                  <CaretDown size={12} weight="bold" aria-hidden="true" />
-                </label>
+                <CategoryMenu value={category} onChange={setCategory} />
                 {fb.imagesEnabled && (
                   <>
-                    <button type="button" className="fb-tool" onClick={() => fileRef.current?.click()} title="Attach an image">
-                      <ImageSquare size={18} aria-hidden="true" />
-                      <span className="sr-only">Attach an image</span>
+                    <button
+                      type="button"
+                      className="fb-tool"
+                      data-filled={Boolean(image)}
+                      onClick={() => fileRef.current?.click()}
+                      title="Add an image (or paste or drop one)"
+                    >
+                      <ImageSquare size={16} weight={image ? "fill" : "regular"} aria-hidden="true" />
+                      <span className="sr-only">Add an image</span>
                     </button>
                     <input
                       ref={fileRef}
@@ -558,7 +711,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                 <UserCircle size={16} aria-hidden="true" />
                 <span className="sr-only">Your name (optional)</span>
                 <input
-                  placeholder="Add your name (optional)"
+                  placeholder="Your name (optional)"
                   maxLength={LIMITS.name}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
