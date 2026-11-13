@@ -1811,6 +1811,60 @@ html[data-feedback="on"] [data-cs-main] * {
   transition: background-color 0.16s ease, border-color 0.16s ease;
 }
 .fb-note:hover { background: var(--fb-raise-2); }
+/* Delete sits in the card's corner: shown on hover or keyboard focus, always on touch */
+.fb-note-card { position: relative; }
+.fb-note-card .fb-note { padding-right: 40px; }
+.fb-note-delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fb-text-3);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.16s ease, background-color 0.16s ease, color 0.16s ease;
+}
+.fb-note-card:hover .fb-note-delete,
+.fb-note-card:focus-within .fb-note-delete { opacity: 1; }
+.fb-note-delete:hover { background: rgba(255, 158, 162, 0.14); color: #ff9ea2; }
+@media (hover: none) {
+  .fb-note-delete { opacity: 1; }
+}
+
+/* "Note deleted · Undo" */
+.fb-toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  padding: 6px 6px 6px 12px;
+  border: 1px solid var(--fb-line);
+  border-radius: theme("borderRadius.md");
+  background: var(--fb-raise-2);
+  color: var(--fb-text-2);
+  font-size: 14px;
+  line-height: 20px;
+  animation: fb-menu-in 0.18s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+.fb-toast button {
+  height: 28px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: theme("colors.pink");
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.fb-toast button:hover { background: rgba(248, 194, 247, 0.12); }
 .fb-timeline li[data-active="true"] .fb-note { border-color: rgba(248, 194, 247, 0.56); background: var(--fb-raise-2); }
 .fb-note-where {
   display: flex;

@@ -22,6 +22,7 @@ import {
   Quote,
   Table,
   Tag,
+  Trash2,
   Type,
   Video,
   X,
@@ -54,6 +55,9 @@ type Target = ReturnType<typeof describe> & { el: HTMLElement | null };
 type Panel = "closed" | "compose" | "notes";
 
 /** Feedback about the case study as a whole, before (or instead of) picking a block */
+/** How long "Note deleted · Undo" stays before the note is really deleted */
+const UNDO_MS = 5000;
+
 const PAGE_TARGET: Target = {
   el: null,
   section: "page",
@@ -73,6 +77,9 @@ interface FeedbackState {
   setOn: (on: boolean) => void;
   items: Saved[];
   add: (item: Saved) => void;
+  /** Take a note out of the list (deleting it); restore puts it back (Undo) */
+  remove: (id: string) => void;
+  restore: (item: Saved) => void;
   author: string;
   imagesEnabled: boolean;
 }
@@ -150,8 +157,16 @@ export function FeedbackProvider({ children, imagesEnabled = false }: { children
   }, [author]);
 
   const add = useCallback((item: Saved) => setItems((list) => [...list, item]), []);
+  const remove = useCallback((id: string) => setItems((list) => list.filter((i) => i.id !== id)), []);
+  const restore = useCallback(
+    (item: Saved) =>
+      setItems((list) => (list.some((i) => i.id === item.id) ? list : [...list, item].sort((a, b) => a.createdAt - b.createdAt))),
+    [],
+  );
 
-  return <Ctx.Provider value={{ on, setOn, items, add, author, imagesEnabled }}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider value={{ on, setOn, items, add, remove, restore, author, imagesEnabled }}>{children}</Ctx.Provider>
+  );
 }
 
 /** The round button that sits beside the section pill. */
@@ -321,6 +336,12 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
   const [dragging, setDragging] = useState(false);
   const [panel, setPanel] = useState<Panel>("closed");
   const [activeNote, setActiveNote] = useState<string | null>(null);
+  // A deleted note waits UNDO_MS before it's really deleted, so Undo only has to cancel
+  const [pending, setPending] = useState<Saved | null>(null);
+  const [deleteError, setDeleteError] = useState(false);
+  const pendingTimer = useRef<number | null>(null);
+  const pendingRef = useRef<Saved | null>(null);
+  pendingRef.current = pending;
   const panelRef = useRef<Panel>("closed");
   const lastPanel = useRef<Panel>("compose");
   const lastTarget = useRef<Target | null>(null);
@@ -503,6 +524,33 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     return () => cancelAnimationFrame(frame);
   }, [on, target]);
 
+  // Leaving the page (or the case study) while Undo is still offered: delete now, so it isn't lost
+  const authorRef = useRef("");
+  authorRef.current = fb?.author ?? "";
+  useEffect(() => {
+    const flush = () => {
+      const note = pendingRef.current;
+      if (!note || !authorRef.current) return;
+      pendingRef.current = null;
+      fetch(FEEDBACK_PATH, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: note.id, author: authorRef.current }),
+        keepalive: true,
+      });
+    };
+    window.addEventListener("pagehide", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      flush();
+    };
+  }, []);
+
+  // With no notes left (and nothing to undo), the tabs go away: back to writing
+  useEffect(() => {
+    if (allItems.length === 0 && !pending && panel === "notes") setPanel("compose");
+  }, [allItems.length, pending, panel]);
+
   // Focus the comment box when the card opens or a block is picked
   useEffect(() => {
     if (target && panel === "compose") textRef.current?.focus({ preventScroll: true });
@@ -526,6 +574,49 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     }
     return [...map].sort(([a], [b]) => Number(b === page) - Number(a === page));
   })();
+
+  const reallyDelete = (note: Saved, opts: { keepalive?: boolean } = {}) =>
+    fetch(FEEDBACK_PATH, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: note.id, author: fb?.author }),
+      keepalive: opts.keepalive,
+    });
+
+  const finishDelete = () => {
+    const note = pendingRef.current;
+    if (pendingTimer.current !== null) window.clearTimeout(pendingTimer.current);
+    pendingTimer.current = null;
+    setPending(null);
+    if (!note) return;
+    reallyDelete(note)
+      .then((res) => {
+        // Already gone (404) counts as deleted; anything else puts the note back
+        if (!res.ok && res.status !== 404) throw new Error(String(res.status));
+      })
+      .catch(() => {
+        fb?.restore(note);
+        setDeleteError(true);
+      });
+  };
+
+  const deleteNote = (note: Saved) => {
+    // One undo at a time: a second delete settles the first
+    if (pendingRef.current) finishDelete();
+    fb?.remove(note.id);
+    setDeleteError(false);
+    if (activeNote === note.id) setActiveNote(null);
+    setPending(note);
+    pendingTimer.current = window.setTimeout(finishDelete, UNDO_MS);
+  };
+
+  const undoDelete = () => {
+    const note = pendingRef.current;
+    if (pendingTimer.current !== null) window.clearTimeout(pendingTimer.current);
+    pendingTimer.current = null;
+    setPending(null);
+    if (note) fb?.restore(note);
+  };
 
   const closeCard = () => {
     setPanel("closed");
@@ -682,7 +773,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
 
             {/* Two views, once there's something to go back to: write a note, or see the ones
                 already left. Arrow keys move between tabs. */}
-            {allItems.length > 0 && (
+            {(allItems.length > 0 || pending) && (
             <div
               className="fb-tabs"
               role="tablist"
@@ -724,11 +815,26 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
             )}
 
             <div
-              role={allItems.length > 0 ? "tabpanel" : undefined}
+              role={allItems.length > 0 || pending ? "tabpanel" : undefined}
               id={`fb-panel-${view}`}
-              aria-labelledby={allItems.length > 0 ? `fb-tab-${view}` : undefined}
+              aria-labelledby={allItems.length > 0 || pending ? `fb-tab-${view}` : undefined}
               className="fb-panel"
             >
+            {(pending || deleteError) && (
+              <div className="fb-toast" role="status">
+                {pending ? (
+                  <>
+                    <span>Note deleted</span>
+                    <button type="button" onClick={undoDelete}>
+                      Undo
+                    </button>
+                  </>
+                ) : (
+                  <span>Couldn&apos;t delete that note. It&apos;s back in your list.</span>
+                )}
+              </div>
+            )}
+
             {view === "notes" ? (
               allItems.length === 0 ? (
                 <div className="fb-empty">
@@ -764,6 +870,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                                   <span aria-hidden="true"> · </span>
                                   {when.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
                                 </time>
+                                <div className="fb-note-card">
                                 <button type="button" className="fb-note" onClick={() => goToNote(n)}>
                                   <span className="fb-note-where">
                                     <KindIcon size={14} aria-hidden="true" {...fill(KindIcon)} />
@@ -784,6 +891,16 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                                     </span>
                                   )}
                                 </button>
+                                <button
+                                  type="button"
+                                  className="fb-note-delete"
+                                  aria-label={`Delete your note "${n.text.slice(0, 40)}${n.text.length > 40 ? "…" : ""}"`}
+                                  title="Delete note"
+                                  onClick={() => deleteNote(n)}
+                                >
+                                  <Trash2 size={14} aria-hidden="true" />
+                                </button>
+                                </div>
                               </li>
                             );
                           })}

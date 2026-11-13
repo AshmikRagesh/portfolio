@@ -5,6 +5,9 @@
 //   feedback:all                sorted set, id → createdAt (ms); the inbox reads this
 //   feedback:author:<authorId>  sorted set, id → createdAt; a reviewer's own comments
 //
+// A reviewer can delete their own comment (deleteFeedback): it's removed everywhere,
+// inbox included, with its image.
+//
 // Attached images live in Vercel Blob (private), at feedback/<namespace>/<uuid>.jpg;
 // the comment keeps only that pathname. Comments from a browser marked as Ashmik's
 // (lib/owner.ts) are saved with test=true and kept out of the inbox's real lists.
@@ -99,4 +102,29 @@ export async function setStatus(id: string, status: FeedbackStatus) {
   // Only touch comments that exist, so a stray id never creates a half-empty hash
   const [{ result: exists }] = await pipeline([["EXISTS", `${FB_NS}:item:${id}`]]);
   if (exists) await pipeline([["HSET", `${FB_NS}:item:${id}`, "status", status]]);
+}
+
+/**
+ * A reviewer deleting their own note: only when the author matches. Removes it from
+ * the inbox lists too, and returns the image pathname (if any) so it can be removed.
+ */
+export async function deleteFeedback(id: string, author: string): Promise<{ deleted: boolean; image: string }> {
+  if (!storeConfigured) {
+    const item = memory.get(id);
+    if (!item || item.author !== author) return { deleted: false, image: "" };
+    memory.delete(id);
+    return { deleted: true, image: item.image };
+  }
+  const key = `${FB_NS}:item:${id}`;
+  const [{ result: owner }, { result: image }] = await pipeline([
+    ["HGET", key, "author"],
+    ["HGET", key, "image"],
+  ]);
+  if (owner === null || owner !== author) return { deleted: false, image: "" };
+  await pipeline([
+    ["DEL", key],
+    ["ZREM", `${FB_NS}:all`, id],
+    ["ZREM", `${FB_NS}:author:${author}`, id],
+  ]);
+  return { deleted: true, image: image ?? "" };
 }

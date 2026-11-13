@@ -3,7 +3,7 @@
 // only, images are kept in memory so the feature can be tried locally (they're gone
 // when the dev server restarts). In production without Blob, images are off.
 
-import { get, put } from "@vercel/blob";
+import { del, get, put } from "@vercel/blob";
 
 const blobReady = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 const devMemory = () => process.env.NODE_ENV !== "production" && !blobReady();
@@ -30,4 +30,12 @@ export async function readImage(pathname: string): Promise<ReadableStream<Uint8A
   if (!blobReady()) return null;
   const found = await get(pathname, { access: "private" });
   return found && "stream" in found && found.stream ? found.stream : null;
+}
+
+export async function deleteImage(pathname: string) {
+  if (devMemory()) {
+    memory.delete(pathname);
+    return;
+  }
+  if (blobReady()) await del(pathname);
 }

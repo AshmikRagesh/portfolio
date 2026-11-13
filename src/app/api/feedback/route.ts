@@ -1,12 +1,14 @@
 // ── /api/feedback ─────────────────────────────────────────────────────────────
 // GET  ?author=<id>[&page=/works/x] → that reviewer's own comments (on that page, or all)
 // POST FeedbackInput (+ "website", a honeypot real people never fill) → the saved comment
+// DELETE { id, author } → removes that comment, only for the browser that wrote it
 //
 // Reviewers only ever see their own comments; everything lands in the private
 // /feedback inbox. Rate limited per hashed IP. Comments from Ashmik's own browser
 // (lib/owner.ts) are saved as tests.
 
-import { addFeedback, listForAuthor } from "@/lib/feedback/store";
+import { addFeedback, deleteFeedback, listForAuthor } from "@/lib/feedback/store";
+import { deleteImage } from "@/lib/feedback/images";
 import { ANCHOR_RE, AUTHOR_RE, IMAGE_RE, LIMITS, PAGE_RE, isCategory, type FeedbackInput, type FeedbackItem } from "@/lib/feedback/shared";
 import { isOwner } from "@/lib/owner";
 import { allow, ipHash, tooMany } from "@/lib/curiosity/guard";
@@ -75,6 +77,32 @@ export async function POST(req: Request) {
     return Response.json(forReviewer(await addFeedback(input, { test: await isOwner() })), { status: 201 });
   } catch (err) {
     console.error("[feedback] store failed", err);
+    return new Response(null, { status: 503 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  if (!(await allow("feedback-delete", ipHash(req.headers), 30, 10 * 60))) return tooMany();
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(null, { status: 400 });
+  }
+  const { id, author } = body ?? {};
+  if (typeof id !== "string" || !/^[0-9a-f-]{36}$/.test(id) || typeof author !== "string" || !AUTHOR_RE.test(author)) {
+    return new Response(null, { status: 400 });
+  }
+  try {
+    const { deleted, image } = await deleteFeedback(id, author);
+    if (!deleted) return new Response(null, { status: 404 });
+    if (image && IMAGE_RE.test(image)) {
+      // The note is gone either way; a stray image is only storage
+      await deleteImage(image).catch((err) => console.error("[feedback] image delete failed", err));
+    }
+    return new Response(null, { status: 204 });
+  } catch (err) {
+    console.error("[feedback] delete failed", err);
     return new Response(null, { status: 503 });
   }
 }
