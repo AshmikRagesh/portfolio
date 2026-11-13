@@ -1560,23 +1560,32 @@ html[data-feedback="on"] .owner-badge {
 }
 .fb-card-head,
 .fb-tabs { flex: 0 0 auto; }
+/* Header: the title leads, a quiet line under it, and close stays light */
 .fb-card-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
 }
 .fb-card-title {
-  font-size: 16px;
+  color: var(--fb-text-1);
+  font-size: 18px;
   font-weight: 500;
   line-height: 24px;
+}
+.fb-card-sub {
+  margin-top: 2px;
+  color: var(--fb-text-3);
+  font-size: 12px;
+  line-height: 16px;
 }
 
 /* Comment | Your notes — quiet text tabs with an underline, shown once a note exists */
 .fb-tabs {
   display: flex;
-  gap: 20px;
-  margin-top: -4px;
+  gap: 24px;
+  margin: -4px -20px 0;
+  padding: 0 20px;
   border-bottom: 1px solid var(--fb-line);
 }
 .fb-tabs button {
@@ -1607,11 +1616,18 @@ html[data-feedback="on"] .owner-badge {
   background: var(--fb-accent);
 }
 .fb-tab-count {
-  color: var(--fb-text-3);
-  font-weight: 400;
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--fb-raise-2);
+  color: var(--fb-text-2);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  text-align: center;
   font-variant-numeric: tabular-nums;
 }
-.fb-tabs button[aria-selected="true"] .fb-tab-count { color: var(--fb-text-2); }
+.fb-tabs button[aria-selected="true"] .fb-tab-count { background: var(--fb-chip-bg); color: var(--fb-accent); }
 .fb-panel {
   display: flex;
   flex: 1 1 auto;
@@ -1641,8 +1657,9 @@ html[data-feedback="on"] .owner-badge {
   flex: 0 0 auto;
   border: 0;
   border-radius: theme("borderRadius.md");
-  background: var(--fb-raise);
-  color: var(--fb-text-2);
+  margin: -4px -6px 0 0;
+  background: transparent;
+  color: var(--fb-text-3);
   cursor: pointer;
   transition: background-color 0.16s ease, color 0.16s ease;
 }
