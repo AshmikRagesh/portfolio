@@ -237,18 +237,42 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
   const listRef = useRef<HTMLUListElement>(null);
   const options = value ? MENU : MENU.slice(0, -1);
   const Current = value ? CATEGORY_ICONS[value] : Tag;
+  // The card scrolls, so a menu inside it would be cut off. It's placed on the
+  // screen instead (position: fixed), above the pill, or below if there's no room.
+  const [place, setPlace] = useState<React.CSSProperties>({});
 
   useEffect(() => {
     if (!open) return;
     const onPointer = (e: PointerEvent) => {
       if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
     };
+    // Scrolling or resizing would leave it floating in the wrong place: close it
+    const onMove = (e: Event) => {
+      if (!(e.target instanceof Node && listRef.current?.contains(e.target))) setOpen(false);
+    };
     document.addEventListener("pointerdown", onPointer);
+    window.addEventListener("scroll", onMove, true);
+    window.addEventListener("resize", onMove);
     listRef.current?.focus();
-    return () => document.removeEventListener("pointerdown", onPointer);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      window.removeEventListener("scroll", onMove, true);
+      window.removeEventListener("resize", onMove);
+    };
   }, [open]);
 
   const show = () => {
+    const r = buttonRef.current?.getBoundingClientRect();
+    if (r) {
+      const room = r.top - 12;
+      const below = window.innerHeight - r.bottom - 12;
+      const left = Math.min(r.left, window.innerWidth - 200 - 12);
+      setPlace(
+        room >= 180 || room >= below
+          ? { left, bottom: window.innerHeight - r.top + 6, maxHeight: room }
+          : { left, top: r.bottom + 6, maxHeight: below },
+      );
+    }
     setActive(Math.max(0, options.findIndex((o) => o.value === value)));
     setOpen(true);
   };
@@ -287,6 +311,7 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
           aria-label="Category"
           tabIndex={-1}
           className="fb-menu"
+          style={place}
           aria-activedescendant={`fb-cat-${active}`}
           onKeyDown={(e) => {
             if (e.key === "ArrowDown") setActive((a) => (a + 1) % options.length);

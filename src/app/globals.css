@@ -1976,10 +1976,10 @@ html[data-feedback="on"] .owner-badge {
 .fb-select-caret { opacity: 0.72; transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1); }
 .fb-select[aria-expanded="true"] .fb-select-caret { transform: rotate(180deg); }
 .fb-menu {
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 0;
-  z-index: 2;
+  /* Placed on the screen by CategoryMenu (above the pill, or below) */
+  position: fixed;
+  z-index: 60;
+  overflow-y: auto;
   min-width: 176px;
   padding: 4px;
   border: 1px solid var(--fb-line);
