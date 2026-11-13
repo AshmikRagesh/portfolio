@@ -580,10 +580,16 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
 
             {thread.length > 0 && (
               <section className="fb-thread" aria-label="Your earlier feedback on this block">
-                <p className="fb-thread-heading">Your earlier feedback</p>
+                <p className="fb-thread-heading">
+                  {thread.length === 1 ? "Your earlier note here" : `Your ${thread.length} earlier notes here`}
+                </p>
                 <ul>
                   {thread.map((c) => (
                     <li key={c.id}>
+                      <span className="fb-avatar" aria-hidden="true">
+                        {(c.name || "You").trim().charAt(0).toUpperCase()}
+                      </span>
+                      <div className="min-w-0">
                       <p className="fb-thread-meta">
                         <span className="fb-thread-name">{c.name || "You"}</span>
                         <span>{new Date(c.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
@@ -596,6 +602,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                           Image attached
                         </p>
                       )}
+                      </div>
                     </li>
                   ))}
                 </ul>
