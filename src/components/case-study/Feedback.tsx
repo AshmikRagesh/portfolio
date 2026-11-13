@@ -479,16 +479,19 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     wasOn.current = on;
   }, [on]);
 
-  // Find each saved comment's block once per mode switch or new comment
+  // Find each saved comment's block whenever the notes change (pins show even
+  // when feedback mode is off)
   useEffect(() => {
     const main = root();
-    if (!on || !main) return;
+    if (!main) return;
     located.current = new Map(items.map((i) => [i.id, locate(i.anchor, i.snippet, main)]));
   }, [on, items]);
 
-  // Keep outlines, dots and the card stuck to their blocks while the page moves
+  // Keep outlines, pins and the card stuck to their blocks while the page moves.
+  // Pins stay on the page after feedback mode closes, so this runs whenever there are any.
+  const hasPins = items.length > 0;
   useEffect(() => {
-    if (!on) return;
+    if (!on && !hasPins) return;
     let frame = 0;
     const place = (box: HTMLDivElement | null, el: HTMLElement | null) => {
       if (!box) return;
@@ -534,7 +537,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [on, target]);
+  }, [on, target, hasPins]);
 
   // Leaving the page (or the case study) while Undo is still offered: delete now, so it isn't lost
   const authorRef = useRef("");
@@ -731,8 +734,9 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
         </div>
       </div>
 
-      {on &&
-        items.map((item) => (
+      {/* Pins: the reviewer's own notes, on the page even when feedback mode is off.
+          Clicking one reopens feedback on that note. */}
+      {items.map((item) => (
           <button
             key={item.id}
             type="button"
@@ -741,13 +745,23 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
               else dotRefs.current.delete(item.id);
             }}
             className="fb-dot"
-            aria-label={`Your comment on ${item.sectionLabel}, ${item.label.toLowerCase()}`}
+            data-on={on}
+            aria-label={`Your note on ${item.sectionLabel}, ${item.label.toLowerCase()}. Open it`}
             onClick={() => {
               const el = located.current.get(item.id);
+              if (on) {
+                if (el) pick(el);
+                return;
+              }
+              setOn?.(true);
               if (el) pick(el);
+              setPanel("notes");
+              setActiveNote(item.id);
             }}
           >
-            {blocks.indexOf(item.anchor) + 1}
+            <span className="fb-dot-face" aria-hidden="true">
+              {blocks.indexOf(item.anchor) + 1}
+            </span>
           </button>
         ))}
 
@@ -924,21 +938,19 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
             ) : (
             <>
             <div className="fb-about">
-              <button
-                type="button"
+              {/* A label, not a button: it says what the note is about */}
+              <p
                 className="fb-target"
-                title={about.el ? "Show this block" : undefined}
                 aria-label={
                   about.el
-                    ? `Commenting on ${about.label.toLowerCase()} in ${about.sectionLabel}. Show it on the page`
-                    : "Commenting on the whole case study. Click a block on the page to be specific"
+                    ? `Commenting on ${about.label.toLowerCase()} in ${about.sectionLabel}`
+                    : "Commenting on the whole case study"
                 }
-                onClick={() => about.el?.scrollIntoView({ behavior: "smooth", block: "center" })}
               >
                 <TargetIcon size={14} aria-hidden="true" {...fill(TargetIcon)} />
-                <span className="fb-target-kind">{about.label}</span>
-                {about.el && <span className="fb-target-where">in {about.sectionLabel}</span>}
-              </button>
+                <span className="fb-target-kind" aria-hidden="true">{about.label}</span>
+                {about.el && <span className="fb-target-where" aria-hidden="true">in {about.sectionLabel}</span>}
+              </p>
             </div>
 
             <div

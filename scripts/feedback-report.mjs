@@ -6,7 +6,7 @@
 //   node scripts/feedback-report.mjs all             # every comment
 //   node scripts/feedback-report.mjs since 7         # open comments from the last 7 days
 //   node scripts/feedback-report.mjs test            # comments Ashmik left from his own browser
-//   node scripts/feedback-report.mjs mark <id> done  # done | wontdo | open  (the only write)
+//   node scripts/feedback-report.mjs mark <id> done  # open | doing | done | wontdo  (the only write)
 //
 // Namespace: FEEDBACK_NS env, default "feedback" (live). Use FEEDBACK_NS=dev:feedback
 // for comments left on `next dev`. Reads UPSTASH_REDIS_REST_URL / _TOKEN from the
@@ -43,8 +43,8 @@ async function run(commands) {
 }
 
 if (mode === "mark") {
-  if (!/^[0-9a-f-]{36}$/.test(a ?? "") || !["done", "wontdo", "open"].includes(b)) {
-    console.error("usage: mark <id> done|wontdo|open");
+  if (!/^[0-9a-f-]{36}$/.test(a ?? "") || !["open", "doing", "done", "wontdo"].includes(b)) {
+    console.error("usage: mark <id> open|doing|done|wontdo");
     process.exit(1);
   }
   const [exists] = await run([["EXISTS", `${NS}:item:${a}`]]);
@@ -72,12 +72,13 @@ const CATS = { accessibility: "Accessibility", content: "Content", visual: "Visu
 // Test comments (from Ashmik's own marked browser) only show in "test" mode
 const real = items.filter((i) => i.test !== "true");
 const shown = (mode === "test" ? items.filter((i) => i.test === "true") : real).filter(
-  (i) => (mode === "all" || mode === "test" ? true : i.status === "open") && i.createdAt >= since,
+  (i) => (mode === "all" || mode === "test" ? true : i.status === "open" || i.status === "doing") && i.createdAt >= since,
 );
 const nice = (ms) =>
   new Date(ms).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" });
 
-const open = real.filter((i) => i.status === "open").length;
+// "Open" here means not finished: To do or In progress on the inbox board
+const open = real.filter((i) => i.status === "open" || i.status === "doing").length;
 console.log(`# Case study feedback (${NS})\n`);
 console.log(`${open} open of ${real.length} total. Showing ${shown.length}${mode === "all" ? " (all)" : mode === "test" ? " test comments" : mode === "since" ? ` open from the last ${a || 7} days` : " open"}.\n`);
 

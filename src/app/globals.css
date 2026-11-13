@@ -640,7 +640,17 @@ html[data-leaving] .page-enter {
   cursor: pointer;
   outline-offset: 4px;
   box-shadow: rgba(0, 0, 0, 0.15) 0 4px 16px;
+  transition: background-color 0.2s ease, transform 0.2s var(--ease-out);
+  /* Its own layer, so the small expand doesn't make the text shimmer */
+  will-change: transform;
+  backface-visibility: hidden;
 }
+/* Hover: the same small expand as the feedback button beside it (a smaller
+   ratio, since the pill is wider) */
+@media (hover: hover) {
+  .cs-pill-button:hover { background: #3a1046; transform: scale(1.03); }
+}
+.cs-pill-button:active { transform: scale(0.97); }
 .cs-pill-button .cs-pill-num {
   opacity: 0.55;
 }
@@ -1446,6 +1456,8 @@ html[data-feedback="on"] .owner-badge {
   white-space: nowrap;
 }
 
+/* The pin: the button is only placed (its transform is set every frame), and
+   its face inside does the drawing, so the face can expand on hover */
 .fb-dot {
   position: fixed;
   top: 0;
@@ -1453,6 +1465,17 @@ html[data-feedback="on"] .owner-badge {
   z-index: 36;
   width: 20px;
   height: 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.fb-dot-face {
+  display: block;
+  width: 100%;
+  height: 100%;
   border: 2px solid #fff;
   border-radius: 999px 999px 999px 2px;
   background: theme("colors.grape");
@@ -1461,11 +1484,21 @@ html[data-feedback="on"] .owner-badge {
   line-height: 16px;
   font-variant-numeric: tabular-nums;
   text-align: center;
-  cursor: pointer;
-  opacity: 0;
   box-shadow: rgba(0, 0, 0, 0.15) 0 2px 6px;
-  transition: opacity 0.12s ease;
+  /* Grows from its point, so the tip stays on the block */
+  transform-origin: 0 100%;
+  backface-visibility: hidden;
+  transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.2s ease, box-shadow 0.2s ease;
 }
+@media (hover: hover) {
+  .fb-dot:hover .fb-dot-face {
+    background: #b2177a;
+    transform: scale(1.15);
+    box-shadow: rgba(30, 5, 37, 0.28) 0 3px 8px;
+  }
+}
+.fb-dot:active .fb-dot-face { transform: scale(0.94); }
+.fb-dot:focus-visible { outline: 2px solid theme("colors.grape"); outline-offset: 2px; }
 
 .fb-card {
   /* A plum palette drawn from midnight and grape — no neutral greys */
@@ -1711,7 +1744,7 @@ html[data-feedback="on"] .owner-badge {
   font-size: 12px;
   line-height: 16px;
   white-space: nowrap;
-  cursor: pointer;
+  cursor: default;
 }
 .fb-target-kind { font-weight: 500; }
 .fb-target-where { overflow: hidden; color: var(--fb-text-2); text-overflow: ellipsis; }
@@ -2084,6 +2117,8 @@ html[data-feedback="on"] .owner-badge {
   opacity: 0;
 }
 @media (prefers-reduced-motion: reduce) {
+  .cs-pill-button, .fb-dot-face { transition: background-color 0.2s ease; }
+  .cs-pill-button:hover, .cs-pill-button:active, .fb-dot:hover .fb-dot-face, .fb-dot:active .fb-dot-face { transform: none; }
   .fb-card, .fb-card[data-open="true"] { transition: none; animation: none; }
 }
 
@@ -2132,7 +2167,8 @@ html[data-feedback="on"] .owner-badge {
   .fb-toast { min-height: 48px; }
   .fb-toast button { height: 36px; padding: 0 14px; }
   .fb-attachment-remove { width: 28px; height: 28px; top: -10px; right: -10px; }
-  .fb-dot { width: 24px; height: 24px; font-size: 12px; line-height: 20px; }
+  .fb-dot { width: 24px; height: 24px; }
+  .fb-dot-face { font-size: 12px; line-height: 20px; }
 }
 @media (max-width: 767px) {
   .fb-card {

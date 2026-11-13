@@ -23,6 +23,9 @@ const INTERACTIVE = "a[href], button, [role=button], [role=tab], summary, select
 const THROTTLE_MS = 35;
 
 function soundFor(el: Element) {
+  // In case study feedback mode, clicks on the page pick a block instead of doing
+  // their usual thing, so the page's links, buttons and media stay silent
+  if (document.documentElement.dataset.feedback === "on" && el.closest("[data-cs-main]")) return null;
   const own = el.closest("[data-sound]");
   if (own) {
     const name = own.getAttribute("data-sound") ?? "";
