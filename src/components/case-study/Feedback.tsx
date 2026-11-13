@@ -426,14 +426,11 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
       const el = blockFor(e.target, main);
       if (el) pick(el);
     };
-    // Esc closes the card first, then leaves feedback mode
+    // Esc leaves feedback mode (the card and the mode open and close together)
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      if (panelRef.current !== "closed") {
-        setPanel("closed");
-        setTarget(null);
-        document.querySelector<HTMLButtonElement>(".fb-button")?.focus();
-      } else setOn?.(false);
+      setOn?.(false);
+      document.querySelector<HTMLButtonElement>(".fb-button")?.focus();
     };
 
     document.addEventListener("pointermove", onMove, { passive: true });
@@ -618,10 +615,9 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     if (note) fb?.restore(note);
   };
 
+  // Closing the card leaves feedback mode too: there's no in-between state
   const closeCard = () => {
-    setPanel("closed");
-    setTarget(null);
-    setActiveNote(null);
+    setOn?.(false);
     // Back to where the reviewer opened it from
     document.querySelector<HTMLButtonElement>(".fb-button")?.focus();
   };
@@ -709,18 +705,6 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
 
   return (
     <>
-      {/* A small reminder only while the card is closed; the open card says it already */}
-      {on && !open && (
-        <div className="fb-strip" role="status">
-          <span className="fb-strip-dot" aria-hidden="true" />
-          <span className="fb-strip-wide">Click a block to comment</span>
-          <span className="fb-strip-narrow">Tap a block to comment</span>
-          <button type="button" className="fb-strip-exit" onClick={() => setOn?.(false)} aria-label="Exit feedback mode">
-            Exit
-          </button>
-        </div>
-      )}
-
       <div className="fb-overlay" data-on={on} aria-hidden="true">
         <div ref={hoverRef} className="fb-outline" data-kind="hover" />
         <div ref={pickedRef} className="fb-outline" data-kind="picked">
