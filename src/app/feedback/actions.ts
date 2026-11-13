@@ -61,3 +61,12 @@ export async function mark(form: FormData) {
   await setStatus(id, status);
   revalidatePath("/feedback");
 }
+
+/** Move a card on the inbox board (drag and drop, or its Move to menu). */
+export async function moveTo(id: string, status: FeedbackStatus) {
+  if (!(await hasAccess())) return { ok: false };
+  if (!/^[0-9a-f-]{36}$/.test(id) || !STATUSES.includes(status)) return { ok: false };
+  await setStatus(id, status);
+  revalidatePath("/feedback");
+  return { ok: true };
+}

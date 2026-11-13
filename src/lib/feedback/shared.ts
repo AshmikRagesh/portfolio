@@ -32,8 +32,9 @@ export const IMAGE_EDGE = 1600;
 export const IMAGE_MAX_BYTES = 1_500_000;
 export const IMAGE_PATH = "/api/feedback/image";
 
-export type FeedbackStatus = "open" | "done" | "wontdo";
-export const STATUSES: FeedbackStatus[] = ["open", "done", "wontdo"];
+/** Board columns in the inbox: To do → In progress → Done, or Won't do */
+export type FeedbackStatus = "open" | "doing" | "done" | "wontdo";
+export const STATUSES: FeedbackStatus[] = ["open", "doing", "done", "wontdo"];
 
 export interface FeedbackItem {
   id: string;
