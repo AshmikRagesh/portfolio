@@ -2099,3 +2099,31 @@ html[data-feedback="on"] [data-cs-main] * {
 @media (max-width: 767px) {
   .owner-badge { left: 12px; bottom: 76px; }
 }
+
+/* Feedback card on touch screens: no hover, so delete is always shown; every
+   control is at least 40px to tap; fields use 16px text so iOS doesn't zoom in;
+   the bottom sheet clears the home indicator */
+@media (pointer: coarse) {
+  .fb-icon-button { width: 40px; height: 40px; }
+  .fb-tabs button { padding: 10px 0 12px; }
+  .fb-target { height: 36px; padding: 0 12px; }
+  .fb-select { height: 40px; padding: 0 12px; font-size: 14px; line-height: 20px; }
+  .fb-tool { width: 40px; height: 40px; }
+  .fb-send { width: 40px; height: 40px; }
+  .fb-menu li { height: 44px; font-size: 16px; }
+  .fb-composer-text,
+  .fb-name-field input { font-size: 16px; line-height: 24px; }
+  .fb-name-field { height: 48px; }
+  .fb-note-card .fb-note { padding-right: 52px; }
+  .fb-note-delete { top: 4px; right: 4px; width: 40px; height: 40px; opacity: 1; }
+  .fb-toast { min-height: 48px; }
+  .fb-toast button { height: 36px; padding: 0 14px; }
+  .fb-attachment-remove { width: 28px; height: 28px; top: -10px; right: -10px; }
+  .fb-dot { width: 24px; height: 24px; font-size: 12px; line-height: 20px; }
+}
+@media (max-width: 767px) {
+  .fb-card {
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    max-height: 72dvh;
+  }
+}
