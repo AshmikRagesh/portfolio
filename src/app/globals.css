@@ -1537,6 +1537,10 @@ html[data-feedback="on"] .owner-badge {
 }
 .fb-card-head,
 .fb-tabs { flex: 0 0 auto; }
+.fb-card-actions {
+  display: flex;
+  gap: 4px;
+}
 .fb-card-head {
   display: flex;
   align-items: center;

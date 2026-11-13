@@ -16,6 +16,8 @@ import {
   CircleX,
   Heading,
   Image as ImageIcon,
+  Moon,
+  Sun,
   List,
   MessageSquare,
   Palette,
@@ -369,8 +371,8 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
 
   useEffect(() => setName(storageGet(NAME_KEY) ?? ""), []);
 
-  // Card colours: dark by default. Preview the light version with ?fb-theme=light
-  // (remembered in this browser; ?fb-theme=dark switches back).
+  // Card colours: dark by default; the sun/moon button beside close switches them,
+  // remembered in this browser (?fb-theme=light|dark sets it from a link too).
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   useEffect(() => {
     const asked = new URLSearchParams(window.location.search).get("fb-theme");
@@ -767,9 +769,25 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
               <h2 id="fb-title" className="fb-card-title">
                 Leave feedback
               </h2>
-              <button type="button" className="fb-icon-button" onClick={closeCard} aria-label="Close feedback">
-                <X size={16} aria-hidden="true" />
-              </button>
+              <div className="fb-card-actions">
+                <button
+                  type="button"
+                  className="fb-icon-button"
+                  data-sound-click="toggle"
+                  aria-label={theme === "dark" ? "Switch to light colours" : "Switch to dark colours"}
+                  title={theme === "dark" ? "Light colours" : "Dark colours"}
+                  onClick={() => {
+                    const next = theme === "dark" ? "light" : "dark";
+                    setTheme(next);
+                    storageSet(THEME_KEY, next);
+                  }}
+                >
+                  {theme === "dark" ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" fill="currentColor" />}
+                </button>
+                <button type="button" className="fb-icon-button" onClick={closeCard} aria-label="Close feedback">
+                  <X size={16} aria-hidden="true" />
+                </button>
+              </div>
             </header>
 
             {/* Two views, once there's something to go back to: write a note, or see the ones
