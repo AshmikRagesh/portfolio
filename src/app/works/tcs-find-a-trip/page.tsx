@@ -284,12 +284,11 @@ const ITERATIONS: IterationItem[] = [
   },
 ];
 
-// The three asks, as they were given (not word-for-word quotes). They came after Variant 1
-// and shaped Variants 2 and 3. Senders alternate, like a chat.
+// The business feedback on Variant 1, as given (not a word-for-word quote). The wording asks
+// ("trips" not "expeditions", "Explore Trips" first) were already in every prototype, so
+// they aren't shown as feedback here.
 const REVIEW_FEEDBACK = [
   { text: "Add a version with the two paths side by side, not stacked.", from: "Rohit Rayala, CRO" },
-  { text: "Call them \u201ctrips\u201d, not \u201cexpeditions\u201d.", from: "Sharayu Jadhav, Product Manager" },
-  { text: "Rename \u201cFind Trips\u201d to \u201cExplore Trips\u201d, and list it first.", from: "Rohit Rayala, CRO" },
 ];
 
 // Numbered points, not cards, in the reading column: the takeaway after the variant cards
@@ -343,8 +342,7 @@ function Exploration() {
       <div className="cs-sub">
         <Copy>
           <p>
-            The side-by-side version is where the phone problem showed up. The
-            business asked for three changes.
+            The side-by-side version is where the phone problem showed up.
           </p>
           <ChatQuotes label="What the business asked for" items={REVIEW_FEEDBACK} />
           <p>In the end, two designs were strong enough that we chose to test both.</p>
