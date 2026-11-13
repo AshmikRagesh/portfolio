@@ -1560,10 +1560,10 @@ html[data-feedback="on"] .owner-badge {
 }
 .fb-card-head,
 .fb-tabs { flex: 0 0 auto; }
-/* Header: the title leads, a quiet line under it, and close stays light */
+/* Header: the title leads; the tabs under it are lighter; close stays quiet */
 .fb-card-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
@@ -1573,12 +1573,7 @@ html[data-feedback="on"] .owner-badge {
   font-weight: 500;
   line-height: 24px;
 }
-.fb-card-sub {
-  margin-top: 2px;
-  color: var(--fb-text-3);
-  font-size: 12px;
-  line-height: 16px;
-}
+
 
 /* Comment | Your notes — quiet text tabs with an underline, shown once a note exists */
 .fb-tabs {
@@ -1598,7 +1593,7 @@ html[data-feedback="on"] .owner-badge {
   background: transparent;
   color: var(--fb-text-3);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 20px;
   cursor: pointer;
   transition: color 0.16s ease;
@@ -1657,7 +1652,7 @@ html[data-feedback="on"] .owner-badge {
   flex: 0 0 auto;
   border: 0;
   border-radius: theme("borderRadius.md");
-  margin: -4px -6px 0 0;
+  margin-right: -6px;
   background: transparent;
   color: var(--fb-text-3);
   cursor: pointer;

@@ -778,12 +778,9 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
         {about && (
           <form onSubmit={send} className="fb-card-form">
             <header className="fb-card-head">
-              <div className="min-w-0">
-                <h2 id="fb-title" className="fb-card-title">
-                  Leave feedback
-                </h2>
-                <p className="fb-card-sub">Only Ashmik sees what you send</p>
-              </div>
+              <h2 id="fb-title" className="fb-card-title">
+                Leave feedback
+              </h2>
               <button type="button" className="fb-icon-button" onClick={closeCard} aria-label="Close feedback">
                 <X size={16} aria-hidden="true" />
               </button>
