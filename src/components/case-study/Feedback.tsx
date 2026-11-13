@@ -759,7 +759,9 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
               setActiveNote(item.id);
             }}
           >
-            {blocks.indexOf(item.anchor) + 1}
+            <span className="fb-dot-face" aria-hidden="true">
+              {blocks.indexOf(item.anchor) + 1}
+            </span>
           </button>
         ))}
 
