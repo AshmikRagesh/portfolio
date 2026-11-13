@@ -2,31 +2,31 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+// The round button keeps its filled Phosphor bubble; everything in the card uses Lucide, like the rest of the site
+import { ChatCircleDots } from "@phosphor-icons/react";
 import {
+  Accessibility,
+  AlignLeft,
   ArrowUp,
   ArrowUpRight,
   Bug,
-  CaretDown,
-  ChatCircleDots,
   Check,
-  ImageSquare,
-  ListBullets,
+  ChevronDown,
+  CircleUser,
+  CircleX,
+  Heading,
+  Image as ImageIcon,
+  List,
+  MessageSquare,
   Palette,
-  Quotes,
+  Quote,
   Table,
   Tag,
-  TextAa,
-  TextAlignLeft,
-  TextH,
-  TextT,
-  UserCircle,
-  VideoCamera,
-  Wheelchair,
+  Type,
+  Video,
   X,
-  XCircle,
-  IconContext,
-  type Icon,
-} from "@phosphor-icons/react";
+  type LucideIcon,
+} from "lucide-react";
 import type { CaseStudySection } from "@/components/case-study/SectionPill";
 import { blockFor, describe, locate } from "@/lib/feedback/anchor";
 import {
@@ -184,20 +184,20 @@ export function FeedbackButton() {
   );
 }
 
-const CATEGORY_ICONS: Record<FeedbackCategory, Icon> = {
-  accessibility: Wheelchair,
-  content: TextAa,
+const CATEGORY_ICONS: Record<FeedbackCategory, LucideIcon> = {
+  accessibility: Accessibility,
+  content: Type,
   visual: Palette,
   bug: Bug,
 };
 
-const KIND_ICONS: Record<string, Icon> = {
-  Heading: TextH,
-  Paragraph: TextAlignLeft,
-  "List item": ListBullets,
-  Quote: Quotes,
-  Image: ImageSquare,
-  Video: VideoCamera,
+const KIND_ICONS: Record<string, LucideIcon> = {
+  Heading: Heading,
+  Paragraph: AlignLeft,
+  "List item": List,
+  Quote: Quote,
+  Image: ImageIcon,
+  Video: Video,
   Table: Table,
 };
 
@@ -245,6 +245,7 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
         data-filled={Boolean(value)}
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-label={`Category (optional): ${value ? CATEGORIES[value] : "none"}`}
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={(e) => {
           if (e.key === "ArrowDown" || e.key === "ArrowUp") {
@@ -255,7 +256,7 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
       >
         <Current size={14} aria-hidden="true" />
         {value ? CATEGORIES[value] : "Category"}
-        <CaretDown size={10} aria-hidden="true" className="fb-select-caret" />
+        <ChevronDown size={10} aria-hidden="true" className="fb-select-caret" />
       </button>
       {open && (
         <ul
@@ -278,7 +279,7 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
           }}
         >
           {options.map((o, i) => {
-            const OptionIcon = o.value ? CATEGORY_ICONS[o.value] : XCircle;
+            const OptionIcon = o.value ? CATEGORY_ICONS[o.value] : CircleX;
             return (
               <li
                 key={o.value || "none"}
@@ -292,7 +293,7 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
               >
                 <OptionIcon size={16} aria-hidden="true" />
                 <span>{o.label}</span>
-                {o.value === value && o.value && <Check size={14} weight="bold" aria-hidden="true" className="fb-menu-check" />}
+                {o.value === value && o.value && <Check size={14} aria-hidden="true" className="fb-menu-check" />}
               </li>
             );
           })}
@@ -398,6 +399,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
       if (panelRef.current !== "closed") {
         setPanel("closed");
         setTarget(null);
+        document.querySelector<HTMLButtonElement>(".fb-button")?.focus();
       } else setOn?.(false);
     };
 
@@ -502,7 +504,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
   if (target) lastTarget.current = target;
   const view: Panel = open ? panel : lastPanel.current;
   const about = target ?? lastTarget.current;
-  const TargetIcon = about?.el ? KIND_ICONS[about.label] || TextT : ChatCircleDots;
+  const TargetIcon = about?.el ? KIND_ICONS[about.label] || Type : MessageSquare;
 
   // Your notes: this page first, then the other case studies, newest first in each
   const groups = (() => {
@@ -517,6 +519,8 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     setPanel("closed");
     setTarget(null);
     setActiveNote(null);
+    // Back to where the reviewer opened it from
+    document.querySelector<HTMLButtonElement>(".fb-button")?.focus();
   };
 
   const goToNote = (n: Saved) => {
@@ -644,30 +648,71 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
           </button>
         ))}
 
-      <div ref={cardRef} className="fb-card" data-open={open} inert={!open}>
-        <IconContext.Provider value={{ weight: "fill" }}>
+      <div
+        ref={cardRef}
+        className="fb-card"
+        data-open={open}
+        inert={!open}
+        role="dialog"
+        aria-modal="false"
+        aria-labelledby="fb-title"
+      >
         {about && (
           <form onSubmit={send} className="fb-card-form">
             <header className="fb-card-head">
-              <div className="fb-tabs" role="tablist" aria-label="Feedback">
-                <button type="button" role="tab" aria-selected={view === "compose"} onClick={() => setPanel("compose")}>
-                  Comment
-                </button>
-                <button type="button" role="tab" aria-selected={view === "notes"} onClick={() => setPanel("notes")}>
-                  Your notes
-                  {allItems.length > 0 && <span className="fb-tab-count">{allItems.length}</span>}
-                </button>
-              </div>
-              <button type="button" className="fb-icon-button" onClick={closeCard}>
-                <X size={14} weight="bold" aria-hidden="true" />
-                <span className="sr-only">Close</span>
+              <h2 id="fb-title" className="fb-card-title">
+                Leave feedback
+              </h2>
+              <button type="button" className="fb-icon-button" onClick={closeCard} aria-label="Close feedback">
+                <X size={16} aria-hidden="true" />
               </button>
             </header>
 
+            {/* Two views: write a note, or go back to the ones already left. Arrow keys move between tabs. */}
+            <div
+              className="fb-tabs"
+              role="tablist"
+              aria-label="Feedback views"
+              onKeyDown={(e) => {
+                const order: Panel[] = ["compose", "notes"];
+                let next: Panel | null = null;
+                if (e.key === "ArrowRight" || e.key === "ArrowLeft") next = order[(order.indexOf(view) + 1) % 2];
+                else if (e.key === "Home") next = "compose";
+                else if (e.key === "End") next = "notes";
+                if (!next) return;
+                e.preventDefault();
+                setPanel(next);
+                document.getElementById(`fb-tab-${next}`)?.focus();
+              }}
+            >
+              {(["compose", "notes"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  id={`fb-tab-${tab}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={view === tab}
+                  aria-controls={`fb-panel-${tab}`}
+                  tabIndex={view === tab ? 0 : -1}
+                  data-sound-click="toggle"
+                  onClick={() => setPanel(tab)}
+                >
+                  {tab === "compose" ? "Comment" : "Your notes"}
+                  {tab === "notes" && allItems.length > 0 && (
+                    <span className="fb-tab-count">
+                      {allItems.length}
+                      <span className="sr-only"> notes</span>
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <div role="tabpanel" id={`fb-panel-${view}`} aria-labelledby={`fb-tab-${view}`} className="fb-panel">
             {view === "notes" ? (
               allItems.length === 0 ? (
                 <div className="fb-empty">
-                  <ChatCircleDots size={24} aria-hidden="true" />
+                  <MessageSquare size={24} aria-hidden="true" />
                   <p className="fb-empty-title">No notes yet</p>
                   <p className="fb-empty-text">Notes you leave on any case study show up here.</p>
                   <button type="button" className="fb-empty-action" onClick={() => setPanel("compose")}>
@@ -681,7 +726,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                       <p className="fb-notes-heading">{notePage === page ? "On this page" : pageName(notes[0])}</p>
                       <ul>
                         {notes.map((n) => {
-                          const KindIcon = n.anchor.startsWith("page|") ? ChatCircleDots : KIND_ICONS[n.label] || TextT;
+                          const KindIcon = n.anchor.startsWith("page|") ? MessageSquare : KIND_ICONS[n.label] || Type;
                           return (
                             <li key={n.id}>
                               <button type="button" className="fb-note" data-active={activeNote === n.id} onClick={() => goToNote(n)}>
@@ -689,7 +734,12 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                                   <KindIcon size={14} aria-hidden="true" />
                                   {n.label}
                                   <span className="fb-note-section">· {n.sectionLabel}</span>
-                                  {n.page !== page && <ArrowUpRight size={12} aria-hidden="true" className="fb-note-out" />}
+                                  {n.page !== page && (
+                                    <>
+                                      <ArrowUpRight size={14} aria-hidden="true" className="fb-note-out" />
+                                      <span className="sr-only">, opens {pageName(n)}</span>
+                                    </>
+                                  )}
                                 </span>
                                 <span className="fb-note-text">{n.text}</span>
                                 <span className="fb-note-meta">
@@ -697,7 +747,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                                   {n.category && <span className="fb-chip">{CATEGORIES[n.category]}</span>}
                                   {n.hasImage && (
                                     <span className="fb-note-image">
-                                      <ImageSquare size={12} aria-hidden="true" />
+                                      <ImageIcon size={12} aria-hidden="true" />
                                       Image
                                     </span>
                                   )}
@@ -718,15 +768,17 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                 type="button"
                 className="fb-target"
                 title={about.el ? "Show this block" : undefined}
+                aria-label={
+                  about.el
+                    ? `Commenting on ${about.label.toLowerCase()} in ${about.sectionLabel}. Show it on the page`
+                    : "Commenting on the whole case study. Click a block on the page to be specific"
+                }
                 onClick={() => about.el?.scrollIntoView({ behavior: "smooth", block: "center" })}
               >
                 <TargetIcon size={14} aria-hidden="true" />
                 <span className="fb-target-kind">{about.label}</span>
                 {about.el && <span className="fb-target-where">in {about.sectionLabel}</span>}
               </button>
-              <p className="fb-about-hint">
-                {about.el ? "Click another block to switch" : "Or click a block on the page"}
-              </p>
             </div>
 
             <div
@@ -750,6 +802,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
               </label>
               <textarea
                 id="fb-text"
+                aria-describedby="fb-status"
                 ref={textRef}
                 className="fb-composer-text"
                 placeholder="What would make this clearer?"
@@ -778,7 +831,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                   {/* eslint-disable-next-line @next/next/no-img-element -- a local preview, not a site image */}
                   <img src={image.preview} alt="Image to send with your feedback" />
                   <button type="button" className="fb-attachment-remove" onClick={clearImage}>
-                    <X size={12} weight="bold" aria-hidden="true" />
+                    <X size={12} aria-hidden="true" />
                     <span className="sr-only">Remove image</span>
                   </button>
                 </div>
@@ -795,7 +848,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                       onClick={() => fileRef.current?.click()}
                       title="Add an image (or paste or drop one)"
                     >
-                      <ImageSquare size={16} aria-hidden="true" />
+                      <ImageIcon size={16} aria-hidden="true" />
                       <span className="sr-only">Add an image</span>
                     </button>
                     <input
@@ -825,7 +878,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
 
             <div className="fb-card-foot">
               <label className="fb-name-field">
-                <UserCircle size={16} aria-hidden="true" />
+                <CircleUser size={16} aria-hidden="true" />
                 <span className="sr-only">Your name (optional)</span>
                 <input
                   placeholder="Your name (optional)"
@@ -834,7 +887,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                   onChange={(e) => setName(e.target.value)}
                 />
               </label>
-              <p className="fb-card-note" aria-live="polite" data-state={state}>
+              <p id="fb-status" className="fb-card-note" aria-live="polite" data-state={state}>
                 {state === "sent"
                   ? "Sent. Thank you!"
                   : state === "error"
@@ -850,9 +903,9 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
             </div>
             </>
             )}
+            </div>
           </form>
         )}
-        </IconContext.Provider>
       </div>
     </>
   );
