@@ -26,6 +26,7 @@ import {
   Footnote,
   VariantProvider,
   VariantPair,
+  BeforeAfterSlider,
   Highlight,
 } from "@/components/case-study";
 
@@ -72,7 +73,17 @@ function Overview() {
       </Copy>
       <Visual>
         {/* The finished work up front; the problem walkthrough sits in The Problem */}
-        <Figure label="The final designs: Variant 2 (text links) and Variant 3 (image cards) in the menu" />
+        {/* The handle starts left of the continent column, so the change shows first and
+            dragging right across Africa brings back today's menu */}
+        <BeforeAfterSlider
+          start={24}
+          label="Today's menu, and the two designs in test: the choice opens right under the continent"
+          before={{ src: "/images/tcs-find-a-trip/overview-before.jpg", alt: "Today's Find a Trip menu: every continent goes straight to a list of trips" }}
+          afters={[
+            { id: "links", label: "Variant 2 · Text links", short: "Text links", src: "/images/tcs-find-a-trip/overview-links.jpg", alt: "Variant 2: Africa open, with Explore Trips and Explore Destinations as links under it" },
+            { id: "cards", label: "Variant 3 · Image cards", short: "Image cards", src: "/images/tcs-find-a-trip/overview-cards.jpg", alt: "Variant 3: Africa open, with Explore Trips and Explore Destination as photo cards under it" },
+          ]}
+        />
       </Visual>
     </Chapter>
   );
