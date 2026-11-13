@@ -94,13 +94,10 @@ export function VariantFigure({
   names,
   videos = {},
   captions = {},
-  card,
 }: {
   names: Record<string, string>;
   videos?: Record<string, string | undefined>;
   captions?: Record<string, React.ReactNode>;
-  /** Set it in the white case study card, like the other Solution visuals */
-  card?: boolean;
 }) {
   const variants = useContext(VariantContext);
   if (!variants) throw new Error("VariantFigure needs a VariantProvider");
@@ -114,7 +111,6 @@ export function VariantFigure({
           alt={video ? `Screen recording: ${names[current]}` : undefined}
           video={video}
           caption={captions[current]}
-          card={card}
         />
       </div>
       <div className="absolute right-[12px] top-[12px] z-10 md:right-[16px] md:top-[16px]">
@@ -147,17 +143,13 @@ export function VariantPair({
     <ul className="m-0 flex list-none flex-col gap-[24px] p-0 md:gap-[32px]">
       {variants.map((v) => {
         const video = videos[v.id];
-        const [kicker, name] = v.label.includes(" · ") ? v.label.split(" · ") : [undefined, v.label];
+        // "Variant 2 · Text links": only the variant shows, as the small label. Every point's
+        // cards are the same two designs, so a repeated title would add nothing
+        const variant = v.label.split(" · ")[0];
         return (
           <li key={v.id} className="min-w-0">
             <Figure
-              card
-              kicker={
-                <>
-                  {name}
-                  {kicker && <span className="text-muted">· {kicker}</span>}
-                </>
-              }
+              kicker={variant}
               name={names[v.id]}
               alt={video ? `Screen recording: ${names[v.id]}` : undefined}
               video={video}

@@ -172,8 +172,17 @@ function Context() {
         />
       </Copy>
       <Visual>
-        {/* The two paths side by side: a destination page is about the place, a trip list is what you can book */}
-        <Figure label="Where each path lands: the Africa destination page (the place, when to go, highlights) and the Africa trip list (dates, length, price)" />
+        {/* Ashmik walks through the live site: Africa in the menu opens a trip list, and the
+            Africa destination page has no menu link. Narrated, so it waits for a click and
+            starts at 1.2× */}
+        <Figure
+          video="/videos/tcs-find-a-trip/problem-walkthrough.mp4"
+          poster="/images/tcs-find-a-trip/problem-walkthrough-poster.jpg"
+          narrated
+          speed={1.2}
+          alt="Walkthrough of the TCS World Travel menu: choosing Africa opens a list of trips, and the Africa destination page has no menu link"
+          label="A walkthrough of the problem on the live site"
+        />
       </Visual>
       {/* Subsections sit one step apart (.cs-sub), like the solutions below */}
       <div className="cs-sub">
@@ -229,7 +238,7 @@ type IterationItem = {
   didntWork: string[];
 };
 
-// The one that didn't go forward first, then the two that went into the test
+// In the order they were made: Variant 1, then the two that went into the test
 const ITERATIONS: IterationItem[] = [
   {
     label: "Variant 1",
@@ -275,12 +284,12 @@ const ITERATIONS: IterationItem[] = [
   },
 ];
 
-// The three asks, as they were given (not word-for-word quotes). Sharayu's rename came
-// before the review; Rohit's two came in it. Senders alternate, like a chat.
+// The business feedback on Variant 1, as given (not word-for-word quotes): Rohit's ask, and
+// Sharayu's note on the cramped tap areas on a phone. The wording asks ("trips" not
+// "expeditions", "Explore Trips" first) were already in every prototype, so they aren't here.
 const REVIEW_FEEDBACK = [
   { text: "Add a version with the two paths side by side, not stacked.", from: "Rohit Rayala, CRO" },
-  { text: "Call them \u201ctrips\u201d, not \u201cexpeditions\u201d.", from: "Sharayu Jadhav, Product Manager" },
-  { text: "Rename \u201cFind Trips\u201d to \u201cExplore Trips\u201d, and list it first.", from: "Rohit Rayala, CRO" },
+  { text: "On a phone, the tap areas get too cramped.", from: "Sharayu Jadhav, Product Manager" },
 ];
 
 // Numbered points, not cards, in the reading column: the takeaway after the variant cards
@@ -298,6 +307,25 @@ const WHY_BOTH = [
   },
 ];
 
+function renderIteration({ label, title, chosen, video, worked, didntWork }: IterationItem) {
+  return (
+    <div key={label} className="cs-sub">
+      <Visual>
+        <OptionCard
+          label={label}
+          title={title}
+          shipped={chosen}
+          stamp="In test"
+          video={video}
+          image={`${label}: ${title}, clickable prototype`}
+        >
+          <ProsCons pros={worked} cons={didntWork} />
+        </OptionCard>
+      </Visual>
+    </div>
+  );
+}
+
 function Exploration() {
   return (
     <Chapter id="exploration" num={3} title="What we explored, and the three we showed the business">
@@ -307,30 +335,18 @@ function Exploration() {
           not how it should look</Highlight>. I built them with <HelixLink />, so the
           business could click through each one. The two paths
           open right under the continent you click, so the menu never jumps
-          away. The business asked for three changes.
-        </p>
-        <ChatQuotes label="What the business asked for" items={REVIEW_FEEDBACK} />
-        <p>
-          The side-by-side version is where the phone problem showed up. In the
-          end, two designs were strong enough that we chose to test both.
+          away. Variant 1 is where the phone problem showed up, so I made two
+          more variants. The business liked both, so we chose to test both.
         </p>
       </Copy>
-      {ITERATIONS.map(({ label, title, chosen, video, worked, didntWork }) => (
-        <div key={label} className="cs-sub">
-          <Visual>
-            <OptionCard
-              label={label}
-              title={title}
-              shipped={chosen}
-              stamp="In test"
-              video={video}
-              image={`${label}: ${title}, clickable prototype`}
-            >
-              <ProsCons pros={worked} cons={didntWork} />
-            </OptionCard>
-          </Visual>
-        </div>
-      ))}
+      {ITERATIONS.slice(0, 1).map(renderIteration)}
+      {/* The business feedback on Variant 1, on its own between it and the two that followed */}
+      <div className="cs-sub">
+        <Copy>
+          <ChatQuotes label="What the business said about Variant 1" items={REVIEW_FEEDBACK} />
+        </Copy>
+      </div>
+      {ITERATIONS.slice(1).map(renderIteration)}
       <div className="cs-sub">
         <Copy>
           <h3>Why we tested both instead of choosing</h3>

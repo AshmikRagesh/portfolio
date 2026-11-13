@@ -199,7 +199,7 @@ export default function BeforeAfterSlider({
       {labels && (
         // One line under the picture, naming the side that fills most of it; the three states
         // share one grid cell and crossfade with a small lift
-        <figcaption aria-live="polite" className="grid px-[12px] pb-[8px] pt-[16px] md:px-[16px]">
+        <figcaption aria-live="polite" className="grid px-[12px] pb-[8px] pt-[16px] [text-wrap:balance] md:px-[16px]">
           {(
             [
               ["before", <>{"\u2190 "}{labels.before.title}</>, labels.before.note],
@@ -214,7 +214,7 @@ export default function BeforeAfterSlider({
               }`}
             >
               <span className="font-body text-body font-medium text-heading md:text-body-md">{title}</span>
-              <span className="font-body text-caption-lg text-muted">{note}</span>
+              <span className="font-body text-body text-secondary">{note}</span>
             </span>
           ))}
           <span

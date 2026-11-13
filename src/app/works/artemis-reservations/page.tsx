@@ -518,7 +518,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            <Figure card name={`Solution ${num} — ${title}`} impact={impact} />
+            <Figure name={`Solution ${num} — ${title}`} impact={impact} />
           </Visual>
         </div>
       ))}

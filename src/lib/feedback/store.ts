@@ -128,3 +128,10 @@ export async function deleteFeedback(id: string, author: string): Promise<{ dele
   ]);
   return { deleted: true, image: image ?? "" };
 }
+
+/** One comment by id, or null. */
+export async function getFeedback(id: string): Promise<FeedbackItem | null> {
+  if (!storeConfigured) return memory.get(id) ?? null;
+  const [{ result }] = await pipeline([["HGETALL", `${FB_NS}:item:${id}`]]);
+  return fromHash(result);
+}
