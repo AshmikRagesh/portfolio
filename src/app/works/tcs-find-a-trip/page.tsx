@@ -238,9 +238,20 @@ type IterationItem = {
   didntWork: string[];
 };
 
-// In the order they were made: the two stacked designs the business reviewed, then the
-// side-by-side version Rohit asked for
+// In the order they were made: Variant 1, then the two that went into the test
 const ITERATIONS: IterationItem[] = [
+  {
+    label: "Variant 1",
+    video: "/videos/tcs-find-a-trip/option-1.mp4",
+    title: "Text links side by side, on every screen",
+    worked: [
+      "On desktop, both paths sit next to each other at equal weight",
+    ],
+    didntWork: [
+      "On a phone, the two links got cramped next to each other",
+      "The tap areas became too small to hit reliably",
+    ],
+  },
   {
     label: "Variant 2",
     video: "/videos/tcs-find-a-trip/option-2.mp4",
@@ -271,28 +282,12 @@ const ITERATIONS: IterationItem[] = [
       "The cards push the rest of the continent list further down",
     ],
   },
-  {
-    label: "Variant 1",
-    video: "/videos/tcs-find-a-trip/option-1.mp4",
-    title: "Text links side by side, on every screen",
-    worked: [
-      "On desktop, both paths sit next to each other at equal weight",
-    ],
-    didntWork: [
-      "On a phone, the two links got cramped next to each other",
-      "The tap areas became too small to hit reliably",
-    ],
-  },
 ];
 
-// The asks, as they were given (not word-for-word quotes), each placed after the design it
-// reacted to. Rohit's side-by-side ask came in the review of the two stacked designs and
-// led to Variant 1. The two wording asks changed both test designs (Sharayu's came before
-// the review, Rohit's in it).
-const LAYOUT_ASK = [
+// The three asks, as they were given (not word-for-word quotes). They came after Variant 1
+// and shaped Variants 2 and 3. Senders alternate, like a chat.
+const REVIEW_FEEDBACK = [
   { text: "Add a version with the two paths side by side, not stacked.", from: "Rohit Rayala, CRO" },
-];
-const WORDING_ASKS = [
   { text: "Call them \u201ctrips\u201d, not \u201cexpeditions\u201d.", from: "Sharayu Jadhav, Product Manager" },
   { text: "Rename \u201cFind Trips\u201d to \u201cExplore Trips\u201d, and list it first.", from: "Rohit Rayala, CRO" },
 ];
@@ -340,28 +335,22 @@ function Exploration() {
           not how it should look</Highlight>. I built them with <HelixLink />, so the
           business could click through each one. The two paths
           open right under the continent you click, so the menu never jumps
-          away. I showed the business two versions first: text links and image cards.
+          away.
         </p>
       </Copy>
-      {ITERATIONS.slice(0, 2).map(renderIteration)}
-      {/* Rohit's ask came from reviewing the two stacked designs, and led to Variant 1 */}
+      {ITERATIONS.slice(0, 1).map(renderIteration)}
+      {/* The feedback on Variant 1, which shaped Variants 2 and 3 */}
       <div className="cs-sub">
         <Copy>
-          <ChatQuotes label="What the business asked for" items={LAYOUT_ASK} />
           <p>
-            So I added a third version with the two links side by side. That
-            version is where the phone problem showed up.
+            The side-by-side version is where the phone problem showed up. The
+            business asked for three changes.
           </p>
-        </Copy>
-      </div>
-      {ITERATIONS.slice(2).map(renderIteration)}
-      {/* The wording asks changed both test designs, so they follow all three */}
-      <div className="cs-sub">
-        <Copy>
-          <ChatQuotes label="Wording changes for both designs" items={WORDING_ASKS} />
+          <ChatQuotes label="What the business asked for" items={REVIEW_FEEDBACK} />
           <p>In the end, two designs were strong enough that we chose to test both.</p>
         </Copy>
       </div>
+      {ITERATIONS.slice(1).map(renderIteration)}
       <div className="cs-sub">
         <Copy>
           <h3>Why we tested both instead of choosing</h3>
