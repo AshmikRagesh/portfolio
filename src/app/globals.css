@@ -1746,17 +1746,15 @@ html[data-feedback="on"] .owner-badge {
   flex-direction: column;
   gap: 20px;
 }
+/* Inline, so the arrow sits right after the last word even when the name wraps */
 .fb-notes-heading {
-  display: flex;
-  align-items: center;
-  gap: 4px;
   margin-bottom: 12px;
   color: var(--fb-text-1);
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
 }
-.fb-notes-heading svg { color: var(--fb-text-3); }
+.fb-notes-heading svg { display: inline-block; margin-left: 4px; vertical-align: -2px; color: var(--fb-text-3); }
 .fb-timeline {
   display: flex;
   flex-direction: column;
