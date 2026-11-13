@@ -254,7 +254,7 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
           }
         }}
       >
-        <Current size={14} aria-hidden="true" />
+        <Current size={12} aria-hidden="true" />
         {value ? CATEGORIES[value] : "Category"}
         <ChevronDown size={10} aria-hidden="true" className="fb-select-caret" />
       </button>
@@ -291,9 +291,9 @@ function CategoryMenu({ value, onChange }: { value: FeedbackCategory | ""; onCha
                 onPointerEnter={() => setActive(i)}
                 onClick={() => choose(o.value)}
               >
-                <OptionIcon size={16} aria-hidden="true" />
+                <OptionIcon size={14} aria-hidden="true" />
                 <span>{o.label}</span>
-                {o.value === value && o.value && <Check size={14} aria-hidden="true" className="fb-menu-check" />}
+                {o.value === value && o.value && <Check size={12} aria-hidden="true" className="fb-menu-check" />}
               </li>
             );
           })}
@@ -668,7 +668,9 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
               </button>
             </header>
 
-            {/* Two views: write a note, or go back to the ones already left. Arrow keys move between tabs. */}
+            {/* Two views, once there's something to go back to: write a note, or see the ones
+                already left. Arrow keys move between tabs. */}
+            {allItems.length > 0 && (
             <div
               className="fb-tabs"
               role="tablist"
@@ -698,7 +700,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                   onClick={() => setPanel(tab)}
                 >
                   {tab === "compose" ? "Comment" : "Your notes"}
-                  {tab === "notes" && allItems.length > 0 && (
+                  {tab === "notes" && (
                     <span className="fb-tab-count">
                       {allItems.length}
                       <span className="sr-only"> notes</span>
@@ -707,8 +709,14 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                 </button>
               ))}
             </div>
+            )}
 
-            <div role="tabpanel" id={`fb-panel-${view}`} aria-labelledby={`fb-tab-${view}`} className="fb-panel">
+            <div
+              role={allItems.length > 0 ? "tabpanel" : undefined}
+              id={`fb-panel-${view}`}
+              aria-labelledby={allItems.length > 0 ? `fb-tab-${view}` : undefined}
+              className="fb-panel"
+            >
             {view === "notes" ? (
               allItems.length === 0 ? (
                 <div className="fb-empty">
