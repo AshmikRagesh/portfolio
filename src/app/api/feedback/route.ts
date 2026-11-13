@@ -1,0 +1,73 @@
+// ── /api/feedback ─────────────────────────────────────────────────────────────
+// GET  ?page=/works/x&author=<id>  → that reviewer's own comments on that page
+// POST FeedbackInput (+ "website", a honeypot real people never fill) → the saved comment
+//
+// Reviewers only ever see their own comments; everything lands in the private
+// /feedback inbox. Rate limited per hashed IP.
+
+import { addFeedback, listForAuthor } from "@/lib/feedback/store";
+import { ANCHOR_RE, AUTHOR_RE, LIMITS, PAGE_RE, type FeedbackInput, type FeedbackItem } from "@/lib/feedback/shared";
+import { allow, ipHash, tooMany } from "@/lib/curiosity/guard";
+
+export const dynamic = "force-dynamic";
+
+/** The author ID stays on the browser that made it */
+function withoutAuthor(item: FeedbackItem) {
+  const rest: Partial<FeedbackItem> = { ...item };
+  delete rest.author;
+  return rest;
+}
+
+const clean = (v: unknown, max: number) =>
+  typeof v === "string" ? v.replace(/\s+/g, " ").trim().slice(0, max) : "";
+
+export async function GET(req: Request) {
+  if (!(await allow("feedback-read", ipHash(req.headers), 60, 60))) return tooMany();
+  const url = new URL(req.url);
+  const page = url.searchParams.get("page") ?? "";
+  const author = url.searchParams.get("author") ?? "";
+  if (!PAGE_RE.test(page) || !AUTHOR_RE.test(author)) return new Response(null, { status: 400 });
+  try {
+    const items = await listForAuthor(author, page);
+    return Response.json(items.map(withoutAuthor));
+  } catch (err) {
+    console.error("[feedback] read failed", err);
+    return Response.json([]);
+  }
+}
+
+export async function POST(req: Request) {
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(null, { status: 400 });
+  }
+  // Bots fill every field; pretend it worked
+  if (typeof body.website === "string" && body.website) return new Response(null, { status: 204 });
+  if (!(await allow("feedback", ipHash(req.headers), 10, 10 * 60))) return tooMany();
+
+  // Keep line breaks in the comment itself, but cap and trim it
+  const text = typeof body.text === "string" ? body.text.trim().slice(0, LIMITS.text) : "";
+  const input: FeedbackInput = {
+    page: clean(body.page, 80),
+    section: clean(body.section, LIMITS.section),
+    sectionLabel: clean(body.sectionLabel, LIMITS.label),
+    anchor: clean(body.anchor, LIMITS.anchor),
+    label: clean(body.label, LIMITS.label),
+    snippet: clean(body.snippet, LIMITS.snippet),
+    text,
+    name: clean(body.name, LIMITS.name),
+    author: clean(body.author, 64),
+  };
+  if (!PAGE_RE.test(input.page) || !AUTHOR_RE.test(input.author) || !ANCHOR_RE.test(input.anchor) || !text) {
+    return new Response(null, { status: 400 });
+  }
+
+  try {
+    return Response.json(withoutAuthor(await addFeedback(input)), { status: 201 });
+  } catch (err) {
+    console.error("[feedback] store failed", err);
+    return new Response(null, { status: 503 });
+  }
+}

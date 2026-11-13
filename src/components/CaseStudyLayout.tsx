@@ -1,5 +1,6 @@
 import Footer from "@/components/Footer";
-import SectionPill, { type CaseStudySection } from "@/components/case-study/SectionPill";
+import { type CaseStudySection } from "@/components/case-study/SectionPill";
+import CaseStudyDock from "@/components/case-study/CaseStudyDock";
 import ReelPlayer, { type Reel } from "@/components/ReelPlayer";
 import CaseStudyTracker from "@/components/bella/CaseStudyTracker";
 import RevealOnScroll from "@/components/case-study/RevealOnScroll";
@@ -23,7 +24,8 @@ export default function CaseStudyLayout({ sections, reel, children }: CaseStudyL
       </main>
       {/* Every block rises in once as it's read */}
       <RevealOnScroll />
-      <SectionPill sections={sections} />
+      {/* Section pill, the feedback button beside it, and feedback mode */}
+      <CaseStudyDock sections={sections} />
       {/* Room keys and where the reader is, for Bella */}
       <CaseStudyTracker sections={sections} />
       {/* Tablet and desktop only; on a phone it would cover the reading */}

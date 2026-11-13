@@ -13,7 +13,17 @@ const pad = (i: number) => String(i).padStart(2, "0");
  * Bottom-centre index for a case study. Shows the chapter being read, with a bar
  * filling through it; opens a timeline of every chapter. Styles: .cs-pill in globals.css.
  */
-export default function SectionPill({ sections }: { sections: CaseStudySection[] }) {
+export default function SectionPill({
+  sections,
+  trailing,
+  keepVisible = false,
+}: {
+  sections: CaseStudySection[];
+  /** A separate round control beside the pill (the feedback button) */
+  trailing?: React.ReactNode;
+  /** Stay up past the hero and over the footer (while feedback mode is on) */
+  keepVisible?: boolean;
+}) {
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -114,10 +124,12 @@ export default function SectionPill({ sections }: { sections: CaseStudySection[]
     };
   }, [open]);
 
+  const up = visible || keepVisible;
+
   // Hidden pills close, so they never reappear already open
   useEffect(() => {
-    if (!visible) setOpen(false);
-  }, [visible]);
+    if (!up) setOpen(false);
+  }, [up]);
 
   const goTo = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
@@ -139,10 +151,11 @@ export default function SectionPill({ sections }: { sections: CaseStudySection[]
     <div
       ref={rootRef}
       className="cs-pill"
-      data-visible={visible}
+      data-visible={up}
       data-open={open}
-      inert={!visible}
+      inert={!up}
     >
+      <div className="cs-pill-main">
       <div className="cs-pill-panel" id="cs-timeline-panel" inert={!open}>
         <nav
           className="cs-timeline"
@@ -226,6 +239,8 @@ export default function SectionPill({ sections }: { sections: CaseStudySection[]
           ))}
         </span>
       </button>
+      </div>
+      {trailing}
     </div>
   );
 }
