@@ -1744,7 +1744,7 @@ html[data-feedback="on"] .owner-badge {
   font-size: 12px;
   line-height: 16px;
   white-space: nowrap;
-  cursor: pointer;
+  cursor: default;
 }
 .fb-target-kind { font-weight: 500; }
 .fb-target-where { overflow: hidden; color: var(--fb-text-2); text-overflow: ellipsis; }

@@ -938,21 +938,19 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
             ) : (
             <>
             <div className="fb-about">
-              <button
-                type="button"
+              {/* A label, not a button: it says what the note is about */}
+              <p
                 className="fb-target"
-                title={about.el ? "Show this block" : undefined}
                 aria-label={
                   about.el
-                    ? `Commenting on ${about.label.toLowerCase()} in ${about.sectionLabel}. Show it on the page`
-                    : "Commenting on the whole case study. Click a block on the page to be specific"
+                    ? `Commenting on ${about.label.toLowerCase()} in ${about.sectionLabel}`
+                    : "Commenting on the whole case study"
                 }
-                onClick={() => about.el?.scrollIntoView({ behavior: "smooth", block: "center" })}
               >
                 <TargetIcon size={14} aria-hidden="true" {...fill(TargetIcon)} />
-                <span className="fb-target-kind">{about.label}</span>
-                {about.el && <span className="fb-target-where">in {about.sectionLabel}</span>}
-              </button>
+                <span className="fb-target-kind" aria-hidden="true">{about.label}</span>
+                {about.el && <span className="fb-target-where" aria-hidden="true">in {about.sectionLabel}</span>}
+              </p>
             </div>
 
             <div
