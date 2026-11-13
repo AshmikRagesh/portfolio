@@ -338,6 +338,8 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
   const [activeNote, setActiveNote] = useState<string | null>(null);
   // A deleted note waits UNDO_MS before it's really deleted, so Undo only has to cancel
   const [pending, setPending] = useState<Saved | null>(null);
+  // Images that can't be shown (e.g. kept only in a dev server's memory): fall back to a label
+  const [brokenImages, setBrokenImages] = useState<Set<string>>(() => new Set());
   const [deleteError, setDeleteError] = useState(false);
   const pendingTimer = useRef<number | null>(null);
   const pendingRef = useRef<Saved | null>(null);
@@ -452,7 +454,8 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
   // Turning it off closes the card.
   const wasOn = useRef(on);
   useEffect(() => {
-    if (!wasOn.current && on) {
+    // Whenever the mode is on, the card is open (also after a remount or a hot reload)
+    if (on) {
       if (!targetRef.current) setTarget(PAGE_TARGET);
       setPanel((p) => (p === "closed" ? "compose" : p));
     }
@@ -860,14 +863,24 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
                                   <span className="fb-note-where">
                                     <KindIcon size={14} aria-hidden="true" {...fill(KindIcon)} />
                                     <span className="fb-note-kind">{n.label}</span>
-                                    <span className="fb-note-section">in {n.sectionLabel}</span>
+                                    {!n.anchor.startsWith("page|") && <span className="fb-note-section">in {n.sectionLabel}</span>}
                                     {!here && <span className="sr-only">, opens {pageName(n)}</span>}
                                   </span>
                                   <span className="fb-note-text">{n.text}</span>
-                                  {(n.category || n.hasImage) && (
+                                  {n.hasImage && !brokenImages.has(n.id) && (
+                                    // eslint-disable-next-line @next/next/no-img-element -- the reviewer's own private image
+                                    <img
+                                      className="fb-note-thumb"
+                                      src={`${IMAGE_PATH}?id=${n.id}&author=${fb.author}`}
+                                      alt="The image you attached"
+                                      loading="lazy"
+                                      onError={() => setBrokenImages((b) => new Set(b).add(n.id))}
+                                    />
+                                  )}
+                                  {(n.category || (n.hasImage && brokenImages.has(n.id))) && (
                                     <span className="fb-note-meta">
                                       {n.category && <span className="fb-chip">{CATEGORIES[n.category]}</span>}
-                                      {n.hasImage && (
+                                      {n.hasImage && brokenImages.has(n.id) && (
                                         <span className="fb-note-image">
                                           <ImageIcon size={12} aria-hidden="true" />
                                           Image attached

@@ -1854,6 +1854,16 @@ html[data-feedback="on"] .owner-badge {
 }
 .fb-note-meta .fb-chip { line-height: 20px; }
 .fb-note-image { display: flex; align-items: center; gap: 4px; }
+.fb-note-thumb {
+  display: block;
+  width: 100%;
+  max-height: 160px;
+  margin-top: 2px;
+  border: 1px solid var(--fb-line);
+  border-radius: 6px;
+  background: var(--fb-raise-2);
+  object-fit: cover;
+}
 .fb-empty {
   display: flex;
   flex-direction: column;
