@@ -284,11 +284,12 @@ const ITERATIONS: IterationItem[] = [
   },
 ];
 
-// The ask that led to Variant 1, as given (not a word-for-word quote). The wording asks
-// ("trips" not "expeditions", "Explore Trips" first) were already in every prototype, so
-// they aren't shown as feedback here.
+// The business feedback on Variant 1, as given (not word-for-word quotes): Rohit's ask, and
+// Sharayu's note on the cramped tap areas on a phone. The wording asks ("trips" not
+// "expeditions", "Explore Trips" first) were already in every prototype, so they aren't here.
 const REVIEW_FEEDBACK = [
   { text: "Add a version with the two paths side by side, not stacked.", from: "Rohit Rayala, CRO" },
+  { text: "On a phone, the tap areas get too cramped.", from: "Sharayu Jadhav, Product Manager" },
 ];
 
 // Numbered points, not cards, in the reading column: the takeaway after the variant cards
@@ -337,10 +338,15 @@ function Exploration() {
           away. Variant 1 is where the phone problem showed up, so I made two
           more variants. The business liked both, so we chose to test both.
         </p>
-        {/* The ask that led to Variant 1, on its own just before it */}
-        <ChatQuotes label="What the business asked for" items={REVIEW_FEEDBACK} />
       </Copy>
-      {ITERATIONS.map(renderIteration)}
+      {ITERATIONS.slice(0, 1).map(renderIteration)}
+      {/* The business feedback on Variant 1, on its own between it and the two that followed */}
+      <div className="cs-sub">
+        <Copy>
+          <ChatQuotes label="What the business said about Variant 1" items={REVIEW_FEEDBACK} />
+        </Copy>
+      </div>
+      {ITERATIONS.slice(1).map(renderIteration)}
       <div className="cs-sub">
         <Copy>
           <h3>Why we tested both instead of choosing</h3>
