@@ -57,8 +57,10 @@ export function Visual({ narrow, children }: { narrow?: boolean; children: React
 }
 
 /**
- * Screenshot or clip with an optional label centred below it, then a caption. Both open
- * larger on click (see Media). `video` plays a muted loop while on screen (with `poster` as
+ * Template A, the media card: every screenshot, clip and placeholder in a case study sits in
+ * the same white card. Top to bottom: an optional small `kicker` (CardKicker) and the
+ * `label` naming what's shown, the media, then a `caption` only when it adds a fact the label
+ * doesn't. Media opens larger on click (see Media). `video` plays a muted loop while on screen (with `poster` as
  * its first frame) — or, with `narrated`, waits for the reader and plays with sound; either
  * way it has play / pause and speed controls. `src` shows an image; with neither it shows a
  * placeholder named `name` (defaults to the label).
@@ -76,7 +78,6 @@ export function Figure({
   narrated,
   speed,
   aspect = "aspect-[16/9]",
-  card,
   kicker,
 }: {
   label?: string;
@@ -91,9 +92,6 @@ export function Figure({
   /** Starting playback speed for the clip (1 by default) */
   speed?: number;
   aspect?: string;
-  /** Set the media in the white case study card (as in Solution sections): 8px inset, the
-   *  media's 4px frame nested inside, caption and impact under it inside the card */
-  card?: boolean;
   /** A small label over the media in a card (CardKicker) — only when it adds something the
    *  heading above doesn't say, such as which design a recording shows */
   kicker?: React.ReactNode;
@@ -105,50 +103,23 @@ export function Figure({
     ) : (
       <ImagePlaceholder label={title} aspect={aspect} />
     );
-  if (card) {
-    return (
-      <figure className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px]">
-        {kicker && (
-          <div className="px-[12px] pb-[12px] pt-[8px] md:px-[16px] md:pb-[16px] md:pt-[12px]">
-            <CardKicker>{kicker}</CardKicker>
-          </div>
-        )}
-        <div className="cs-pair-media relative overflow-hidden rounded-sm bg-grape-light/40">{media}</div>
-        {(label || caption || impact) && (
-          <div className="flex flex-col gap-[8px] px-[12px] pb-[8px] pt-[16px] md:px-[16px]">
-            {label && <p className="m-0 font-body text-caption-md font-medium text-muted">{label}</p>}
-            {caption && (
-              <figcaption className="font-body text-body text-secondary md:text-body-md">{caption}</figcaption>
-            )}
-            {impact && (
-              <figcaption className="font-body text-body uppercase text-success">{impact}</figcaption>
-            )}
-          </div>
-        )}
-      </figure>
-    );
-  }
+  // One card for every image, clip and slider (Template A): the name on top, then the media
+  // in its 4px frame nested in the 8px inset, then a caption only when it adds a fact
+  const head = kicker || label;
   return (
-    <figure className="m-0 min-w-0">
-      <div className="overflow-hidden rounded-sm bg-grape-light/40 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03)]">
-        {video || src ? (
-          <Media src={src} video={video} poster={poster} label={alt ?? title} narrated={narrated} speed={speed} />
-        ) : (
-          <ImagePlaceholder label={title} aspect={aspect} />
-        )}
-      </div>
-      {label && (
-        <p className="mt-[12px] text-center font-body text-[12px] font-medium leading-[16px] text-muted">{label}</p>
+    <figure className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px]">
+      {head && (
+        <div className="flex flex-col gap-[6px] px-[12px] pb-[12px] pt-[8px] md:px-[16px] md:pb-[16px] md:pt-[12px]">
+          {kicker && <CardKicker>{kicker}</CardKicker>}
+          {label && <p className="m-0 font-body text-body font-medium text-heading md:text-body-md">{label}</p>}
+        </div>
       )}
-      {caption && (
-        <figcaption className="mt-[14px] text-center font-body text-[14px] leading-[22px] text-muted [text-wrap:balance]">
-          {caption}
-        </figcaption>
-      )}
-      {impact && (
-        <figcaption className="mt-[20px] text-center font-body text-[14px] uppercase leading-[20px] text-success">
-          {impact}
-        </figcaption>
+      <div className="cs-pair-media relative overflow-hidden rounded-sm bg-grape-light/40">{media}</div>
+      {(caption || impact) && (
+        <div className="flex flex-col gap-[8px] px-[12px] pb-[8px] pt-[16px] md:px-[16px]">
+          {caption && <figcaption className="font-body text-body text-secondary md:text-body-md">{caption}</figcaption>}
+          {impact && <figcaption className="font-body text-body uppercase text-success">{impact}</figcaption>}
+        </div>
       )}
     </figure>
   );

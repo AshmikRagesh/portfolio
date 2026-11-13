@@ -401,9 +401,9 @@ function Solution() {
           <Visual>
             {/* Recordings so far: the first three use cases. The rest stay placeholders until recorded */}
             {RECORDED.has(slug) ? (
-              <Figure card video={`/videos/bella/${slug}.mp4`} alt={`Live site: ${title.toLowerCase()}`} />
+              <Figure video={`/videos/bella/${slug}.mp4`} alt={`Live site: ${title.toLowerCase()}`} />
             ) : (
-              <Figure card name={`Recording: ${slug}`} alt={`Live site: ${title.toLowerCase()}`} />
+              <Figure name={`Recording: ${slug}`} alt={`Live site: ${title.toLowerCase()}`} />
             )}
           </Visual>
           {tried && (

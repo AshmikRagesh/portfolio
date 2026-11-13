@@ -1,10 +1,10 @@
 import { Tag } from "@/components/Tag";
 
 /**
- * One drawing from an exploration round: the still (`src`) or a live drawing (`children`)
- * on a soft grape stage, its name below, inside one white card. Every card is the same
- * size whatever the drawing, so a row of them lines up. `kept` outlines the card in grape
- * and tags it ("Kept", or `tag`).
+ * One drawing from an exploration round, on the case study card (Template A): its name on
+ * top, then the still (`src`) or a live drawing (`children`) on a soft grape stage in the
+ * card's 4px frame. Every card is the same size whatever the drawing, so a row lines up.
+ * `kept` gives it the chosen outline and a tag beside the name ("Kept", or `tag`).
  */
 export default function ExplorationCard({
   name,
@@ -20,12 +20,12 @@ export default function ExplorationCard({
   children?: React.ReactNode;
 }) {
   return (
-    <li
-      className={`relative flex flex-col rounded-lg border bg-white p-[12px] ${
-        kept ? "border-grape shadow-[0_0_0_1px_theme(colors.grape)]" : "border-line-soft"
-      }`}
-    >
-      <div className="flex h-[136px] items-center justify-center rounded-md bg-grape-light/30 p-[16px]">
+    <li className={`cs-pair-card flex flex-col rounded-md p-[8px] ${kept ? "cs-pair-card--chosen" : ""}`}>
+      <div className="flex min-h-[40px] items-center justify-between gap-[8px] px-[12px] pb-[12px] pt-[8px]">
+        <p className="m-0 font-body text-body font-medium text-heading">{name}</p>
+        {kept && <Tag face="geist" tone="grape">{tag}</Tag>}
+      </div>
+      <div className="cs-pair-media mt-auto flex h-[136px] items-center justify-center rounded-sm bg-grape-light/30 p-[16px]">
         {src ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={src} alt={name} className="max-h-full max-w-full object-contain" />
@@ -33,12 +33,6 @@ export default function ExplorationCard({
           children
         )}
       </div>
-      <p className="mt-[12px] px-[8px] pb-[4px] font-body text-[16px] font-medium leading-[24px] text-heading">{name}</p>
-      {kept && (
-        <span className="absolute right-[20px] top-[20px]">
-          <Tag face="geist" tone="grape">{tag}</Tag>
-        </span>
-      )}
     </li>
   );
 }

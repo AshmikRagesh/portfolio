@@ -94,13 +94,10 @@ export function VariantFigure({
   names,
   videos = {},
   captions = {},
-  card,
 }: {
   names: Record<string, string>;
   videos?: Record<string, string | undefined>;
   captions?: Record<string, React.ReactNode>;
-  /** Set it in the white case study card, like the other Solution visuals */
-  card?: boolean;
 }) {
   const variants = useContext(VariantContext);
   if (!variants) throw new Error("VariantFigure needs a VariantProvider");
@@ -114,7 +111,6 @@ export function VariantFigure({
           alt={video ? `Screen recording: ${names[current]}` : undefined}
           video={video}
           caption={captions[current]}
-          card={card}
         />
       </div>
       <div className="absolute right-[12px] top-[12px] z-10 md:right-[16px] md:top-[16px]">
@@ -151,7 +147,6 @@ export function VariantPair({
         return (
           <li key={v.id} className="min-w-0">
             <Figure
-              card
               kicker={
                 <>
                   {name}

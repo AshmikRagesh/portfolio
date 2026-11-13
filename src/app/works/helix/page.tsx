@@ -200,7 +200,6 @@ const PAIRS = [
     visual: (
       <VariantProvider variants={BRAND_TABS}>
         <VariantFigure
-          card
           names={{ quark: "Quark Expeditions' design system in Helix", kalos: "Kalos Golf's design system in Helix" }}
           videos={{ quark: "/videos/helix/solution-3-quark.mp4", kalos: "/videos/helix/solution-3-kalos.mp4" }}
           captions={{
@@ -238,7 +237,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            {visual ?? <Figure card name={figure} alt={video ? `Screen recording: ${figure}` : src ? figure : undefined} video={video} src={src} caption={caption} />}
+            {visual ?? <Figure name={figure} alt={video ? `Screen recording: ${figure}` : src ? figure : undefined} video={video} src={src} caption={caption} />}
           </Visual>
         </div>
       ))}

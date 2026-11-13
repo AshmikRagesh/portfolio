@@ -18,7 +18,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *
  * Look: the picture sits in the case study card (white, 8px inset, 4px frame) like the other
  * visuals. The handle is a thin white line with a round grip that lifts on hover and presses
- * in while dragged. No labels on the picture: one footer line names the side that fills most
+ * in while dragged. No labels on the picture: one line on top of the card names the side that fills most
  * of it (past 55% the before, under 45% the after, "Drag to compare" between) and crossfades
  * as the handle moves.
  */
@@ -46,7 +46,7 @@ export default function BeforeAfterSlider({
   start?: number;
   /** Where the first-view sweep turns back, in % from the left (no sweep without it) */
   sweepTo?: number;
-  /** The footer under the picture: each side named under its own half */
+  /** The label on top of the card, naming the side that fills most of the picture */
   labels?: { before: Side; after: Side };
 }) {
   const [pos, setPosState] = useState(start);
@@ -55,7 +55,7 @@ export default function BeforeAfterSlider({
   const box = useRef<HTMLDivElement>(null);
   const anim = useRef<number | null>(null);
   const touched = useRef(false);
-  // Which side the footer names: the one that fills most of the picture. A 3% margin either
+  // Which side the label names: the one that fills most of the picture. A 3% margin either
   // side of each threshold keeps it from flickering when the handle rests on the line.
   const [side, setSide] = useState<"before" | "after" | null>(start >= 55 ? "before" : start <= 45 ? "after" : null);
   useEffect(() => {
@@ -140,6 +140,41 @@ export default function BeforeAfterSlider({
 
   return (
     <figure className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px]">
+      {labels && (
+        // The card's label, on top like every case study card: it names the side that fills most of
+        // the picture; the three states
+        // share one grid cell and crossfade with a small lift
+        <figcaption aria-live="polite" className="grid px-[12px] pb-[12px] pt-[8px] md:px-[16px] md:pb-[16px] md:pt-[12px]">
+          {(
+            [
+              ["before", <>{"\u2190 "}{labels.before.title}</>, labels.before.note],
+              ["after", <>{labels.after.title}{" \u2192"}</>, labels.after.note],
+            ] as const
+          ).map(([key, title, note]) => (
+            <span
+              key={key}
+              aria-hidden={side !== key}
+              className={`col-start-1 row-start-1 flex flex-col items-start gap-[2px] text-left transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
+                side === key ? "translate-y-0 opacity-100 blur-0" : "pointer-events-none translate-y-[4px] opacity-0 blur-[2px]"
+              }`}
+            >
+              <span className="font-body text-body font-medium text-heading md:text-body-md">{title}</span>
+              <span className="font-body text-caption-lg text-muted">{note}</span>
+            </span>
+          ))}
+          <span
+            aria-hidden={side !== null}
+            className={`col-start-1 row-start-1 flex items-center justify-start gap-[6px] self-center font-geist text-caption-md font-medium uppercase tracking-[1px] text-muted transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
+              side === null ? "translate-y-0 opacity-100 blur-0" : "pointer-events-none translate-y-[4px] opacity-0 blur-[2px]"
+            }`}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m8 7-5 5 5 5M16 7l5 5-5 5M3 12h18" />
+            </svg>
+            Drag to compare
+          </span>
+        </figcaption>
+      )}
       <div
         ref={box}
         className={`cs-pair-media group/ba relative touch-pan-y select-none overflow-hidden rounded-sm bg-grape-light/40 ${
@@ -196,40 +231,6 @@ export default function BeforeAfterSlider({
           </div>
         </div>
       </div>
-      {labels && (
-        // One line under the picture, naming the side that fills most of it; the three states
-        // share one grid cell and crossfade with a small lift
-        <figcaption aria-live="polite" className="grid px-[12px] pb-[8px] pt-[16px] md:px-[16px]">
-          {(
-            [
-              ["before", <>{"\u2190 "}{labels.before.title}</>, labels.before.note],
-              ["after", <>{labels.after.title}{" \u2192"}</>, labels.after.note],
-            ] as const
-          ).map(([key, title, note]) => (
-            <span
-              key={key}
-              aria-hidden={side !== key}
-              className={`col-start-1 row-start-1 flex flex-col items-center gap-[2px] text-center transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
-                side === key ? "translate-y-0 opacity-100 blur-0" : "pointer-events-none translate-y-[4px] opacity-0 blur-[2px]"
-              }`}
-            >
-              <span className="font-body text-body font-medium text-heading md:text-body-md">{title}</span>
-              <span className="font-body text-caption-lg text-muted">{note}</span>
-            </span>
-          ))}
-          <span
-            aria-hidden={side !== null}
-            className={`col-start-1 row-start-1 flex items-center justify-center gap-[6px] self-center font-geist text-caption-md font-medium uppercase tracking-[1px] text-muted transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
-              side === null ? "translate-y-0 opacity-100 blur-0" : "pointer-events-none translate-y-[4px] opacity-0 blur-[2px]"
-            }`}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="m8 7-5 5 5 5M16 7l5 5-5 5M3 12h18" />
-            </svg>
-            Drag to compare
-          </span>
-        </figcaption>
-      )}
     </figure>
   );
 }
