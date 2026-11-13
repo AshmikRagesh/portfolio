@@ -162,11 +162,14 @@ export default async function FeedbackPage({ searchParams }: { searchParams: Pro
               {owner && " This browser is marked as yours, so feedback you leave goes to Test."}
             </p>
           </div>
+          {/* A marked browser stays in; unmark it on /stats instead */}
+          {!owner && (
           <form action={lock}>
             <button type="submit" className="text-caption text-muted underline underline-offset-4 hover:text-grape">
               Lock
             </button>
           </form>
+          )}
         </header>
 
         <div className="flex flex-col gap-3">

@@ -7,9 +7,11 @@ import { revalidatePath } from "next/cache";
 import { allow, ipHash } from "@/lib/curiosity/guard";
 import { setStatus } from "@/lib/feedback/store";
 import { STATUSES, type FeedbackStatus } from "@/lib/feedback/shared";
+import { isOwner } from "@/lib/owner";
 
 // ── /feedback access ──────────────────────────────────────────────────────────
 // Same key as /stats (STATS_KEY), its own httpOnly cookie scoped to /feedback.
+// A browser marked as Ashmik's on /stats gets in without the key.
 
 const COOKIE = "feedback_access";
 const WRONG_TRIES = 5;
@@ -18,6 +20,8 @@ const WRONG_WINDOW = 15 * 60;
 const digest = (value: string) => createHash("sha256").update(value).digest();
 
 export async function hasAccess() {
+  // A browser marked as Ashmik's (owner switch on /stats) already proved the key
+  if (await isOwner()) return true;
   const key = process.env.STATS_KEY;
   const token = (await cookies()).get(COOKIE)?.value;
   if (!key || !token) return false;
