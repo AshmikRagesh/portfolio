@@ -13,17 +13,17 @@ export type ProjectType = "Case study" | "Side project" | "Exploration" | "Taste
 export type Discipline = "Design systems" | "Product design" | "Interaction design" | "UX research" | "AI";
 
 const BASE =
-  "inline-flex h-[24px] shrink-0 items-center whitespace-nowrap px-[8px] text-[12px] leading-[16px]";
+  "inline-flex shrink-0 items-center whitespace-nowrap";
 
-// Taste notes keep Geist Mono capitals in the 2px-corner shape; case studies use a pill
-// in Geist capitals (a touch of tracking so the caps don't crowd), with a little more side room.
+// Taste notes keep Geist Mono capitals in the 2px-corner shape (24px tall, 12/16); case
+// studies use a smaller pill (20px tall, 10/12) in Geist capitals (a touch of tracking so the caps don't crowd), with a little more side room.
 // In the pill, a leading icon sits in its own small round chip (16px, 4px from the edge), so
 // it reads as the marker and the word as the label, and a hairline light along the top edge
 // lifts the filled tones off the card.
 const FACES = {
-  mono: "gap-[4px] rounded-xs font-brand uppercase tracking-[0px]",
+  mono: "h-[24px] gap-[4px] px-[8px] text-[12px] leading-[16px] rounded-xs font-brand uppercase tracking-[0px]",
   geist:
-    "gap-[6px] rounded-full px-[10px] font-geist font-medium uppercase tracking-[0.6px] has-[>svg:first-child]:pl-[4px] [&>svg:first-child]:box-content [&>svg:first-child]:size-[12px] [&>svg:first-child]:rounded-full [&>svg:first-child]:p-[2px]",
+    "h-[20px] gap-[4px] rounded-full px-[8px] text-[10px] leading-[12px] font-geist font-medium uppercase tracking-[0.6px] has-[>svg:first-child]:pl-[2px] [&>svg:first-child]:box-content [&>svg:first-child]:size-[10px] [&>svg:first-child]:rounded-full [&>svg:first-child]:p-[2px]",
 };
 
 const TONES = {
