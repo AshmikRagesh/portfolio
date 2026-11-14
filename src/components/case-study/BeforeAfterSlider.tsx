@@ -219,7 +219,7 @@ export default function BeforeAfterSlider({
           ))}
           <span
             aria-hidden={side !== null}
-            className={`col-start-1 row-start-1 flex items-center justify-center gap-[6px] self-center font-geist text-caption-md font-medium uppercase tracking-[1px] text-muted transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
+            className={`col-start-1 row-start-1 flex items-center justify-center gap-[6px] self-center font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-muted transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
               side === null ? "translate-y-0 opacity-100 blur-0" : "pointer-events-none translate-y-[4px] opacity-0 blur-[2px]"
             }`}
           >

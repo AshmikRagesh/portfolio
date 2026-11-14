@@ -224,7 +224,7 @@ export default function ModalTokens() {
         <div onPointerLeave={() => setFocus(null)} className="flex flex-col gap-[20px]">
           {GROUPS.map((g) => (
             <div key={g}>
-              <p className="m-0 mb-[6px] px-[8px] text-[12px] font-medium uppercase leading-[16px] tracking-[0.5px] text-muted">{g}</p>
+              <p className="m-0 mb-[6px] px-[8px] font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-muted">{g}</p>
               <ul className="m-0 flex list-none flex-col p-0">
                 {TOKENS.filter((t) => t.group === g).map((t) => {
                   const on = litToken(t.id);
