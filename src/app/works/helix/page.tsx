@@ -88,16 +88,19 @@ function TheProblem() {
     <Chapter id="the-problem" num={1} title="Two design systems that had to match">
       <Copy>
         <p>
-          Our design systems existed in two places: Figma and code. Keeping them
-          aligned across multiple brands meant <Highlight>more handoffs, more
-          inconsistencies and more dependency on developers</Highlight> for even
-          the smallest fixes.
+          Every ticket was designed in Figma and handed to developers, who built
+          it again in code. Even well-documented files lost small details like
+          padding and colour values on the way.
+        </p>
+        <p>
+          Each slip came back as <Highlight>a bug ticket that only a developer
+          could fix</Highlight>, even when the fix was small.
         </p>
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Each brand's design system was kept twice: in Figma by designers, and in code by developers."
-          consequence="The two drifted apart, every mismatch became a bug for developers, and keeping a dozen brands consistent got slower with each change."
+          situation="Our design systems existed in two places: Figma and code."
+          consequence="Keeping them aligned across multiple brands meant more handoffs, more inconsistencies and more dependency on developers for even the smallest fixes."
         />
       </Visual>
     </Chapter>
