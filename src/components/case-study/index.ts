@@ -50,3 +50,4 @@ export { default as ChangeList } from "./ChangeList";
 export { default as ReferencePlayground } from "./ReferencePlayground";
 export { default as BellComparison } from "./BellComparison";
 export { default as BellaSolves } from "./BellaSolves";
+export { default as ImageCarousel } from "./ImageCarousel";

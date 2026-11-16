@@ -24,6 +24,7 @@ import {
   NextCase,
   Highlight,
   BeforeAfterSlider,
+  ImageCarousel,
 } from "@/components/case-study";
 
 // DRAFT — angle chosen 29 Oct 2026: "build once, not twice", with Ashmik's own path
@@ -246,8 +247,19 @@ const PAIRS = [
     title: "Designers fix it, developers review",
     body: <>When I spot a miss, I fix it in Helix and send a pull request. A developer reviews it and merges it, so <Highlight>a small fix no longer waits in the queue</Highlight>.</>,
     figure: "A pull request for a design fix, approved by a developer",
-    src: "/images/helix/solution-4.webp",
-    caption: "The review before a Kalos pull request, merged after approval.",
+    // Spot the miss → fix it in Helix → a developer reviews. Same size stills (2000 x 1171);
+    // the two Kalos session shots have links, branch names and Figma comments blurred.
+    visual: (
+      <ImageCarousel
+        width={2000}
+        height={1171}
+        slides={[
+          { src: "/images/helix/solution-4-spot.webp", alt: "A list of fixes for the Kalos itinerary modal: spacing, overlay and motion not matching production", caption: "Spotting the misses on a Kalos modal" },
+          { src: "/images/helix/solution-4-fix.webp", alt: "Claude Code checking the modal's current spacing in Helix before the fix", caption: "Checking the spacing before the fix in Helix" },
+          { src: "/images/helix/solution-4.webp", alt: "The review before a Kalos pull request", caption: "The review before a Kalos pull request, merged after approval" },
+        ]}
+      />
+    ),
   },
 ];
 
@@ -259,7 +271,7 @@ function Solution() {
           Each problem from earlier has its own answer in Helix.
         </p>
       </Copy>
-      {PAIRS.map(({ num, title, body, figure, video, src, caption, visual }) => (
+      {PAIRS.map(({ num, title, body, figure, video, caption, visual }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>
@@ -268,7 +280,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            {visual ?? <Figure name={figure} alt={video ? `Screen recording: ${figure}` : src ? figure : undefined} video={video} src={src} caption={caption} />}
+            {visual ?? <Figure name={figure} alt={video ? `Screen recording: ${figure}` : undefined} video={video} caption={caption} />}
           </Visual>
         </div>
       ))}
