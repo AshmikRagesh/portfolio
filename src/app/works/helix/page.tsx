@@ -73,15 +73,15 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        {/* Same screen, same crop: designed in Figma, then built in Helix. Drop the two stills
-            (2000 x 1076) into public/images/helix/ under these names. */}
+        {/* Kalos itinerary page, same crop: the Figma frame, then the Helix build from the draft
+            pull request. Drop the two stills (2000 x 1076) into public/images/helix/. */}
         <BeforeAfterSlider
           width={2000}
           height={1076}
           start={24}
           sweepTo={64}
-          before={{ src: "/images/helix/compare-before.jpg", alt: "the screen as designed in Figma" }}
-          after={{ src: "/images/helix/compare-after.jpg", alt: "the same screen built in Helix with the components developers ship" }}
+          before={{ src: "/images/helix/compare-before.jpg", alt: "the Kalos itinerary page as designed in Figma" }}
+          after={{ src: "/images/helix/compare-after.jpg", alt: "the same Kalos itinerary page built in Helix with the components developers ship" }}
           labels={{
             before: { title: "Designed in Figma", note: "Rebuilt again in code by developers" },
             after: { title: "Built in Helix", note: "Made with the components developers ship" },
@@ -165,7 +165,11 @@ function Discovery() {
         </p>
       </Copy>
       <Visual>
-        <Figure label="Claude Code with the Figma MCP, before Helix" />
+        {/* Placeholder until public/images/helix/discovery-recreated.jpg (2000 x 1076) arrives:
+            Kalos itinerary Figma frame left, Claude Code + Figma MCP build (no Helix) right,
+            2-3 marked spots (spacing drift, improvised component, off-token colour).
+            Then swap to <Figure src=... alt=... caption="Recreated on Kalos: ..." />. */}
+        <Figure label="Recreated on Kalos: Claude Code with the Figma MCP, before Helix" />
       </Visual>
       <div className="cs-sub">
         <Copy>
