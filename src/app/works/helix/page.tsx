@@ -73,14 +73,14 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        {/* Quark Expedition Card: the Figma component sheet, then the same card built in Helix
-            (screen recording, cropped to the still's shape by object-cover) */}
+        {/* Quark Expedition Card: a recording of the Figma component sheet, then the same card
+            built in Helix. Both recordings fill the frame (object-cover) and each has its own controls. */}
         <BeforeAfterSlider
-          width={2000}
-          height={1016}
+          width={1920}
+          height={1088}
           start={24}
           sweepTo={64}
-          before={{ src: "/images/helix/compare-before.webp", alt: "the Quark Expedition Card variants as designed in Figma" }}
+          before={{ src: "/videos/helix/compare-before.mp4", alt: "screen recording: the Quark Expedition Card variants in Figma" }}
           after={{ src: "/videos/helix/compare-after.mp4", alt: "screen recording: the same Expedition Card built in Helix" }}
           labels={{
             before: { title: "Designed in Figma", note: "Rebuilt again in code by developers" },

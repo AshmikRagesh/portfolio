@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { ArrowCounterClockwise, Pause, Play } from "@phosphor-icons/react";
 
 /**
  * Before and after as one picture. The after sits underneath and the before on top, cut off
@@ -24,16 +25,81 @@ import { useCallback, useEffect, useRef, useState } from "react";
  */
 type Shot = { src: string; alt: string };
 
+const isVideo = (shot: Shot) => /\.(mp4|webm|mov)$/i.test(shot.src);
+
 /** One side of the comparison: a still, or a muted looping screen recording when src is a video */
-function Media({ shot, width, height, style }: { shot: Shot; width: number; height: number; style?: React.CSSProperties }) {
-  const cls = "pointer-events-none absolute inset-0 h-full w-full object-cover";
-  if (/\.(mp4|webm|mov)$/i.test(shot.src)) {
-    return (
-      <video src={shot.src} aria-label={shot.alt} width={width} height={height} autoPlay muted loop playsInline preload="metadata" className={cls} style={style} />
-    );
-  }
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={shot.src} alt={shot.alt} width={width} height={height} draggable={false} className={cls} style={style} />;
+const Media = forwardRef<HTMLVideoElement, { shot: Shot; width: number; height: number; style?: React.CSSProperties }>(
+  function Media({ shot, width, height, style }, ref) {
+    const cls = "pointer-events-none absolute inset-0 h-full w-full object-cover";
+    if (isVideo(shot)) {
+      return (
+        <video ref={ref} src={shot.src} aria-label={shot.alt} width={width} height={height} muted loop playsInline preload="metadata" className={cls} style={style} />
+      );
+    }
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={shot.src} alt={shot.alt} width={width} height={height} draggable={false} className={cls} style={style} />;
+  },
+);
+
+/**
+ * Play/pause and restart for one video side, pinned to that side's bottom corner. Pointer
+ * events stop here so pressing a control never moves the handle.
+ */
+function VideoControls({ video, name, align }: { video: React.RefObject<HTMLVideoElement | null>; name: string; align: "left" | "right" }) {
+  const [playing, setPlaying] = useState(false);
+  useEffect(() => {
+    const v = video.current;
+    if (!v) return;
+    const sync = () => setPlaying(!v.paused);
+    v.addEventListener("play", sync);
+    v.addEventListener("pause", sync);
+    // Autoplay unless the reader asked for reduced motion; they can still press play
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) v.play().catch(() => {});
+    sync();
+    return () => {
+      v.removeEventListener("play", sync);
+      v.removeEventListener("pause", sync);
+    };
+  }, [video]);
+  const btn =
+    "grid size-[32px] place-items-center rounded-full text-heading transition-colors hover:bg-grape-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading";
+  return (
+    <div
+      className={`absolute bottom-[8px] z-[2] flex items-center gap-[2px] rounded-full bg-white/90 p-[2px] shadow-[0_0_0_0.5px_rgba(30,5,37,0.16),0_2px_8px_rgba(30,5,37,0.16)] backdrop-blur-sm md:bottom-[12px] ${
+        align === "left" ? "left-[8px] md:left-[12px]" : "right-[8px] md:right-[12px]"
+      }`}
+      onPointerDown={(e) => e.stopPropagation()}
+    >
+      <button
+        type="button"
+        className={btn}
+        aria-label={`${playing ? "Pause" : "Play"} ${name}`}
+        data-sound-click="toggle"
+        onClick={() => {
+          const v = video.current;
+          if (!v) return;
+          if (v.paused) v.play().catch(() => {});
+          else v.pause();
+        }}
+      >
+        {playing ? <Pause size={16} weight="fill" aria-hidden="true" /> : <Play size={16} weight="fill" aria-hidden="true" />}
+      </button>
+      <button
+        type="button"
+        className={btn}
+        aria-label={`Restart ${name}`}
+        data-sound-click="toggle"
+        onClick={() => {
+          const v = video.current;
+          if (!v) return;
+          v.currentTime = 0;
+          v.play().catch(() => {});
+        }}
+      >
+        <ArrowCounterClockwise size={16} weight="bold" aria-hidden="true" />
+      </button>
+    </div>
+  );
 }
 type Side = { title: string; note: string };
 
@@ -64,6 +130,8 @@ export default function BeforeAfterSlider({
   const [pos, setPosState] = useState(start);
   const [dragging, setDragging] = useState(false);
   const posRef = useRef(start);
+  const beforeVid = useRef<HTMLVideoElement>(null);
+  const afterVid = useRef<HTMLVideoElement>(null);
   const box = useRef<HTMLDivElement>(null);
   const anim = useRef<number | null>(null);
   const touched = useRef(false);
@@ -173,8 +241,10 @@ export default function BeforeAfterSlider({
         onPointerUp={() => setDragging(false)}
         onPointerCancel={() => setDragging(false)}
       >
-        <Media shot={after} width={width} height={height} />
-        <Media shot={before} width={width} height={height} style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }} />
+        <Media ref={afterVid} shot={after} width={width} height={height} />
+        <Media ref={beforeVid} shot={before} width={width} height={height} style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }} />
+        {isVideo(before) && <VideoControls video={beforeVid} name={labels?.before.title ?? "before video"} align="left" />}
+        {isVideo(after) && <VideoControls video={afterVid} name={labels?.after.title ?? "after video"} align="right" />}
 
         {/* The handle: a hairline with a round grip */}
         <div className="pointer-events-none absolute inset-y-0 z-[1] w-0" style={{ left: `${pos}%` }}>
