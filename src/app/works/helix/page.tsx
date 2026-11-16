@@ -247,16 +247,16 @@ const PAIRS = [
     title: "Designers fix it, developers review",
     body: <>When I spot a miss, I fix it in Helix and send a pull request. A developer reviews it and merges it, so <Highlight>a small fix no longer waits in the queue</Highlight>.</>,
     figure: "A pull request for a design fix, approved by a developer",
-    // Spot the miss → fix it in Helix → a developer reviews. Same size stills (2000 x 1171);
+    // The pull request review leads (it is what the pointer describes), then the miss and the fix behind it. Same size stills (2000 x 1171);
     // the two Kalos session shots have links, branch names and Figma comments blurred.
     visual: (
       <ImageCarousel
         width={2000}
         height={1171}
         slides={[
+          { src: "/images/helix/solution-4.webp", alt: "The review before a Kalos pull request", caption: "The review before a Kalos pull request, merged after approval" },
           { src: "/images/helix/solution-4-spot.webp", alt: "A list of fixes for the Kalos itinerary modal: spacing, overlay and motion not matching production", caption: "Spotting the misses on a Kalos modal" },
           { src: "/images/helix/solution-4-fix.webp", alt: "Claude Code checking the modal's current spacing in Helix before the fix", caption: "Checking the spacing before the fix in Helix" },
-          { src: "/images/helix/solution-4.webp", alt: "The review before a Kalos pull request", caption: "The review before a Kalos pull request, merged after approval" },
         ]}
       />
     ),
