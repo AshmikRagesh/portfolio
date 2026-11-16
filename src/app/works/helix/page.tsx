@@ -73,15 +73,15 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        {/* Kalos itinerary page, same crop: the Figma frame, then the Helix build from the draft
-            pull request. Drop the two stills (2000 x 1076) into public/images/helix/. */}
+        {/* Quark Expedition Card: the Figma component sheet, then the same card built in Helix
+            (screen recording, cropped to the still's shape by object-cover) */}
         <BeforeAfterSlider
           width={2000}
-          height={1076}
+          height={1016}
           start={24}
           sweepTo={64}
-          before={{ src: "/images/helix/compare-before.jpg", alt: "the Kalos itinerary page as designed in Figma" }}
-          after={{ src: "/images/helix/compare-after.jpg", alt: "the same Kalos itinerary page built in Helix with the components developers ship" }}
+          before={{ src: "/images/helix/compare-before.webp", alt: "the Quark Expedition Card variants as designed in Figma" }}
+          after={{ src: "/videos/helix/compare-after.mp4", alt: "screen recording: the same Expedition Card built in Helix" }}
           labels={{
             before: { title: "Designed in Figma", note: "Rebuilt again in code by developers" },
             after: { title: "Built in Helix", note: "Made with the components developers ship" },

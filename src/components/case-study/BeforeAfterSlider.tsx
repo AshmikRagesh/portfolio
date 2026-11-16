@@ -23,6 +23,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * as the handle moves.
  */
 type Shot = { src: string; alt: string };
+
+/** One side of the comparison: a still, or a muted looping screen recording when src is a video */
+function Media({ shot, width, height, style }: { shot: Shot; width: number; height: number; style?: React.CSSProperties }) {
+  const cls = "pointer-events-none absolute inset-0 h-full w-full object-cover";
+  if (/\.(mp4|webm|mov)$/i.test(shot.src)) {
+    return (
+      <video src={shot.src} aria-label={shot.alt} width={width} height={height} autoPlay muted loop playsInline preload="metadata" className={cls} style={style} />
+    );
+  }
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={shot.src} alt={shot.alt} width={width} height={height} draggable={false} className={cls} style={style} />;
+}
 type Side = { title: string; note: string };
 
 const clamp = (n: number) => Math.min(100, Math.max(0, n));
@@ -161,18 +173,8 @@ export default function BeforeAfterSlider({
         onPointerUp={() => setDragging(false)}
         onPointerCancel={() => setDragging(false)}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={after.src} alt={after.alt} width={width} height={height} draggable={false} className="absolute inset-0 h-full w-full object-cover" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={before.src}
-          alt={before.alt}
-          width={width}
-          height={height}
-          draggable={false}
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
-        />
+        <Media shot={after} width={width} height={height} />
+        <Media shot={before} width={width} height={height} style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }} />
 
         {/* The handle: a hairline with a round grip */}
         <div className="pointer-events-none absolute inset-y-0 z-[1] w-0" style={{ left: `${pos}%` }}>
