@@ -14,8 +14,9 @@ import { CaretLeft, CaretRight } from "@phosphor-icons/react";
  *    The ends resist (a third of the pointer's pace) so the reader feels the edge.
  *  - With a mouse, the left and right thirds of the picture are click targets: hovering one
  *    shades that edge and shows its arrow, a click goes there.
- *  - A control row under the picture: previous, one segment per slide (click to jump), next.
- *    Buttons at the ends dim instead of vanishing, so the row never shifts.
+ *  - A control pill on the picture's bottom edge: previous, one segment per slide (click to
+ *    jump), next. Buttons at the ends dim instead of vanishing, so the pill never shifts. The
+ *    caption sits straight under the picture, like every other media card.
  *  - Arrow keys move when the carousel has focus; Home and End go to the ends.
  *  - The caption settles in with each slide; a tiny vibration marks a slide change on touch.
  *  - The next slide preloads, so a swipe never shows an empty frame.
@@ -84,7 +85,7 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
   const offset = drag === null ? 0 : (i === 0 && drag > 0) || (i === last && drag < 0) ? drag / 3 : drag;
 
   const step =
-    "grid size-[36px] shrink-0 place-items-center rounded-full text-heading transition-[background-color,opacity,transform] duration-200 hover:bg-grape-light active:scale-[0.92] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading disabled:pointer-events-none disabled:opacity-[0.32] motion-reduce:transition-none";
+    "grid size-[32px] shrink-0 place-items-center rounded-full text-heading transition-[background-color,opacity,transform] duration-200 hover:bg-grape-light active:scale-[0.92] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading disabled:pointer-events-none disabled:opacity-[0.32] motion-reduce:transition-none";
 
   return (
     <figure
@@ -184,36 +185,47 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
             </span>
           </div>
         ))}
+
+        {/* Controls float on the picture's bottom edge, so the caption sits right under the
+            picture like every other media card. Pointer events stop here so pressing a control
+            never starts a drag or a hover-edge click. */}
+        <div
+          className="absolute bottom-[8px] left-1/2 z-[2] flex -translate-x-1/2 items-center gap-[4px] rounded-full bg-white/[0.92] p-[4px] shadow-[0_0_0_0.5px_rgba(30,5,37,0.16),0_4px_16px_-4px_rgba(30,5,37,0.32)] backdrop-blur-md md:bottom-[12px]"
+          onPointerDown={(e) => e.stopPropagation()}
+          onPointerUp={(e) => e.stopPropagation()}
+          onPointerMove={(e) => {
+            e.stopPropagation();
+            setZone(null);
+          }}
+        >
+          <button type="button" className={step} aria-label="Previous image" data-sound-click="toggle" disabled={i === 0} onClick={() => go(i - 1)}>
+            <CaretLeft size={16} weight="bold" aria-hidden="true" />
+          </button>
+          <div className="flex items-center gap-[4px]">
+            {slides.map((s, n) => (
+              <button
+                key={s.src}
+                type="button"
+                aria-label={`Image ${n + 1} of ${slides.length}: ${s.caption}`}
+                aria-current={n === i ? "true" : undefined}
+                data-sound-click="toggle"
+                onClick={() => go(n)}
+                className="group/seg grid h-[24px] place-items-center px-[2px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-heading"
+              >
+                <span
+                  className={`block h-[4px] rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                    n === i ? "w-[32px] bg-heading" : "w-[16px] bg-heading/[0.16] group-hover/seg:w-[20px] group-hover/seg:bg-heading/[0.4]"
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
+          <button type="button" className={step} aria-label="Next image" data-sound-click="toggle" disabled={i === last} onClick={() => go(i + 1)}>
+            <CaretRight size={16} weight="bold" aria-hidden="true" />
+          </button>
+        </div>
       </div>
 
-      {/* Previous · one segment per slide · next */}
-      <div className="flex items-center justify-center gap-[12px] pt-[12px]">
-        <button type="button" className={step} aria-label="Previous image" data-sound-click="toggle" disabled={i === 0} onClick={() => go(i - 1)}>
-          <CaretLeft size={16} weight="bold" aria-hidden="true" />
-        </button>
-        <div className="flex items-center gap-[4px]">
-          {slides.map((s, n) => (
-            <button
-              key={s.src}
-              type="button"
-              aria-label={`Image ${n + 1} of ${slides.length}: ${s.caption}`}
-              aria-current={n === i ? "true" : undefined}
-              data-sound-click="toggle"
-              onClick={() => go(n)}
-              className="group/seg grid h-[24px] place-items-center px-[2px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-heading"
-            >
-              <span
-                className={`block h-[4px] rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                  n === i ? "w-[32px] bg-heading" : "w-[16px] bg-heading/[0.16] group-hover/seg:w-[20px] group-hover/seg:bg-heading/[0.4]"
-                }`}
-              />
-            </button>
-          ))}
-        </div>
-        <button type="button" className={step} aria-label="Next image" data-sound-click="toggle" disabled={i === last} onClick={() => go(i + 1)}>
-          <CaretRight size={16} weight="bold" aria-hidden="true" />
-        </button>
-      </div>
       {/* Same look as CardFooter's caption; keyed by slide so it settles in each time it changes */}
       <figcaption key={i} aria-live="polite" className="cs-caption-in flex flex-col items-center px-[12px] pb-[8px] pt-[16px] text-center [text-wrap:balance] md:px-[16px]">
         <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">
