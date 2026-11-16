@@ -133,16 +133,8 @@ export function CardFooter({
     <figcaption className="flex flex-col items-center gap-[4px] px-[12px] pb-[8px] pt-[16px] text-center [text-wrap:balance] md:px-[16px]">
       {label && <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-muted">{label}</span>}
       {caption && (
-        <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-muted">
-          {/* "Shown here: X": the lead-in stays muted, X (what the media shows) is the part to read */}
-          {typeof caption === "string" && caption.startsWith("Shown here:") ? (
-            <>
-              Shown here: <span className="text-heading">{caption.slice("Shown here:".length).trim()}</span>
-            </>
-          ) : (
-            caption
-          )}
-        </span>
+        // The caption names what the media shows, so it reads in the heading colour (labels stay muted)
+        <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{caption}</span>
       )}
       {impact && <span className="mt-[4px] font-body text-body uppercase text-success">{impact}</span>}
     </figcaption>

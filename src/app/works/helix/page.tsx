@@ -178,13 +178,13 @@ const BRAND_VIDEOS = [
     id: "quark",
     name: "Quark Expeditions' design system in Helix",
     video: "/videos/helix/solution-3-quark.mp4",
-    caption: "Shown here: Quark Expeditions' design system in Helix.",
+    caption: "Quark Expeditions' design system in Helix.",
   },
   {
     id: "kalos",
     name: "Kalos Golf's design system in Helix",
     video: "/videos/helix/solution-3-kalos.mp4",
-    caption: "Shown here: Kalos Golf's design system in Helix.",
+    caption: "Kalos Golf's design system in Helix.",
   },
 ];
 
@@ -195,7 +195,7 @@ const PAIRS = [
     body: <>Each brand’s design system now lives directly in Helix as reusable TypeScript components. Designers work with the same components developers use, <Highlight>eliminating the need to maintain two separate versions of the system</Highlight>.</>,
     figure: "One brand's foundations in Helix: colour, type and spacing",
     video: "/videos/helix/solution-1.mp4",
-    caption: "Shown here: Quark Expeditions' design system in Helix.",
+    caption: "Quark Expeditions' design system in Helix.",
   },
   {
     num: 2,
@@ -229,7 +229,7 @@ const PAIRS = [
     body: <>When I spot a miss, I fix it in Helix and send a pull request. A developer reviews it and merges it, so <Highlight>a small fix no longer waits in the queue</Highlight>.</>,
     figure: "A pull request for a design fix, approved by a developer",
     src: "/images/helix/solution-4.webp",
-    caption: "Shown here: the review before a Kalos pull request, merged after approval.",
+    caption: "The review before a Kalos pull request, merged after approval.",
   },
 ];
 
