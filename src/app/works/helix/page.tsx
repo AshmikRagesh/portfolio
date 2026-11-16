@@ -406,7 +406,7 @@ function Outcome() {
         <Copy>
           <h3>110+ components, in code</h3>
           <p>
-            I moved the existing components for Quark and TCS into Helix <Highlight>in
+            We moved the existing components for Quark and TCS into Helix <Highlight>in
             about a month, alongside live tickets</Highlight>, and Kalos is still moving
             across. When a ticket needed something new, we built it in
             Helix too.
