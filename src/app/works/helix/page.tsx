@@ -166,11 +166,14 @@ function Discovery() {
         </p>
       </Copy>
       <Visual>
-        {/* Placeholder until public/images/helix/discovery-recreated.jpg (2000 x 1076) arrives:
-            Kalos itinerary Figma frame left, Claude Code + Figma MCP build (no Helix) right,
-            2-3 marked spots (spacing drift, improvised component, off-token colour).
-            Then swap to <Figure src=... alt=... caption="Recreated on Kalos: ..." />. */}
-        <Figure label="Recreated on Kalos: Claude Code with the Figma MCP, before Helix" />
+        {/* A later Kalos footer session (not the original pre-Helix test, so the caption doesn't
+            say "before Helix"). Figma links, branch bar and session name are blurred. */}
+        <Figure
+          name="Claude Code reading Kalos Figma frames"
+          alt="Claude Code given Kalos Figma frames, then listing the spacing and breakpoints it got wrong and needs to fix"
+          src="/images/helix/discovery.webp"
+          caption="The same kind of session on Kalos: Claude Code reading Figma frames, then correcting its own spacing"
+        />
       </Visual>
       <div className="cs-sub">
         <Copy>
