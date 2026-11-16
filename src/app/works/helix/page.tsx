@@ -14,8 +14,6 @@ import {
   ReviewThread,
   type ThreadItem,
   ModalTokens,
-  VariantProvider,
-  VariantFigure,
   NumberedPoints,
   MoreDetail,
   RolloutPhases,
@@ -33,7 +31,7 @@ import {
 // Figures are placeholders until the recordings are made.
 
 export const metadata: Metadata = {
-  title: "Helix · Ashmik Ragesh",
+  title: "Helix on Claude Code · Ashmik Ragesh",
   description:
     "Helix is a design-system skill for Claude Code that lets designers build straight from each brand's components and tokens, so a component is built once instead of twice.",
 };
@@ -69,7 +67,7 @@ function Overview() {
         </p>
         <Meta
           role="Design System Migration & Product Design in Helix"
-          team="Ashmik Ragesh, Hriday Gami (Design), Travelopia developers (Engineering)"
+          team="Ashmik Ragesh, Hriday Gami, Arunava (Design), Travelopia developers (Engineering)"
           timeline={<>June 2026 – present<br />Pilot in June · Rollout from July · In daily use since August</>}
         />
       </Copy>
@@ -174,10 +172,20 @@ function Discovery() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Solution  (each problem raised earlier, and how Helix answers it)
 // ─────────────────────────────────────────────────────────────────────────────
-// The brands solution 3 switches between
-const BRAND_TABS = [
-  { id: "quark", label: "Quark Expeditions", short: "Quark" },
-  { id: "kalos", label: "Kalos Golf", short: "Kalos" },
+// The two brands solution 3 shows, one recording each
+const BRAND_VIDEOS = [
+  {
+    id: "quark",
+    name: "Quark Expeditions' design system in Helix",
+    video: "/videos/helix/solution-3-quark.mp4",
+    caption: "Shown here: Quark Expeditions' design system in Helix.",
+  },
+  {
+    id: "kalos",
+    name: "Kalos Golf's design system in Helix",
+    video: "/videos/helix/solution-3-kalos.mp4",
+    caption: "Shown here: Kalos Golf's design system in Helix.",
+  },
 ];
 
 const PAIRS = [
@@ -187,7 +195,7 @@ const PAIRS = [
     body: <>Each brand’s design system now lives directly in Helix as reusable TypeScript components. Designers work with the same components developers use, <Highlight>eliminating the need to maintain two separate versions of the system</Highlight>.</>,
     figure: "One brand's foundations in Helix: colour, type and spacing",
     video: "/videos/helix/solution-1.mp4",
-    caption: "Shown here: TCS World Travel's design system in Helix.",
+    caption: "Shown here: Quark Expeditions' design system in Helix.",
   },
   {
     num: 2,
@@ -199,19 +207,20 @@ const PAIRS = [
   {
     num: 3,
     title: "One skill, every brand kept separate",
-    body: <>A dozen brands share one skill, but <Highlight>each keeps its own system</Highlight>. Work on TCS only uses TCS components and tokens, and work on Quark only uses Quark’s.</>,
+    body: <>A dozen brands share one skill, but <Highlight>each keeps its own system</Highlight>. Work on Quark only uses Quark components and tokens, and work on Kalos only uses Kalos’s.</>,
     figure: "Each brand's own design system in Helix",
     visual: (
-      <VariantProvider variants={BRAND_TABS}>
-        <VariantFigure
-          names={{ quark: "Quark Expeditions' design system in Helix", kalos: "Kalos Golf's design system in Helix" }}
-          videos={{ quark: "/videos/helix/solution-3-quark.mp4", kalos: "/videos/helix/solution-3-kalos.mp4" }}
-          captions={{
-            quark: "Shown here: Quark Expeditions' design system in Helix.",
-            kalos: "Shown here: Kalos Golf's design system in Helix.",
-          }}
-        />
-      </VariantProvider>
+      <div className="flex flex-col gap-[24px]">
+        {BRAND_VIDEOS.map((b) => (
+          <Figure
+            key={b.id}
+            name={b.name}
+            alt={`Screen recording: ${b.name}`}
+            video={b.video}
+            caption={b.caption}
+          />
+        ))}
+      </div>
     ),
   },
   {
@@ -399,8 +408,8 @@ function Outcome() {
           <p>
             I moved the existing components for Quark and TCS into Helix <Highlight>in
             about a month, alongside live tickets</Highlight>, and Kalos is still moving
-            across. When a ticket needed something new, Hriday and I built it
-            in Helix too.
+            across. When a ticket needed something new, we built it in
+            Helix too.
           </p>
           <ComponentCount
             total={{ count: 110, plus: true }}
@@ -487,7 +496,7 @@ function Reflection() {
 export default function HelixPage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels.helix}>
-      <Hero title="Shipping designs in half the time with Helix" date="2026" image="/images/helix/cover.webp" />
+      <Hero title="Shipping designs in half the time with Helix on Claude Code" date="2026" image="/images/helix/cover.webp" />
       <Overview />
       <TheProblem />
       <Discovery />
