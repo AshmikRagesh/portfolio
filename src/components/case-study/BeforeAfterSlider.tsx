@@ -13,6 +13,10 @@ import { ArrowCounterClockwise, Pause, Play } from "@phosphor-icons/react";
  *    Vertical swipes still scroll the page on a phone.
  *  - Keyboard: the grip is a slider (role="slider"): arrows move 2%, Shift+arrows 10%,
  *    Home and End go to the ends.
+ *  - Let go mid-swipe and the handle carries on a little before easing to a stop; a
+ *    double-click glides it back to the middle; on touch a tiny tick marks either edge.
+ *  - With video sides, each gets its own controls (see VideoControls) and Space on the grip
+ *    plays or pauses both together.
  *  - The first time it comes into view, the handle sweeps across the change and back once,
  *    so the reader sees there's something to compare. Reduced motion skips the sweep and
  *    every glide.
@@ -64,6 +68,7 @@ function VideoControls({
 }) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
   const userPaused = useRef(false);
 
   useEffect(() => {
@@ -84,8 +89,11 @@ function VideoControls({
       cancelAnimationFrame(raf);
       if (v.duration) setProgress(v.currentTime / v.duration);
     };
+    const onMeta = () => setDuration(v.duration || 0);
     v.addEventListener("play", onPlay);
     v.addEventListener("pause", onPause);
+    v.addEventListener("loadedmetadata", onMeta);
+    onMeta();
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) userPaused.current = true;
     // Play only while on screen
@@ -102,8 +110,10 @@ function VideoControls({
       cancelAnimationFrame(raf);
       v.removeEventListener("play", onPlay);
       v.removeEventListener("pause", onPause);
+      v.removeEventListener("loadedmetadata", onMeta);
     };
   }, [video]);
+  const clock = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
 
   const toggle = () => {
     const v = video.current;
@@ -133,7 +143,7 @@ function VideoControls({
   return (
     <div
       aria-hidden={!visible}
-      className={`absolute bottom-[8px] z-[2] flex items-center gap-[2px] rounded-full bg-white/[0.92] p-[2px] shadow-[0_0_0_0.5px_rgba(30,5,37,0.16),0_4px_16px_-4px_rgba(30,5,37,0.32)] backdrop-blur-md transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none md:bottom-[12px] ${
+      className={`group/vc absolute bottom-[8px] z-[2] flex items-center gap-[2px] rounded-full bg-white/[0.92] p-[2px] shadow-[0_0_0_0.5px_rgba(30,5,37,0.16),0_4px_16px_-4px_rgba(30,5,37,0.32)] backdrop-blur-md transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none md:bottom-[12px] ${
         align === "left" ? "left-[8px] flex-row md:left-[12px]" : "right-[8px] flex-row-reverse md:right-[12px]"
       } ${visible ? "opacity-100" : "pointer-events-none translate-y-[4px] opacity-0"}`}
       onPointerDown={(e) => e.stopPropagation()}
@@ -146,7 +156,16 @@ function VideoControls({
         </svg>
         {playing ? <Pause size={14} weight="fill" aria-hidden="true" /> : <Play size={14} weight="fill" aria-hidden="true" className="translate-x-[1px]" />}
       </button>
-      <span className="px-[6px] font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{tag}</span>
+      {/* The side's name; hovering or focusing the pill also shows where the clip is */}
+      <span className="flex items-center px-[6px] font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">
+        {tag}
+        <span
+          aria-hidden="true"
+          className="grid max-w-0 overflow-hidden whitespace-nowrap tabular-nums text-muted opacity-0 transition-[max-width,opacity,margin] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] group-focus-within/vc:ml-[8px] group-focus-within/vc:max-w-[96px] group-focus-within/vc:opacity-100 group-hover/vc:ml-[8px] group-hover/vc:max-w-[96px] group-hover/vc:opacity-100 motion-reduce:transition-none"
+        >
+          {clock(progress * duration)} / {clock(duration)}
+        </span>
+      </span>
       <button type="button" className={`${btn} size-[32px]`} aria-label={`Restart ${name}`} data-sound-click="toggle" tabIndex={visible ? 0 : -1} onClick={restart}>
         <ArrowCounterClockwise size={14} weight="bold" aria-hidden="true" />
       </button>
@@ -199,6 +218,8 @@ export default function BeforeAfterSlider({
   }, []);
   const anim = useRef<number | null>(null);
   const touched = useRef(false);
+  const vel = useRef({ x: 0, t: 0, v: 0 }); // handle speed in % per ms, for the release throw
+  const touchDrag = useRef(false);
   // Which side the footer names: the one that fills most of the picture. A 3% margin either
   // side of each threshold keeps it from flickering when the handle rests on the line.
   const [side, setSide] = useState<"before" | "after" | null>(start >= 55 ? "before" : start <= 45 ? "after" : null);
@@ -275,6 +296,14 @@ export default function BeforeAfterSlider({
       : e.key === "Home" ? 0
       : e.key === "End" ? 100
       : null;
+    if (e.key === " ") {
+      // Space plays or pauses both videos together
+      e.preventDefault();
+      const vids = [beforeVid.current, afterVid.current].filter((v): v is HTMLVideoElement => !!v);
+      const anyPlaying = vids.some((v) => !v.paused);
+      vids.forEach((v) => (anyPlaying ? v.pause() : v.play().catch(() => {})));
+      return;
+    }
     if (next === null) return;
     e.preventDefault();
     touched.current = true;
@@ -293,17 +322,30 @@ export default function BeforeAfterSlider({
         onPointerDown={(e) => {
           if (e.button !== 0) return;
           touched.current = true;
+          touchDrag.current = e.pointerType !== "mouse";
           e.currentTarget.setPointerCapture(e.pointerId);
           setDragging(true);
+          vel.current = { x: at(e.clientX), t: performance.now(), v: 0 };
           glide([at(e.clientX)], 240);
         }}
         onPointerMove={(e) => {
           if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
           stop();
-          setPos(at(e.clientX));
+          const p = at(e.clientX);
+          const now = performance.now();
+          vel.current = { x: p, t: now, v: (p - vel.current.x) / Math.max(1, now - vel.current.t) };
+          // A tiny tick on touch when the handle meets either edge
+          if (touchDrag.current && (p === 0 || p === 100) && posRef.current !== p) navigator.vibrate?.(8);
+          setPos(p);
         }}
-        onPointerUp={() => setDragging(false)}
+        onPointerUp={() => {
+          setDragging(false);
+          // Let go mid-swipe and the handle carries on a little, easing to a stop
+          const { v, t } = vel.current;
+          if (Math.abs(v) > 0.03 && performance.now() - t < 80) glide([clamp(posRef.current + v * 220)], 420);
+        }}
         onPointerCancel={() => setDragging(false)}
+        onDoubleClick={() => glide([50], 360)}
       >
         <Media ref={afterVid} shot={after} width={width} height={height} />
         <Media ref={beforeVid} shot={before} width={width} height={height} style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }} />
@@ -326,13 +368,15 @@ export default function BeforeAfterSlider({
             aria-valuemax={100}
             aria-valuenow={Math.round(pos)}
             aria-valuetext={`${Math.round(pos)}% showing the before`}
+            aria-keyshortcuts={isVideo(before) || isVideo(after) ? "Space" : undefined}
             onKeyDown={onKey}
             className={`pointer-events-auto absolute left-0 top-1/2 flex size-[44px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.08),0_12px_28px_-8px_rgba(30,5,37,0.4)] outline-none transition-transform duration-200 ease-[cubic-bezier(0.2,0.7,0.2,1)] focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2 motion-reduce:transition-none ${
               dragging ? "scale-[0.92]" : "group-hover/ba:scale-[1.08]"
             }`}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="m9.5 7-5 5 5 5M14.5 7l5 5-5 5" />
+              <path d="m9.5 7-5 5 5 5" className="transition-transform duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] group-hover/ba:-translate-x-[1.5px] motion-reduce:transition-none" />
+              <path d="m14.5 7 5 5-5 5" className="transition-transform duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] group-hover/ba:translate-x-[1.5px] motion-reduce:transition-none" />
             </svg>
           </div>
         </div>
