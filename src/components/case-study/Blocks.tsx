@@ -131,9 +131,9 @@ export function CardFooter({
   if (!label && !caption && !impact) return null;
   return (
     <figcaption className="flex flex-col items-center gap-[4px] px-[12px] pb-[8px] pt-[16px] text-center [text-wrap:balance] md:px-[16px]">
-      {label && <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-muted">{label}</span>}
+      {/* Labels and captions both read in the heading colour: the footer names what the media shows */}
+      {label && <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{label}</span>}
       {caption && (
-        // The caption names what the media shows, so it reads in the heading colour (labels stay muted)
         <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{caption}</span>
       )}
       {impact && <span className="mt-[4px] font-body text-body uppercase text-success">{impact}</span>}

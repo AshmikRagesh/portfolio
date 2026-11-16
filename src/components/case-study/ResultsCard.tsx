@@ -232,7 +232,7 @@ function Chart({ metric, shown: inView }: { metric: Metric; shown: boolean }) {
         ))}
       </div>
 
-      <figcaption className="mt-[32px] text-center [text-wrap:balance] font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-muted">{metric.caption}</figcaption>
+      <figcaption className="mt-[32px] text-center [text-wrap:balance] font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{metric.caption}</figcaption>
     </figure>
   );
 }
