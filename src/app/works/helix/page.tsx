@@ -167,7 +167,7 @@ function Discovery() {
       </Copy>
       <Visual>
         {/* A later Kalos footer session (not the original pre-Helix test, so the caption doesn't
-            say "before Helix"). Figma links, branch bar and session name are blurred. */}
+            say "before Helix"). Branch bar and session name are blurred; the Figma links stay readable. */}
         <Figure
           name="Claude Code reading Kalos Figma frames"
           alt="Claude Code given Kalos Figma frames, then listing the spacing and breakpoints it got wrong and needs to fix"
