@@ -42,67 +42,122 @@ const Media = forwardRef<HTMLVideoElement, { shot: Shot; width: number; height: 
 );
 
 /**
- * Play/pause and restart for one video side, pinned to that side's bottom corner. Pointer
- * events stop here so pressing a control never moves the handle.
+ * The controls for one video side, pinned to that side's bottom corner: a play/pause button
+ * ringed by the clip's progress, the side's short name, and restart.
+ *  - It fades out when the handle covers most of its side, so it never sits over the other video.
+ *  - Videos pause while scrolled out of view and pick up again on return (unless the reader
+ *    paused them), and start paused under reduced motion.
+ *  - Pointer events stop here, so pressing a control never moves the handle.
  */
-function VideoControls({ video, name, align }: { video: React.RefObject<HTMLVideoElement | null>; name: string; align: "left" | "right" }) {
+function VideoControls({
+  video,
+  name,
+  tag,
+  align,
+  visible,
+}: {
+  video: React.RefObject<HTMLVideoElement | null>;
+  name: string;
+  tag: string;
+  align: "left" | "right";
+  visible: boolean;
+}) {
   const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const userPaused = useRef(false);
+
   useEffect(() => {
     const v = video.current;
     if (!v) return;
-    const sync = () => setPlaying(!v.paused);
-    v.addEventListener("play", sync);
-    v.addEventListener("pause", sync);
-    // Autoplay unless the reader asked for reduced motion; they can still press play
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) v.play().catch(() => {});
-    sync();
+    let raf = 0;
+    const tick = () => {
+      if (v.duration) setProgress(v.currentTime / v.duration);
+      raf = requestAnimationFrame(tick);
+    };
+    const onPlay = () => {
+      setPlaying(true);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(tick);
+    };
+    const onPause = () => {
+      setPlaying(false);
+      cancelAnimationFrame(raf);
+      if (v.duration) setProgress(v.currentTime / v.duration);
+    };
+    v.addEventListener("play", onPlay);
+    v.addEventListener("pause", onPause);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) userPaused.current = true;
+    // Play only while on screen
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !userPaused.current) v.play().catch(() => {});
+        else if (!entry.isIntersecting) v.pause();
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(v);
     return () => {
-      v.removeEventListener("play", sync);
-      v.removeEventListener("pause", sync);
+      io.disconnect();
+      cancelAnimationFrame(raf);
+      v.removeEventListener("play", onPlay);
+      v.removeEventListener("pause", onPause);
     };
   }, [video]);
+
+  const toggle = () => {
+    const v = video.current;
+    if (!v) return;
+    if (v.paused) {
+      userPaused.current = false;
+      v.play().catch(() => {});
+    } else {
+      userPaused.current = true;
+      v.pause();
+    }
+  };
+  const restart = () => {
+    const v = video.current;
+    if (!v) return;
+    userPaused.current = false;
+    v.currentTime = 0;
+    setProgress(0);
+    v.play().catch(() => {});
+  };
+
+  const R = 15; // ring radius inside the 36px button
+  const C = 2 * Math.PI * R;
   const btn =
-    "grid size-[32px] place-items-center rounded-full text-heading transition-colors hover:bg-grape-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading";
+    "grid shrink-0 place-items-center rounded-full text-heading transition-[background-color,transform] duration-200 hover:bg-grape-light active:scale-[0.92] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading motion-reduce:transition-none";
+
   return (
     <div
-      className={`absolute bottom-[8px] z-[2] flex items-center gap-[2px] rounded-full bg-white/90 p-[2px] shadow-[0_0_0_0.5px_rgba(30,5,37,0.16),0_2px_8px_rgba(30,5,37,0.16)] backdrop-blur-sm md:bottom-[12px] ${
-        align === "left" ? "left-[8px] md:left-[12px]" : "right-[8px] md:right-[12px]"
-      }`}
+      aria-hidden={!visible}
+      className={`absolute bottom-[8px] z-[2] flex items-center gap-[2px] rounded-full bg-white/[0.92] p-[2px] shadow-[0_0_0_0.5px_rgba(30,5,37,0.16),0_4px_16px_-4px_rgba(30,5,37,0.32)] backdrop-blur-md transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none md:bottom-[12px] ${
+        align === "left" ? "left-[8px] flex-row md:left-[12px]" : "right-[8px] flex-row-reverse md:right-[12px]"
+      } ${visible ? "opacity-100" : "pointer-events-none translate-y-[4px] opacity-0"}`}
       onPointerDown={(e) => e.stopPropagation()}
     >
-      <button
-        type="button"
-        className={btn}
-        aria-label={`${playing ? "Pause" : "Play"} ${name}`}
-        data-sound-click="toggle"
-        onClick={() => {
-          const v = video.current;
-          if (!v) return;
-          if (v.paused) v.play().catch(() => {});
-          else v.pause();
-        }}
-      >
-        {playing ? <Pause size={16} weight="fill" aria-hidden="true" /> : <Play size={16} weight="fill" aria-hidden="true" />}
+      <button type="button" className={`${btn} relative size-[36px]`} aria-label={`${playing ? "Pause" : "Play"} ${name}`} data-sound-click="toggle" tabIndex={visible ? 0 : -1} onClick={toggle}>
+        {/* Progress ring: the clip's position, drawn clockwise from the top */}
+        <svg className="absolute inset-0 -rotate-90" viewBox="0 0 36 36" aria-hidden="true">
+          <circle cx="18" cy="18" r={R} fill="none" stroke="currentColor" strokeOpacity="0.12" strokeWidth="2" />
+          <circle cx="18" cy="18" r={R} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - progress)} />
+        </svg>
+        {playing ? <Pause size={14} weight="fill" aria-hidden="true" /> : <Play size={14} weight="fill" aria-hidden="true" className="translate-x-[1px]" />}
       </button>
-      <button
-        type="button"
-        className={btn}
-        aria-label={`Restart ${name}`}
-        data-sound-click="toggle"
-        onClick={() => {
-          const v = video.current;
-          if (!v) return;
-          v.currentTime = 0;
-          v.play().catch(() => {});
-        }}
-      >
-        <ArrowCounterClockwise size={16} weight="bold" aria-hidden="true" />
+      <span className="px-[6px] font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{tag}</span>
+      <button type="button" className={`${btn} size-[32px]`} aria-label={`Restart ${name}`} data-sound-click="toggle" tabIndex={visible ? 0 : -1} onClick={restart}>
+        <ArrowCounterClockwise size={14} weight="bold" aria-hidden="true" />
       </button>
     </div>
   );
 }
-type Side = { title: string; note: string };
+/** `tag` is the short name on a video side's controls (falls back to the title) */
+type Side = { title: string; note: string; tag?: string };
 
+/** Width (px) a side needs before its video controls show: the pill plus a little air */
+const ROOM = 168;
 const clamp = (n: number) => Math.min(100, Math.max(0, n));
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
@@ -133,6 +188,15 @@ export default function BeforeAfterSlider({
   const beforeVid = useRef<HTMLVideoElement>(null);
   const afterVid = useRef<HTMLVideoElement>(null);
   const box = useRef<HTMLDivElement>(null);
+  // The frame's width, so a side's video controls only show when that side has room for them
+  const [boxW, setBoxW] = useState(0);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => setBoxW(e.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const anim = useRef<number | null>(null);
   const touched = useRef(false);
   // Which side the footer names: the one that fills most of the picture. A 3% margin either
@@ -243,8 +307,13 @@ export default function BeforeAfterSlider({
       >
         <Media ref={afterVid} shot={after} width={width} height={height} />
         <Media ref={beforeVid} shot={before} width={width} height={height} style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }} />
-        {isVideo(before) && <VideoControls video={beforeVid} name={labels?.before.title ?? "before video"} align="left" />}
-        {isVideo(after) && <VideoControls video={afterVid} name={labels?.after.title ?? "after video"} align="right" />}
+        {/* Each side's controls show while that side has room (fade once the handle covers most of it) */}
+        {isVideo(before) && (
+          <VideoControls video={beforeVid} name={labels?.before.title ?? "before video"} tag={labels?.before.tag ?? labels?.before.title ?? "Before"} align="left" visible={(pos / 100) * boxW > ROOM} />
+        )}
+        {isVideo(after) && (
+          <VideoControls video={afterVid} name={labels?.after.title ?? "after video"} tag={labels?.after.tag ?? labels?.after.title ?? "After"} align="right" visible={((100 - pos) / 100) * boxW > ROOM} />
+        )}
 
         {/* The handle: a hairline with a round grip */}
         <div className="pointer-events-none absolute inset-y-0 z-[1] w-0" style={{ left: `${pos}%` }}>

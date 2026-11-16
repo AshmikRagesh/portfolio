@@ -84,8 +84,8 @@ function Overview() {
           before={{ src: "/videos/helix/compare-before.mp4", alt: "screen recording: the Quark Expedition Card variants in Figma" }}
           after={{ src: "/videos/helix/compare-after.mp4", alt: "screen recording: the same Expedition Card built in Helix" }}
           labels={{
-            before: { title: "Designed in Figma", note: "Rebuilt again in code by developers" },
-            after: { title: "Built in Helix", note: "Made with the components developers ship" },
+            before: { title: "Designed in Figma", note: "Rebuilt again in code by developers", tag: "Figma" },
+            after: { title: "Built in Helix", note: "Made with the components developers ship", tag: "Helix" },
           }}
         />
       </Visual>
