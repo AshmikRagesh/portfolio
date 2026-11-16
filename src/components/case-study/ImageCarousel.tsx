@@ -85,7 +85,7 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
   const offset = drag === null ? 0 : (i === 0 && drag > 0) || (i === last && drag < 0) ? drag / 3 : drag;
 
   const step =
-    "grid size-[32px] shrink-0 place-items-center rounded-full text-heading transition-[background-color,opacity,transform] duration-200 hover:bg-grape-light active:scale-[0.92] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading disabled:pointer-events-none disabled:opacity-[0.32] motion-reduce:transition-none";
+    "grid size-[32px] shrink-0 place-items-center rounded-full text-heading transition-[background-color,opacity,transform,box-shadow] duration-200 hover:bg-white hover:shadow-[0_0_0_1px_rgba(30,5,37,0.08),0_2px_6px_-2px_rgba(30,5,37,0.24)] active:scale-[0.9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading disabled:pointer-events-none disabled:opacity-[0.32] motion-reduce:transition-none";
 
   return (
     <figure
@@ -190,7 +190,7 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
             picture like every other media card. Pointer events stop here so pressing a control
             never starts a drag or a hover-edge click. */}
         <div
-          className="absolute bottom-[8px] left-1/2 z-[2] flex -translate-x-1/2 items-center gap-[4px] rounded-full bg-white/[0.92] p-[4px] shadow-[0_0_0_0.5px_rgba(30,5,37,0.16),0_4px_16px_-4px_rgba(30,5,37,0.32)] backdrop-blur-md md:bottom-[12px]"
+          className="absolute bottom-[8px] left-1/2 z-[2] flex -translate-x-1/2 items-center gap-[2px] rounded-full bg-white/[0.84] p-[4px] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_0_0_1px_rgba(30,5,37,0.08),0_2px_4px_rgba(30,5,37,0.06),0_12px_28px_-8px_rgba(30,5,37,0.36)] backdrop-blur-xl backdrop-saturate-150 md:bottom-[12px]"
           onPointerDown={(e) => e.stopPropagation()}
           onPointerUp={(e) => e.stopPropagation()}
           onPointerMove={(e) => {
@@ -199,9 +199,10 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
           }}
         >
           <button type="button" className={step} aria-label="Previous image" data-sound-click="toggle" disabled={i === 0} onClick={() => go(i - 1)}>
-            <CaretLeft size={16} weight="bold" aria-hidden="true" />
+            <CaretLeft size={14} weight="bold" aria-hidden="true" />
           </button>
-          <div className="flex items-center gap-[4px]">
+          {/* The slide track sits in a soft inset well, set apart from the arrows */}
+          <div className="flex h-[32px] items-center rounded-full bg-grape-light/60 px-[6px] shadow-[inset_0_1px_2px_rgba(30,5,37,0.08)]">
             {slides.map((s, n) => (
               <button
                 key={s.src}
@@ -210,18 +211,20 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
                 aria-current={n === i ? "true" : undefined}
                 data-sound-click="toggle"
                 onClick={() => go(n)}
-                className="group/seg grid h-[24px] place-items-center px-[2px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-heading"
+                className="group/seg grid h-[32px] place-items-center px-[4px] focus-visible:rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-heading"
               >
                 <span
-                  className={`block h-[4px] rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                    n === i ? "w-[32px] bg-heading" : "w-[16px] bg-heading/[0.16] group-hover/seg:w-[20px] group-hover/seg:bg-heading/[0.4]"
+                  className={`block h-[6px] rounded-full transition-[width,background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                    n === i
+                      ? "w-[24px] bg-heading"
+                      : "w-[6px] bg-heading/[0.24] group-hover/seg:scale-[1.34] group-hover/seg:bg-heading/[0.48]"
                   }`}
                 />
               </button>
             ))}
           </div>
           <button type="button" className={step} aria-label="Next image" data-sound-click="toggle" disabled={i === last} onClick={() => go(i + 1)}>
-            <CaretRight size={16} weight="bold" aria-hidden="true" />
+            <CaretRight size={14} weight="bold" aria-hidden="true" />
           </button>
         </div>
       </div>
