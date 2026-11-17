@@ -36,9 +36,17 @@ const EASE = "ease-[cubic-bezier(0.2,0.7,0.2,1)]";
 const DRAW = 1400;
 const WALK = 450;
 
-// Counts from 0 to `to` once `run` is true, easing out, keeping `decimals` places
+// Counts from 0 to `to` once `run` is true, easing out, keeping `decimals` places.
+// The server renders the real value, so the page's HTML (crawlers, reader mode, link
+// previews, no-JS) never shows a 0; the browser drops it to 0 only while the card is
+// still hidden, waiting to count up
 function useCountUp(to: number, run: boolean, decimals = 0, ms = 1200) {
-  const [n, setN] = useState(0);
+  const [n, setN] = useState(to);
+  useEffect(() => {
+    if (!run && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) setN(0);
+    // Only on mount: once counting starts, the effect below owns the value
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
     if (!run) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -232,7 +240,7 @@ function Chart({ metric, shown: inView }: { metric: Metric; shown: boolean }) {
         ))}
       </div>
 
-      <figcaption className="mt-[32px] text-center [text-wrap:balance] font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{metric.caption}</figcaption>
+      <figcaption className="mt-[48px] text-center [text-wrap:balance] font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{metric.caption}</figcaption>
     </figure>
   );
 }
@@ -283,57 +291,56 @@ export default function ResultsCard({
         <p className="mt-[12px] max-w-[520px] font-body text-body text-secondary md:text-body-md">{body}</p>
       </div>
 
-      {/* Supporting stats: boxes side by side, each with a tag and the label, then the
-          number in a strip along the bottom so the numbers line up. A win has a grape tag,
-          the old value muted and the new one in grape. A number still to improve has a solid
-          warning tag, a stronger warning edge and a warm tint over the whole card */}
+      {/* Supporting stats: cards side by side. Top to bottom: a tag, what the number counts
+          with a short note tucked under it (one text block, the label in the heading colour,
+          the note muted), then the number along the bottom above a hairline, so the numbers
+          line up. From tablet up the cards share their rows (a subgrid), so every tag, label,
+          note and number starts level across cards. A win has a grape tag, the old value
+          muted and the new one in grape; a number still to improve has a warning tag, edge
+          and a warm tint */}
       <dl
         className={`m-0 mt-[32px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${
           stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"
         }`}
       >
         {stats.map((s, i) => (
-          <div key={s.label} {...rise(200 + i * 150)}>
-            <div
-              className={`relative flex h-full flex-col overflow-hidden rounded-md bg-white ring-inset ${
-                s.improve ? "ring-2 ring-warning/50" : "ring-1 ring-primary/5"
-              }`}
-            >
-              {/* A number still to improve tints the whole card warm, over the white */}
-              {s.improve && <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-warning/[0.06]" />}
-              <div className="relative flex flex-1 flex-col gap-[12px] p-[16px] md:p-[20px]">
-                <span className="self-start">
-                  {s.improve ? (
-                    <Tag face="geist" tone="warning">
-                      <WarningCircle size={14} weight="bold" aria-hidden="true" />
-                      Still to improve
-                    </Tag>
-                  ) : (
-                    <Tag face="geist" tone="grape">
-                      <TrendUp size={14} weight="bold" aria-hidden="true" />
-                      Improved
-                    </Tag>
-                  )}
-                </span>
-                <dt className={`font-body text-body ${s.improve ? "text-heading" : "text-secondary"}`}>{s.label}</dt>
-                {s.note && <dd className="m-0 font-body text-body text-muted">{s.note}</dd>}
-              </div>
-              {/* The number along the bottom, so the numbers line up */}
-              <dd
-                className="relative m-0 flex items-baseline gap-[8px] px-[16px] pb-[16px] pt-[8px] md:px-[20px] md:pb-[20px]"
-              >
-                {s.before && (
-                  <>
-                    <span className="font-heading text-h4 text-muted md:text-h4-md">{s.before}</span>
-                    <span aria-hidden="true" className="font-body text-body text-muted">→</span>
-                  </>
-                )}
-                <span className={`font-heading text-h2 md:text-h2-md ${s.improve ? "text-warning" : "text-grape"}`}>
-                  <CountUp value={s.after} run={shown} />
-                </span>
-                {s.change && <span className="sr-only">, {s.change}</span>}
-              </dd>
-            </div>
+          <div
+            key={s.label}
+            {...rise(200 + i * 150)}
+            className={`${rise(200 + i * 150).className} relative flex flex-col overflow-hidden rounded-xl p-[20px] md:row-span-4 md:grid md:grid-rows-subgrid md:gap-y-0 md:p-[24px] ${
+              s.improve ? "border border-warning/40 bg-white" : "border border-line-soft bg-white"
+            }`}
+          >
+            {/* A number still to improve tints the whole card warm, over the white */}
+            {s.improve && <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-warning/[0.06]" />}
+            <span className="relative mb-[16px] self-start">
+              {s.improve ? (
+                <Tag face="geist" tone="warning">
+                  <WarningCircle size={14} weight="bold" aria-hidden="true" />
+                  Still to improve
+                </Tag>
+              ) : (
+                <Tag face="geist" tone="grape">
+                  <TrendUp size={14} weight="bold" aria-hidden="true" />
+                  Improved
+                </Tag>
+              )}
+            </span>
+            <dt className="relative font-body text-body font-medium text-heading">{s.label}</dt>
+            {s.note ? <dd className="relative m-0 mt-[4px] font-body text-body text-muted">{s.note}</dd> : <span />}
+            {/* The number along the bottom: old value small and muted, the new one large */}
+            <dd className="relative m-0 mt-[20px] flex items-baseline gap-[8px] border-t border-line-soft pt-[16px]">
+              {s.before && (
+                <>
+                  <span className="font-heading text-h3 text-muted md:text-h3-md">{s.before}</span>
+                  <span aria-hidden="true" className="font-body text-body text-muted md:text-body-md">→</span>
+                </>
+              )}
+              <span className={`font-heading text-h1 font-medium md:text-h1-md ${s.improve ? "text-warning" : "text-grape"}`}>
+                <CountUp value={s.after} run={shown} />
+              </span>
+              {s.change && <span className="sr-only">, {s.change}</span>}
+            </dd>
           </div>
         ))}
       </dl>

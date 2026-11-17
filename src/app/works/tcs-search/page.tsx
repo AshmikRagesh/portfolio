@@ -28,6 +28,7 @@ import {
   ProsCons,
   OptionCard,
   Pointers,
+  BeforeAfterSlider,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1151 (site search filters). Built from
@@ -76,11 +77,26 @@ function Overview() {
           role="End-to-end Design & Developer Handoff"
           // TODO: add Travis's role once known
           team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content), TCS developers (Engineering)"
-          timeline={<>May – July 2026<br />Briefed in June 2026 · V1 launched in July 2026</>}
+          timeline={<>February – July 2026<br />Briefed in February 2026 · Designed in May 2026 · V1 launched in July 2026</>}
         />
       </Copy>
       <Visual>
-        <Figure label="Before and after: the same search, old page and new" />
+        {/* Both frames are 2000 × 1389. The old page's header is 34px shorter, so its frame is
+            pushed down by that much (padded with the header's own dark) to put the search bar,
+            tabs and first row of results at the same height in both. The handle rests mid-way;
+            the first-view sweep pulls it left over the new filter panel and back */}
+        <BeforeAfterSlider
+          width={2000}
+          height={1389}
+          start={50}
+          sweepTo={14}
+          before={{ src: "/images/tcs-search/compare-before.webp", alt: "the old search page: a result count and a grid of mixed cards, with no filters" }}
+          after={{ src: "/images/tcs-search/compare-after.webp", alt: "the new search page: a filter panel, a result count with removable filter chips, sort, and trip cards showing each route" }}
+          labels={{
+            before: { title: "The old search page", note: "Every result in one grid, with no filters" },
+            after: { title: "The new search page", note: "Filters, a result count and each trip's route" },
+          }}
+        />
       </Visual>
     </Chapter>
   );
@@ -515,6 +531,13 @@ function Outcome() {
             <ChangeList items={V1_GAPS} />
           </div>
         </Copy>
+        <Visual>
+          <Figure
+            src="/images/tcs-search/v2-design.webp"
+            alt="The V2 search page design: a dark search band, a filter panel on the left, the result count and removable filter chips above the results, a Sort menu, and trip cards showing each route"
+            label="V2, designed and next to be built: filters beside the results, the count at the top left, and Sort"
+          />
+        </Visual>
       </div>
     </Chapter>
   );
@@ -532,7 +555,7 @@ const WORKED = [
   },
   {
     lead: "Ship, learn, and iterate.",
-    text: <><Highlight>V1 went live a month after the brief.</Highlight> Getting the experience into production gave us an opportunity to see how it worked in practice and identify what needed to improve in V2.</>,
+    text: <><Highlight>V1 went live two months after the designs.</Highlight> Getting the experience into production gave us an opportunity to see how it worked in practice and identify what needed to improve in V2.</>,
   },
   {
     lead: "Test with people who know the product.",
@@ -581,7 +604,7 @@ export default function TcsSearchPage() {
     <CaseStudyLayout sections={SECTIONS} reel={reels["tcs-search"]}>
       <Hero
         title="From every trip at once to the few that fit: filters for TCS search"
-        date="May 2026"
+        date="July 2026"
         image="/images/tcs-search/cover.webp"
       />
       <Overview />

@@ -15,15 +15,16 @@ import { ArrowCounterClockwise, Pause, Play } from "@phosphor-icons/react";
  *    Home and End go to the ends.
  *  - Let go mid-swipe and the handle carries on a little before easing to a stop; a
  *    double-click glides it back to the middle; on touch a tiny tick marks either edge.
- *  - With video sides, each gets its own controls (see VideoControls) and Space on the grip
- *    plays or pauses both together.
+ *  - With video sides, one control on the bottom edge plays, pauses and restarts both
+ *    together (see VideoControls), and Space on the grip does the same as play/pause. Each
+ *    side's name sits in its top corner.
  *  - The first time it comes into view, the handle sweeps across the change and back once,
  *    so the reader sees there's something to compare. Reduced motion skips the sweep and
  *    every glide.
  *
  * Look: the picture sits in the case study card (white, 8px inset, 4px frame) like the other
  * visuals. The handle is a thin white line with a round grip that lifts on hover and presses
- * in while dragged. No labels on the picture: one footer line names the side that fills most
+ * in while dragged. Stills carry no labels on the picture (videos get a name tag per side): one footer line names the side that fills most
  * of it (past 55% the before, under 45% the after, "Drag to compare" between) and crossfades
  * as the handle moves.
  */
@@ -46,137 +47,137 @@ const Media = forwardRef<HTMLVideoElement, { shot: Shot; width: number; height: 
 );
 
 /**
- * The controls for one video side, pinned to that side's bottom corner: a play/pause button
- * ringed by the clip's progress, the side's short name, and restart.
- *  - It fades out when the handle covers most of its side, so it never sits over the other video.
+ * One set of controls for both videos, centred on the picture's bottom edge. A comparison is
+ * read side by side, so both clips play, pause and restart together, and the control never
+ * has to hide when the handle moves (each side's own pill used to vanish as its half shrank).
+ *  - Play/pause is a solid white button ringed by the clip's progress (the longer clip's, so
+ *    the ring fills once per full cycle). Restart sits quieter beside it.
  *  - Videos pause while scrolled out of view and pick up again on return (unless the reader
  *    paused them), and start paused under reduced motion.
  *  - Pointer events stop here, so pressing a control never moves the handle.
  */
-function VideoControls({
-  video,
-  name,
-  tag,
-  align,
-  visible,
-}: {
-  video: React.RefObject<HTMLVideoElement | null>;
-  name: string;
-  tag: string;
-  align: "left" | "right";
-  visible: boolean;
-}) {
+function VideoControls({ videos }: { videos: React.RefObject<HTMLVideoElement | null>[] }) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
   const userPaused = useRef(false);
+  const list = () => videos.map((r) => r.current).filter((v): v is HTMLVideoElement => !!v);
+  // The clip the ring follows: the longest one
+  const lead = () => list().reduce<HTMLVideoElement | null>((m, v) => (!m || (v.duration || 0) > (m.duration || 0) ? v : m), null);
 
   useEffect(() => {
-    const v = video.current;
-    if (!v) return;
+    const vids = videos.map((r) => r.current).filter((v): v is HTMLVideoElement => !!v);
+    if (!vids.length) return;
     let raf = 0;
     const tick = () => {
-      if (v.duration) setProgress(v.currentTime / v.duration);
+      const v = lead();
+      if (v?.duration) setProgress(v.currentTime / v.duration);
       raf = requestAnimationFrame(tick);
     };
-    const onPlay = () => {
-      setPlaying(true);
+    const sync = () => {
+      const on = vids.some((v) => !v.paused);
+      setPlaying(on);
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(tick);
+      if (on) raf = requestAnimationFrame(tick);
     };
-    const onPause = () => {
-      setPlaying(false);
-      cancelAnimationFrame(raf);
-      if (v.duration) setProgress(v.currentTime / v.duration);
-    };
-    const onMeta = () => setDuration(v.duration || 0);
-    v.addEventListener("play", onPlay);
-    v.addEventListener("pause", onPause);
-    v.addEventListener("loadedmetadata", onMeta);
-    onMeta();
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) userPaused.current = true;
+    vids.forEach((v) => {
+      v.addEventListener("play", sync);
+      v.addEventListener("pause", sync);
+    });
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) userPaused.current = true;
     // Play only while on screen
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !userPaused.current) v.play().catch(() => {});
-        else if (!entry.isIntersecting) v.pause();
+        if (entry.isIntersecting && !userPaused.current) vids.forEach((v) => v.play().catch(() => {}));
+        else if (!entry.isIntersecting) vids.forEach((v) => v.pause());
       },
       { threshold: 0.25 },
     );
-    io.observe(v);
+    io.observe(vids[0]);
     return () => {
       io.disconnect();
       cancelAnimationFrame(raf);
-      v.removeEventListener("play", onPlay);
-      v.removeEventListener("pause", onPause);
-      v.removeEventListener("loadedmetadata", onMeta);
+      vids.forEach((v) => {
+        v.removeEventListener("play", sync);
+        v.removeEventListener("pause", sync);
+      });
     };
-  }, [video]);
-  const clock = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videos]);
 
   const toggle = () => {
-    const v = video.current;
-    if (!v) return;
-    if (v.paused) {
-      userPaused.current = false;
-      v.play().catch(() => {});
-    } else {
+    const vids = list();
+    if (playing) {
       userPaused.current = true;
-      v.pause();
+      vids.forEach((v) => v.pause());
+    } else {
+      userPaused.current = false;
+      vids.forEach((v) => v.play().catch(() => {}));
     }
   };
   const restart = () => {
-    const v = video.current;
-    if (!v) return;
     userPaused.current = false;
-    v.currentTime = 0;
+    list().forEach((v) => {
+      v.currentTime = 0;
+      v.play().catch(() => {});
+    });
     setProgress(0);
-    v.play().catch(() => {});
   };
 
-  const R = 15; // ring radius inside the 36px button
+  const R = 17; // ring radius around the 32px button, inside the 40px ring box
   const C = 2 * Math.PI * R;
-  const btn =
-    "grid shrink-0 place-items-center rounded-full text-heading transition-[background-color,transform] duration-200 hover:bg-grape-light active:scale-[0.92] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading motion-reduce:transition-none";
-
   return (
     <div
-      aria-hidden={!visible}
-      className={`group/vc absolute bottom-[8px] z-[2] flex items-center gap-[2px] rounded-full bg-white/[0.92] p-[2px] shadow-[0_0_0_0.5px_rgba(30,5,37,0.16),0_4px_16px_-4px_rgba(30,5,37,0.32)] backdrop-blur-md transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none md:bottom-[12px] ${
-        align === "left" ? "left-[8px] flex-row md:left-[12px]" : "right-[8px] flex-row-reverse md:right-[12px]"
-      } ${visible ? "opacity-100" : "pointer-events-none translate-y-[4px] opacity-0"}`}
+      className="absolute bottom-[8px] left-1/2 z-[2] flex -translate-x-1/2 items-center gap-[2px] rounded-full bg-[rgba(30,5,37,0.72)] p-[4px] text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_8px_24px_-8px_rgba(30,5,37,0.48)] backdrop-blur-xl backdrop-saturate-150 md:bottom-[12px]"
       onPointerDown={(e) => e.stopPropagation()}
+      onPointerUp={(e) => e.stopPropagation()}
     >
-      <button type="button" className={`${btn} relative size-[36px]`} aria-label={`${playing ? "Pause" : "Play"} ${name}`} data-sound-click="toggle" tabIndex={visible ? 0 : -1} onClick={toggle}>
-        {/* Progress ring: the clip's position, drawn clockwise from the top */}
-        <svg className="absolute inset-0 -rotate-90" viewBox="0 0 36 36" aria-hidden="true">
-          <circle cx="18" cy="18" r={R} fill="none" stroke="currentColor" strokeOpacity="0.12" strokeWidth="2" />
-          <circle cx="18" cy="18" r={R} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - progress)} />
+      <button
+        type="button"
+        className="group/pp relative grid size-[40px] shrink-0 place-items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white/[0.56]"
+        aria-label={playing ? "Pause both videos" : "Play both videos"}
+        data-sound-click="toggle"
+        onClick={toggle}
+      >
+        {/* Progress ring: where the clips are, drawn clockwise from the top */}
+        <svg className="absolute inset-0 -rotate-90" viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="20" r={R} fill="none" stroke="white" strokeOpacity="0.2" strokeWidth="2" />
+          <circle cx="20" cy="20" r={R} fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - progress)} />
         </svg>
-        {playing ? <Pause size={14} weight="fill" aria-hidden="true" /> : <Play size={14} weight="fill" aria-hidden="true" className="translate-x-[1px]" />}
-      </button>
-      {/* The side's name; hovering or focusing the pill also shows where the clip is */}
-      <span className="flex items-center px-[6px] font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">
-        {tag}
-        <span
-          aria-hidden="true"
-          className="grid max-w-0 overflow-hidden whitespace-nowrap tabular-nums text-muted opacity-0 transition-[max-width,opacity,margin] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] group-focus-within/vc:ml-[8px] group-focus-within/vc:max-w-[96px] group-focus-within/vc:opacity-100 group-hover/vc:ml-[8px] group-hover/vc:max-w-[96px] group-hover/vc:opacity-100 motion-reduce:transition-none"
-        >
-          {clock(progress * duration)} / {clock(duration)}
+        <span className="grid size-[28px] place-items-center rounded-full bg-white text-heading transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-active/pp:scale-[0.88] motion-reduce:transition-none [@media(hover:hover)]:group-hover/pp:scale-[1.08]">
+          {playing ? <Pause size={12} weight="fill" aria-hidden="true" /> : <Play size={12} weight="fill" aria-hidden="true" className="translate-x-[1px]" />}
         </span>
-      </span>
-      <button type="button" className={`${btn} size-[32px]`} aria-label={`Restart ${name}`} data-sound-click="toggle" tabIndex={visible ? 0 : -1} onClick={restart}>
-        <ArrowCounterClockwise size={14} weight="bold" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        className="grid size-[40px] shrink-0 place-items-center rounded-full text-white/[0.72] outline-none transition-[background-color,color,transform] duration-200 focus-visible:ring-2 focus-visible:ring-white/[0.56] active:scale-[0.9] motion-reduce:transition-none [@media(hover:hover)]:hover:bg-white/[0.12] [@media(hover:hover)]:hover:text-white"
+        aria-label="Restart both videos"
+        data-sound-click="toggle"
+        onClick={restart}
+      >
+        <ArrowCounterClockwise size={16} weight="bold" aria-hidden="true" />
       </button>
     </div>
+  );
+}
+
+/** A side's name in its top corner, so the reader always knows which video is which */
+function SideTag({ text, align, visible }: { text: string; align: "left" | "right"; visible: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`pointer-events-none absolute top-[8px] z-[2] rounded-full bg-[rgba(30,5,37,0.72)] px-[12px] py-[6px] font-geist text-caption-md font-medium uppercase leading-none tracking-[0.5px] text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-xl backdrop-saturate-150 transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none md:top-[12px] ${
+        align === "left" ? "left-[8px] md:left-[12px]" : "right-[8px] md:right-[12px]"
+      } ${visible ? "opacity-100" : "-translate-y-[4px] opacity-0"}`}
+    >
+      {text}
+    </span>
   );
 }
 /** `tag` is the short name on a video side's controls (falls back to the title) */
 type Side = { title: string; note: string; tag?: string };
 
-/** Width (px) a side needs before its video controls show: the pill plus a little air */
-const ROOM = 168;
+/** Width (px) a side needs before its name tag shows: the tag plus a little air */
+const ROOM = 104;
 const clamp = (n: number) => Math.min(100, Math.max(0, n));
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
@@ -206,8 +207,9 @@ export default function BeforeAfterSlider({
   const posRef = useRef(start);
   const beforeVid = useRef<HTMLVideoElement>(null);
   const afterVid = useRef<HTMLVideoElement>(null);
+  const [vidRefs] = useState(() => [beforeVid, afterVid]);
   const box = useRef<HTMLDivElement>(null);
-  // The frame's width, so a side's video controls only show when that side has room for them
+  // The frame's width, so a side's name tag only shows when that side has room for it
   const [boxW, setBoxW] = useState(0);
   useEffect(() => {
     const el = box.current;
@@ -349,13 +351,14 @@ export default function BeforeAfterSlider({
       >
         <Media ref={afterVid} shot={after} width={width} height={height} />
         <Media ref={beforeVid} shot={before} width={width} height={height} style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }} />
-        {/* Each side's controls show while that side has room (fade once the handle covers most of it) */}
-        {isVideo(before) && (
-          <VideoControls video={beforeVid} name={labels?.before.title ?? "before video"} tag={labels?.before.tag ?? labels?.before.title ?? "Before"} align="left" visible={(pos / 100) * boxW > ROOM} />
+        {/* Each side's name shows while that side has room; one control runs both videos */}
+        {labels && (isVideo(before) || isVideo(after)) && (
+          <>
+            <SideTag text={labels.before.tag ?? labels.before.title} align="left" visible={(pos / 100) * boxW > ROOM} />
+            <SideTag text={labels.after.tag ?? labels.after.title} align="right" visible={((100 - pos) / 100) * boxW > ROOM} />
+          </>
         )}
-        {isVideo(after) && (
-          <VideoControls video={afterVid} name={labels?.after.title ?? "after video"} tag={labels?.after.tag ?? labels?.after.title ?? "After"} align="right" visible={((100 - pos) / 100) * boxW > ROOM} />
-        )}
+        {(isVideo(before) || isVideo(after)) && <VideoControls videos={vidRefs} />}
 
         {/* The handle: a hairline with a round grip */}
         <div className="pointer-events-none absolute inset-y-0 z-[1] w-0" style={{ left: `${pos}%` }}>
