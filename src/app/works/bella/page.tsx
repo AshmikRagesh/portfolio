@@ -19,6 +19,10 @@ import {
   NextCase,
   Highlight,
   SessionLog,
+  PanelCards,
+  RhythmChart,
+  AttemptCards,
+  BellaShowcase,
 } from "@/components/case-study";
 
 // DRAFT, 2 Nov 2026. Bella's own outline, set by Ashmik (not the Problem → Outcome template):
@@ -46,6 +50,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "choosing",     label: "The pick"       },
   { id: "finish",       label: "Finishing"      },
   { id: "solution",     label: "On the site"    },
+  { id: "behind",       label: "Behind the desk" },
   { id: "purpose",      label: "What it solves" },
 ];
 
@@ -70,10 +75,8 @@ function Overview() {
           without drawing anything by hand.
         </p>
       </Copy>
-      <Visual>
-        {/* Ashmik's narrated walkthrough goes here: video="/videos/bella/overview.mp4" with a poster */}
-        <Figure label="Walkthrough: meet Bella" narrated />
-      </Visual>
+      {/* The live Bella, no card: she hops into a new use case every 10 seconds */}
+      <BellaShowcase />
     </Chapter>
   );
 }
@@ -105,13 +108,17 @@ const TRAITS = [
   },
 ]
 
-// Four of the six hospitality references, pictures only, loose on one card to drag around.
-// x and y are where each starts, as a share of the free space.
+// Four mascots, cut out on transparent backgrounds, loose on one card to drag around.
+// x and y are where each starts, as a share of the free space; `wide` widens the box for
+// a wide pose. Sources (public/images/bella/references): Duo, en.wikipedia
+// File:Duo_from_Duolingo.svg; Ollie, commons File:Tripadvisor-logo-circle-owl-icon-black-green.svg
+// (CC0); Kumamon, en.wikipedia File:Kumamon_illustration.jpeg; Bibendum, en.wikipedia
+// File:Michelin_(2017).svg with the wordmark cut away. Trademarks of their owners.
 const REFERENCES = [
-  { name: "Ollie, Tripadvisor's owl", slug: "ollie", x: 0.06, y: 0.12 },
-  { name: "The Suica penguin", slug: "suica-penguin", x: 0.38, y: 0.78 },
-  { name: "Kumamon", slug: "kumamon", x: 0.66, y: 0.08 },
-  { name: "Bibendum, the Michelin Man", slug: "bibendum", x: 0.94, y: 0.7 },
+  { name: "Ollie, Tripadvisor's owl", slug: "ollie", x: 0.04, y: 0.1 },
+  { name: "Duo, Duolingo's owl", slug: "duo", x: 0.34, y: 0.82 },
+  { name: "Kumamon", slug: "kumamon", x: 0.62, y: 0.08 },
+  { name: "Bibendum, the Michelin Man", slug: "bibendum", x: 0.98, y: 0.72, wide: 1.8 },
 ];
 
 function Research() {
@@ -254,10 +261,10 @@ const FINALISTS = [
 
 function Choosing() {
   return (
-    <Chapter id="choosing" num={3} title="We picked the desk bell over the key tag">
+    <Chapter id="choosing" num={3} title="I picked the desk bell over the key tag">
       <Copy>
         <p>
-          The key tag was the strongest alternative until we tested it in
+          The key tag was the strongest alternative until I tested it in
           context. Claude Code placed it in the live navbar, and <Highlight>at logo
           size its details disappeared</Highlight>.
         </p>
@@ -338,7 +345,7 @@ const TOOLTIPS = [
   { name: "Compact dark, with a pointer", src: art("tip-compact-dark"), kept: true },
 ];
 
-const RECORDED = new Set(["greets", "time", "reads"]);
+const RECORDED = new Set(["greets", "time", "reads", "celebrates", "champion"]);
 
 const USE_CASES: {
   num: number;
@@ -399,7 +406,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            {/* Recordings so far: the first three use cases. The rest stay placeholders until recorded */}
+            {/* Every use case has its recording now; a slug left out of RECORDED shows a placeholder */}
             {RECORDED.has(slug) ? (
               <Figure video={`/videos/bella/${slug}.mp4`} alt={`Live site: ${title.toLowerCase()}`} />
             ) : (
@@ -424,6 +431,100 @@ function Solution() {
         </Copy>
         <Visual>
           <BellaStates />
+        </Visual>
+      </div>
+    </Chapter>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section: Behind the desk  (the private stats page, how it's built, and how fake
+// visits and spam are kept out). Facts from src/lib/curiosity, src/app/stats and the
+// 11 Nov 2026 commits. Not claimed: bot detection (headless browsers aren't filtered).
+// Joining copy is a placeholder for Ashmik to rewrite in his words.
+// ─────────────────────────────────────────────────────────────────────────────
+const STATS_PANELS = [
+  { src: "/images/bella/stats/time.webp", alt: "Totals on the stats page", title: "Time", text: "Visits, visitors, average and median active time, and the longest visit so far." },
+  { src: "/images/bella/stats/per-day.webp", alt: "Visits per day chart", title: "Visits per day", text: "One bar per day for the last 30 days, so a sudden jump stands out." },
+  { src: "/images/bella/stats/referrers.webp", alt: "Top referrers list", title: "Where people come from", text: "By site only, like linkedin.com, never the full link." },
+  { src: "/images/bella/stats/exits.webp", alt: "Exit pages list", title: "Where they leave", text: "The last page seen in each visit, so I know which page ends a visit." },
+  { src: "/images/bella/stats/bella.webp", alt: "Bella actions list", title: "What they do with Bella", text: "Opening the sign, copying the email, earning a stamp. Each counts once per visit." },
+];
+
+// Real visits per day (curiosity:days, IST) from 23 Oct, the first day with visits, to
+// 16 Nov 2026; nightly copies (curiosity:snapshot:*) exist from 13 Nov. Read on 17 Nov.
+// The five zero days before 23 Oct only feed the spike check's "usual day".
+const VISITS_BY_DAY: [string, number][] = [
+  ["2026-10-23", 11], ["2026-10-24", 6], ["2026-10-25", 3], ["2026-10-26", 11], ["2026-10-27", 4],
+  ["2026-10-28", 5], ["2026-10-29", 6], ["2026-10-30", 4], ["2026-10-31", 4], ["2026-11-01", 27],
+  ["2026-11-02", 8], ["2026-11-03", 16], ["2026-11-04", 4], ["2026-11-05", 9], ["2026-11-06", 17],
+  ["2026-11-07", 45], ["2026-11-08", 31], ["2026-11-09", 16], ["2026-11-10", 2], ["2026-11-11", 8],
+  ["2026-11-12", 14], ["2026-11-13", 22], ["2026-11-14", 4], ["2026-11-15", 0], ["2026-11-16", 0],
+];
+const STATS_DAYS = VISITS_BY_DAY.map(([date, visits]) => ({ date, visits, saved: date >= "2026-11-13" }));
+
+const RHYTHM_TABS = {
+  visits: { name: "Every visit", text: "Each bar is one day. While a tab is open it reports every 20 seconds, and each visit is counted once." },
+  saved: { name: "Saved nightly", text: "Every night the site saves a copy of the totals, with days in Indian time. The first copy was saved on 13 Nov." },
+  weekly: { name: "Monday summary", text: "Every Monday, Claude adds up the week before and sends me a short summary, inside Claude instead of email." },
+  spikes: { name: "Morning check", text: "Every morning, Claude checks the last day. A day with 30 or more visits and five times a usual day gets flagged. 7 Nov would have been." },
+};
+
+// Three ways to fake the numbers and what the site does. Cut on 17 Nov: someone else's
+// visit, my own test visits, and the flagging script (still true, just fewer cards)
+const ATTEMPTS = [
+  { attempt: "Leave a tab open all night", result: "Nothing added after 30 seconds", how: "The clock pauses when the tab is hidden or nothing moves for 30 seconds." },
+  { attempt: "Send a made-up nine-hour visit", result: "Cut down to real time", how: "A visit can't claim more time than has passed since the site first saw it, and it stops at two hours." },
+  { attempt: "Flood the site with hundreds of visits", result: "Stopped at the limit", how: "Each connection can only start so many visits an hour. Its address is scrambled before it's stored." },
+];
+
+function Behind() {
+  return (
+    <Chapter id="behind" num={6} title="Behind the desk: reading the numbers and keeping them real">
+      <Copy>
+        <p>
+          Bella only helps if the numbers are true. Visitors never see them, so
+          I built <Highlight>a private stats page that only I can open</Highlight>,
+          and a set of checks that keep fake visits out of it.
+        </p>
+      </Copy>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What I see on the stats page</h3>
+          <p>
+            The page sits behind a key. <Highlight>Five wrong tries locks it for 15
+            minutes.</Highlight> It answers one question: did people read, and what?
+          </p>
+        </Copy>
+        <Visual>
+          <Figure video="/videos/bella/stats.mp4" poster="/images/bella/stats/poster.webp" alt="Scrolling through the private Curiosity stats page" />
+        </Visual>
+        <Visual>
+          <PanelCards items={STATS_PANELS} />
+        </Visual>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>How the numbers get there</h3>
+          <p>
+            <Highlight>I don&apos;t have to remember to check.</Highlight> The numbers
+            are saved as visits happen, and Claude brings them to me.
+          </p>
+        </Copy>
+        <Visual>
+          <RhythmChart days={STATS_DAYS} history={[0, 0, 0, 0, 0]} tabs={RHYTHM_TABS} />
+        </Visual>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Keeping out fake visits and spam</h3>
+          <p>
+            Anyone can send the site a made-up visit. <Highlight>So the site checks every
+            report instead of believing it.</Highlight>
+          </p>
+        </Copy>
+        <Visual>
+          <AttemptCards items={ATTEMPTS} />
         </Visual>
       </div>
     </Chapter>
@@ -461,7 +562,7 @@ const SOLVES: Parameters<typeof BellaSolves>[0]["items"] = [
 
 function Purpose() {
   return (
-    <Chapter id="purpose" num={6} title="What Bella solves">
+    <Chapter id="purpose" num={7} title="What Bella solves">
       <Copy>
         <p>
           Bella was designed with two goals: give visitors a reason to explore,
@@ -493,6 +594,7 @@ export default function BellaPage() {
       <Choosing />
       <Finishing />
       <Solution />
+      <Behind />
       <Purpose />
       <NextCase current="/works/bella" />
     </CaseStudyLayout>

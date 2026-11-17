@@ -7,10 +7,11 @@ import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
  * be dragged anywhere inside the card (mouse, touch or pen), and the one you pick up comes
  * to the front. With the keyboard, focus one and move it with the arrow keys. Positions are
  * kept as a share of the free space, so the layout holds when the card resizes.
+ * A wide pose can take a wider box (`wide`, a multiple of the size).
  * Pictures live in public/images/bella/references/{slug}.png; until one exists, a soft
  * stand-in with the name holds its place.
  */
-type Ref = { name: string; slug: string; x: number; y: number };
+type Ref = { name: string; slug: string; x: number; y: number; wide?: number };
 
 const STEP = 0.04; // one arrow press, as a share of the free space
 
@@ -58,7 +59,7 @@ export default function ReferencePlayground({ items }: { items: Ref[] }) {
         ref={stage}
         className="relative h-[320px] touch-none [--ref-size:112px] md:[--ref-size:144px] overflow-hidden rounded-md bg-grape-light/30 md:h-[360px]"
       >
-        {items.map(({ name, slug }, i) => (
+        {items.map(({ name, slug, wide = 1 }, i) => (
           <button
             key={slug}
             type="button"
@@ -68,9 +69,10 @@ export default function ReferencePlayground({ items }: { items: Ref[] }) {
             onPointerUp={up}
             onPointerCancel={up}
             onKeyDown={key(i)}
-            className="absolute flex h-[var(--ref-size)] w-[var(--ref-size)] cursor-grab items-center justify-center rounded-md outline-none transition-transform duration-200 ease-out hover:scale-[1.04] focus-visible:ring-2 focus-visible:ring-grape active:cursor-grabbing active:scale-[1.08] motion-reduce:transition-none"
+            className="absolute flex h-[var(--ref-size)] w-[var(--ref-w)] cursor-grab items-center justify-center rounded-md outline-none transition-transform duration-200 ease-out hover:scale-[1.04] focus-visible:ring-2 focus-visible:ring-grape active:cursor-grabbing active:scale-[1.08] motion-reduce:transition-none"
             style={{
-              left: `calc(${pos[i].x} * (100% - var(--ref-size)))`,
+              ["--ref-w" as string]: `calc(var(--ref-size) * ${wide})`,
+              left: `calc(${pos[i].x} * (100% - var(--ref-w)))`,
               top: `calc(${pos[i].y} * (100% - var(--ref-size)))`,
               zIndex: order.indexOf(i) + 1,
             }}
