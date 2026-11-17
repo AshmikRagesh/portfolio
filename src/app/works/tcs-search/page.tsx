@@ -227,7 +227,7 @@ function Context() {
               problem with a tag naming it. The Overview slider already shows the page
               plain, so here it carries the findings */}
           <AnnotatedFigure
-            src="/images/tcs-search/old-search.webp"
+            src="/images/tcs-search/old-search-blue.webp"
             width={1920}
             height={1280}
             alt="The old TCS search page, marked up with three findings: the tabs, the result count and a card title"
