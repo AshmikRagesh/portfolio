@@ -291,11 +291,13 @@ export default function ResultsCard({
         <p className="mt-[12px] max-w-[520px] font-body text-body text-secondary md:text-body-md">{body}</p>
       </div>
 
-      {/* Supporting stats: cards side by side, read top to bottom like the StatTiles on the
-          other case studies: a tag, the number, what it counts, then a short note. From
-          tablet up the cards share their rows (a subgrid), so tags, numbers, labels and notes
-          start level across cards. A win has a grape tag, the old value muted and the new
-          one in grape; a number still to improve has a warning tag, edge and a warm tint */}
+      {/* Supporting stats: cards side by side. Top to bottom: a tag, what the number counts
+          with a short note tucked under it (one text block, the label in the heading colour,
+          the note muted), then the number along the bottom above a hairline, so the numbers
+          line up. From tablet up the cards share their rows (a subgrid), so every tag, label,
+          note and number starts level across cards. A win has a grape tag, the old value
+          muted and the new one in grape; a number still to improve has a warning tag, edge
+          and a warm tint */}
       <dl
         className={`m-0 mt-[32px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${
           stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"
@@ -305,13 +307,13 @@ export default function ResultsCard({
           <div
             key={s.label}
             {...rise(200 + i * 150)}
-            className={`${rise(200 + i * 150).className} relative flex flex-col gap-[16px] overflow-hidden rounded-xl p-[20px] md:row-span-4 md:grid md:grid-rows-subgrid md:gap-y-[12px] md:p-[24px] ${
+            className={`${rise(200 + i * 150).className} relative flex flex-col overflow-hidden rounded-xl p-[20px] md:row-span-4 md:grid md:grid-rows-subgrid md:gap-y-0 md:p-[24px] ${
               s.improve ? "border border-warning/40 bg-white" : "border border-line-soft bg-white"
             }`}
           >
             {/* A number still to improve tints the whole card warm, over the white */}
             {s.improve && <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-warning/[0.06]" />}
-            <span className="relative order-1 self-start">
+            <span className="relative mb-[16px] self-start">
               {s.improve ? (
                 <Tag face="geist" tone="warning">
                   <WarningCircle size={14} weight="bold" aria-hidden="true" />
@@ -324,10 +326,10 @@ export default function ResultsCard({
                 </Tag>
               )}
             </span>
-            {/* The label comes first in the markup (a dt must lead its dd), but shows under the number */}
-            <dt className="relative order-3 font-body text-body font-medium text-heading md:text-body-md">{s.label}</dt>
-            {/* The number: old value small and muted, the new one large */}
-            <dd className="relative order-2 m-0 flex items-baseline gap-[8px] md:pt-[8px]">
+            <dt className="relative font-body text-body font-medium text-heading">{s.label}</dt>
+            {s.note ? <dd className="relative m-0 mt-[4px] font-body text-body text-muted">{s.note}</dd> : <span />}
+            {/* The number along the bottom: old value small and muted, the new one large */}
+            <dd className="relative m-0 mt-[20px] flex items-baseline gap-[8px] border-t border-line-soft pt-[16px]">
               {s.before && (
                 <>
                   <span className="font-heading text-h3 text-muted md:text-h3-md">{s.before}</span>
@@ -339,7 +341,6 @@ export default function ResultsCard({
               </span>
               {s.change && <span className="sr-only">, {s.change}</span>}
             </dd>
-            {s.note ? <dd className="relative order-4 m-0 font-body text-body text-secondary">{s.note}</dd> : <span className="order-4" />}
           </div>
         ))}
       </dl>

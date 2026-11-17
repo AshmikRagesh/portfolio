@@ -531,6 +531,13 @@ function Outcome() {
             <ChangeList items={V1_GAPS} />
           </div>
         </Copy>
+        <Visual>
+          <Figure
+            src="/images/tcs-search/v2-design.webp"
+            alt="The V2 search page design: a dark search band, a filter panel on the left, the result count and removable filter chips above the results, a Sort menu, and trip cards showing each route"
+            label="V2, designed and next to be built: filters beside the results, the count at the top left, and Sort"
+          />
+        </Visual>
       </div>
     </Chapter>
   );
