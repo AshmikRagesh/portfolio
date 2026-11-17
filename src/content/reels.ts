@@ -64,3 +64,7 @@ export const reels = {
 
 // The homepage plays the reels of the listed works, in homepage order
 export const reelOrder: Reel[] = [reels.helix, reels["tcs-find-a-trip"], reels["artemis-reservations"], reels["artemis-insurance"]];
+
+// Reels are switched off until the walkthrough videos are recorded (17 Nov 2026).
+// Set this to true to bring back the floating reel on the home page and the case studies.
+export const reelsEnabled = false;

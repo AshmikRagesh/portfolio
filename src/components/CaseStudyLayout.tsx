@@ -3,6 +3,7 @@ import { type CaseStudySection } from "@/components/case-study/SectionPill";
 import CaseStudyDock from "@/components/case-study/CaseStudyDock";
 import { imagesEnabled } from "@/lib/feedback/images";
 import ReelPlayer, { type Reel } from "@/components/ReelPlayer";
+import { reelsEnabled } from "@/content/reels";
 import CaseStudyTracker from "@/components/bella/CaseStudyTracker";
 import RevealOnScroll from "@/components/case-study/RevealOnScroll";
 
@@ -30,7 +31,7 @@ export default function CaseStudyLayout({ sections, reel, children }: CaseStudyL
       {/* Room keys and where the reader is, for Bella */}
       <CaseStudyTracker sections={sections} />
       {/* Tablet and desktop only; on a phone it would cover the reading */}
-      {reel && <ReelPlayer reels={[reel]} pill desktopOnly />}
+      {reelsEnabled && reel && <ReelPlayer reels={[reel]} pill desktopOnly />}
       <Footer />
     </>
   );

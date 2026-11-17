@@ -4,7 +4,7 @@ import Testimonials from "@/components/Testimonials";
 import TasteNotes from "@/components/TasteNotes";
 import Footer from "@/components/Footer";
 import ReelPlayer from "@/components/ReelPlayer";
-import { reelOrder } from "@/content/reels";
+import { reelOrder, reelsEnabled } from "@/content/reels";
 
 export default function Home() {
   return (
@@ -17,7 +17,7 @@ export default function Home() {
         <TasteNotes />
       </div>
       <Footer />
-      <ReelPlayer reels={reelOrder} browse startAt="#works" />
+      {reelsEnabled && <ReelPlayer reels={reelOrder} browse startAt="#works" />}
     </>
   );
 }
