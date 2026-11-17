@@ -73,7 +73,8 @@ export default async function FeedbackPage({ searchParams }: { searchParams: Pro
     name: i.name,
     category: i.category,
     image: i.image ? `/feedback/image?p=${encodeURIComponent(i.image)}` : "",
-    link: `${i.page}?fb=${encodeURIComponent(i.anchor)}`,
+    // Opens the case study on this comment: its block pinned and outlined, the comment in a card
+    link: `${i.page}?review=${i.id}&ref=${keys.get(i.id) ?? ""}`,
     createdAt: i.createdAt,
   }));
 

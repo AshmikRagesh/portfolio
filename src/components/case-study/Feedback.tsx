@@ -486,15 +486,20 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     };
   }, [on, pick, setOn]);
 
-  // Turning feedback mode on opens the card straight away, ready for a note on the
-  // whole case study (a deep link that picks a block in the same pass keeps it).
-  // Turning it off closes the card.
+  // Turning feedback mode on only starts picking: the card opens when a block is clicked.
+  // A reviewer who has already left notes gets the card straight away, on Your notes.
+  // (A deep link that picks a block in the same pass keeps it.) Turning it off closes the card.
   const wasOn = useRef(on);
+  const hasNotes = allItems.length > 0;
   useEffect(() => {
-    // Whenever the mode is on, the card is open (also after a remount or a hot reload)
     if (on) {
-      if (!targetRef.current) setTarget(PAGE_TARGET);
-      setPanel((p) => (p === "closed" ? "compose" : p));
+      if (targetRef.current) {
+        // A block is picked (also after a remount or a hot reload): the card shows it
+        setPanel((p) => (p === "closed" ? "compose" : p));
+      } else if (!wasOn.current && hasNotes) {
+        setTarget(PAGE_TARGET);
+        setPanel("notes");
+      }
     }
     if (wasOn.current && !on) {
       setTarget(null);
@@ -502,7 +507,7 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
       setActiveNote(null);
     }
     wasOn.current = on;
-  }, [on]);
+  }, [on, hasNotes]);
 
   // Find each saved comment's block whenever the notes change (pins show even
   // when feedback mode is off)
@@ -840,6 +845,16 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
             </span>
           </button>
         ))}
+
+      {/* Mode on, nothing picked yet: say how it works, just above the dock */}
+      {on && !open && (
+        <p
+          role="status"
+          className="cs-fade pointer-events-none fixed bottom-[88px] left-1/2 z-[45] m-0 -translate-x-1/2 whitespace-nowrap rounded-full bg-midnight px-[16px] py-[8px] text-[14px] leading-[20px] text-white shadow-[0_8px_24px_rgba(30,5,37,0.24)]"
+        >
+          Click any part of the page to comment
+        </p>
+      )}
 
       <div
         ref={cardRef}
