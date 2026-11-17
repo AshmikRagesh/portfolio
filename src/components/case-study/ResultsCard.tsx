@@ -232,7 +232,7 @@ function Chart({ metric, shown: inView }: { metric: Metric; shown: boolean }) {
         ))}
       </div>
 
-      <figcaption className="mt-[16px] font-body text-body text-secondary">{metric.caption}</figcaption>
+      <figcaption className="mt-[32px] text-center [text-wrap:balance] font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{metric.caption}</figcaption>
     </figure>
   );
 }
@@ -279,8 +279,8 @@ export default function ResultsCard({
           {count}
           {headline.suffix}
         </p>
-        <p className="mt-[16px] font-heading text-h4 font-medium text-heading md:text-h4-md">{title}</p>
-        <p className="mt-[8px] font-body text-body text-secondary md:text-body-md">{body}</p>
+        <p className="mt-[12px] font-heading text-h3 font-medium text-heading md:text-h3-lg">{title}</p>
+        <p className="mt-[12px] max-w-[520px] font-body text-body text-secondary md:text-body-md">{body}</p>
       </div>
 
       {/* Supporting stats: boxes side by side, each with a tag and the label, then the
@@ -288,7 +288,7 @@ export default function ResultsCard({
           the old value muted and the new one in grape. A number still to improve has a solid
           warning tag, a stronger warning edge and a warm tint over the whole card */}
       <dl
-        className={`m-0 mt-[24px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${
+        className={`m-0 mt-[32px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${
           stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"
         }`}
       >

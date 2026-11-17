@@ -14,8 +14,6 @@ import {
   ReviewThread,
   type ThreadItem,
   ModalTokens,
-  VariantProvider,
-  VariantFigure,
   NumberedPoints,
   MoreDetail,
   RolloutPhases,
@@ -25,6 +23,8 @@ import {
   Footnote,
   NextCase,
   Highlight,
+  BeforeAfterSlider,
+  ImageCarousel,
 } from "@/components/case-study";
 
 // DRAFT — angle chosen 29 Oct 2026: "build once, not twice", with Ashmik's own path
@@ -33,7 +33,7 @@ import {
 // Figures are placeholders until the recordings are made.
 
 export const metadata: Metadata = {
-  title: "Helix · Ashmik Ragesh",
+  title: "Helix on Claude Code · Ashmik Ragesh",
   description:
     "Helix is a design-system skill for Claude Code that lets designers build straight from each brand's components and tokens, so a component is built once instead of twice.",
 };
@@ -57,21 +57,37 @@ function Overview() {
     <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
-          From first idea to finished screen, our designers now work in one
-          place. Helix is a skill on Claude Code that holds the design system of
-          every Travelopia brand, and it covers each step: exploring,
-          brainstorming, wireframing, layouts, building screens, and keeping the
-          system audited and up to date. What we build is what ships, and our
-          designs now <Highlight>ship in about half the time</Highlight>.
+          Helix brings our design systems directly into Claude Code, giving
+          designers a place to explore ideas, build interfaces and work with
+          production-ready components.
+        </p>
+        <p>
+          Instead of designing in Figma and handing everything over for
+          development, we&apos;re now building with the same components our
+          developers use. The result? Designs that take <Highlight>roughly half
+          the time to deliver</Highlight>.
         </p>
         <Meta
           role="Design System Migration & Product Design in Helix"
-          team="Ashmik Ragesh, Hriday Gami (Design), Travelopia developers (Engineering)"
+          team="Ashmik Ragesh, Hriday Gami, Arunava (Design), Travelopia developers (Engineering)"
           timeline={<>June 2026 – present<br />Pilot in June · Rollout from July · In daily use since August</>}
         />
       </Copy>
       <Visual>
-        <Figure name="Helix on Claude Code" />
+        {/* Quark Expedition Card: a recording of the Figma component sheet, then the same card
+            built in Helix. Both recordings fill the frame (object-cover) and each has its own controls. */}
+        <BeforeAfterSlider
+          width={1920}
+          height={1088}
+          start={24}
+          sweepTo={64}
+          before={{ src: "/videos/helix/compare-before.mp4", alt: "screen recording: the Quark Expedition Card variants in Figma" }}
+          after={{ src: "/videos/helix/compare-after.mp4", alt: "screen recording: the same Expedition Card built in Helix" }}
+          labels={{
+            before: { title: "Designed in Figma", note: "Rebuilt again in code by developers", tag: "Figma" },
+            after: { title: "Built in Helix", note: "Made with the components developers ship", tag: "Helix" },
+          }}
+        />
       </Visual>
     </Chapter>
   );
@@ -85,20 +101,19 @@ function TheProblem() {
     <Chapter id="the-problem" num={1} title="Two design systems that had to match">
       <Copy>
         <p>
-          Every brand&apos;s design system lived in two places: our Figma
-          library and the developers&apos; coded components. Every ticket was
-          handed to developers as a Figma file. Designs were well documented,
-          but <Highlight>small details like padding and colour values still slipped
-          between the two</Highlight>.
+          Every ticket was designed in Figma and handed to developers, who built
+          it again in code. Even well-documented files lost small details like
+          padding and colour values on the way.
         </p>
         <p>
-          Each slip became <Highlight>a bug ticket that only a developer could fix</Highlight>.
+          Each slip came back as <Highlight>a bug ticket that only a developer
+          could fix</Highlight>, even when the fix was small.
         </p>
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Each brand's design system was kept twice: in Figma by designers, and in code by developers."
-          consequence="The two drifted apart, every mismatch became a bug for developers, and keeping a dozen brands consistent got slower with each change."
+          situation="Our design systems existed in two places: Figma and code."
+          consequence="Keeping them aligned across multiple brands meant more handoffs, more inconsistencies and more dependency on developers for even the smallest fixes."
         />
       </Visual>
     </Chapter>
@@ -137,19 +152,28 @@ function Discovery() {
     <Chapter id="discovery" num={2} title="Claude Code alone wasn't enough">
       <Copy>
         <p>
-          Before Helix, I tried the obvious route on Enchanting Travels: Claude
-          Code, with our Figma components passed in through the Figma MCP
-          server. Screens came together fast, but they didn&apos;t match the
-          system. Spacing, colours and components drifted, and every build
-          needed fixing by hand.
+          Before building Helix, I experimented with using Claude Code and our
+          Figma components through the Figma MCP server on Enchanting Travels.
         </p>
         <p>
-          Pointing the AI at the design system wasn&apos;t enough. <Highlight>It had
-          to be limited to it.</Highlight>
+          It was promising. Screens came together quickly, but the output
+          wasn&apos;t consistent with our design system. Spacing drifted,
+          components were improvised, and every build needed manual corrections.
+        </p>
+        <p>
+          It became clear that giving AI access to a design system wasn&apos;t
+          enough. <Highlight>It needed a way to work within its boundaries.</Highlight>
         </p>
       </Copy>
       <Visual>
-        <Figure label="Claude Code with the Figma MCP, before Helix" />
+        {/* A later Kalos footer session (not the original pre-Helix test, so the caption doesn't
+            say "before Helix"). Branch bar and session name are blurred; the Figma links stay readable. */}
+        <Figure
+          name="Claude Code reading Kalos Figma frames"
+          alt="Claude Code given Kalos Figma frames, then listing the spacing and breakpoints it got wrong and needs to fix"
+          src="/images/helix/discovery.webp"
+          caption="The same kind of session on Kalos: Claude Code reading Figma frames, then correcting its own spacing"
+        />
       </Visual>
       <div className="cs-sub">
         <Copy>
@@ -170,44 +194,55 @@ function Discovery() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Solution  (each problem raised earlier, and how Helix answers it)
 // ─────────────────────────────────────────────────────────────────────────────
-// The brands solution 3 switches between
-const BRAND_TABS = [
-  { id: "quark", label: "Quark Expeditions", short: "Quark" },
-  { id: "kalos", label: "Kalos Golf", short: "Kalos" },
+// The two brands solution 3 shows, one recording each
+const BRAND_VIDEOS = [
+  {
+    id: "quark",
+    name: "Quark Expeditions' design system in Helix",
+    video: "/videos/helix/solution-3-quark.mp4",
+    caption: "Quark Expeditions' design system in Helix.",
+  },
+  {
+    id: "kalos",
+    name: "Kalos Golf's design system in Helix",
+    video: "/videos/helix/solution-3-kalos.mp4",
+    caption: "Kalos Golf's design system in Helix.",
+  },
 ];
 
 const PAIRS = [
   {
     num: 1,
     title: "One design system per brand, in code",
-    body: <>Each brand’s design system lives in Helix, written as the same TypeScript components our developers use. Designers build in it directly, so <Highlight>there is no second copy to drift</Highlight>.</>,
+    body: <>Each brand’s design system now lives directly in Helix as reusable TypeScript components. Designers work with the same components developers use, <Highlight>eliminating the need to maintain two separate versions of the system</Highlight>.</>,
     figure: "One brand's foundations in Helix: colour, type and spacing",
     video: "/videos/helix/solution-1.mp4",
-    caption: "Shown here: TCS World Travel's design system in Helix.",
+    caption: "Quark Expeditions' design system in Helix.",
   },
   {
     num: 2,
     title: "Only the system's values",
-    body: <>Helix can only use the brand’s own tokens and components, so <Highlight>every value comes out exactly as the system defines it</Highlight>. If a component is missing, we add it to the system first instead of improvising.</>,
+    body: <>Helix is restricted to each brand’s own tokens and components. That means <Highlight>no made-up colours, inconsistent spacing or improvised components</Highlight>. If something is missing, we add it to the system rather than work around it.</>,
     figure: "A component, with the token behind each value",
     visual: <ModalTokens />,
   },
   {
     num: 3,
     title: "One skill, every brand kept separate",
-    body: <>A dozen brands share one skill, but <Highlight>each keeps its own system</Highlight>. Work on TCS only uses TCS components and tokens, and work on Quark only uses Quark’s.</>,
+    body: <>A dozen brands share one skill, but <Highlight>each keeps its own system</Highlight>. Work on Quark only uses Quark components and tokens, and work on Kalos only uses Kalos’s.</>,
     figure: "Each brand's own design system in Helix",
     visual: (
-      <VariantProvider variants={BRAND_TABS}>
-        <VariantFigure
-          names={{ quark: "Quark Expeditions' design system in Helix", kalos: "Kalos Golf's design system in Helix" }}
-          videos={{ quark: "/videos/helix/solution-3-quark.mp4", kalos: "/videos/helix/solution-3-kalos.mp4" }}
-          captions={{
-            quark: "Shown here: Quark Expeditions' design system in Helix.",
-            kalos: "Shown here: Kalos Golf's design system in Helix.",
-          }}
-        />
-      </VariantProvider>
+      <div className="flex flex-col gap-[24px]">
+        {BRAND_VIDEOS.map((b) => (
+          <Figure
+            key={b.id}
+            name={b.name}
+            alt={`Screen recording: ${b.name}`}
+            video={b.video}
+            caption={b.caption}
+          />
+        ))}
+      </div>
     ),
   },
   {
@@ -215,8 +250,19 @@ const PAIRS = [
     title: "Designers fix it, developers review",
     body: <>When I spot a miss, I fix it in Helix and send a pull request. A developer reviews it and merges it, so <Highlight>a small fix no longer waits in the queue</Highlight>.</>,
     figure: "A pull request for a design fix, approved by a developer",
-    src: "/images/helix/solution-4.webp",
-    caption: "Shown here: the review before a Kalos pull request, merged after approval.",
+    // The pull request review leads (it is what the pointer describes), then the miss and the fix behind it. Same size stills (2000 x 1171);
+    // the two Kalos session shots have links, branch names and Figma comments blurred.
+    visual: (
+      <ImageCarousel
+        width={2000}
+        height={1171}
+        slides={[
+          { src: "/images/helix/solution-4.webp", alt: "The review before a Kalos pull request", caption: "The review before a Kalos pull request, merged after approval" },
+          { src: "/images/helix/solution-4-spot.webp", alt: "A list of fixes for the Kalos itinerary modal: spacing, overlay and motion not matching production", caption: "Spotting the misses on a Kalos modal" },
+          { src: "/images/helix/solution-4-fix.webp", alt: "Claude Code checking the modal's current spacing in Helix before the fix", caption: "Checking the spacing before the fix in Helix" },
+        ]}
+      />
+    ),
   },
 ];
 
@@ -228,7 +274,7 @@ function Solution() {
           Each problem from earlier has its own answer in Helix.
         </p>
       </Copy>
-      {PAIRS.map(({ num, title, body, figure, video, src, caption, visual }) => (
+      {PAIRS.map(({ num, title, body, figure, video, caption, visual }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>
@@ -237,7 +283,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            {visual ?? <Figure name={figure} alt={video ? `Screen recording: ${figure}` : src ? figure : undefined} video={video} src={src} caption={caption} />}
+            {visual ?? <Figure name={figure} alt={video ? `Screen recording: ${figure}` : undefined} video={video} caption={caption} />}
           </Visual>
         </div>
       ))}
@@ -256,20 +302,23 @@ const ROLLOUT = [
   },
   {
     title: "Foundations first, for every brand",
-    description: "Every brand's primary tokens and values went in first, exactly right, before any component.",
+    description:
+      "We started with every brand's primary tokens and values, not its components. Once those were exactly right, anything built on top of them would be too.",
   },
   {
     title: "Existing components when there was time",
-    description: "Components we already had moved from Figma into Helix between tickets. Quark and TCS took about a month; Kalos is still moving across.",
+    description:
+      "Rather than block out time for a migration, we moved existing components from Figma between tickets. Quark and TCS took about a month; Kalos is still moving across.",
   },
   {
     title: "New components as tickets needed them",
     description:
-      "When a ticket needed something new, we built it on the foundations, shared it with a developer for review as a pull request, and merged it to main.",
+      "If a ticket needed something new, we didn't draw it in Figma first. We built it in Helix on the foundations, sent it to a developer as a pull request, and merged it once approved.",
   },
   {
     title: "Every ticket in Helix",
-    description: "From August, nothing new was designed in Figma. Today every brand's design system is in good shape.",
+    description:
+      "By August the system could carry new work on its own, so we stopped designing in Figma. Every new ticket since has started in Helix.",
   },
 ];
 
@@ -278,25 +327,25 @@ const PHASES = [
   {
     when: "Jun – Jul",
     title: "Foundations first",
-    detail: "Live work kept going. Every brand's primary tokens and values went into Helix first, and the first few tickets were tried there.",
+    detail: "Most new tickets still start in Figma.",
     helix: 1,
   },
   {
     when: "Jul – Aug",
     title: "Components move across",
-    detail: "Existing components moved from Figma between tickets, and new ones were built in Helix as tickets needed them.",
+    detail: "More tickets start in Helix as components arrive.",
     helix: 2,
   },
   {
     when: "August",
     title: "Every ticket in Helix",
-    detail: "From August, every new ticket was designed in Helix. Nothing new was designed in Figma.",
+    detail: "Figma drops out for new tickets.",
     helix: 3,
   },
   {
     when: "Now",
     title: "Still growing",
-    detail: "Quark and TCS took about a month; Kalos is still moving across. New components keep arriving with tickets.",
+    detail: "The system grows with each ticket.",
     helix: 4,
   },
 ];
@@ -366,9 +415,9 @@ function Output() {
 // PLACEHOLDER counts for TCS and Kalos (and so the total) until Ashmik sends the real
 // numbers. Counted from his recordings: Quark 51+, TCS 25, Kalos 16 (92 in all).
 const COMPONENTS = [
-  { name: "Quark", count: 51, plus: true },
-  { name: "TCS", count: 36 },
-  { name: "Kalos", count: 25, note: "in progress" },
+  { name: "Quark", count: 51, plus: true, note: "migrated" },
+  { name: "TCS", count: 36, note: "migrated" },
+  { name: "Kalos", count: 25, note: "still migrating" },
 ];
 
 const DELIVERY = [
@@ -390,10 +439,10 @@ function Outcome() {
         <Copy>
           <h3>110+ components, in code</h3>
           <p>
-            I moved the existing components for Quark and TCS into Helix <Highlight>in
+            We moved the existing components for Quark and TCS into Helix <Highlight>in
             about a month, alongside live tickets</Highlight>, and Kalos is still moving
-            across. When a ticket needed something new, Hriday and I built it
-            in Helix too.
+            across. When a ticket needed something new, we built it in
+            Helix too.
           </p>
           <ComponentCount
             total={{ count: 110, plus: true }}
@@ -406,10 +455,14 @@ function Outcome() {
         <Copy>
           <h3>Designs delivered in about half the time</h3>
           <p>
-            A ticket&apos;s designs used to take <Highlight>one to two weeks to deliver; now
-            they take about half that</Highlight>. New work also reuses what&apos;s already
-            there: the country and state dropdowns for the TCS forms reused the
-            existing combobox component instead of a new design.
+            Previously, a design ticket could take one to two weeks to move from
+            exploration to developer-ready handoff. With Helix, <Highlight>that work
+            now takes roughly half the time</Highlight>.
+          </p>
+          <p>
+            Designers can build directly with existing production components,
+            reuse patterns across screens and make small corrections without
+            waiting for a separate development cycle.
           </p>
           <BeforeAfter rows={DELIVERY} />
           <Footnote>
@@ -429,27 +482,27 @@ function Outcome() {
 // ─────────────────────────────────────────────────────────────────────────────
 const WORKED = [
   {
-    lead: "AI needs limits to be useful.",
-    text: <>Claude Code on its own drifted from the design system. <Highlight>Holding it to each brand’s own tokens and components</Highlight> is what made the output match.</>,
+    lead: "AI became genuinely useful once we gave it clear boundaries.",
+    text: <>The design system wasn’t just a reference anymore; <Highlight>it became the foundation for everything we built</Highlight>.</>,
   },
   {
-    lead: "Foundations first kept work moving.",
-    text: <>Getting every brand’s tokens right before any components meant <Highlight>live tickets never had to stop for the migration</Highlight>.</>,
+    lead: "Migrating incrementally",
+    text: <>meant <Highlight>we could keep shipping</Highlight> while improving the system underneath.</>,
   },
   {
-    lead: "The fastest fix is the designer's.",
-    text: <><Highlight>Fixing a miss in Helix and sending it for review</Highlight> beats filing a bug and waiting for a developer.</>,
+    lead: "Giving designers ownership of implementation",
+    text: <><Highlight>reduced the back-and-forth</Highlight> for smaller changes.</>,
   },
 ];
 
 const NEXT_TIME = [
   {
-    lead: "You can only use what the system has.",
-    text: <>When something is missing, you add it to the design system instead of drawing around it: <Highlight>slower once, faster every time after</Highlight>.</>,
+    lead: "Establish measurement from day one.",
+    text: <>I estimated the time saved across my tickets, but <Highlight>tracking delivery time and design bugs from the beginning</Highlight> would have given us a stronger baseline.</>,
   },
   {
-    lead: "I'd measure from day one.",
-    text: <>“About half the time” is my honest estimate. <Highlight>Tracking delivery time and design bugs from the start</Highlight> would make it a measured number.</>,
+    lead: "Plan for missing components.",
+    text: <>Restricting output to the system improves consistency, but it also means <Highlight>the system needs to evolve alongside the work</Highlight>.</>,
   },
 ];
 
@@ -462,7 +515,7 @@ function Reflection() {
       </Copy>
       <div className="cs-sub">
         <Copy>
-          <h3>The trade-off, and what I&apos;d change</h3>
+          <h3>What I&apos;d do differently</h3>
           <Pointers items={NEXT_TIME} />
         </Copy>
       </div>
@@ -476,7 +529,7 @@ function Reflection() {
 export default function HelixPage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels.helix}>
-      <Hero title="Shipping designs in half the time with Helix" date="2026" image="/images/helix/cover.webp" />
+      <Hero title="Shipping designs in half the time with Helix on Claude Code" date="2026" image="/images/helix/cover.webp" />
       <Overview />
       <TheProblem />
       <Discovery />

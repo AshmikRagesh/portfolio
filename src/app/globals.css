@@ -2176,3 +2176,8 @@ html[data-feedback="on"] .owner-badge {
     max-height: 72dvh;
   }
 }
+
+/* Case study media: a caption that changes with its media (carousel slide) settles in */
+@keyframes cs-caption-in { from { opacity: 0; transform: translateY(4px); filter: blur(2px); } }
+.cs-caption-in { animation: cs-caption-in 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .cs-caption-in { animation: none; } }

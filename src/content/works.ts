@@ -27,7 +27,7 @@ export const featuredWorks: FeaturedWork[] = [
   {
     type: "Case study",
     discipline: "Design systems",
-    title: "Shipping designs in half the time with Helix",
+    title: "Shipping designs in half the time with Helix on Claude Code",
     description:
       "A design-system skill for Claude Code, so designers build from our real components and what we design is what ships.",
     image: "/images/helix/cover.webp",
