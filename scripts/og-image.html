@@ -1,7 +1,7 @@
 <!doctype html>
 <!-- The link-preview image (src/app/opengraph-image.png and twitter-image.png), 1200x630.
-     Bella in the centre of a framed card, like a hotel's front-desk card, with four small
-     labels in the corners: the name in the primary serif, the rest in Geist caps.
+     Bella ringing in the middle of a white card, with the work cards' pixel clouds in the
+     corners. No text: the page title and description sit under the image in every preview.
      To change it, edit this file, then from the repo root run:
      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars --allow-file-access-from-files --window-size=1200,630 --virtual-time-budget=3000 --screenshot=src/app/opengraph-image.png "file://$PWD/scripts/og-image.html"
      and copy the result to src/app/twitter-image.png. -->
@@ -9,28 +9,63 @@
 <head>
 <meta charset="utf-8">
 <style>
-  @font-face { font-family: Serif; src: url("../src/app/fonts/source-serif-4-latin-wght-normal.woff2") format("woff2"); font-weight: 200 900; }
-  @font-face { font-family: Geist; src: url("../src/app/fonts/Geist-Variable.woff2") format("woff2"); font-weight: 100 900; }
-  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #f6ecf8; }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #fff; }
   .card { position: relative; width: 1200px; height: 630px; }
-  .frame { position: absolute; inset: 32px; border: 1.5px solid rgba(50, 7, 62, 0.14); border-radius: 24px; }
-  .bella { position: absolute; left: 50%; top: 50%; width: 320px; transform: translate(-50%, -50%); }
-  .c { position: absolute; color: #32073e; }
-  .tl { left: 72px; top: 64px; font-family: Serif; font-size: 34px; line-height: 40px; letter-spacing: -0.8px; }
-  .label { font-family: Geist; font-weight: 500; font-size: 16px; line-height: 20px; letter-spacing: 2px; text-transform: uppercase; color: #6e0d4b; }
-  .tr { right: 72px; top: 74px; }
-  .bl { left: 72px; bottom: 70px; }
-  .br { right: 72px; bottom: 70px; }
+  canvas { position: absolute; inset: 0; }
+  .bella { position: absolute; left: 50%; top: 50%; width: 300px; transform: translate(-50%, -46%); }
+  .ring { position: absolute; left: 50%; top: 50%; width: 420px; height: 160px; transform: translate(-50%, -205px); }
 </style>
 </head>
 <body>
   <div class="card">
-    <div class="frame"></div>
-    <div class="c tl">Ashmik Ragesh</div>
-    <div class="c label tr">Design Engineer</div>
-    <div class="c label bl">Portfolio · 2026</div>
-    <div class="c label br">Ring for service</div>
+    <canvas id="c" width="1200" height="630"></canvas>
+    <!-- "Ding": three little ring marks either side of Bella's button -->
+    <svg class="ring" viewBox="0 0 420 160" fill="none" stroke="#9D136A" stroke-width="7" stroke-linecap="round">
+      <path d="M150 112 L120 92" /><path d="M162 82 L140 48" /><path d="M190 66 L184 30" />
+      <path d="M270 112 L300 92" /><path d="M258 82 L280 48" /><path d="M230 66 L236 30" />
+    </svg>
     <img class="bella" src="../public/images/bella/final-bella.svg" alt="">
   </div>
+<script>
+  // Pixel clouds in the corners, after the dithered clouds on the work cards (PixelClouds.tsx):
+  // a value-noise field weighted towards the corners picks a tone per 12px cell
+  // (clear · pale dither · pale · mid dither · mid · deep dither · deep), so the middle stays white.
+  const ctx = document.getElementById('c').getContext('2d');
+  const W = 1200, H = 630, CELL = 12;
+  const pale = '#F9E4FF', mid = '#F2B6EC', deep = '#9D136A';
+  let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const G = 9, grid = Array.from({ length: G * G }, rnd);
+  const lerp = (a, b, t) => a + (b - a) * t, sm = t => t * t * (3 - 2 * t);
+  const noise = (x, y) => { // value noise on a 9x9 lattice over the canvas
+    const gx = x * (G - 1), gy = y * (G - 1), x0 = Math.floor(gx), y0 = Math.floor(gy);
+    const tx = sm(gx - x0), ty = sm(gy - y0), v = (i, j) => grid[Math.min(j, G - 1) * G + Math.min(i, G - 1)];
+    return lerp(lerp(v(x0, y0), v(x0 + 1, y0), tx), lerp(v(x0, y0 + 1), v(x0 + 1, y0 + 1), tx), ty);
+  };
+  const CUTS = [0.62, 0.68, 0.72, 0.78, 0.88, 0.95];
+  for (let cy = 0; cy < H / CELL; cy++) for (let cx = 0; cx < W / CELL; cx++) {
+    const x = (cx + 0.5) * CELL / W, y = (cy + 0.5) * CELL / H;
+    // closeness to the nearest corner: 1 at a corner, 0 towards the middle
+    const dx = Math.min(x, 1 - x) * 2, dy = Math.min(y, 1 - y) * 2;
+    const edge = 1 - Math.min(1, Math.hypot(dx * 1.05, dy * 1.25));
+    const v = edge * 0.95 + noise(x, y) * 0.35 + (noise(x * 3 % 1, y * 3 % 1) - 0.5) * 0.12;
+    let tone = 0; for (const c of CUTS) if (v > c) tone++;
+    if (!tone) continue;
+    const X = cx * CELL, Y = cy * CELL;
+    const solid = [null, pale, pale, mid, mid, deep, deep][tone];
+    const under = [null, null, null, pale, pale, mid, mid][tone];
+    if (tone % 2 === 1) { // dither: a checkerboard of this tone and the one below
+      for (let j = 0; j < 4; j++) for (let i = 0; i < 4; i++) {
+        const c = (i + j) % 2 ? solid : under; if (!c) continue;
+        ctx.fillStyle = c; ctx.fillRect(X + i * 3, Y + j * 3, 3, 3);
+      }
+    } else { ctx.fillStyle = solid; ctx.fillRect(X, Y, CELL, CELL); }
+  }
+  // A few twinkling pixels just off the fringe
+  for (let k = 0; k < 40; k++) {
+    const x = rnd() * W, y = rnd() * H, dx = Math.min(x, W - x) / W * 2, dy = Math.min(y, H - y) / H * 2;
+    if (Math.hypot(dx, dy * 1.2) > 0.75 || Math.hypot(dx, dy * 1.2) < 0.45) continue;
+    ctx.fillStyle = rnd() < 0.5 ? mid : deep; ctx.fillRect(Math.floor(x / CELL) * CELL + 3, Math.floor(y / CELL) * CELL + 3, 6, 6);
+  }
+</script>
 </body>
 </html>
