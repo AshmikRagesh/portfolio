@@ -21,6 +21,7 @@ import {
   BarRows,
   Highlight,
   ResultsCard,
+  AnnotatedFigure,
   ChangeList,
   HelixLink,
   MoreDetail,
@@ -222,23 +223,42 @@ function Context() {
           </p>
         </Copy>
         <Visual>
-          {/* The old page annotated with what the audit found; the Overview slider already
-              shows it plain, so here it carries the findings */}
-          <Figure
-            src="/images/tcs-search/old-search-annotated.webp"
-            alt="The old TCS search page, marked 1 beside the tabs, 2 beside the result count and 3 on a card title"
-            label="The old search page, Aug 2025 tabs design"
-            caption="1 Tabs, but no filters or sort · 2 252 results, with no way to narrow them · 3 A card names the trip, not where it goes"
+          {/* The old page marked up with what the audit found: a pen ring on each problem
+              and a handwritten note pointing at it. The Overview slider already shows the
+              page plain, so here it carries the findings */}
+          <AnnotatedFigure
+            src="/images/tcs-search/old-search.webp"
+            width={1920}
+            height={1280}
+            alt="The old TCS search page, marked up with three findings: the tabs, the result count and a card title"
+            label="What I found auditing the old search page (Aug 2025 tabs design)"
+            notes={[
+              {
+                lines: ["252 results, and no way", "to narrow them"],
+                side: "top",
+                x: 0.04,
+                from: 0.12,
+                ring: { cx: 0.142, cy: 0.262, rx: 0.04, ry: 0.03 },
+                bow: 30,
+              },
+              {
+                lines: ["Only tabs: no filters,", "no sort"],
+                side: "top",
+                x: 0.58,
+                from: 0.62,
+                ring: { cx: 0.5, cy: 0.262, rx: 0.15, ry: 0.034 },
+                bow: -40,
+              },
+              {
+                lines: ["A name, but where", "does this trip go?"],
+                side: "bottom",
+                x: 0.52,
+                from: 0.62,
+                ring: { cx: 0.733, cy: 0.533, rx: 0.088, ry: 0.032 },
+                bow: -50,
+              },
+            ]}
           />
-          {/* Close-up: one old card above one V1 card, cut from screenshots at the same
-              width so they keep their true size, so the missing route shows at a glance */}
-          <div className="mt-[24px] md:mt-[32px]">
-            <Figure
-              src="/images/tcs-search/cards-before-v1.webp"
-              alt="Top: an old search card with a category and a title only. Bottom: a V1 trip card with availability, title, number of destinations, the full route, dates and trip length"
-              label="Top: an old card names the trip · Bottom: a V1 card shows every stop, the dates and the length"
-            />
-          </div>
         </Visual>
       </div>
       <div className="cs-sub">
