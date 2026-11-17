@@ -92,7 +92,7 @@ function Overview() {
           before={{ src: "/images/tcs-search/compare-before.webp", alt: "the old search page: a result count and a grid of mixed cards, with no filters" }}
           after={{ src: "/images/tcs-search/compare-after.webp", alt: "the live V1 search page: tabs, a row of five filters, a result count, and trip cards showing each route" }}
           labels={{
-            before: { title: "The old search page", note: "Every result in one grid, with no filters" },
+            before: { title: "The old search page", note: "Aug 2025: every result in one grid, with no filters" },
             after: { title: "The live V1 search page", note: "Five filters, a result count and each trip's route" },
           }}
         />
@@ -222,11 +222,23 @@ function Context() {
           </p>
         </Copy>
         <Visual>
+          {/* The old page annotated with what the audit found; the Overview slider already
+              shows it plain, so here it carries the findings */}
           <Figure
-            src="/images/tcs-search/old-search.webp"
-            alt="The old TCS search page: a long grid of trip and destination cards with no filters"
-            label="The old search page: every kind of result in one grid, with no filters"
+            src="/images/tcs-search/old-search-annotated.webp"
+            alt="The old TCS search page, marked 1 beside the tabs, 2 beside the result count and 3 on a card title"
+            label="The old search page, Aug 2025 tabs design"
+            caption="1 Tabs, but no filters or sort · 2 252 results, with no way to narrow them · 3 A card names the trip, not where it goes"
           />
+          {/* Close-up: one old card above one V1 card, cut from screenshots at the same
+              width so they keep their true size, so the missing route shows at a glance */}
+          <div className="mt-[24px] md:mt-[32px]">
+            <Figure
+              src="/images/tcs-search/cards-before-v1.webp"
+              alt="Top: an old search card with a category and a title only. Bottom: a V1 trip card with availability, title, number of destinations, the full route, dates and trip length"
+              label="Top: an old card names the trip · Bottom: a V1 card shows every stop, the dates and the length"
+            />
+          </div>
         </Visual>
       </div>
       <div className="cs-sub">
