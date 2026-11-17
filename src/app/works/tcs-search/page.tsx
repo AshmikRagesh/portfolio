@@ -231,7 +231,6 @@ function Context() {
             width={1920}
             height={1280}
             alt="The old TCS search page, marked up with three findings: the tabs, the result count and a card title"
-            label="What I found auditing the old search page (Aug 2025 tabs design)"
             notes={[
               { text: "252 results, no way to narrow", box: { x: 0.11, y: 0.243, w: 0.064, h: 0.04 }, place: "bottom" },
               { text: "Tabs only, no filters or sort", box: { x: 0.354, y: 0.241, w: 0.29, h: 0.044 }, place: "top" },
