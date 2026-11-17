@@ -2170,11 +2170,63 @@ html[data-feedback="on"] .owner-badge {
   .fb-dot { width: 24px; height: 24px; }
   .fb-dot-face { font-size: 12px; line-height: 20px; }
 }
+/* Phones. The dock: pill and feedback button both 48px tall (thumb size), a little
+   further from the edge and clear of the home indicator. The feedback card: a real bottom
+   sheet, edge to edge with rounded top corners and a grab handle (drag it down to close),
+   only as tall as what's in it, sliding up from the bottom and riding above the keyboard
+   (--fb-kb, set from visualViewport in Feedback.tsx). Tighter spacing inside. */
+.fb-grabber { display: none; }
 @media (max-width: 767px) {
+  .cs-pill { bottom: calc(16px + env(safe-area-inset-bottom)); gap: 10px; }
+  .cs-pill-button { padding: 16px 18px 16px 22px; font-size: 15px; }
+  .cs-pill-bar { width: 32px; }
+  .fb-button { width: 48px; height: 48px; }
+  .fb-button svg { width: 22px; height: 22px; }
+
   .fb-card {
-    bottom: calc(12px + env(safe-area-inset-bottom));
-    max-height: 72dvh;
+    right: 0;
+    bottom: var(--fb-kb, 0px);
+    left: 0;
+    max-height: min(560px, calc(100dvh - var(--fb-kb, 0px) - 64px));
+    padding: 0 16px calc(16px + env(safe-area-inset-bottom));
+    border-width: 1px 0 0;
+    border-radius: 20px 20px 0 0;
+    filter: none;
+    transform: translateY(100%);
+    transition: transform 0.28s var(--ease-out), opacity 0.2s ease, visibility 0s 0.28s, bottom 0.2s ease;
   }
+  .fb-card[data-open="true"] {
+    transform: translateY(var(--fb-drag, 0px));
+    transition: transform 0.42s var(--ease-out), opacity 0.2s ease, bottom 0.2s ease;
+  }
+  .fb-card[data-dragging="true"] { transition: none; }
+  .fb-grabber {
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: center;
+    margin: 0 -16px;
+    padding: 10px 0 6px;
+    touch-action: none;
+    cursor: grab;
+  }
+  .fb-grabber::before {
+    content: "";
+    width: 40px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--fb-line);
+  }
+  .fb-card-form,
+  .fb-panel { gap: 12px; }
+  .fb-card-head { touch-action: none; }
+  .fb-card-title { font-size: 16px; }
+  .fb-tabs { margin: -4px -16px 0; padding: 0 16px; }
+  .fb-composer-text { min-height: 48px; padding-top: 10px; }
+  .fb-composer-bar { padding: 4px 6px 6px 8px; }
+  /* What the note is about reads as a line under the title, not a boxed chip */
+  .fb-about { margin-top: -4px; }
+  .fb-target { height: 20px; padding: 0; border: 0; }
+  .fb-name-field { height: 44px; }
 }
 
 /* Case study media: a caption that changes with its media (carousel slide) settles in */
