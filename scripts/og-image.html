@@ -1,7 +1,7 @@
 <!doctype html>
 <!-- The link-preview image (src/app/opengraph-image.png and twitter-image.png), 1200x630.
-     Kept minimal on purpose, like other designers' previews: one flat background, the name,
-     the role and the portrait sketch. No tagline, address or texture.
+     Kept minimal on purpose, like other designers' previews: one flat background, Bella, the
+     name in the primary serif and the role in the secondary font, all centred.
      To change it, edit this file, then from the repo root run:
      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars --allow-file-access-from-files --window-size=1200,630 --virtual-time-budget=3000 --screenshot=src/app/opengraph-image.png "file://$PWD/scripts/og-image.html"
      and copy the result to src/app/twitter-image.png. -->
@@ -12,20 +12,17 @@
   @font-face { font-family: Serif; src: url("../src/app/fonts/source-serif-4-latin-wght-normal.woff2") format("woff2"); font-weight: 200 900; }
   @font-face { font-family: Geist; src: url("../src/app/fonts/Geist-Variable.woff2") format("woff2"); font-weight: 100 900; }
   html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #fbf9f6; }
-  .card { position: relative; width: 1200px; height: 630px; }
-  .text { position: absolute; left: 96px; bottom: 96px; }
-  h1 { font-family: Serif; font-weight: 400; font-size: 80px; line-height: 84px; letter-spacing: -2.4px; color: #32073e; margin: 0; }
-  p { font-family: Geist; font-weight: 400; font-size: 30px; line-height: 40px; color: #8e8292; margin: 16px 0 0; }
-  img { position: absolute; right: 64px; bottom: 0; height: 560px; }
+  .card { width: 1200px; height: 630px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  img { width: 200px; height: auto; display: block; }
+  h1 { font-family: Serif; font-weight: 400; font-size: 80px; line-height: 88px; letter-spacing: -2.4px; color: #32073e; margin: 28px 0 0; }
+  p { font-family: Geist; font-weight: 400; font-size: 30px; line-height: 40px; color: #524555; margin: 12px 0 0; }
 </style>
 </head>
 <body>
   <div class="card">
-    <div class="text">
-      <h1>Ashmik Ragesh</h1>
-      <p>Design Engineer</p>
-    </div>
-    <img src="../public/images/portrait-sketch-glasses-cutout.webp" alt="">
+    <img src="../public/images/bella/final-bella.svg" alt="">
+    <h1>Ashmik Ragesh</h1>
+    <p>Product designer turned design engineer</p>
   </div>
 </body>
 </html>
