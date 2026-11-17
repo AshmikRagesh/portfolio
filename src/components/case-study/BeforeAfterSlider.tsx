@@ -191,12 +191,6 @@ type Side = { title: string; note: string; tag?: string };
 /** Width (px) a side needs before its name tag shows: the tag plus a little air */
 const ROOM = 104;
 const clamp = (n: number) => Math.min(100, Math.max(0, n));
-/** The side the handle has squeezed below 20%: a light blur and fade, eased in and out */
-const soften = (on: boolean): React.CSSProperties => ({
-  filter: on ? "blur(4px)" : "blur(0px)",
-  opacity: on ? 0.6 : 1,
-  transition: "filter 300ms cubic-bezier(0.2,0.7,0.2,1), opacity 300ms cubic-bezier(0.2,0.7,0.2,1)",
-});
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 export default function BeforeAfterSlider({
@@ -367,11 +361,23 @@ export default function BeforeAfterSlider({
         onPointerCancel={() => setDragging(false)}
         onDoubleClick={() => glide([50], 360)}
       >
+        <Media ref={afterVid} shot={after} width={width} height={height} />
+        <Media ref={beforeVid} shot={before} width={width} height={height} style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }} />
         {/* Once the handle has given one side 80% or more, the sliver left of the other side
-            softens (a light blur and fade), like the backdrop behind an open sheet, so the eye
-            stays on the side being read */}
-        <Media ref={afterVid} shot={after} width={width} height={height} style={soften(pos >= 80)} />
-        <Media ref={beforeVid} shot={before} width={width} height={height} style={{ clipPath: `inset(0 ${100 - pos}% 0 0)`, ...soften(pos <= 20) }} />
+            softens, like the backdrop behind an open sheet, so the eye stays on the side being
+            read. It's a frosted layer laid over just that sliver (a backdrop blur and a light
+            wash), not a filter on the picture: a filter on the clipped top picture would turn
+            its edges see-through and let the other picture show behind it */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 bg-white/40 backdrop-blur-[4px] transition-opacity duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none"
+          style={{
+            // Covers the narrower side (left of the handle when it's in the left half), so it
+            // fades in and out over the right sliver
+            ...(pos < 50 ? { left: 0, width: `${pos}%` } : { left: `${pos}%`, right: 0 }),
+            opacity: pos <= 20 || pos >= 80 ? 1 : 0,
+          }}
+        />
         {/* Each side's name shows while that side has room; one control runs both videos */}
         {labels && (isVideo(before) || isVideo(after)) && (
           <>
