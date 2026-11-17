@@ -36,9 +36,17 @@ const EASE = "ease-[cubic-bezier(0.2,0.7,0.2,1)]";
 const DRAW = 1400;
 const WALK = 450;
 
-// Counts from 0 to `to` once `run` is true, easing out, keeping `decimals` places
+// Counts from 0 to `to` once `run` is true, easing out, keeping `decimals` places.
+// The server renders the real value, so the page's HTML (crawlers, reader mode, link
+// previews, no-JS) never shows a 0; the browser drops it to 0 only while the card is
+// still hidden, waiting to count up
 function useCountUp(to: number, run: boolean, decimals = 0, ms = 1200) {
-  const [n, setN] = useState(0);
+  const [n, setN] = useState(to);
+  useEffect(() => {
+    if (!run && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) setN(0);
+    // Only on mount: once counting starts, the effect below owns the value
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
     if (!run) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
