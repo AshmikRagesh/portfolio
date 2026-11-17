@@ -28,6 +28,7 @@ import {
   ProsCons,
   OptionCard,
   Pointers,
+  BeforeAfterSlider,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1151 (site search filters). Built from
@@ -80,7 +81,22 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        <Figure label="Before and after: the same search, old page and new" />
+        {/* Both frames are 2000 × 1389. The old page's header is 34px shorter, so its frame is
+            pushed down by that much (padded with the header's own dark) to put the search bar,
+            tabs and first row of results at the same height in both. The handle rests mid-way;
+            the first-view sweep pulls it left over the new filter panel and back */}
+        <BeforeAfterSlider
+          width={2000}
+          height={1389}
+          start={50}
+          sweepTo={14}
+          before={{ src: "/images/tcs-search/compare-before.webp", alt: "the old search page: a result count and a grid of mixed cards, with no filters" }}
+          after={{ src: "/images/tcs-search/compare-after.webp", alt: "the new search page: a filter panel, a result count with removable filter chips, sort, and trip cards showing each route" }}
+          labels={{
+            before: { title: "The old search page", note: "Every result in one grid, with no filters" },
+            after: { title: "The new search page", note: "Filters, a result count and each trip's route" },
+          }}
+        />
       </Visual>
     </Chapter>
   );
