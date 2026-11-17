@@ -9,8 +9,8 @@ import { CaretLeft, CaretRight } from "@phosphor-icons/react";
  * the card never jumps between them.
  *
  * Controls follow the usual gallery pattern:
- *  - On the picture: a white arrow centred on each side, and the dots in the bottom-right
- *    corner. The caption sits straight under the picture, like every other media card.
+ *  - On the picture: a white arrow centred on each side, and the dots centred on the
+ *    bottom edge. The caption sits straight under the picture, like every other media card.
  *  - Drag or swipe the picture: it follows the pointer 1:1 and settles on the nearest slide; a
  *    quick flick is enough. The ends resist so the reader feels the edge.
  *  - Arrow keys move when the carousel has focus; Home and End go to the ends.
@@ -143,10 +143,10 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
         <Arrow dir="prev" off={i === 0} onGo={() => jump(i - 1)} />
         <Arrow dir="next" off={i === last} onGo={() => jump(i + 1)} />
 
-        {/* Dots in the bottom-right corner, on a dark glass chip so they read over any
+        {/* Dots centred on the bottom edge, on a dark glass chip so they read over any
             screenshot. Each dot is a 24px target around an 8px dot; the current one is a bar. */}
         <div
-          className="absolute bottom-[8px] right-[8px] z-[2] flex items-center rounded-full bg-[rgba(30,5,37,0.72)] px-[4px] shadow-[0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-xl backdrop-saturate-150 md:bottom-[12px] md:right-[12px]"
+          className="absolute bottom-[8px] left-1/2 z-[2] flex -translate-x-1/2 items-center rounded-full bg-[rgba(30,5,37,0.72)] px-[4px] shadow-[0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-xl backdrop-saturate-150 md:bottom-[12px]"
           onPointerDown={(e) => e.stopPropagation()}
           onPointerUp={(e) => e.stopPropagation()}
         >
