@@ -21,9 +21,15 @@ export default function ExplorationCard({
 }) {
   return (
     <li className={`cs-pair-card flex flex-col rounded-md p-[8px] ${kept ? "cs-pair-card--chosen" : ""}`}>
-      <div className="flex min-h-[40px] items-center justify-between gap-[8px] px-[12px] pb-[12px] pt-[8px]">
-        <p className="m-0 font-body text-body font-medium text-heading">{name}</p>
-        {kept && <Tag face="geist" tone="grape">{tag}</Tag>}
+      {/* Phones: the tag sits above the name, so narrow cards keep the whole width for it.
+          Tablet up: beside it, level with the first line, so a name that wraps never pushes it off */}
+      <div className="flex min-h-[40px] flex-col-reverse items-start gap-[8px] px-[12px] pb-[12px] pt-[8px] md:flex-row md:justify-between">
+        <p className="m-0 min-w-0 font-body text-body font-medium text-heading">{name}</p>
+        {kept && (
+          <span className="shrink-0 md:mt-[1px]">
+            <Tag face="geist" tone="grape">{tag}</Tag>
+          </span>
+        )}
       </div>
       <div className="cs-pair-media mt-auto flex h-[136px] items-center justify-center rounded-sm bg-grape-light/30 p-[16px]">
         {src ? (
