@@ -381,11 +381,6 @@ const SOLUTION_ITEMS = [
   },
   {
     num: 3,
-    title: "When a continent has no destination page",
-    body: <>Continents with a destination page get their own photos and links, so Africa looks like Africa. <Highlight>North America and Golf have no destination page, so clicking them skips the choice</Highlight> and opens their trips, exactly as before. Nobody lands on an empty option.</>,
-  },
-  {
-    num: 4,
     title: "The same choice on a phone",
     body: <>The test runs on desktop, iPhone and Android, so the choice had to fit a narrow menu. Variant 1 showed that two links side by side get cramped and hard to tap. So on a phone, <Highlight>the text links stack, one per row, and the image cards stay side by side</Highlight>, because each card is big enough to tap.</>,
   },
@@ -404,7 +399,7 @@ const SOLUTION_VIDEOS: Record<number, Record<string, string>> = {
     cards: "/videos/tcs-find-a-trip/solution-1-cards.mp4",
   },
   // The phone recordings (point 1 stays desktop only)
-  4: {
+  3: {
     links: "/videos/tcs-find-a-trip/solution-phone-links.mp4",
     cards: "/videos/tcs-find-a-trip/solution-phone-cards.mp4",
   },
@@ -425,7 +420,7 @@ function Solution() {
         <Copy>
           <p>
             Both test designs share one flow: pick a continent, choose how to
-            explore it, and land on the right page. These four details make
+            explore it, and land on the right page. These three details make
             that flow work. Each detail shows both designs side by side:
             Variant 2 (text links) and Variant 3 (image cards).
           </p>
@@ -445,11 +440,6 @@ function Solution() {
                     ? {
                         links: "Africa open in the menu with two text links: Explore Trips first, then Explore Destinations",
                         cards: "Africa open in the menu with two image cards: Explore Trips first, then Explore Destination",
-                      }
-                    : num === 3
-                    ? {
-                        links: "Africa opens the choice; North America goes straight to its trips (text links)",
-                        cards: "Africa opens the choice; North America goes straight to its trips (image cards)",
                       }
                     : {
                         links: `Solution ${num} — ${title} (text links)`,
