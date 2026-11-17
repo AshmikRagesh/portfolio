@@ -156,11 +156,15 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
                 aria-current={n === i ? "true" : undefined}
                 data-sound-click="toggle"
                 onClick={() => jump(n)}
-                className="group/dot grid size-[24px] place-items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-heading"
+                className={`group/dot grid h-[24px] place-items-center rounded-full outline-none transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-heading motion-reduce:transition-none ${
+                  n === i ? "w-[32px] cursor-default" : "w-[24px]"
+                }`}
               >
                 <span
-                  className={`block size-[8px] rounded-full transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                    n === i ? "scale-[1.25] bg-heading" : "bg-heading/[0.32] group-hover/dot:bg-heading/[0.56]"
+                  className={`block h-[8px] rounded-full transition-[width,background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                    n === i
+                      ? "w-[20px] bg-heading"
+                      : "w-[8px] bg-heading/[0.32] group-active/dot:scale-[0.75] [@media(hover:hover)]:group-hover/dot:bg-heading/[0.64]"
                   }`}
                 />
               </button>
@@ -177,8 +181,12 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
 }
 
 /**
- * Framer Slideshow's arrow: a 40px white circle with a hairline edge and soft shadow. At an end
- * it fades but stays focusable (aria-disabled), so keyboard focus never drops to the page.
+ * Framer Slideshow's arrow: a 40px white circle with a hairline edge and soft shadow.
+ *  - Hover (mouse and trackpad only, so a tap on a phone never leaves it stuck): a light purple
+ *    fill, a deeper shadow, and the chevron nudges 2px the way it goes.
+ *  - Press: it sinks (scale 0.92, shadow flattens) in 100ms, then springs back on release.
+ *  - At an end it fades and shows a not-allowed cursor, but stays focusable (aria-disabled), so
+ *    keyboard focus never drops to the page.
  */
 function Arrow({ dir, off, onGo }: { dir: "prev" | "next"; off: boolean; onGo: () => void }) {
   const Icon = dir === "prev" ? CaretLeft : CaretRight;
@@ -189,13 +197,20 @@ function Arrow({ dir, off, onGo }: { dir: "prev" | "next"; off: boolean; onGo: (
       aria-disabled={off || undefined}
       data-sound-click={off ? undefined : "toggle"}
       onClick={() => !off && onGo()}
-      className={`grid size-[40px] shrink-0 place-items-center rounded-full bg-white text-heading shadow-[0_0_0_1px_rgba(30,5,37,0.12),0_2px_6px_-2px_rgba(30,5,37,0.16)] outline-none transition-[opacity,background-color,transform,box-shadow] duration-200 focus-visible:ring-2 focus-visible:ring-heading focus-visible:ring-offset-2 motion-reduce:transition-none ${
+      className={`group/arrow grid size-[40px] shrink-0 place-items-center rounded-full bg-white text-heading outline-none transition-[opacity,background-color,transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-heading focus-visible:ring-offset-2 motion-reduce:transition-none ${
         off
-          ? "cursor-default opacity-[0.4] shadow-[0_0_0_1px_rgba(30,5,37,0.12)]"
-          : "hover:bg-grape-light hover:shadow-[0_0_0_1px_rgba(30,5,37,0.16),0_4px_12px_-4px_rgba(30,5,37,0.24)] active:scale-[0.94]"
+          ? "cursor-not-allowed opacity-[0.4] shadow-[0_0_0_1px_rgba(30,5,37,0.12)]"
+          : "shadow-[0_0_0_1px_rgba(30,5,37,0.12),0_2px_6px_-2px_rgba(30,5,37,0.16)] active:scale-[0.92] active:bg-grape-light active:shadow-[0_0_0_1px_rgba(30,5,37,0.16)] active:duration-100 [@media(hover:hover)]:hover:bg-grape-light [@media(hover:hover)]:hover:shadow-[0_0_0_1px_rgba(30,5,37,0.16),0_6px_16px_-6px_rgba(30,5,37,0.32)]"
       }`}
     >
-      <Icon size={16} weight="bold" aria-hidden="true" />
+      <Icon
+        size={16}
+        weight="bold"
+        aria-hidden="true"
+        className={`transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+          off ? "" : dir === "prev" ? "[@media(hover:hover)]:group-hover/arrow:-translate-x-[2px]" : "[@media(hover:hover)]:group-hover/arrow:translate-x-[2px]"
+        }`}
+      />
     </button>
   );
 }
