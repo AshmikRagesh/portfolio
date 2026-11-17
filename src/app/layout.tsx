@@ -42,11 +42,15 @@ const nanumPen = localFont({
 });
 
 // The site's own address, so link previews (Slack, LinkedIn, WhatsApp) get full links to the
-// preview image in opengraph-image.png. On Vercel this is the production domain, which becomes
-// the custom domain once one is added; locally it's the dev server.
-const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : "http://localhost:3000";
+// preview image in opengraph-image.png. Production is www.ashmikragesh.com (Vercel redirects
+// the bare ashmikragesh.com to it); preview deployments use their own address; locally it's
+// the dev server.
+const SITE_URL =
+  process.env.VERCEL_ENV === "production"
+    ? "https://www.ashmikragesh.com"
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
 
 const DESCRIPTION = "Product designer turned design engineer. I design it, then build it, so teams can try an idea early.";
 
