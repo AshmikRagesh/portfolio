@@ -135,40 +135,51 @@ function VideoControls({
     v.play().catch(() => {});
   };
 
-  const R = 15; // ring radius inside the 36px button
-  const C = 2 * Math.PI * R;
-  const btn =
-    "grid shrink-0 place-items-center rounded-full text-heading transition-[background-color,transform] duration-200 hover:bg-grape-light active:scale-[0.92] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading motion-reduce:transition-none";
-
+  // A dark glass pill, as on video players, so it reads over light and dark footage alike.
+  // Hierarchy: play/pause is the one solid control; the side's name, the time (on hover or
+  // focus) and restart sit quieter beside it; a hairline along the bottom shows the clip's
+  // position. Hover tints only on mouse/trackpad, so a tap never leaves a stuck state.
   return (
     <div
       aria-hidden={!visible}
-      className={`group/vc absolute bottom-[8px] z-[2] flex items-center gap-[2px] rounded-full bg-white/[0.92] p-[2px] shadow-[0_0_0_0.5px_rgba(30,5,37,0.16),0_4px_16px_-4px_rgba(30,5,37,0.32)] backdrop-blur-md transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none md:bottom-[12px] ${
+      className={`group/vc absolute bottom-[8px] z-[2] flex items-center gap-[4px] overflow-hidden rounded-full bg-[rgba(30,5,37,0.72)] p-[4px] text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_8px_24px_-8px_rgba(30,5,37,0.48)] backdrop-blur-xl backdrop-saturate-150 transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none md:bottom-[12px] ${
         align === "left" ? "left-[8px] flex-row md:left-[12px]" : "right-[8px] flex-row-reverse md:right-[12px]"
       } ${visible ? "opacity-100" : "pointer-events-none translate-y-[4px] opacity-0"}`}
       onPointerDown={(e) => e.stopPropagation()}
     >
-      <button type="button" className={`${btn} relative size-[36px]`} aria-label={`${playing ? "Pause" : "Play"} ${name}`} data-sound-click="toggle" tabIndex={visible ? 0 : -1} onClick={toggle}>
-        {/* Progress ring: the clip's position, drawn clockwise from the top */}
-        <svg className="absolute inset-0 -rotate-90" viewBox="0 0 36 36" aria-hidden="true">
-          <circle cx="18" cy="18" r={R} fill="none" stroke="currentColor" strokeOpacity="0.12" strokeWidth="2" />
-          <circle cx="18" cy="18" r={R} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - progress)} />
-        </svg>
+      <button
+        type="button"
+        className="grid size-[32px] shrink-0 place-items-center rounded-full bg-white text-heading outline-none transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/[0.56] active:scale-[0.9] motion-reduce:transition-none [@media(hover:hover)]:hover:scale-[1.06]"
+        aria-label={`${playing ? "Pause" : "Play"} ${name}`}
+        data-sound-click="toggle"
+        tabIndex={visible ? 0 : -1}
+        onClick={toggle}
+      >
         {playing ? <Pause size={14} weight="fill" aria-hidden="true" /> : <Play size={14} weight="fill" aria-hidden="true" className="translate-x-[1px]" />}
       </button>
-      {/* The side's name; hovering or focusing the pill also shows where the clip is */}
-      <span className="flex items-center px-[6px] font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">
+      <span className="flex items-baseline px-[4px] font-geist text-caption-md font-medium uppercase leading-none tracking-[0.5px]">
         {tag}
         <span
           aria-hidden="true"
-          className="grid max-w-0 overflow-hidden whitespace-nowrap tabular-nums text-muted opacity-0 transition-[max-width,opacity,margin] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] group-focus-within/vc:ml-[8px] group-focus-within/vc:max-w-[96px] group-focus-within/vc:opacity-100 group-hover/vc:ml-[8px] group-hover/vc:max-w-[96px] group-hover/vc:opacity-100 motion-reduce:transition-none"
+          className="max-w-0 overflow-hidden whitespace-nowrap tabular-nums text-white/[0.64] opacity-0 transition-[max-width,opacity,margin] duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] group-focus-within/vc:ml-[8px] group-focus-within/vc:max-w-[96px] group-focus-within/vc:opacity-100 group-hover/vc:ml-[8px] group-hover/vc:max-w-[96px] group-hover/vc:opacity-100 motion-reduce:transition-none"
         >
           {clock(progress * duration)} / {clock(duration)}
         </span>
       </span>
-      <button type="button" className={`${btn} size-[32px]`} aria-label={`Restart ${name}`} data-sound-click="toggle" tabIndex={visible ? 0 : -1} onClick={restart}>
-        <ArrowCounterClockwise size={14} weight="bold" aria-hidden="true" />
+      <button
+        type="button"
+        className="grid size-[32px] shrink-0 place-items-center rounded-full text-white/[0.72] outline-none transition-[background-color,color,transform] duration-200 focus-visible:ring-2 focus-visible:ring-white active:scale-[0.9] motion-reduce:transition-none [@media(hover:hover)]:hover:bg-white/[0.12] [@media(hover:hover)]:hover:text-white"
+        aria-label={`Restart ${name}`}
+        data-sound-click="toggle"
+        tabIndex={visible ? 0 : -1}
+        onClick={restart}
+      >
+        <ArrowCounterClockwise size={16} weight="bold" aria-hidden="true" />
       </button>
+      {/* The clip's position: a hairline along the pill's bottom edge */}
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] bg-white/[0.12]">
+        <span className="block h-full origin-left bg-white/[0.8]" style={{ transform: `scaleX(${progress})` }} />
+      </span>
     </div>
   );
 }
