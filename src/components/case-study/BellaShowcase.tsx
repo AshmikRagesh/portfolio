@@ -8,8 +8,9 @@ import HostCharacter from "@/components/host/HostCharacter";
  * the navbar logo, on her own ground shadow. Every 10 seconds she hops into the next
  * thing she does on the site (reading, watching, celebrating, champion, dozing, ringing);
  * between changes she does a small idle hop now and then. Her eyes follow the cursor. No
- * caption: what each state means is left for the reader to find further down. More room
- * above her than below. With reduced motion she holds still
+ * caption: what each state means is left for the reader to find further down. She sits
+ * centred between the overview text and the next chapter: the negative bottom margin
+ * takes the next chapter's top margin (.cs-chapter) down to match the room above her. With reduced motion she holds still
  * and only the state changes.
  */
 type Pose = Omit<ComponentProps<typeof HostCharacter>, "style" | "className">;
@@ -71,7 +72,7 @@ export default function BellaShowcase() {
   }, [state]);
 
   return (
-    <figure aria-label="Bella, the live character" className="m-0 flex flex-col items-center pb-[8px] pt-[48px] md:pb-[16px] md:pt-[72px]">
+    <figure aria-label="Bella, the live character" className="m-0 -mb-[56px] flex flex-col items-center pt-[40px] md:-mb-[96px] md:pt-[56px]">
       <div ref={hopper} className="origin-bottom">
           <HostCharacter
             {...state.pose}

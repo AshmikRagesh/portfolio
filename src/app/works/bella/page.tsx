@@ -345,7 +345,7 @@ const TOOLTIPS = [
   { name: "Compact dark, with a pointer", src: art("tip-compact-dark"), kept: true },
 ];
 
-const RECORDED = new Set(["greets", "time", "reads"]);
+const RECORDED = new Set(["greets", "time", "reads", "celebrates", "champion"]);
 
 const USE_CASES: {
   num: number;
@@ -406,7 +406,7 @@ function Solution() {
             <p>{body}</p>
           </Copy>
           <Visual>
-            {/* Recordings so far: the first three use cases. The rest stay placeholders until recorded */}
+            {/* Every use case has its recording now; a slug left out of RECORDED shows a placeholder */}
             {RECORDED.has(slug) ? (
               <Figure video={`/videos/bella/${slug}.mp4`} alt={`Live site: ${title.toLowerCase()}`} />
             ) : (
