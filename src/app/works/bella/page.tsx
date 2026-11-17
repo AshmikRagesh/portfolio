@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { reels } from "@/content/reels";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
-import { Palette, Shapes, Eye, Sparkle } from "@phosphor-icons/react/dist/ssr";
+import { Palette, Shapes, Eye, Sparkle, Timer, CalendarCheck, Notebook, BellRinging } from "@phosphor-icons/react/dist/ssr";
 import {
   Hero,
   Chapter,
@@ -19,6 +19,9 @@ import {
   NextCase,
   Highlight,
   SessionLog,
+  PanelCards,
+  RhythmTrack,
+  AttemptCards,
 } from "@/components/case-study";
 
 // DRAFT, 2 Nov 2026. Bella's own outline, set by Ashmik (not the Problem → Outcome template):
@@ -437,28 +440,28 @@ function Solution() {
 // 11 Nov 2026 commits. Not claimed: bot detection (headless browsers aren't filtered).
 // Joining copy is a placeholder for Ashmik to rewrite in his words.
 // ─────────────────────────────────────────────────────────────────────────────
-const STATS_VIEWS = [
-  { lead: "Time,", text: "as visits, visitors, average and median active time, and the longest visit so far." },
-  { lead: "Visits per day,", text: "as one bar per day, so a sudden jump stands out." },
-  { lead: "Where people come from,", text: "by site only, like linkedin.com, never the full link." },
-  { lead: "Where they leave,", text: "from the last page seen in each visit, so I know which case study ends a visit." },
-  { lead: "What they do with Bella,", text: "such as opening the sign, copying the email, earning a stamp or sharing their pass. Each one counts once per visit." },
+const STATS_PANELS = [
+  { src: "/images/bella/stats/time.webp", alt: "Totals on the stats page", title: "Time", text: "Visits, visitors, average and median active time, and the longest visit so far." },
+  { src: "/images/bella/stats/per-day.webp", alt: "Visits per day chart", title: "Visits per day", text: "One bar per day for the last 30 days, so a sudden jump stands out." },
+  { src: "/images/bella/stats/referrers.webp", alt: "Top referrers list", title: "Where people come from", text: "By site only, like linkedin.com, never the full link." },
+  { src: "/images/bella/stats/exits.webp", alt: "Exit pages list", title: "Where they leave", text: "The last page seen in each visit, so I know which page ends a visit." },
+  { src: "/images/bella/stats/bella.webp", alt: "Bella actions list", title: "What they do with Bella", text: "Opening the sign, copying the email, earning a stamp. Each counts once per visit." },
 ];
 
-const STATS_BUILD = [
-  { lead: "Every 20 seconds,", text: "an open tab sends its active time to the site, and once more when the tab closes." },
-  { lead: "Every day,", text: "the site saves a copy of the totals, with days counted in Indian time, so I can compare weeks later." },
-  { lead: "Every Monday,", text: "Claude writes me a short summary of the week, inside Claude instead of email." },
-  { lead: "Every morning,", text: "Claude checks for spikes: a day with at least 30 visits and five times the usual, or visits sitting near the two-hour limit." },
+const STATS_RHYTHM = [
+  { icon: <Timer size={24} weight="fill" />, when: "Every 20 seconds", text: "An open tab sends its active time, and once more when it closes." },
+  { icon: <CalendarCheck size={24} weight="fill" />, when: "Every day", text: "The site saves the totals, with days in Indian time, so I can compare weeks later." },
+  { icon: <Notebook size={24} weight="fill" />, when: "Every Monday", text: "Claude writes me a short summary of the week, right in Claude instead of email." },
+  { icon: <BellRinging size={24} weight="fill" />, when: "Every morning", text: "Claude checks for spikes, like a day with 30 visits and five times the usual." },
 ];
 
-const HONEST = [
-  { lead: "Only real time counts.", text: "The clock pauses when the tab is hidden or nothing moves for 30 seconds. A video only counts when someone presses play." },
-  { lead: "The browser's numbers aren't trusted.", text: "A visit can never claim more time than has really passed since the site first saw it, and one visit tops out at two hours." },
-  { lead: "Nobody can edit someone else's visit.", text: "Only the visitor who started a visit can add to it, and a late report can never lower a score." },
-  { lead: "Spam hits a limit.", text: "Each connection can only send so many reports a minute and start so many visits an hour. The address is scrambled before it's stored, so no real address is kept." },
-  { lead: "My own visits don't count.", text: "One switch on the stats page marks my browser as mine, so testing the live site never changes the numbers." },
-  { lead: "Odd entries get flagged.", text: "A script lists anything that looks fake, and I decide what to clear. Nothing is deleted on its own." },
+const ATTEMPTS = [
+  { attempt: "Leaves a tab open all night", result: "Nothing added after 30 seconds", how: "The clock pauses when the tab is hidden or nothing moves for 30 seconds." },
+  { attempt: "Sends a made-up nine-hour visit", result: "Cut down to real time", how: "A visit can't claim more time than has passed since the site first saw it, and it stops at two hours." },
+  { attempt: "Adds time to someone else's visit", result: "Turned away", how: "Only the visitor who started a visit can add to it, and a late report never lowers a score." },
+  { attempt: "Floods the site with hundreds of visits", result: "Stopped at the limit", how: "Each connection can only start so many visits an hour. Its address is scrambled before it's stored." },
+  { who: "When I test", attempt: "I open the live site to try a change", result: "Not counted", how: "One switch on the stats page marks my browser as mine." },
+  { who: "If it slips through", attempt: "Something odd gets into the numbers", result: "Flagged for me", how: "A script lists anything that looks fake, and I decide what to clear. Nothing is deleted on its own." },
 ];
 
 function Behind() {
@@ -478,11 +481,12 @@ function Behind() {
             The page sits behind a key. <Highlight>Five wrong tries locks it for 15
             minutes.</Highlight> It answers one question: did people read, and what?
           </p>
-          <Pointers items={STATS_VIEWS} />
         </Copy>
         <Visual>
-          {/* Screenshot of /stats with real numbers goes here */}
-          <Figure name="Screenshot: stats page" alt="The private Curiosity stats page" />
+          <Figure video="/videos/bella/stats.mp4" poster="/images/bella/stats/poster.webp" alt="Scrolling through the private Curiosity stats page" />
+        </Visual>
+        <Visual>
+          <PanelCards items={STATS_PANELS} />
         </Visual>
       </div>
       <div className="cs-sub">
@@ -492,8 +496,10 @@ function Behind() {
             <Highlight>I don&apos;t have to remember to check.</Highlight> The numbers
             are saved as visits happen, and Claude brings them to me.
           </p>
-          <Pointers items={STATS_BUILD} />
         </Copy>
+        <Visual>
+          <RhythmTrack items={STATS_RHYTHM} />
+        </Visual>
       </div>
       <div className="cs-sub">
         <Copy>
@@ -502,8 +508,10 @@ function Behind() {
             Anyone can send the site a made-up visit. <Highlight>So the site checks every
             report instead of believing it.</Highlight>
           </p>
-          <Pointers items={HONEST} />
         </Copy>
+        <Visual>
+          <AttemptCards items={ATTEMPTS} />
+        </Visual>
       </div>
     </Chapter>
   );
