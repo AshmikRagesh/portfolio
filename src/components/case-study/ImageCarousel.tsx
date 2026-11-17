@@ -8,17 +8,13 @@ import { CaretLeft, CaretRight } from "@phosphor-icons/react";
  * in order (e.g. a pull request review, then the work behind it). All slides share one size so
  * the card never jumps between them.
  *
- * Modelled on Apple's product-page galleries (apple.com/iphone):
- *  - Paddle arrows: grey frosted circles at the picture's left and right, shown while the mouse
- *    is over the picture or when an arrow has keyboard focus. They hide at the ends and on touch
- *    screens, where swiping does the job.
- *  - Dot nav: a frosted grey pill on the picture's bottom edge, one dot per slide; the current
- *    one stretches into a bar. Each dot is a 24px tap target around an 8px dot.
+ * Modelled on Framer's Slideshow component with its controls outside the media:
+ *  - Under the picture: a round arrow at each end, and between them a dot per slide (24px tap
+ *    target around an 8px dot) above the caption. Nothing sits on top of the screenshot.
  *  - Drag or swipe the picture: it follows the pointer 1:1 and settles on the nearest slide; a
  *    quick flick is enough. The ends resist so the reader feels the edge.
  *  - Arrow keys move when the carousel has focus; Home and End go to the ends.
- *  - The caption sits straight under the picture, like every other media card, and is read
- *    out when the slide changes.
+ *  - The caption is read out when the slide changes.
  *  - Reduced motion: slides switch without the glide.
  */
 type Slide = { src: string; alt: string; caption: string };
@@ -89,7 +85,7 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
     >
       <div
         ref={frame}
-        className={`group/car cs-pair-media relative touch-pan-y select-none overflow-hidden rounded-sm bg-grape-light/40 ${
+        className={`cs-pair-media relative touch-pan-y select-none overflow-hidden rounded-sm bg-grape-light/40 ${
           drag !== null ? "cursor-grabbing" : "cursor-grab"
         }`}
         style={{ aspectRatio: `${width} / ${height}` }}
@@ -143,56 +139,48 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
             />
           ))}
         </div>
-
-        <Paddle dir="prev" off={i === 0} onGo={() => jump(i - 1)} />
-        <Paddle dir="next" off={i === last} onGo={() => jump(i + 1)} />
-
-        {/* Dot nav on the picture's bottom edge. Pointer events stop here so tapping a dot
-            never starts a drag. */}
-        <div
-          className="absolute bottom-[8px] left-1/2 z-[2] flex h-[40px] -translate-x-1/2 items-center rounded-full bg-[rgba(232,232,237,0.72)] px-[8px] backdrop-blur-xl backdrop-saturate-150 md:bottom-[12px]"
-          onPointerDown={(e) => e.stopPropagation()}
-          onPointerUp={(e) => e.stopPropagation()}
-        >
-          {slides.map((s, n) => (
-            <button
-              key={s.src}
-              type="button"
-              aria-label={`Image ${n + 1} of ${slides.length}: ${s.caption}`}
-              aria-current={n === i ? "true" : undefined}
-              data-sound-click="toggle"
-              onClick={() => jump(n)}
-              className={`group/dot grid h-[24px] place-items-center rounded-full outline-none transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-heading motion-reduce:transition-none ${
-                n === i ? "w-[56px]" : "w-[24px]"
-              }`}
-            >
-              <span
-                className={`block h-[8px] rounded-full transition-[width,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                  n === i ? "w-[40px] bg-[rgb(29,29,31)]" : "w-[8px] bg-black/[0.42] group-hover/dot:bg-black/[0.64]"
-                }`}
-              />
-            </button>
-          ))}
-        </div>
       </div>
 
-      {/* Same look as CardFooter's caption; keyed by slide so it settles in each time it changes */}
-      <figcaption key={i} aria-live="polite" className="cs-caption-in flex flex-col items-center px-[12px] pb-[8px] pt-[16px] text-center [text-wrap:balance] md:px-[16px]">
-        <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">
-          {i + 1} of {slides.length} · {slides[i].caption}
-        </span>
+      {/* Footer, after Framer's Slideshow with its controls placed outside the media: round
+          arrows at the ends, dots and the caption centred between them. Nothing covers the
+          screenshot, and the caption keeps the same centred Geist caps as every media card. */}
+      <figcaption className="flex items-start gap-[8px] px-[4px] pb-[4px] pt-[12px] md:gap-[16px] md:px-[8px]">
+        <Arrow dir="prev" off={i === 0} onGo={() => jump(i - 1)} />
+        <div className="flex min-w-0 flex-1 flex-col items-center gap-[8px] pt-[4px]">
+          <div className="flex items-center">
+            {slides.map((s, n) => (
+              <button
+                key={s.src}
+                type="button"
+                aria-label={`Image ${n + 1} of ${slides.length}: ${s.caption}`}
+                aria-current={n === i ? "true" : undefined}
+                data-sound-click="toggle"
+                onClick={() => jump(n)}
+                className="group/dot grid size-[24px] place-items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-heading"
+              >
+                <span
+                  className={`block size-[8px] rounded-full transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                    n === i ? "scale-[1.25] bg-heading" : "bg-heading/[0.32] group-hover/dot:bg-heading/[0.56]"
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
+          <p key={i} aria-live="polite" className="cs-caption-in m-0 text-center [text-wrap:balance]">
+            <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{slides[i].caption}</span>
+          </p>
+        </div>
+        <Arrow dir="next" off={i === last} onGo={() => jump(i + 1)} />
       </figcaption>
     </figure>
   );
 }
 
 /**
- * Apple's paddle arrow: a grey frosted circle centred on the picture's edge. It appears while
- * the mouse is over the picture or when it has keyboard focus, and hides at the ends. At an end
- * it stays focusable (aria-disabled, shown faint if focused) so focus never drops to the page.
- * Touch screens never show it; swiping and the dots cover them.
+ * Framer Slideshow's arrow: a 40px white circle with a hairline edge and soft shadow. At an end
+ * it fades but stays focusable (aria-disabled), so keyboard focus never drops to the page.
  */
-function Paddle({ dir, off, onGo }: { dir: "prev" | "next"; off: boolean; onGo: () => void }) {
+function Arrow({ dir, off, onGo }: { dir: "prev" | "next"; off: boolean; onGo: () => void }) {
   const Icon = dir === "prev" ? CaretLeft : CaretRight;
   return (
     <button
@@ -201,17 +189,13 @@ function Paddle({ dir, off, onGo }: { dir: "prev" | "next"; off: boolean; onGo: 
       aria-disabled={off || undefined}
       data-sound-click={off ? undefined : "toggle"}
       onClick={() => !off && onGo()}
-      onPointerDown={(e) => e.stopPropagation()}
-      onPointerUp={(e) => e.stopPropagation()}
-      className={`absolute top-1/2 z-[2] grid size-[36px] -translate-y-1/2 place-items-center rounded-full bg-[rgba(210,210,215,0.64)] text-black/[0.56] outline-none backdrop-blur-xl backdrop-saturate-150 transition-[opacity,background-color,color,transform] duration-200 focus-visible:ring-2 focus-visible:ring-heading motion-reduce:transition-none md:size-[44px] ${
-        dir === "prev" ? "left-[12px] md:left-[16px]" : "right-[12px] md:right-[16px]"
-      } ${
+      className={`grid size-[40px] shrink-0 place-items-center rounded-full bg-white text-heading shadow-[0_0_0_1px_rgba(30,5,37,0.12),0_2px_6px_-2px_rgba(30,5,37,0.16)] outline-none transition-[opacity,background-color,transform,box-shadow] duration-200 focus-visible:ring-2 focus-visible:ring-heading focus-visible:ring-offset-2 motion-reduce:transition-none ${
         off
-          ? "pointer-events-none opacity-0 focus-visible:opacity-[0.4]"
-          : "opacity-0 hover:bg-[rgba(223,223,227,0.72)] hover:text-black/[0.64] focus-visible:opacity-100 active:scale-[0.92] [@media(hover:hover)]:group-hover/car:opacity-100"
+          ? "cursor-default opacity-[0.4] shadow-[0_0_0_1px_rgba(30,5,37,0.12)]"
+          : "hover:bg-grape-light hover:shadow-[0_0_0_1px_rgba(30,5,37,0.16),0_4px_12px_-4px_rgba(30,5,37,0.24)] active:scale-[0.94]"
       }`}
     >
-      <Icon size={18} weight="bold" aria-hidden="true" />
+      <Icon size={16} weight="bold" aria-hidden="true" />
     </button>
   );
 }
