@@ -449,11 +449,14 @@ export function Expanded({
   ratio,
   onClose,
   children,
+  caption,
 }: {
   label: string;
   ratio: number;
   onClose: () => void;
   children: React.ReactNode;
+  /** Replaces the line under the media (the label) when given */
+  caption?: React.ReactNode;
 }) {
   const box = useRef<HTMLDivElement>(null);
   const close = useRef<HTMLButtonElement>(null);
@@ -510,7 +513,7 @@ export function Expanded({
       >
         {children}
       </div>
-      <p className="pointer-events-none max-w-[640px] text-center font-geist text-[14px] leading-[20px] text-white/70">{label}</p>
+      {caption ?? <p className="pointer-events-none max-w-[640px] text-center font-geist text-[14px] leading-[20px] text-white/70">{label}</p>}
     </div>,
     document.body,
   );

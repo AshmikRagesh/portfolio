@@ -7,20 +7,21 @@ import { CardFooter } from "./Blocks";
 import { Expanded } from "./Media";
 
 /**
- * A screenshot with its findings marked on it. Quiet and static: the screenshot stays the
- * hero, and every finding is visible at once, so there's nothing to discover or click
- * through.
+ * A screenshot with its findings marked on it. Quiet and static: every finding is visible
+ * at once, numbered, so the reader can count them and match each mark to its words.
  *
- *  - Tablet and up: each finding is an outline box (2px grape line, 6px corners, a faint
- *    wash, a white halo so it reads on dark and light parts alike) with the case studies'
- *    Tag on its top or bottom edge, naming it in a few words. Tags on boxes in the right
- *    half hang from the box's right edge, so they never run off the picture.
- *  - Phones: the tags would crowd a small picture, so the picture stays clean and the
- *    findings read as a short list under it.
- *  - Every size: clicking or tapping the picture (or Enter on it) opens it large with
- *    every finding marked; Esc, the backdrop or ✕ close it.
+ *  - Each finding is an outline box (2px grape line, 6px corners, a faint wash, a white
+ *    halo so it reads on dark and light parts alike), numbered in reading order.
+ *  - Tablet and up: the case studies' Tag sits on the box's top or bottom edge with the
+ *    number in its chip and the finding in a few words. Tags on boxes in the right half
+ *    hang from the box's right edge, so they never run off the picture.
+ *  - Phones: tags would crowd a small picture, so each box carries just its number on the
+ *    corner and the findings are listed under the picture with the same numbers.
+ *  - Every size: clicking or tapping the picture (or Enter on it) opens it large. Phones
+ *    keep the numbers on the picture and list the findings under it; larger screens show
+ *    the tags. Esc, the backdrop or ✕ close it.
  *  - Once in view the boxes settle in one after another; reduced motion shows them
- *    straight away. Screen readers get the findings as a list.
+ *    straight away.
  *
  * Boxes are placed as fractions of the picture, so they stay on their targets at any width.
  */
@@ -34,9 +35,35 @@ type Note = {
 };
 
 const EASE = "ease-[cubic-bezier(0.2,0.7,0.2,1)]";
+const HALO = "shadow-[0_0_0_2px_rgba(255,255,255,0.85)]";
 
-// The picture with its boxes. Inline, the boxes show from tablet up; `large` shows them on
-// every size (the expanded view)
+// The number, the same grape dot wherever it appears
+function Dot({ n, className = "" }: { n: number; className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`grid size-[20px] shrink-0 place-items-center rounded-full bg-grape font-geist text-[10px] font-medium leading-[12px] text-white ${className}`}
+    >
+      {n}
+    </span>
+  );
+}
+
+// The findings as a numbered list (under the picture on phones, and in the large view)
+function List({ notes, dark = false, className = "" }: { notes: Note[]; dark?: boolean; className?: string }) {
+  return (
+    <ol className={`m-0 flex list-none flex-col gap-[8px] p-0 ${className}`}>
+      {notes.map((n, i) => (
+        <li key={n.text} className={`flex items-center gap-[8px] font-body text-body ${dark ? "text-white/90" : "text-heading"}`}>
+          <Dot n={i + 1} />
+          {n.text}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+// The picture with its numbered boxes
 function Marked({
   src,
   alt,
@@ -64,9 +91,9 @@ function Marked({
           <div
             key={n.text}
             aria-hidden="true"
-            className={`absolute rounded-[6px] border-2 border-grape bg-grape/[0.06] shadow-[0_0_0_2px_rgba(255,255,255,0.85)] transition-[opacity,transform] duration-500 ${EASE} motion-reduce:transition-none ${
-              large ? "" : "max-md:hidden"
-            } ${shown ? "scale-100 opacity-100" : "scale-[1.04] opacity-0"}`}
+            className={`absolute rounded-[6px] border-2 border-grape bg-grape/[0.06] ${HALO} transition-[opacity,transform] duration-500 ${EASE} motion-reduce:transition-none ${
+              shown ? "scale-100 opacity-100" : "scale-[1.04] opacity-0"
+            }`}
             style={{
               left: `${n.box.x * 100}%`,
               top: `${n.box.y * 100}%`,
@@ -75,8 +102,12 @@ function Marked({
               transitionDelay: large ? "0ms" : `${200 + i * 250}ms`,
             }}
           >
-            <span className={`absolute ${right ? "right-[-2px]" : "left-[-2px]"} ${n.place === "bottom" ? "top-full mt-[6px]" : "bottom-full mb-[6px]"}`}>
+            {/* Phones: the number on the box's corner */}
+            <Dot n={i + 1} className={`absolute -top-[10px] md:hidden ${right ? "-right-[10px]" : "-left-[10px]"} ${HALO}`} />
+            {/* Tablet up: the tag, its number in the chip */}
+            <span className={`absolute hidden md:block ${right ? "right-[-2px]" : "left-[-2px]"} ${n.place === "bottom" ? "top-full mt-[6px]" : "bottom-full mb-[6px]"}`}>
               <Tag face="geist" tone="grape">
+                <span className="-ml-[6px] grid size-[16px] place-items-center rounded-full bg-white/20 text-[10px] leading-[12px]">{i + 1}</span>
                 {n.text}
               </Tag>
             </span>
@@ -129,20 +160,18 @@ export default function AnnotatedFigure({
         <Marked src={src} alt={alt} width={width} height={height} notes={notes} shown={shown} />
       </div>
 
-      {/* The findings in words: shown under the picture on phones, for screen readers on every size */}
-      <ul className="m-0 flex list-none flex-col gap-[6px] px-[12px] pb-[4px] pt-[12px] md:sr-only">
-        {notes.map((n) => (
-          <li key={n.text} className="flex items-baseline gap-[8px] font-body text-body text-heading">
-            <span aria-hidden="true" className="size-[6px] shrink-0 -translate-y-[2px] rounded-full bg-grape" />
-            {n.text}
-          </li>
-        ))}
-      </ul>
+      {/* The findings in words, numbered like the boxes: shown on phones, for screen readers on every size */}
+      <List notes={notes} className="px-[12px] pb-[4px] pt-[12px] md:sr-only" />
 
       <CardFooter label={label} />
 
       {open && (
-        <Expanded label={label ?? alt} ratio={width / height} onClose={close}>
+        <Expanded
+          label={label ?? alt}
+          ratio={width / height}
+          onClose={close}
+          caption={<List notes={notes} dark className="self-stretch px-[8px] md:hidden" />}
+        >
           <Marked src={src} alt={alt} width={width} height={height} notes={notes} shown large />
         </Expanded>
       )}
