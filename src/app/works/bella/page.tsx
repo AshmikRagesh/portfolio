@@ -75,7 +75,7 @@ function Overview() {
           without drawing anything by hand.
         </p>
       </Copy>
-      {/* The live Bella, no card: she hops into a new use case every 20 seconds */}
+      {/* The live Bella, no card: she hops into a new use case every 10 seconds */}
       <BellaShowcase />
     </Chapter>
   );

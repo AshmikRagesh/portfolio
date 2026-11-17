@@ -5,10 +5,11 @@ import HostCharacter from "@/components/host/HostCharacter";
 
 /**
  * Bella on her own in the page, no card: the live character, centred, a little bigger than
- * the navbar logo, on her own ground shadow. Every 20 seconds she hops into the next
+ * the navbar logo, on her own ground shadow. Every 10 seconds she hops into the next
  * thing she does on the site (reading, watching, celebrating, champion, dozing, ringing);
- * between changes she does a small idle hop now and then. Her eyes follow the cursor. A
- * Geist caps caption under her names what she's doing. With reduced motion she holds still
+ * between changes she does a small idle hop now and then. Her eyes follow the cursor. No
+ * caption: what each state means is left for the reader to find further down. More room
+ * above her than below. With reduced motion she holds still
  * and only the state changes.
  */
 type Pose = Omit<ComponentProps<typeof HostCharacter>, "style" | "className">;
@@ -22,8 +23,8 @@ const STATES: { label: string; pose: Pose; ding?: boolean; celebrate?: boolean }
   { label: "Dozing while you're away", pose: { mood: "dozing" } },
 ];
 
-const EVERY_MS = 20_000;
-const IDLE_HOP_MS = 6_000;
+const EVERY_MS = 10_000;
+const IDLE_HOP_MS = 4_000;
 
 export default function BellaShowcase() {
   const [i, setI] = useState(0);
@@ -70,7 +71,7 @@ export default function BellaShowcase() {
   }, [state]);
 
   return (
-    <figure className="m-0 flex flex-col items-center py-[24px] md:py-[40px]">
+    <figure aria-label="Bella, the live character" className="m-0 flex flex-col items-center pb-[8px] pt-[48px] md:pb-[16px] md:pt-[72px]">
       <div ref={hopper} className="origin-bottom">
           <HostCharacter
             {...state.pose}
@@ -80,13 +81,6 @@ export default function BellaShowcase() {
             className="block"
           />
       </div>
-      <figcaption
-        key={i}
-        aria-live="polite"
-        className="mt-[24px] animate-[cs-fade_600ms_ease-out] font-geist text-caption font-medium uppercase tracking-[0.5px] text-heading"
-      >
-        {state.label}
-      </figcaption>
     </figure>
   );
 }
