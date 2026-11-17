@@ -10,7 +10,7 @@
 // Click it and it comes to the middle of the screen and turns over into Nivasa's host
 // card (the same motion as the book and the GitHub card).
 
-import { useCallback, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import HoverTip from "./HoverTip";
 import Cta from "@/components/Cta";
 import { Tag } from "@/components/Tag";
@@ -200,7 +200,7 @@ function PixelField() {
 }
 
 // Hierarchy, top to bottom: who (the name, with Superhost beside it) → what Nivasa is,
-// in one line → the proof, rating first → one guest in their own words → why we host →
+// in one line → the proof, rating first → guests in their own words, one at a time → why we host →
 // the way out to Airbnb. Everything reads from one left edge. The numbers and the review
 // are from Nivasa's Airbnb profile (17 Nov 2026).
 function HostCard() {
@@ -226,7 +226,7 @@ function HostCard() {
           </Tag>
         </div>
         <p className="mt-2 text-pretty font-geist text-body text-secondary sm:text-body-md">
-          <span className="text-text-base">Our side project with walls:</span> a sunlit 1BHK in HSR Layout, Bengaluru, run by Nandagopal and me.
+          <span className="text-text-base">Our side project with walls:</span> a sunlit 1BHK in HSR, Bengaluru, run by my friend Nandagopal and me.
         </p>
 
         {/* The proof, rating first */}
@@ -243,13 +243,8 @@ function HostCard() {
           <Stat value="3" label="Months open" />
         </div>
 
-        {/* One guest, in their own words */}
-        <figure className="m-0 mt-5">
-          <blockquote className="m-0 text-pretty font-heading text-h4 text-heading sm:text-h4-md">
-            “The space is calm, peaceful, and immaculate.”
-          </blockquote>
-          <figcaption className="mt-2 font-geist text-caption text-muted">Santosh, a guest · 5 stars</figcaption>
-        </figure>
+        {/* Guests, in their own words, one at a time */}
+        <GuestReviews />
 
         {/* Why we host */}
         <p className="mt-5 font-geist text-caption font-medium uppercase tracking-[0.5px] text-muted">Why we host</p>
@@ -263,6 +258,84 @@ function HostCard() {
         </Cta>
       </div>
     </div>
+  );
+}
+
+// ── Guest reviews ─────────────────────────────────────────────────────────────
+// Five real reviews from Nivasa's Airbnb page, quoted word for word (one sentence each).
+// One shows at a time: every 7 seconds it lifts out and the next rises in. All five sit
+// in the same grid cell, so the card is always as tall as the longest and never jumps.
+// Hovering or focusing the reviews pauses them; the dots pick one; with reduced motion
+// they swap without moving and don't turn on their own.
+const REVIEWS = [
+  { quote: "The property had everything already, we didn’t need to ask for anything.", who: "Kabir, a guest" },
+  { quote: "The space is calm, peaceful, and immaculate.", who: "Santosh, a guest" },
+  { quote: "Everything felt fresh, clean and thoughtfully designed.", who: "Avinash, a guest" },
+  { quote: "Loved the place, feels like home.", who: "Koushik, a guest" },
+  { quote: "It genuinely felt like my little nest in the city.", who: "Jeena, our first guest" },
+];
+const REVIEW_MS = 7000;
+
+function GuestReviews() {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    if (paused || reduced) return;
+    const t = window.setTimeout(() => {
+      if (!document.hidden) setIndex((i) => (i + 1) % REVIEWS.length);
+    }, REVIEW_MS);
+    return () => window.clearTimeout(t);
+  }, [index, paused, reduced]);
+
+  return (
+    <figure
+      className="m-0 mt-5"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+      aria-roledescription="carousel"
+      aria-label="What guests say"
+    >
+      <div className="grid">
+        {REVIEWS.map((r, i) => {
+          const on = i === index;
+          return (
+            <div
+              key={r.who}
+              aria-hidden={!on}
+              className={`col-start-1 row-start-1 ${reduced ? "" : "transition-[opacity,transform] duration-500 ease-out"} ${
+                on ? "translate-y-0 opacity-100" : `pointer-events-none opacity-0 ${reduced ? "" : i < index ? "-translate-y-2" : "translate-y-2"}`
+              }`}
+            >
+              <blockquote className="m-0 text-pretty font-heading text-h4 text-heading sm:text-h4-md">“{r.quote}”</blockquote>
+            </div>
+          );
+        })}
+      </div>
+      <figcaption className="mt-3 flex items-center justify-between gap-4">
+        <span className="font-geist text-caption text-muted">
+          <span className="text-grape" aria-hidden="true">★★★★★</span>
+          <span className="sr-only">5 stars, </span> {REVIEWS[index].who}
+        </span>
+        <span className="flex items-center">
+          {REVIEWS.map((r, i) => (
+            <button
+              key={r.who}
+              type="button"
+              onClick={() => setIndex(i)}
+              aria-label={`Review ${i + 1} of ${REVIEWS.length}`}
+              aria-current={i === index}
+              className="group/dot flex h-6 w-5 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
+            >
+              <span className={`block h-1.5 rounded-full transition-all duration-300 ${i === index ? "w-4 bg-grape" : "w-1.5 bg-muted/40 group-hover/dot:bg-muted"}`} />
+            </button>
+          ))}
+        </span>
+      </figcaption>
+    </figure>
   );
 }
 
