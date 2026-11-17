@@ -173,12 +173,13 @@ function Context() {
       </Copy>
       <Visual>
         {/* Ashmik walks through the live site: Africa in the menu opens a trip list, and the
-            Africa destination page has no menu link. Narrated, so it waits for a click; it
-            starts at the case studies' default 1.25× */}
+            Africa destination page has no menu link. Narrated, so it waits for a click and
+            starts at 1.2× */}
         <Figure
           video="/videos/tcs-find-a-trip/problem-walkthrough.mp4"
           poster="/images/tcs-find-a-trip/problem-walkthrough-poster.jpg"
           narrated
+          speed={1.2}
           alt="Walkthrough of the TCS World Travel menu: choosing Africa opens a list of trips, and the Africa destination page has no menu link"
           label="A walkthrough of the problem on the live site"
         />

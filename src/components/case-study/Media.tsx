@@ -22,7 +22,7 @@ import { useReportOnScreen, useReportWatching } from "@/lib/curiosity/watching";
  */
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
 /** Every case study clip starts at this speed unless it sets its own; the reader can change it */
-export const DEFAULT_SPEED = 1.25;
+export const DEFAULT_SPEED = 1;
 const IDLE_MS = 2000;
 
 type Place = { time: number; rate: number; playing: boolean };
