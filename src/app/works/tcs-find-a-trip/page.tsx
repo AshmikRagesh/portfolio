@@ -410,6 +410,14 @@ const SOLUTION_VIDEOS: Record<number, Record<string, string>> = {
   },
 };
 
+// Point 2 is about the labels' wording and order, which don't move: stills, side by side
+const SOLUTION_STILLS: Record<number, Record<string, string>> = {
+  2: {
+    links: "/images/tcs-find-a-trip/solution-2-links.jpg",
+    cards: "/images/tcs-find-a-trip/solution-2-cards.jpg",
+  },
+};
+
 function Solution() {
   return (
     <Chapter id="solution" num={4} title="How the final designs work">
@@ -431,8 +439,14 @@ function Solution() {
             <Visual>
               <VariantPair
                 videos={SOLUTION_VIDEOS[num]}
+                images={SOLUTION_STILLS[num]}
                 names={
-                  num === 3
+                  num === 2
+                    ? {
+                        links: "Africa open in the menu with two text links: Explore Trips first, then Explore Destinations",
+                        cards: "Africa open in the menu with two image cards: Explore Trips first, then Explore Destination",
+                      }
+                    : num === 3
                     ? {
                         links: "Africa opens the choice; North America goes straight to its trips (text links)",
                         cards: "Africa opens the choice; North America goes straight to its trips (image cards)",
