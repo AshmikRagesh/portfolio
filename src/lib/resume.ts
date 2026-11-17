@@ -32,10 +32,11 @@ export const resumeSections: ResumeSection[] = [
         role: "Product Designer",
         when: "Aug 2023 – Now",
         detail: [
-          "Led design for three brands: Enchanting Travels, Hayes & Jarvis and My Planet.",
-          "Spearheaded the **Artemis design system** across three travel brands, ((boosting task completion by 35%)) and reducing errors by 60%.",
+          "Led design for six brands: TCS World Travel, Quark Expeditions, Kalos, Enchanting Travels, Hayes & Jarvis and My Planet.",
+          "Integrated travel insurance into the Artemis booking flow in 4 weeks, ((lifting adoption from 7% to 52%)) and adding $125K in Q1 revenue.",
+          "Spearheaded the **Artemis design system** across three brands, raising task completion by 35% and reducing errors by 60%.",
+          "Helped start **Helix**, a Claude Code skill that holds every brand's design system in code, cutting design delivery time roughly in half.",
           "Redesigned the travel proposal UX, leading to **a 40% increase in bookings**.",
-          "Designed a travel planning tool that cut lead prospecting time by 75%.",
         ],
       },
       {
@@ -75,9 +76,9 @@ export const resumeSections: ResumeSection[] = [
   {
     label: "Skills",
     entries: [
-      { org: "Design & Animation", detail: ["Interaction design, prototyping, user flows, information architecture, motion design, branding, responsive design for iOS, Android and web."] },
+      { org: "Design & Animation", detail: ["Interaction design, prototyping, user flows, information architecture, design systems, design-to-code, motion design, branding, responsive design."] },
       { org: "Research", detail: ["User interviews, usability tests, heuristic evaluation, survey design, comparative analysis, A/B testing."] },
-      { org: "Tools", detail: ["Figma, Framer, Adobe CC, FigJam, Protopie, Spline, Notion, Jira, ChatGPT, Midjourney."] },
+      { org: "Tools", detail: ["Figma, Framer, ProtoPie, Spline, Claude Code, Cursor, Codex, Figma MCP, GitHub, Vercel."] },
     ],
   },
 ];
