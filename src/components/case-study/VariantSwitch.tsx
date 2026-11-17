@@ -131,16 +131,25 @@ export function VariantFigure({
 export function VariantPair({
   names,
   videos = {},
+  images,
   aspect = "aspect-[16/9]",
 }: {
   names: Record<string, string>;
   videos?: Record<string, string | undefined>;
+  /** Stills instead of recordings, for a detail that doesn't move (e.g. the labels). Stills
+   *  sit side by side from tablet up, so the two designs compare at a glance; recordings
+   *  stay one below the other, full width. Both stills must be the same size. */
+  images?: Record<string, string>;
   aspect?: string;
 }) {
   const variants = useContext(VariantContext);
   if (!variants) throw new Error("VariantPair needs a VariantProvider");
   return (
-    <ul className="m-0 flex list-none flex-col gap-[24px] p-0 md:gap-[32px]">
+    <ul
+      className={`m-0 list-none p-0 ${
+        images ? "grid grid-cols-1 gap-[24px] sm:grid-cols-2 md:gap-[24px]" : "flex flex-col gap-[24px] md:gap-[32px]"
+      }`}
+    >
       {variants.map((v) => {
         const video = videos[v.id];
         // "Variant 2 · Text links": only the variant shows, as the small label. Every point's
@@ -151,8 +160,9 @@ export function VariantPair({
             <Figure
               kicker={variant}
               name={names[v.id]}
-              alt={video ? `Screen recording: ${names[v.id]}` : undefined}
+              alt={video ? `Screen recording: ${names[v.id]}` : images ? names[v.id] : undefined}
               video={video}
+              src={images?.[v.id]}
               aspect={aspect}
             />
           </li>
