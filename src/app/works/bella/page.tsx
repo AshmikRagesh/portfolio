@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { reels } from "@/content/reels";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
-import { Palette, Shapes, Eye, Sparkle } from "@phosphor-icons/react/dist/ssr";
+import { Palette, Shapes, Eye, Sparkle, Moon, ClockCountdown, UserSwitch, Stack, Wrench, Flag } from "@phosphor-icons/react/dist/ssr";
 import {
   Hero,
   Chapter,
@@ -468,12 +468,12 @@ const RHYTHM_TABS = {
 };
 
 const ATTEMPTS = [
-  { attempt: "Leaves a tab open all night", result: "Nothing added after 30 seconds", how: "The clock pauses when the tab is hidden or nothing moves for 30 seconds." },
-  { attempt: "Sends a made-up nine-hour visit", result: "Cut down to real time", how: "A visit can't claim more time than has passed since the site first saw it, and it stops at two hours." },
-  { attempt: "Adds time to someone else's visit", result: "Turned away", how: "Only the visitor who started a visit can add to it, and a late report never lowers a score." },
-  { attempt: "Floods the site with hundreds of visits", result: "Stopped at the limit", how: "Each connection can only start so many visits an hour. Its address is scrambled before it's stored." },
-  { who: "When I test", attempt: "I open the live site to try a change", result: "Not counted", how: "One switch on the stats page marks my browser as mine." },
-  { who: "If it slips through", attempt: "Something odd gets into the numbers", result: "Flagged for me", how: "A script lists anything that looks fake, and I decide what to clear. Nothing is deleted on its own." },
+  { icon: <Moon />, attempt: "Leaves a tab open all night", result: "Nothing added after 30 seconds", how: "The clock pauses when the tab is hidden or nothing moves for 30 seconds." },
+  { icon: <ClockCountdown />, attempt: "Sends a made-up nine-hour visit", result: "Cut down to real time", how: "A visit can't claim more time than has passed since the site first saw it, and it stops at two hours." },
+  { icon: <UserSwitch />, attempt: "Adds time to someone else's visit", result: "Turned away", how: "Only the visitor who started a visit can add to it, and a late report never lowers a score." },
+  { icon: <Stack />, attempt: "Floods the site with hundreds of visits", result: "Stopped at the limit", how: "Each connection can only start so many visits an hour. Its address is scrambled before it's stored." },
+  { who: "When I test", icon: <Wrench />, attempt: "I open the live site to try a change", result: "Not counted", how: "One switch on the stats page marks my browser as mine." },
+  { who: "If it slips through", icon: <Flag />, attempt: "Something odd gets into the numbers", result: "Flagged for me", how: "A script lists anything that looks fake, and I decide what to clear. Nothing is deleted on its own." },
 ];
 
 function Behind() {
