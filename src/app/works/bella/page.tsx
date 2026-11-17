@@ -261,10 +261,10 @@ const FINALISTS = [
 
 function Choosing() {
   return (
-    <Chapter id="choosing" num={3} title="We picked the desk bell over the key tag">
+    <Chapter id="choosing" num={3} title="I picked the desk bell over the key tag">
       <Copy>
         <p>
-          The key tag was the strongest alternative until we tested it in
+          The key tag was the strongest alternative until I tested it in
           context. Claude Code placed it in the live navbar, and <Highlight>at logo
           size its details disappeared</Highlight>.
         </p>
