@@ -16,8 +16,9 @@ export default function Hero() {
           {`I'm Ashmik, Design Engineer\nwho ships with vision.`}
         </h1>
         <p className="font-body font-normal text-[16px] leading-[24px] text-secondary w-full md:text-[20px] md:leading-[32px] md:max-w-[652px] lg:text-[20px] lg:leading-[32px] lg:max-w-[652px]">
-          I make data-heavy products easy to understand—and build working
-          prototypes so teams can try an idea before they commit to it.
+          I build production-aware prototypes so teams can experience an idea
+          before they commit to it. Off the clock, I host guests at Nivasa, our
+          Airbnb in Bengaluru.
         </p>
       </div>
 
