@@ -77,7 +77,7 @@ function Overview() {
           role="End-to-end Design & Developer Handoff"
           // TODO: add Travis's role once known
           team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content), TCS developers (Engineering)"
-          timeline={<>May – July 2026<br />Briefed in June 2026 · V1 launched in July 2026</>}
+          timeline={<>February – July 2026<br />Briefed in February 2026 · Designed in May 2026 · V1 launched in July 2026</>}
         />
       </Copy>
       <Visual>
@@ -548,7 +548,7 @@ const WORKED = [
   },
   {
     lead: "Ship, learn, and iterate.",
-    text: <><Highlight>V1 went live a month after the brief.</Highlight> Getting the experience into production gave us an opportunity to see how it worked in practice and identify what needed to improve in V2.</>,
+    text: <><Highlight>V1 went live two months after the designs.</Highlight> Getting the experience into production gave us an opportunity to see how it worked in practice and identify what needed to improve in V2.</>,
   },
   {
     lead: "Test with people who know the product.",
@@ -597,7 +597,7 @@ export default function TcsSearchPage() {
     <CaseStudyLayout sections={SECTIONS} reel={reels["tcs-search"]}>
       <Hero
         title="From every trip at once to the few that fit: filters for TCS search"
-        date="May 2026"
+        date="July 2026"
         image="/images/tcs-search/cover.webp"
       />
       <Overview />
