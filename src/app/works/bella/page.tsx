@@ -108,13 +108,17 @@ const TRAITS = [
   },
 ]
 
-// Four of the six hospitality references, pictures only, loose on one card to drag around.
-// x and y are where each starts, as a share of the free space.
+// Four mascots, cut out on transparent backgrounds, loose on one card to drag around.
+// x and y are where each starts, as a share of the free space; `wide` widens the box for
+// a wide pose. Sources (public/images/bella/references): Duo, en.wikipedia
+// File:Duo_from_Duolingo.svg; Ollie, commons File:Tripadvisor-logo-circle-owl-icon-black-green.svg
+// (CC0); Kumamon, en.wikipedia File:Kumamon_illustration.jpeg; Bibendum, en.wikipedia
+// File:Michelin_(2017).svg with the wordmark cut away. Trademarks of their owners.
 const REFERENCES = [
-  { name: "Ollie, Tripadvisor's owl", slug: "ollie", x: 0.06, y: 0.12 },
-  { name: "The Suica penguin", slug: "suica-penguin", x: 0.38, y: 0.78 },
-  { name: "Kumamon", slug: "kumamon", x: 0.66, y: 0.08 },
-  { name: "Bibendum, the Michelin Man", slug: "bibendum", x: 0.94, y: 0.7 },
+  { name: "Ollie, Tripadvisor's owl", slug: "ollie", x: 0.04, y: 0.1 },
+  { name: "Duo, Duolingo's owl", slug: "duo", x: 0.34, y: 0.82 },
+  { name: "Kumamon", slug: "kumamon", x: 0.62, y: 0.08 },
+  { name: "Bibendum, the Michelin Man", slug: "bibendum", x: 0.98, y: 0.72, wide: 1.8 },
 ];
 
 function Research() {
