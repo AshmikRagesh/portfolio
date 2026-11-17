@@ -84,15 +84,13 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
   // Past the first or last slide the picture moves at a third of the pointer's pace
   const offset = drag === null ? 0 : (i === 0 && drag > 0) || (i === last && drag < 0) ? drag / 3 : drag;
 
-  const step =
-    "grid size-[32px] shrink-0 place-items-center rounded-full text-heading transition-[background-color,opacity,transform,box-shadow] duration-200 hover:bg-white hover:shadow-[0_0_0_1px_rgba(30,5,37,0.08),0_2px_6px_-2px_rgba(30,5,37,0.24)] active:scale-[0.9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading disabled:pointer-events-none disabled:opacity-[0.32] motion-reduce:transition-none";
-
   return (
     <figure
       className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px] outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
       role="region"
       aria-roledescription="carousel"
-      aria-label={`${slides.length} images: ${slides.map((s) => s.caption).join(", then ")}`}
+      aria-label={`${slides.length} images`}
+      aria-keyshortcuts="ArrowLeft ArrowRight Home End"
       tabIndex={0}
       onKeyDown={(e) => {
         const next = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : e.key === "Home" ? 0 : e.key === "End" ? last : null;
@@ -187,10 +185,11 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
         ))}
 
         {/* Controls float on the picture's bottom edge, so the caption sits right under the
-            picture like every other media card. Pointer events stop here so pressing a control
-            never starts a drag or a hover-edge click. */}
+            picture like every other media card. A solid white pill with a firm edge, so the
+            controls stay readable over light and dark screenshots alike. Pointer events stop
+            here so pressing a control never starts a drag or a hover-edge click. */}
         <div
-          className="absolute bottom-[8px] left-1/2 z-[2] flex -translate-x-1/2 items-center gap-[2px] rounded-full bg-white/[0.84] p-[4px] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_0_0_1px_rgba(30,5,37,0.08),0_2px_4px_rgba(30,5,37,0.06),0_12px_28px_-8px_rgba(30,5,37,0.36)] backdrop-blur-xl backdrop-saturate-150 md:bottom-[12px]"
+          className="absolute bottom-[8px] left-1/2 z-[2] flex -translate-x-1/2 items-center gap-[4px] rounded-full bg-white p-[4px] shadow-[0_0_0_1px_rgba(30,5,37,0.16),0_2px_4px_rgba(30,5,37,0.08),0_12px_28px_-8px_rgba(30,5,37,0.4)] md:bottom-[12px]"
           onPointerDown={(e) => e.stopPropagation()}
           onPointerUp={(e) => e.stopPropagation()}
           onPointerMove={(e) => {
@@ -198,11 +197,10 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
             setZone(null);
           }}
         >
-          <button type="button" className={step} aria-label="Previous image" data-sound-click="toggle" disabled={i === 0} onClick={() => go(i - 1)}>
-            <CaretLeft size={14} weight="bold" aria-hidden="true" />
-          </button>
-          {/* The slide track sits in a soft inset well, set apart from the arrows */}
-          <div className="flex h-[32px] items-center rounded-full bg-grape-light/60 px-[6px] shadow-[inset_0_1px_2px_rgba(30,5,37,0.08)]">
+          <Arrow dir="prev" off={i === 0} onGo={() => go(i - 1)} />
+          {/* One dot per slide. Each target is 24px wide and 32px tall (WCAG 2.5.8 asks for 24),
+              though the dot inside is small. Inactive dots are solid enough for 3:1 contrast. */}
+          <div className="flex items-center">
             {slides.map((s, n) => (
               <button
                 key={s.src}
@@ -211,21 +209,19 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
                 aria-current={n === i ? "true" : undefined}
                 data-sound-click="toggle"
                 onClick={() => go(n)}
-                className="group/seg grid h-[32px] place-items-center px-[4px] focus-visible:rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-heading"
+                className={`group/seg grid h-[32px] place-items-center rounded-full outline-none transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-heading motion-reduce:transition-none ${
+                  n === i ? "w-[40px]" : "w-[24px]"
+                }`}
               >
                 <span
-                  className={`block h-[6px] rounded-full transition-[width,background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                    n === i
-                      ? "w-[24px] bg-heading"
-                      : "w-[6px] bg-heading/[0.24] group-hover/seg:scale-[1.34] group-hover/seg:bg-heading/[0.48]"
+                  className={`block h-[8px] rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                    n === i ? "w-[24px] bg-heading" : "w-[8px] bg-heading/[0.56] group-hover/seg:bg-heading/[0.8]"
                   }`}
                 />
               </button>
             ))}
           </div>
-          <button type="button" className={step} aria-label="Next image" data-sound-click="toggle" disabled={i === last} onClick={() => go(i + 1)}>
-            <CaretRight size={14} weight="bold" aria-hidden="true" />
-          </button>
+          <Arrow dir="next" off={i === last} onGo={() => go(i + 1)} />
         </div>
       </div>
 
@@ -236,5 +232,28 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
         </span>
       </figcaption>
     </figure>
+  );
+}
+
+/**
+ * Previous / next. At the ends the button stays focusable with aria-disabled instead of the
+ * disabled attribute, so keyboard focus never drops to the page when the last slide arrives.
+ * It reads as unavailable through a lighter icon and no hover, yet keeps its shape and place.
+ */
+function Arrow({ dir, off, onGo }: { dir: "prev" | "next"; off: boolean; onGo: () => void }) {
+  const Icon = dir === "prev" ? CaretLeft : CaretRight;
+  return (
+    <button
+      type="button"
+      aria-label={dir === "prev" ? "Previous image" : "Next image"}
+      aria-disabled={off || undefined}
+      data-sound-click={off ? undefined : "toggle"}
+      onClick={() => !off && onGo()}
+      className={`grid size-[32px] shrink-0 place-items-center rounded-full outline-none transition-[background-color,color,transform] duration-200 focus-visible:ring-2 focus-visible:ring-heading motion-reduce:transition-none ${
+        off ? "cursor-default text-heading/[0.4]" : "text-heading hover:bg-grape-light active:scale-[0.9]"
+      }`}
+    >
+      <Icon size={16} weight="bold" aria-hidden="true" />
+    </button>
   );
 }
