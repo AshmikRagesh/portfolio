@@ -126,7 +126,7 @@ function TheProblem() {
       <Visual>
         <ProblemStatement
           situation="Search results offered no filters, so travellers couldn’t narrow the list to the trips that fit."
-          consequence="How might we make it easier for travellers to find relevant itineraries through TCS search?"
+          consequence="Every extra step to find the right one stood between them and an enquiry."
         />
       </Visual>
     </Chapter>
