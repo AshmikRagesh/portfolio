@@ -2,6 +2,7 @@
 
 import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { ArrowCounterClockwise, Pause, Play } from "@phosphor-icons/react";
+import { DEFAULT_SPEED } from "./Media";
 
 /**
  * Before and after as one picture. The after sits underneath and the before on top, cut off
@@ -38,7 +39,19 @@ const Media = forwardRef<HTMLVideoElement, { shot: Shot; width: number; height: 
     const cls = "pointer-events-none absolute inset-0 h-full w-full object-cover";
     if (isVideo(shot)) {
       return (
-        <video ref={ref} src={shot.src} aria-label={shot.alt} width={width} height={height} muted loop playsInline preload="metadata" className={cls} style={style} />
+        <video
+          ref={ref}
+          src={shot.src}
+          aria-label={shot.alt}
+          width={width}
+          height={height}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className={cls}
+          style={style}
+        />
       );
     }
     // eslint-disable-next-line @next/next/no-img-element
@@ -209,6 +222,21 @@ export default function BeforeAfterSlider({
   const afterVid = useRef<HTMLVideoElement>(null);
   const [vidRefs] = useState(() => [beforeVid, afterVid]);
   const box = useRef<HTMLDivElement>(null);
+  // Video sides start at the case studies' default speed. Set on mount (the clip may have
+  // loaded before this ran) and again on every load, since a fresh load resets the speed
+  useEffect(() => {
+    const vids = [beforeVid.current, afterVid.current].filter((v): v is HTMLVideoElement => !!v);
+    const apply = (v: HTMLVideoElement) => {
+      v.defaultPlaybackRate = DEFAULT_SPEED;
+      v.playbackRate = DEFAULT_SPEED;
+    };
+    const onLoad = (e: Event) => apply(e.currentTarget as HTMLVideoElement);
+    vids.forEach((v) => {
+      apply(v);
+      v.addEventListener("loadedmetadata", onLoad);
+    });
+    return () => vids.forEach((v) => v.removeEventListener("loadedmetadata", onLoad));
+  }, []);
   // The frame's width, so a side's name tag only shows when that side has room for it
   const [boxW, setBoxW] = useState(0);
   useEffect(() => {
