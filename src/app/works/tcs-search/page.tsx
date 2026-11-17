@@ -110,12 +110,12 @@ function TheProblem() {
     <Chapter id="the-problem" num={1} title="Search made it hard for travellers to find the right trip">
       <Copy>
         <p>
-          Travellers often search with a destination, travel period or type of
-          experience in mind. But in March 2026, TCS&apos;s search page offered
-          limited ways to narrow results. The Trips tab displayed <Highlight>42 trip cards
-          in date order, with no filters, sorting or result count</Highlight>. Cards also
-          lacked country information, meaning travellers had to scan the list
-          and open individual trips to understand where each journey went.
+          The project started with a request to improve the search experience
+          on the TCS website. The existing search results <Highlight>didn&apos;t offer
+          filtering options</Highlight>, making it difficult for travellers to narrow
+          down relevant itineraries. The brief called for a filtered search
+          experience that would help users refine results based on trip
+          characteristics and availability.
         </p>
         <p>
           <Highlight>Search performance data wasn&apos;t available</Highlight> to the design team,
@@ -125,8 +125,8 @@ function TheProblem() {
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Travellers couldn’t easily identify trips that matched their interests. They had to work through a long list and open individual trips to determine which journeys were relevant."
-          consequence="For a business that relies on enquiries, making relevant trips harder to discover also created a potential barrier between browsing and enquiring."
+          situation="Search results offered no filters, so travellers couldn’t narrow the list to the trips that fit."
+          consequence="How might we make it easier for travellers to find relevant itineraries through TCS search?"
         />
       </Visual>
     </Chapter>
