@@ -8,18 +8,17 @@ import { CaretLeft, CaretRight } from "@phosphor-icons/react";
  * in order (e.g. a pull request review, then the work behind it). All slides share one size so
  * the card never jumps between them.
  *
- * Interaction
- *  - Drag or swipe the picture: it follows the pointer 1:1 and presses in slightly, then
- *    settles on the nearest slide. A quick flick is enough, and a faster flick settles faster.
- *    The ends resist (a third of the pointer's pace) so the reader feels the edge.
- *  - With a mouse, the left and right thirds of the picture are click targets: hovering one
- *    shades that edge and shows its arrow, a click goes there.
- *  - A control pill on the picture's bottom edge: previous, one segment per slide (click to
- *    jump), next. Buttons at the ends dim instead of vanishing, so the pill never shifts. The
- *    caption sits straight under the picture, like every other media card.
+ * Modelled on Apple's product-page galleries (apple.com/iphone):
+ *  - Paddle arrows: grey frosted circles at the picture's left and right, shown while the mouse
+ *    is over the picture or when an arrow has keyboard focus. They hide at the ends and on touch
+ *    screens, where swiping does the job.
+ *  - Dot nav: a frosted grey pill on the picture's bottom edge, one dot per slide; the current
+ *    one stretches into a bar. Each dot is a 24px tap target around an 8px dot.
+ *  - Drag or swipe the picture: it follows the pointer 1:1 and settles on the nearest slide; a
+ *    quick flick is enough. The ends resist so the reader feels the edge.
  *  - Arrow keys move when the carousel has focus; Home and End go to the ends.
- *  - The caption settles in with each slide; a tiny vibration marks a slide change on touch.
- *  - The next slide preloads, so a swipe never shows an empty frame.
+ *  - The caption sits straight under the picture, like every other media card, and is read
+ *    out when the slide changes.
  *  - Reduced motion: slides switch without the glide.
  */
 type Slide = { src: string; alt: string; caption: string };
@@ -30,8 +29,7 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
   const [i, setI] = useState(0);
   const [drag, setDrag] = useState<number | null>(null); // px offset while dragging
   const [ms, setMs] = useState(520); // settle duration, shorter after a fast flick
-  const [zone, setZone] = useState<"prev" | "next" | null>(null); // mouse hover edge
-  const start = useRef<{ x: number; y: number; t: number; id: number; touch: boolean } | null>(null);
+  const start = useRef<{ x: number; y: number; id: number; touch: boolean } | null>(null);
   const lastMove = useRef<{ x: number; t: number; v: number }>({ x: 0, t: 0, v: 0 });
   const axis = useRef<"x" | "y" | null>(null);
   const frame = useRef<HTMLDivElement>(null);
@@ -42,6 +40,10 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
     if (to !== i && touch) navigator.vibrate?.(6);
     setI(to);
   };
+  const jump = (n: number) => {
+    setMs(520);
+    go(n);
+  };
 
   // Preload the slide after the current one
   useEffect(() => {
@@ -49,25 +51,10 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
     if (next) new Image().src = next.src;
   }, [i, slides]);
 
-  const zoneAt = (clientX: number) => {
-    const r = frame.current!.getBoundingClientRect();
-    const x = (clientX - r.left) / r.width;
-    return x < 0.3 && i > 0 ? "prev" : x > 0.7 && i < last ? "next" : null;
-  };
-
   const release = (clientX: number) => {
     const s = start.current;
     start.current = null;
-    if (!s) return;
-    if (axis.current !== "x") {
-      // A click without a drag: the hovered edge decides
-      if (!s.touch && axis.current === null) {
-        const z = zoneAt(clientX);
-        if (z) {
-          setMs(520);
-          go(z === "next" ? i + 1 : i - 1);
-        }
-      }
+    if (!s || axis.current !== "x") {
       setDrag(null);
       return;
     }
@@ -93,41 +80,34 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
       aria-keyshortcuts="ArrowLeft ArrowRight Home End"
       tabIndex={0}
       onKeyDown={(e) => {
+        if (e.target !== e.currentTarget) return;
         const next = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : e.key === "Home" ? 0 : e.key === "End" ? last : null;
         if (next === null) return;
         e.preventDefault();
-        setMs(520);
-        go(next);
+        jump(next);
       }}
     >
       <div
         ref={frame}
-        className={`cs-pair-media relative touch-pan-y select-none overflow-hidden rounded-sm bg-grape-light/40 ${
-          drag !== null ? "cursor-grabbing" : zone ? "cursor-pointer" : "cursor-grab"
+        className={`group/car cs-pair-media relative touch-pan-y select-none overflow-hidden rounded-sm bg-grape-light/40 ${
+          drag !== null ? "cursor-grabbing" : "cursor-grab"
         }`}
         style={{ aspectRatio: `${width} / ${height}` }}
         onPointerDown={(e) => {
           if (e.button !== 0) return;
-          const touch = e.pointerType !== "mouse";
-          start.current = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId, touch };
+          start.current = { x: e.clientX, y: e.clientY, id: e.pointerId, touch: e.pointerType !== "mouse" };
           lastMove.current = { x: e.clientX, t: performance.now(), v: 0 };
           axis.current = null;
         }}
         onPointerMove={(e) => {
           const s = start.current;
-          if (!s || s.id !== e.pointerId) {
-            if (e.pointerType === "mouse") setZone(zoneAt(e.clientX));
-            return;
-          }
+          if (!s || s.id !== e.pointerId) return;
           const dx = e.clientX - s.x;
           const dy = e.clientY - s.y;
           // Decide once whether this is a sideways drag or a page scroll
           if (axis.current === null && Math.hypot(dx, dy) > 6) {
             axis.current = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
-            if (axis.current === "x") {
-              e.currentTarget.setPointerCapture(e.pointerId);
-              setZone(null);
-            }
+            if (axis.current === "x") e.currentTarget.setPointerCapture(e.pointerId);
           }
           if (axis.current !== "x") return;
           const now = performance.now();
@@ -136,7 +116,6 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
           setDrag(dx);
         }}
         onPointerUp={(e) => release(e.clientX)}
-        onPointerLeave={() => setZone(null)}
         onPointerCancel={() => {
           start.current = null;
           setDrag(null);
@@ -145,8 +124,8 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
         <div
           className="flex h-full motion-reduce:!transition-none"
           style={{
-            transform: `translateX(calc(${-i * 100}% + ${offset}px)) scale(${drag !== null ? 0.985 : 1})`,
-            transition: drag === null ? `transform ${ms}ms ${SETTLE}` : "transform 160ms ease-out",
+            transform: `translateX(calc(${-i * 100}% + ${offset}px))`,
+            transition: drag === null ? `transform ${ms}ms ${SETTLE}` : "none",
           }}
         >
           {slides.map((s, n) => (
@@ -160,68 +139,40 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
               draggable={false}
               loading={n <= 1 ? undefined : "lazy"}
               aria-hidden={n !== i}
-              className={`h-full w-full shrink-0 object-cover transition-opacity duration-500 motion-reduce:transition-none ${n === i || drag !== null ? "opacity-100" : "opacity-40"}`}
+              className="h-full w-full shrink-0 object-cover"
             />
           ))}
         </div>
 
-        {/* Mouse hover: the edge you'd go to shades in with its arrow */}
-        {(["prev", "next"] as const).map((z) => (
-          <div
-            key={z}
-            aria-hidden="true"
-            className={`pointer-events-none absolute inset-y-0 flex w-[30%] items-center transition-opacity duration-300 motion-reduce:transition-none ${
-              z === "prev" ? "left-0 justify-start bg-gradient-to-r pl-[12px] md:pl-[16px]" : "right-0 justify-end bg-gradient-to-l pr-[12px] md:pr-[16px]"
-            } from-[rgba(30,5,37,0.24)] to-transparent ${zone === z ? "opacity-100" : "opacity-0"}`}
-          >
-            <span
-              className={`grid size-[40px] place-items-center rounded-full bg-white/[0.92] text-heading shadow-[0_0_0_0.5px_rgba(30,5,37,0.16),0_4px_16px_-4px_rgba(30,5,37,0.32)] backdrop-blur-md transition-transform duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] ${
-                zone === z ? "translate-x-0" : z === "prev" ? "-translate-x-[8px]" : "translate-x-[8px]"
-              }`}
-            >
-              {z === "prev" ? <CaretLeft size={18} weight="bold" /> : <CaretRight size={18} weight="bold" />}
-            </span>
-          </div>
-        ))}
+        <Paddle dir="prev" off={i === 0} onGo={() => jump(i - 1)} />
+        <Paddle dir="next" off={i === last} onGo={() => jump(i + 1)} />
 
-        {/* Controls float on the picture's bottom edge, so the caption sits right under the
-            picture like every other media card. A solid white pill with a firm edge, so the
-            controls stay readable over light and dark screenshots alike. Pointer events stop
-            here so pressing a control never starts a drag or a hover-edge click. */}
+        {/* Dot nav on the picture's bottom edge. Pointer events stop here so tapping a dot
+            never starts a drag. */}
         <div
-          className="absolute bottom-[8px] left-1/2 z-[2] flex -translate-x-1/2 items-center gap-[4px] rounded-full bg-white p-[4px] shadow-[0_0_0_1px_rgba(30,5,37,0.16),0_2px_4px_rgba(30,5,37,0.08),0_12px_28px_-8px_rgba(30,5,37,0.4)] md:bottom-[12px]"
+          className="absolute bottom-[8px] left-1/2 z-[2] flex h-[40px] -translate-x-1/2 items-center rounded-full bg-[rgba(232,232,237,0.72)] px-[8px] backdrop-blur-xl backdrop-saturate-150 md:bottom-[12px]"
           onPointerDown={(e) => e.stopPropagation()}
           onPointerUp={(e) => e.stopPropagation()}
-          onPointerMove={(e) => {
-            e.stopPropagation();
-            setZone(null);
-          }}
         >
-          <Arrow dir="prev" off={i === 0} onGo={() => go(i - 1)} />
-          {/* One dot per slide. Each target is 24px wide and 32px tall (WCAG 2.5.8 asks for 24),
-              though the dot inside is small. Inactive dots are solid enough for 3:1 contrast. */}
-          <div className="flex items-center">
-            {slides.map((s, n) => (
-              <button
-                key={s.src}
-                type="button"
-                aria-label={`Image ${n + 1} of ${slides.length}: ${s.caption}`}
-                aria-current={n === i ? "true" : undefined}
-                data-sound-click="toggle"
-                onClick={() => go(n)}
-                className={`group/seg grid h-[32px] place-items-center rounded-full outline-none transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-heading motion-reduce:transition-none ${
-                  n === i ? "w-[40px]" : "w-[24px]"
+          {slides.map((s, n) => (
+            <button
+              key={s.src}
+              type="button"
+              aria-label={`Image ${n + 1} of ${slides.length}: ${s.caption}`}
+              aria-current={n === i ? "true" : undefined}
+              data-sound-click="toggle"
+              onClick={() => jump(n)}
+              className={`group/dot grid h-[24px] place-items-center rounded-full outline-none transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-heading motion-reduce:transition-none ${
+                n === i ? "w-[56px]" : "w-[24px]"
+              }`}
+            >
+              <span
+                className={`block h-[8px] rounded-full transition-[width,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                  n === i ? "w-[40px] bg-[rgb(29,29,31)]" : "w-[8px] bg-black/[0.42] group-hover/dot:bg-black/[0.64]"
                 }`}
-              >
-                <span
-                  className={`block h-[8px] rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                    n === i ? "w-[24px] bg-heading" : "w-[8px] bg-heading/[0.56] group-hover/seg:bg-heading/[0.8]"
-                  }`}
-                />
-              </button>
-            ))}
-          </div>
-          <Arrow dir="next" off={i === last} onGo={() => go(i + 1)} />
+              />
+            </button>
+          ))}
         </div>
       </div>
 
@@ -236,11 +187,12 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
 }
 
 /**
- * Previous / next. At the ends the button stays focusable with aria-disabled instead of the
- * disabled attribute, so keyboard focus never drops to the page when the last slide arrives.
- * It reads as unavailable through a lighter icon and no hover, yet keeps its shape and place.
+ * Apple's paddle arrow: a grey frosted circle centred on the picture's edge. It appears while
+ * the mouse is over the picture or when it has keyboard focus, and hides at the ends. At an end
+ * it stays focusable (aria-disabled, shown faint if focused) so focus never drops to the page.
+ * Touch screens never show it; swiping and the dots cover them.
  */
-function Arrow({ dir, off, onGo }: { dir: "prev" | "next"; off: boolean; onGo: () => void }) {
+function Paddle({ dir, off, onGo }: { dir: "prev" | "next"; off: boolean; onGo: () => void }) {
   const Icon = dir === "prev" ? CaretLeft : CaretRight;
   return (
     <button
@@ -249,11 +201,17 @@ function Arrow({ dir, off, onGo }: { dir: "prev" | "next"; off: boolean; onGo: (
       aria-disabled={off || undefined}
       data-sound-click={off ? undefined : "toggle"}
       onClick={() => !off && onGo()}
-      className={`grid size-[32px] shrink-0 place-items-center rounded-full outline-none transition-[background-color,color,transform] duration-200 focus-visible:ring-2 focus-visible:ring-heading motion-reduce:transition-none ${
-        off ? "cursor-default text-heading/[0.4]" : "text-heading hover:bg-grape-light active:scale-[0.9]"
+      onPointerDown={(e) => e.stopPropagation()}
+      onPointerUp={(e) => e.stopPropagation()}
+      className={`absolute top-1/2 z-[2] grid size-[36px] -translate-y-1/2 place-items-center rounded-full bg-[rgba(210,210,215,0.64)] text-black/[0.56] outline-none backdrop-blur-xl backdrop-saturate-150 transition-[opacity,background-color,color,transform] duration-200 focus-visible:ring-2 focus-visible:ring-heading motion-reduce:transition-none md:size-[44px] ${
+        dir === "prev" ? "left-[12px] md:left-[16px]" : "right-[12px] md:right-[16px]"
+      } ${
+        off
+          ? "pointer-events-none opacity-0 focus-visible:opacity-[0.4]"
+          : "opacity-0 hover:bg-[rgba(223,223,227,0.72)] hover:text-black/[0.64] focus-visible:opacity-100 active:scale-[0.92] [@media(hover:hover)]:group-hover/car:opacity-100"
       }`}
     >
-      <Icon size={16} weight="bold" aria-hidden="true" />
+      <Icon size={18} weight="bold" aria-hidden="true" />
     </button>
   );
 }
