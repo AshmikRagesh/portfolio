@@ -570,12 +570,12 @@ export default function Footer() {
           {/* Header */}
           <div className="flex flex-col gap-4 items-center text-center relative z-10 lg:gap-6">
             <h2 className="font-heading font-medium text-[36px] leading-[40px] tracking-[-0.36px] text-white md:text-[44px] md:leading-[48px] md:tracking-[-0.44px]">
-              Making creating easy and
+              Checking out already?
               <br className="hidden md:block" />
-              {" "}enjoyable for everyone.
+              {" "}Don&apos;t be a stranger.
             </h2>
             <p className="font-body font-normal text-[16px] leading-[26px] text-white/70 text-balance max-w-[320px] md:max-w-[500px] md:text-[18px] md:leading-[28px] lg:text-[20px] lg:leading-[30px] lg:max-w-[504px]">
-              For any work inquiries, please feel free to get in touch with me anytime.
+              For any work inquiries, feel free to reach out to me anytime.
             </p>
           </div>
 

@@ -17,8 +17,8 @@ interface Testimonial {
   signature: string[]; // SVG path strokes, drawn in a 168×72 box
 }
 
-// Amlan's quote is the recommendation as written, with the pronouns corrected to he/him; Junaid's is approved.
-// TODO: Anish's is a draft; confirm it with Anish before publishing. The signature strokes are drawn to read as each name,
+// Amlan's quote is the recommendation as written, with the pronouns corrected to he/him.
+// TODO: Junaid's and Anish's were shortened on 17 Nov 2026; confirm both with them before publishing. The signature strokes are drawn to read as each name,
 // scribbles, not their real signatures.
 const testimonials: Testimonial[] = [
   {
@@ -34,7 +34,7 @@ const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "Ashmik designs with our real components and writes the code himself, so what he hands over is what we ship. He knows the system well enough that reviews with him are short and handoffs rarely need a second pass.",
+      "Ashmik designs with our real components and writes the code himself, so what he hands over is what we ship.",
     name: "Junaid",
     role: "Senior Software Developer, Travelopia",
     signature: [
@@ -45,7 +45,7 @@ const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "Ashmik turns a rough brief into a flow the team can actually build. On our booking and insurance work, every design decision came with a reason, and engineering always knew exactly what to ship.",
+      "Ashmik turns a rough brief into a flow the team can actually build, and every design decision comes with a reason.",
     name: "Anish",
     role: "Product Manager, Enchanting Travels",
     signature: [

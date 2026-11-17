@@ -2181,3 +2181,6 @@ html[data-feedback="on"] .owner-badge {
 @keyframes cs-caption-in { from { opacity: 0; transform: translateY(4px); filter: blur(2px); } }
 .cs-caption-in { animation: cs-caption-in 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 @media (prefers-reduced-motion: reduce) { .cs-caption-in { animation: none; } }
+
+/* Nivasa card: the active review dot fills up while that review is showing */
+@keyframes review-progress { from { width: 0%; } to { width: 100%; } }
