@@ -449,7 +449,7 @@ function Solution() {
             <Figure
               name={`Recording: ${title}`}
               alt={`Screen recording: ${title}`}
-              video={`/videos/tcs-search/solution-${num}.mp4`}
+              video={`/videos/tcs-search/solution-${num}.mp4?v=2`}
             />
           </Visual>
         </div>
