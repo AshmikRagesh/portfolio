@@ -262,11 +262,14 @@ function HostCard() {
 }
 
 // ── Guest reviews ─────────────────────────────────────────────────────────────
-// Five real reviews from Nivasa's Airbnb page, quoted word for word (one sentence each).
-// One shows at a time: every 7 seconds it lifts out and the next rises in. All five sit
-// in the same grid cell, so the card is always as tall as the longest and never jumps.
-// Hovering or focusing the reviews pauses them; the dots pick one; with reduced motion
-// they swap without moving and don't turn on their own.
+// Five real reviews from Nivasa's Airbnb page, quoted word for word (one sentence each),
+// on their own warm-grey card (the work cards' fill) so they read apart from the hosts'
+// own words below. One shows at a time: every 7 seconds the quote lifts out and blurs,
+// and the next one comes in word by word, rising out of a soft blur. The active dot fills
+// up as the 7 seconds pass. All five sit in one grid cell, so the card is always as tall
+// as the longest and never jumps. Hovering or focusing pauses them (the dot stops
+// filling); the dots pick one; with reduced motion they swap without moving and don't
+// turn on their own.
 const REVIEWS = [
   { quote: "The property had everything already, we didn’t need to ask for anything.", who: "Kabir, a guest" },
   { quote: "The space is calm, peaceful, and immaculate.", who: "Santosh, a guest" },
@@ -275,23 +278,36 @@ const REVIEWS = [
   { quote: "It genuinely felt like my little nest in the city.", who: "Jeena, our first guest" },
 ];
 const REVIEW_MS = 7000;
+const WORD_STAGGER_MS = 40;
 
 function GuestReviews() {
   const [index, setIndex] = useState(0);
+  // The review on its way out lifts up; the rest wait just below, ready to rise in
+  const [leaving, setLeaving] = useState(-1);
   const [paused, setPaused] = useState(false);
   const reduced = useReducedMotion();
+  const go = useCallback(
+    (next: number) => {
+      if (next === index) return;
+      setLeaving(index);
+      setIndex(next);
+    },
+    [index],
+  );
 
   useEffect(() => {
     if (paused || reduced) return;
     const t = window.setTimeout(() => {
-      if (!document.hidden) setIndex((i) => (i + 1) % REVIEWS.length);
+      if (!document.hidden) go((index + 1) % REVIEWS.length);
     }, REVIEW_MS);
     return () => window.clearTimeout(t);
-  }, [index, paused, reduced]);
+  }, [index, paused, reduced, go]);
+
+  const ease = reduced ? "" : "transition-[opacity,transform,filter] ease-out";
 
   return (
     <figure
-      className="m-0 mt-5"
+      className="relative m-0 mt-5 overflow-hidden rounded-[16px] bg-card px-4 pb-3 pt-4 sm:px-5 sm:pt-5"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -299,40 +315,91 @@ function GuestReviews() {
       aria-roledescription="carousel"
       aria-label="What guests say"
     >
-      <div className="grid">
+      {/* A big opening quote mark, tucked into the corner */}
+      <span aria-hidden="true" className="pointer-events-none absolute -top-2 right-3 select-none font-heading text-[96px] leading-none text-grape/15">
+        “
+      </span>
+      <p className="m-0 font-geist text-caption font-medium uppercase tracking-[0.5px] text-muted">Guests say</p>
+
+      <div className="relative mt-2 grid">
         {REVIEWS.map((r, i) => {
           const on = i === index;
+          const words = `“${r.quote}”`.split(" ");
           return (
-            <div
+            <blockquote
               key={r.who}
               aria-hidden={!on}
-              className={`col-start-1 row-start-1 ${reduced ? "" : "transition-[opacity,transform] duration-500 ease-out"} ${
-                on ? "translate-y-0 opacity-100" : `pointer-events-none opacity-0 ${reduced ? "" : i < index ? "-translate-y-2" : "translate-y-2"}`
-              }`}
+              className={`col-start-1 row-start-1 m-0 text-pretty font-heading text-h4 text-heading sm:text-h4-md ${on ? "" : "pointer-events-none"}`}
             >
-              <blockquote className="m-0 text-pretty font-heading text-h4 text-heading sm:text-h4-md">“{r.quote}”</blockquote>
-            </div>
+              {words.map((w, j) => (
+                <span key={j}>
+                  <span
+                    className={`inline-block ${ease} ${
+                      on
+                        ? "translate-y-0 opacity-100 blur-0 duration-500"
+                        : `opacity-0 duration-300 ${reduced ? "" : i === leaving ? "-translate-y-2 blur-[4px]" : "translate-y-2 blur-[4px]"}`
+                    }`}
+                    style={{ transitionDelay: on && !reduced ? `${200 + j * WORD_STAGGER_MS}ms` : "0ms" }}
+                  >
+                    {w}
+                  </span>
+                  {j < words.length - 1 ? " " : null}
+                </span>
+              ))}
+            </blockquote>
           );
         })}
       </div>
-      <figcaption className="mt-3 flex items-center justify-between gap-4">
-        <span className="font-geist text-caption text-muted">
+
+      <figcaption className="mt-3 flex items-center justify-between gap-4 border-t border-heading/[0.06] pt-2">
+        <span className="flex min-w-0 items-center gap-2 font-geist text-caption text-muted">
           <span className="text-grape" aria-hidden="true">★★★★★</span>
-          <span className="sr-only">5 stars, </span> {REVIEWS[index].who}
+          <span className="sr-only">5 stars, </span>
+          <span className="grid">
+            {REVIEWS.map((r, i) => (
+              <span
+                key={r.who}
+                aria-hidden={i !== index}
+                className={`col-start-1 row-start-1 truncate ${ease} duration-300 ${i === index ? "opacity-100" : "opacity-0"}`}
+                style={{ transitionDelay: i === index && !reduced ? "300ms" : "0ms" }}
+              >
+                {r.who}
+              </span>
+            ))}
+          </span>
         </span>
-        <span className="flex items-center">
-          {REVIEWS.map((r, i) => (
-            <button
-              key={r.who}
-              type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`Review ${i + 1} of ${REVIEWS.length}`}
-              aria-current={i === index}
-              className="group/dot flex h-6 w-5 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
-            >
-              <span className={`block h-1.5 rounded-full transition-all duration-300 ${i === index ? "w-4 bg-grape" : "w-1.5 bg-muted/40 group-hover/dot:bg-muted"}`} />
-            </button>
-          ))}
+        <span className="flex shrink-0 items-center">
+          {REVIEWS.map((r, i) => {
+            const on = i === index;
+            return (
+              <button
+                key={r.who}
+                type="button"
+                onClick={() => go(i)}
+                aria-label={`Review ${i + 1} of ${REVIEWS.length}`}
+                aria-current={on}
+                className="group/dot flex h-6 w-5 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
+              >
+                <span
+                  className={`relative block h-1.5 overflow-hidden rounded-full transition-all duration-300 ${
+                    on ? "w-4 bg-grape/20" : "w-1.5 bg-muted/40 group-hover/dot:bg-muted"
+                  }`}
+                >
+                  {on && (
+                    <span
+                      key={index}
+                      className="absolute inset-y-0 left-0 rounded-full bg-grape"
+                      style={
+                        reduced
+                          ? { width: "100%" }
+                          : { animation: `review-progress ${REVIEW_MS}ms linear forwards`, animationPlayState: paused ? "paused" : "running" }
+                      }
+                    />
+                  )}
+                </span>
+              </button>
+            );
+          })}
         </span>
       </figcaption>
     </figure>
