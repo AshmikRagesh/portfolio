@@ -199,9 +199,10 @@ function PixelField() {
   );
 }
 
-// Hierarchy, top to bottom: who (the name, with Superhost beside it) → where and who
-// runs it → the numbers → about the hosts → the way out to Airbnb. Everything reads from
-// one left edge.
+// Hierarchy, top to bottom: who (the name, with Superhost beside it) → what Nivasa is,
+// in one line → the proof, rating first → one guest in their own words → why we host →
+// the way out to Airbnb. Everything reads from one left edge. The numbers and the review
+// are from Nivasa's Airbnb profile (17 Nov 2026).
 function HostCard() {
   return (
     <div className="w-[calc(100vw-32px)] max-w-[440px] overflow-hidden rounded-[20px] bg-background text-left shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]">
@@ -224,31 +225,41 @@ function HostCard() {
             <MedalIcon /> Superhost
           </Tag>
         </div>
-        <p className="mt-1 text-pretty font-geist text-body text-secondary sm:text-body-md">Short stays in Bengaluru · Nandagopal &amp; Ashmik</p>
+        <p className="mt-2 text-pretty font-geist text-body text-secondary sm:text-body-md">
+          <span className="text-text-base">Our side project with walls:</span> a sunlit 1BHK in HSR Layout, Bengaluru, run by Nandagopal and me.
+        </p>
 
-        {/* The numbers */}
+        {/* The proof, rating first */}
         <div className="mt-5 flex items-stretch divide-x divide-line-soft border-y border-line-soft py-4">
-          <Stat value="30" label="Reviews" />
           <Stat
             value={
               <span className="inline-flex items-baseline gap-1">
                 4.97<span className="text-[16px] text-grape">★</span>
               </span>
             }
-            label="Rating"
+            label="Guest rating"
           />
-          <Stat value="3" label="Months hosting" />
+          <Stat value="33" label="Reviews" />
+          <Stat value="3" label="Months open" />
         </div>
 
-        {/* About the hosts */}
-        <p className="mt-5 font-geist text-caption font-medium uppercase tracking-[0.5px] text-muted">About the hosts</p>
+        {/* One guest, in their own words */}
+        <figure className="m-0 mt-5">
+          <blockquote className="m-0 text-pretty font-heading text-h4 text-heading sm:text-h4-md">
+            “The space is calm, peaceful, and immaculate.”
+          </blockquote>
+          <figcaption className="mt-2 font-geist text-caption text-muted">Santosh, a guest · 5 stars</figcaption>
+        </figure>
+
+        {/* Why we host */}
+        <p className="mt-5 font-geist text-caption font-medium uppercase tracking-[0.5px] text-muted">Why we host</p>
         <p className="mt-2 text-pretty font-geist text-body text-secondary sm:text-body-md">
-          <span className="text-text-base">We’re Nandagopal and Ashmik, the two behind Nivasa.</span> Between us, someone’s always reachable, usually within the hour.
+          We love two things: hosting people, and building the spaces they stay in. Turns out guests test a home the way users test a product.
         </p>
 
         {/* The work cards' CTA, smaller: grape on hover, and the arrow circle slides out */}
         <Cta href={PROFILE} external size="sm" className="mt-6">
-          View Nivasa on Airbnb
+          See Nivasa on Airbnb
         </Cta>
       </div>
     </div>
