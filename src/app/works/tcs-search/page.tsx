@@ -223,9 +223,9 @@ function Context() {
           </p>
         </Copy>
         <Visual>
-          {/* The old page marked up with what the audit found: a pen ring on each problem
-              and a handwritten note pointing at it. The Overview slider already shows the
-              page plain, so here it carries the findings */}
+          {/* The old page marked up with what the audit found: an outline box on each
+              problem with a tag naming it. The Overview slider already shows the page
+              plain, so here it carries the findings */}
           <AnnotatedFigure
             src="/images/tcs-search/old-search.webp"
             width={1920}
@@ -233,30 +233,9 @@ function Context() {
             alt="The old TCS search page, marked up with three findings: the tabs, the result count and a card title"
             label="What I found auditing the old search page (Aug 2025 tabs design)"
             notes={[
-              {
-                lines: ["252 results, and no way", "to narrow them"],
-                side: "top",
-                x: 0.04,
-                from: 0.12,
-                ring: { cx: 0.142, cy: 0.262, rx: 0.04, ry: 0.03 },
-                bow: 30,
-              },
-              {
-                lines: ["Only tabs: no filters,", "no sort"],
-                side: "top",
-                x: 0.58,
-                from: 0.62,
-                ring: { cx: 0.5, cy: 0.262, rx: 0.15, ry: 0.034 },
-                bow: -40,
-              },
-              {
-                lines: ["A name, but where", "does this trip go?"],
-                side: "bottom",
-                x: 0.52,
-                from: 0.62,
-                ring: { cx: 0.733, cy: 0.533, rx: 0.088, ry: 0.032 },
-                bow: -50,
-              },
+              { text: "252 results, no way to narrow", box: { x: 0.11, y: 0.243, w: 0.064, h: 0.04 }, place: "bottom" },
+              { text: "Tabs only, no filters or sort", box: { x: 0.354, y: 0.241, w: 0.29, h: 0.044 }, place: "top" },
+              { text: "A name, but no route", box: { x: 0.641, y: 0.486, w: 0.243, h: 0.098 }, place: "bottom" },
             ]}
           />
         </Visual>
