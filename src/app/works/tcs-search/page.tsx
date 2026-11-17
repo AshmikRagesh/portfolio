@@ -125,8 +125,8 @@ function TheProblem() {
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Search results offered no filters, so travellers couldn’t narrow the list to the trips that fit."
-          consequence="Every extra step to find the right one stood between them and an enquiry."
+          situation="Search results offered no filters, making it difficult for travellers to narrow the list to trips that matched their interests."
+          consequence="Finding a relevant itinerary meant spending more time navigating the results before they could explore a trip further or make an enquiry."
         />
       </Visual>
     </Chapter>
