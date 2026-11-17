@@ -242,6 +242,13 @@ function Context() {
       <div className="cs-sub">
         <Copy>
           <h3>Turning findings into design priorities</h3>
+          <p>
+            The brief asked for filters, but the interviews and audit showed
+            travellers also needed to see where a trip goes and how their
+            choices changed the results. That turned the brief into one
+            question: <Highlight>how might we make it easier for travellers to find
+            relevant itineraries through TCS search?</Highlight>
+          </p>
           <p>The interviews and product audit shaped five priorities for the redesign:</p>
         </Copy>
         <Visual>
