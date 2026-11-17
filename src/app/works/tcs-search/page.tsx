@@ -90,8 +90,8 @@ function Overview() {
           height={1076}
           start={50}
           sweepTo={14}
-          before={{ src: "/images/tcs-search/compare-before.webp", alt: "the old search page: a result count and a grid of mixed cards, with no filters" }}
-          after={{ src: "/images/tcs-search/compare-after.webp", alt: "the live V1 search page: tabs, a row of five filters, a result count, and trip cards showing each route" }}
+          before={{ src: "/images/tcs-search/compare-before.webp?v=3", alt: "the old search page: a result count and a grid of mixed cards, with no filters" }}
+          after={{ src: "/images/tcs-search/compare-after.webp?v=3", alt: "the live V1 search page: tabs, a row of five filters, a result count, and trip cards showing each route" }}
           labels={{
             before: { title: "The old search page", note: "Aug 2025: every result in one grid, with no filters" },
             after: { title: "The live V1 search page", note: "Five filters, a result count and each trip's route" },
