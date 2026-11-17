@@ -57,18 +57,16 @@ function Overview() {
     <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
-          Helix brings our design systems directly into Claude Code, giving
-          designers a place to explore ideas, build interfaces and work with
-          production-ready components.
+          Helix brings every Travelopia brand&apos;s design system directly into
+          Claude Code. Designers can explore ideas, build interfaces and work
+          with the same production-ready components our developers use.
         </p>
         <p>
-          Instead of designing in Figma and handing everything over for
-          development, we&apos;re now building with the same components our
-          developers use. The result? Designs that take <Highlight>roughly half
-          the time to deliver</Highlight>.
+          What we build is what ships, and our designs now take <Highlight>about
+          half the time to deliver</Highlight>.
         </p>
         <Meta
-          role="Design System Migration & Product Design in Helix"
+          role="Product Design, Design Systems & AI-assisted Development"
           team="Ashmik Ragesh, Hriday Gami, Arunava (Design), Travelopia developers (Engineering)"
           timeline={<>June 2026 – present<br />Pilot in June · Rollout from July · In daily use since August</>}
         />
@@ -228,8 +226,8 @@ const PAIRS = [
   },
   {
     num: 3,
-    title: "One skill, every brand kept separate",
-    body: <>A dozen brands share one skill, but <Highlight>each keeps its own system</Highlight>. Work on Quark only uses Quark components and tokens, and work on Kalos only uses Kalos’s.</>,
+    title: "One skill, different brand systems",
+    body: <>Helix supports a dozen Travelopia brands, each with its own design system. My day-to-day work covers TCS, Quark, Kalos and Enchanting Travels, so <Highlight>keeping those systems separate was particularly important</Highlight>.</>,
     figure: "Each brand's own design system in Helix",
     visual: (
       <div className="flex flex-col gap-[24px]">
@@ -248,7 +246,7 @@ const PAIRS = [
   {
     num: 4,
     title: "Designers fix it, developers review",
-    body: <>When I spot a miss, I fix it in Helix and send a pull request. A developer reviews it and merges it, so <Highlight>a small fix no longer waits in the queue</Highlight>.</>,
+    body: <>When I spot a miss, I can fix it directly in Helix and raise a pull request. Developers review the change against the existing codebase before it’s merged, keeping the system consistent <Highlight>without sending every small correction back as a separate ticket</Highlight>.</>,
     figure: "A pull request for a design fix, approved by a developer",
     // The pull request review leads (it is what the pointer describes), then the miss and the fix behind it. Same size stills (2000 x 1171);
     // the two Kalos session shots have links, branch names and Figma comments blurred.
@@ -397,11 +395,17 @@ function Output() {
     <Chapter id="output" num={5} title="Who keeps it right">
       <Copy>
         <p>
-          Helix keeps every brand consistent because <Highlight>nothing goes in unchecked</Highlight>.
-          Each new component or fix is built by a designer and sent as a pull
-          request. The brand&apos;s developers review it against their codebase
-          and approve it or ask for changes. Once it&apos;s merged into main,
-          every designer on that brand can use it.
+          Helix changes who can contribute to the design system, not who is
+          responsible for its quality.
+        </p>
+        <p>
+          Designers can build and maintain components directly, while
+          developers review every change against the existing codebase before
+          it&apos;s merged. Once approved, the component becomes available to
+          everyone working on that brand.
+        </p>
+        <p>
+          <Highlight>It&apos;s a shared system, with shared ownership.</Highlight>
         </p>
         <ReviewThread title="feat(modal): add the Modal component" number={482} branch="feat/modal" items={THREAD} steps={CHANGE_PATH} />
       </Copy>
@@ -437,7 +441,7 @@ function Outcome() {
       </Copy>
       <div className="cs-sub">
         <Copy>
-          <h3>110+ components, in code</h3>
+          <h3>110+ components in code, migrated and new</h3>
           <p>
             We moved the existing components for Quark and TCS into Helix <Highlight>in
             about a month, alongside live tickets</Highlight>, and Kalos is still moving
@@ -455,14 +459,15 @@ function Outcome() {
         <Copy>
           <h3>Designs delivered in about half the time</h3>
           <p>
-            Previously, a design ticket could take one to two weeks to move from
-            exploration to developer-ready handoff. With Helix, <Highlight>that work
-            now takes roughly half the time</Highlight>.
+            Before Helix, getting a ticket&apos;s designs ready for development
+            typically took one to two weeks. With designers now building directly
+            with production components, <Highlight>that takes roughly half the
+            time</Highlight>.
           </p>
           <p>
-            Designers can build directly with existing production components,
-            reuse patterns across screens and make small corrections without
-            waiting for a separate development cycle.
+            It also means existing components can be reused instead of
+            redesigned. For example, the country and state dropdowns in TCS forms
+            used the existing combobox component.
           </p>
           <BeforeAfter rows={DELIVERY} />
           <Footnote>
