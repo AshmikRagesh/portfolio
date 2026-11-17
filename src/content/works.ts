@@ -40,7 +40,7 @@ export const featuredWorks: FeaturedWork[] = [
     discipline: "Product design",
     title: "From every trip at once to the few that fit: filters for TCS search",
     description:
-      "Filters, a result count and a no-results page that always leads somewhere. Live since July 2026.",
+      "Filters, a result count and each trip's route on its card, so travellers can find the trips that fit. Live since July 2026.",
     image: "/images/tcs-search/cover.webp",
     imageAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
     href: "/works/tcs-search",
@@ -51,7 +51,7 @@ export const featuredWorks: FeaturedWork[] = [
     discipline: "Product design",
     title: "Letting TCS travellers explore a destination before they book",
     description:
-      "A two-path choice in the Find a Trip menu, so travellers still exploring can learn about a place first.",
+      "A two-path choice in the Find a Trip menu, so travellers still exploring can learn about a place first. Built in code, ready for an A/B/C test.",
     image: "/images/tcs-find-a-trip/cover-lime.webp",
     imageAlt: "The TCS World Travel Find a Trip menu, with Africa open to Explore Trips and Explore Destination",
     href: "/works/tcs-find-a-trip",
@@ -62,7 +62,7 @@ export const featuredWorks: FeaturedWork[] = [
     discipline: "Interaction design",
     title: "Designing Bella, the desk bell that hosts this portfolio, in Claude Code",
     description:
-      "A front-desk bell in the navbar that tracks how long you actually spend here.",
+      "A front-desk bell in the navbar that counts how long you actually spend here.",
     image: "/images/bella/cover.png",
     imageAlt: "Bella the desk bell in eight moods: idle, ringing, reading, watching, dozing, celebrating, surprised and champion",
     href: "/works/bella",
