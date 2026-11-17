@@ -52,7 +52,7 @@ const SITE_URL =
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3000";
 
-const DESCRIPTION = "Product designer turned design engineer. I design it, then build it, so teams can try an idea early.";
+const DESCRIPTION = "Product designer turned design engineer. I design it, then build it in code, so teams can click through an idea before they commit to it.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
