@@ -53,5 +53,5 @@ export { default as BellComparison } from "./BellComparison";
 export { default as BellaSolves } from "./BellaSolves";
 export { default as ImageCarousel } from "./ImageCarousel";
 export { default as PanelCards } from "./PanelCards";
-export { default as RhythmTrack } from "./RhythmTrack";
+export { default as RhythmChart } from "./RhythmChart";
 export { default as AttemptCards } from "./AttemptCards";

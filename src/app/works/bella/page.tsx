@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { reels } from "@/content/reels";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
-import { Palette, Shapes, Eye, Sparkle, Timer, CalendarCheck, Notebook, BellRinging } from "@phosphor-icons/react/dist/ssr";
+import { Palette, Shapes, Eye, Sparkle } from "@phosphor-icons/react/dist/ssr";
 import {
   Hero,
   Chapter,
@@ -20,7 +20,7 @@ import {
   Highlight,
   SessionLog,
   PanelCards,
-  RhythmTrack,
+  RhythmChart,
   AttemptCards,
 } from "@/components/case-study";
 
@@ -448,12 +448,24 @@ const STATS_PANELS = [
   { src: "/images/bella/stats/bella.webp", alt: "Bella actions list", title: "What they do with Bella", text: "Opening the sign, copying the email, earning a stamp. Each counts once per visit." },
 ];
 
-const STATS_RHYTHM = [
-  { icon: <Timer size={24} weight="fill" />, when: "Every 20 seconds", text: "An open tab sends its active time, and once more when it closes." },
-  { icon: <CalendarCheck size={24} weight="fill" />, when: "Every day", text: "The site saves the totals, with days in Indian time, so I can compare weeks later." },
-  { icon: <Notebook size={24} weight="fill" />, when: "Every Monday", text: "Claude writes me a short summary of the week, right in Claude instead of email." },
-  { icon: <BellRinging size={24} weight="fill" />, when: "Every morning", text: "Claude checks for spikes, like a day with 30 visits and five times the usual." },
+// Real visits per day (curiosity:days, IST) from 23 Oct, the first day with visits, to
+// 16 Nov 2026; nightly copies (curiosity:snapshot:*) exist from 13 Nov. Read on 17 Nov.
+// The five zero days before 23 Oct only feed the spike check's "usual day".
+const VISITS_BY_DAY: [string, number][] = [
+  ["2026-10-23", 11], ["2026-10-24", 6], ["2026-10-25", 3], ["2026-10-26", 11], ["2026-10-27", 4],
+  ["2026-10-28", 5], ["2026-10-29", 6], ["2026-10-30", 4], ["2026-10-31", 4], ["2026-11-01", 27],
+  ["2026-11-02", 8], ["2026-11-03", 16], ["2026-11-04", 4], ["2026-11-05", 9], ["2026-11-06", 17],
+  ["2026-11-07", 45], ["2026-11-08", 31], ["2026-11-09", 16], ["2026-11-10", 2], ["2026-11-11", 8],
+  ["2026-11-12", 14], ["2026-11-13", 22], ["2026-11-14", 4], ["2026-11-15", 0], ["2026-11-16", 0],
 ];
+const STATS_DAYS = VISITS_BY_DAY.map(([date, visits]) => ({ date, visits, saved: date >= "2026-11-13" }));
+
+const RHYTHM_TABS = {
+  visits: { name: "Every visit", text: "Each bar is one day. While a tab is open it reports every 20 seconds, and each visit is counted once." },
+  saved: { name: "Saved nightly", text: "Every night the site saves a copy of the totals, with days in Indian time. The first copy was saved on 13 Nov." },
+  weekly: { name: "Monday summary", text: "Every Monday, Claude adds up the week before and sends me a short summary, inside Claude instead of email." },
+  spikes: { name: "Morning check", text: "Every morning, Claude checks the last day. A day with 30 or more visits and five times a usual day gets flagged. 7 Nov would have been." },
+};
 
 const ATTEMPTS = [
   { attempt: "Leaves a tab open all night", result: "Nothing added after 30 seconds", how: "The clock pauses when the tab is hidden or nothing moves for 30 seconds." },
@@ -498,7 +510,7 @@ function Behind() {
           </p>
         </Copy>
         <Visual>
-          <RhythmTrack items={STATS_RHYTHM} />
+          <RhythmChart days={STATS_DAYS} history={[0, 0, 0, 0, 0]} tabs={RHYTHM_TABS} />
         </Visual>
       </div>
       <div className="cs-sub">
