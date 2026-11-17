@@ -77,24 +77,23 @@ function Overview() {
           role="End-to-end Design & Developer Handoff"
           // TODO: add Travis's role once known
           team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content), TCS developers (Engineering)"
-          timeline={<>February – July 2026<br />Briefed in February 2026 · Designed in May 2026 · V1 launched in July 2026</>}
+          timeline={<>June – July 2026<br />Briefed in June 2026 · V1 built and launched in July 2026</>}
         />
       </Copy>
       <Visual>
-        {/* Both frames are 2000 × 1389. The old page's header is 34px shorter, so its frame is
-            pushed down by that much (padded with the header's own dark) to put the search bar,
-            tabs and first row of results at the same height in both. The handle rests mid-way;
-            the first-view sweep pulls it left over the new filter panel and back */}
+        {/* Both frames are 2000 × 1076: the old search page cropped to the live V1 screenshot's
+            height, 4px off its top so the two search bars sit at the same height. The handle
+            rests mid-way; the first-view sweep pulls it left over V1's filter row and back */}
         <BeforeAfterSlider
           width={2000}
-          height={1389}
+          height={1076}
           start={50}
           sweepTo={14}
           before={{ src: "/images/tcs-search/compare-before.webp", alt: "the old search page: a result count and a grid of mixed cards, with no filters" }}
-          after={{ src: "/images/tcs-search/compare-after.webp", alt: "the new search page: a filter panel, a result count with removable filter chips, sort, and trip cards showing each route" }}
+          after={{ src: "/images/tcs-search/compare-after.webp", alt: "the live V1 search page: tabs, a row of five filters, a result count, and trip cards showing each route" }}
           labels={{
             before: { title: "The old search page", note: "Every result in one grid, with no filters" },
-            after: { title: "The new search page", note: "Filters, a result count and each trip's route" },
+            after: { title: "The live V1 search page", note: "Five filters, a result count and each trip's route" },
           }}
         />
       </Visual>
@@ -195,8 +194,9 @@ function Context() {
         <Copy>
           <h3>What we heard from travellers</h3>
           <p>
-            <Highlight><span className="text-heading">7 frequent TCS travellers interviewed.</span></Highlight> Two
-            recurring observations stood out:
+            <Highlight><span className="text-heading">7 frequent TCS travellers interviewed.</span></Highlight> All
+            were existing TCS customers who volunteered, and I asked each of them a
+            few questions. Two recurring observations stood out:
           </p>
           <ChatQuotes label="What two frequent TCS travellers said" items={TRAVELLER_QUOTES} />
           <p>
@@ -555,7 +555,7 @@ const WORKED = [
   },
   {
     lead: "Ship, learn, and iterate.",
-    text: <><Highlight>V1 went live two months after the designs.</Highlight> Getting the experience into production gave us an opportunity to see how it worked in practice and identify what needed to improve in V2.</>,
+    text: <><Highlight>V1 went live a month after the brief.</Highlight> Getting the experience into production gave us an opportunity to see how it worked in practice and identify what needed to improve in V2.</>,
   },
   {
     lead: "Test with people who know the product.",
