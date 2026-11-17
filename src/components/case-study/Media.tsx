@@ -364,7 +364,13 @@ function Player({
           const v = e.currentTarget;
           if (v.buffered.length && v.duration) setLoaded(v.buffered.end(v.buffered.length - 1) / v.duration);
         }}
-        onClick={toggle}
+        onClick={() => {
+          // On a phone the inline clip is small, so a tap on it opens it large (where it keeps
+          // playing); the play button and control bar still work in place. With a mouse a
+          // click plays or pauses, as before.
+          if (!expanded && onOpen && window.matchMedia("(hover: none) and (pointer: coarse)").matches) onOpen(where());
+          else toggle();
+        }}
         className="block h-full w-full cursor-pointer object-contain"
       />
 
@@ -518,6 +524,39 @@ export function Expanded({
       {caption ?? <p className="pointer-events-none max-w-[640px] text-center font-geist text-[14px] leading-[20px] text-white/70">{label}</p>}
     </div>,
     document.body,
+  );
+}
+
+/** A picture that opens large when clicked or tapped, for cards that show a screenshot on
+ * their own stage (Media draws its own frame). The button takes `className`; the picture
+ * keeps `imgClassName`. */
+export function ZoomImage({
+  src,
+  alt,
+  className = "",
+  imgClassName = "",
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  imgClassName?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [ratio, setRatio] = useState(16 / 9);
+  const shut = useCallback(() => setOpen(false), []);
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)} aria-label={`Expand: ${alt}`} data-sound="whisper" data-sound-click="pop" className={`cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-grape ${className}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={alt} loading="lazy" draggable={false} onLoad={(e) => setRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight)} className={imgClassName} />
+      </button>
+      {open && (
+        <Expanded label={alt} ratio={ratio} onClose={shut}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={src} alt={alt} className="block h-full w-full bg-white object-contain" />
+        </Expanded>
+      )}
+    </>
   );
 }
 

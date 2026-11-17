@@ -384,7 +384,7 @@ const USE_CASES: {
     num: 5,
     slug: "champion",
     title: "Celebrates the longest visit",
-    body: <>The longest visit of the month turns Bella and its sign gold. <Highlight>Visit counts are never shown.</Highlight></>,
+    body: <>The longest visit of the month turns Bella and its sign gold.</>,
   },
 ];
 
@@ -474,7 +474,7 @@ const RHYTHM_TABS = {
 // visit, my own test visits, and the flagging script (still true, just fewer cards)
 const ATTEMPTS = [
   { attempt: "Leave a tab open all night", result: "Nothing added after 30 seconds", how: "The clock pauses when the tab is hidden or nothing moves for 30 seconds." },
-  { attempt: "Send a made-up nine-hour visit", result: "Cut down to real time", how: "A visit can't claim more time than has passed since the site first saw it, and it stops at two hours." },
+  { attempt: "Fake a really long visit to top the rankings", result: "Capped at the real time", how: "The site knows when each visit started, so a visit can't claim more time than has actually passed. No visit counts past two hours." },
   { attempt: "Flood the site with hundreds of visits", result: "Stopped at the limit", how: "Each connection can only start so many visits an hour. Its address is scrambled before it's stored." },
 ];
 
@@ -492,8 +492,8 @@ function Behind() {
         <Copy>
           <h3>What I see on the stats page</h3>
           <p>
-            The page sits behind a key. <Highlight>Five wrong tries locks it for 15
-            minutes.</Highlight> It answers one question: did people read, and what?
+            The page sits behind a key that only I have. <Highlight>It answers one
+            question: did people read, and what?</Highlight>
           </p>
         </Copy>
         <Visual>
@@ -584,7 +584,7 @@ export default function BellaPage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels.bella}>
       <Hero
-        title="A desk bell that shows how long people really read my portfolio, designed in Claude Code"
+        title="Designing Bella, the desk bell that hosts this portfolio, in Claude Code"
         date="October 2026"
         image="/images/bella/cover.png"
       />

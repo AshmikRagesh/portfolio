@@ -12,8 +12,8 @@ import { pitchFor } from "@/lib/sound/ui";
  *   weekly   seven-day blocks, Monday to Sunday, each with the total a Monday summary adds up
  *   spikes   the morning check's flood line (max of FLOOD_MIN and FLOOD_TIMES × the median
  *            of the 14 days before); a day over it is set in the warning colour
- * One dark tooltip follows the day in focus (hover, tap or arrow keys), the same as the
- * results chart. Bars grow in when the card scrolls into view; with reduced motion they
+ * At rest the bars are plain, with no tooltip. Pointing at, tapping or arrowing to a day
+ * shows one dark tooltip for it and dims the other bars, the same as the results chart. Bars grow in when the card scrolls into view; with reduced motion they
  * simply show. Built after ResultsCard's chart, in a plain white card.
  */
 export type Day = { date: string; visits: number; saved?: boolean };
@@ -47,6 +47,9 @@ export default function RhythmChart({
   // Opens on the busiest day, so the first tooltip says something
   const peak = days.reduce((best, d, i) => (d.visits > days[best].visits ? i : best), 0);
   const [active, setActive] = useState(peak);
+  // Nothing is singled out at rest: the tooltip and the dimming only show while a day is
+  // being pointed at, tapped or reached with the keyboard
+  const [engaged, setEngaged] = useState(false);
 
   // The spike check's line for each day: median of the 14 days before, then the flood rule
   const all = [...history, ...days.map((d) => d.visits)];
@@ -69,7 +72,10 @@ export default function RhythmChart({
   const top = Math.ceil(Math.max(...days.map((d) => d.visits), ...(mode === "spikes" ? flood.map((f) => f.line) : [0])) / 10) * 10;
   const h = (v: number) => `${(v / top) * 100}%`;
 
-  const pick = (i: number) => setActive(Math.max(0, Math.min(last, i)));
+  const pick = (i: number) => {
+    setEngaged(true);
+    setActive(Math.max(0, Math.min(last, i)));
+  };
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowRight") pick(active + 1);
     else if (e.key === "ArrowLeft") pick(active - 1);
@@ -143,6 +149,9 @@ export default function RhythmChart({
           aria-label="Visits per day. Use the arrow keys to move between days."
           tabIndex={0}
           onKeyDown={onKey}
+          onFocus={() => setEngaged(true)}
+          onBlur={() => setEngaged(false)}
+          onMouseLeave={() => setEngaged(false)}
           className="relative h-[176px] min-w-0 flex-1 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-4 md:h-[208px]"
         >
           {/* Grid lines */}
@@ -189,7 +198,7 @@ export default function RhythmChart({
               >
                 <span
                   className={`block w-full rounded-t-[2px] transition-[height,background-color,opacity] duration-700 ${EASE} motion-reduce:transition-none ${barTone(i)} ${
-                    i === active ? "opacity-100" : "opacity-90"
+                    engaged && i !== active ? "opacity-40" : "opacity-100"
                   }`}
                   style={{ height: inView ? (d.visits ? h(d.visits) : "2px") : "0%", transitionDelay: inView ? `${i * 18}ms` : "0ms" }}
                 />
@@ -205,7 +214,7 @@ export default function RhythmChart({
           <span
             aria-live="polite"
             className={`pointer-events-none absolute z-[1] -translate-x-1/2 whitespace-nowrap rounded-sm bg-primary px-[8px] py-[4px] font-geist text-caption text-white transition-all duration-300 ${EASE} motion-reduce:transition-none ${
-              inView ? "opacity-100" : "opacity-0"
+              inView && engaged ? "opacity-100" : "opacity-0"
             }`}
             style={{
               left: `clamp(80px, ${((active + 0.5) / days.length) * 100}%, calc(100% - 80px))`,
@@ -222,7 +231,7 @@ export default function RhythmChart({
         {days.map((d, i) => (
           <span key={d.date} className="relative h-[16px] min-w-0 flex-1">
             {ticks[i] && (
-              <span className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${i === active ? "text-heading" : "text-muted"}`}>
+              <span className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${engaged && i === active ? "text-heading" : "text-muted"}`}>
                 {nice(d.date)}
               </span>
             )}

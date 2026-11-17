@@ -591,6 +591,57 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
     if (allItems.length === 0 && !pending && panel === "notes") setPanel("compose");
   }, [allItems.length, pending, panel]);
 
+  // Phones: keep the sheet above the on-screen keyboard. visualViewport shrinks when the
+  // keyboard opens; the gap below it becomes --fb-kb, which the sheet sits on.
+  const sheetOpen = on && panel !== "closed";
+  useEffect(() => {
+    const vv = window.visualViewport;
+    const card = cardRef.current;
+    if (!sheetOpen || !vv || !card) return;
+    const update = () => {
+      const kb = window.matchMedia("(min-width: 768px)").matches ? 0 : Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      card.style.setProperty("--fb-kb", `${Math.round(kb)}px`);
+    };
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+      card.style.removeProperty("--fb-kb");
+    };
+  }, [sheetOpen]);
+
+  // Phones: drag the sheet down by its handle or header to close it (past 96px or a flick)
+  const drag = useRef<{ y: number; t: number; dy: number } | null>(null);
+  const dragStart = (e: React.PointerEvent<HTMLElement>) => {
+    if (window.matchMedia("(min-width: 768px)").matches) return;
+    if ((e.target as HTMLElement).closest("button")) return;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // Capture can fail for a pointer that's already gone; the drag still works without it
+    }
+    drag.current = { y: e.clientY, t: performance.now(), dy: 0 };
+    cardRef.current?.setAttribute("data-dragging", "true");
+  };
+  const dragMove = (e: React.PointerEvent<HTMLElement>) => {
+    const d = drag.current;
+    if (!d) return;
+    d.dy = Math.max(0, e.clientY - d.y);
+    cardRef.current?.style.setProperty("--fb-drag", `${d.dy}px`);
+  };
+  const dragEnd = () => {
+    const d = drag.current;
+    drag.current = null;
+    const card = cardRef.current;
+    if (!d || !card) return;
+    card.removeAttribute("data-dragging");
+    card.style.removeProperty("--fb-drag");
+    const fast = d.dy / Math.max(1, performance.now() - d.t) > 0.6;
+    if (d.dy > 96 || (fast && d.dy > 24)) closeCard();
+  };
+
   // Focus the comment box when the card opens or a block is picked
   useEffect(() => {
     if (target && panel === "compose") textRef.current?.focus({ preventScroll: true });
@@ -800,9 +851,24 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
         aria-modal="false"
         aria-labelledby="fb-title"
       >
+        {/* Phones: a handle to drag the sheet down and away */}
+        <div
+          className="fb-grabber"
+          aria-hidden="true"
+          onPointerDown={dragStart}
+          onPointerMove={dragMove}
+          onPointerUp={dragEnd}
+          onPointerCancel={dragEnd}
+        />
         {about && (
           <form onSubmit={send} className="fb-card-form">
-            <header className="fb-card-head">
+            <header
+              className="fb-card-head"
+              onPointerDown={dragStart}
+              onPointerMove={dragMove}
+              onPointerUp={dragEnd}
+              onPointerCancel={dragEnd}
+            >
               <h2 id="fb-title" className="fb-card-title">
                 Leave feedback
               </h2>

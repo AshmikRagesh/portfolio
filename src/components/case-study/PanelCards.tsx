@@ -1,7 +1,10 @@
+import { ZoomImage } from "./Media";
+
 /**
  * Picture cards for the parts of one screen: each card shows a crop of that part on a soft
  * grape stage, then a short title and one plain line. Every stage is the same height and
  * the crop sits whole inside it (never stretched), so wide and tall crops share one size.
+ * Tap or click a crop to see it large.
  * Five cards sit as two (the wide crops) over three from tablet up; one column on phones.
  */
 type Panel = { src: string; alt: string; title: string; text: string };
@@ -19,12 +22,11 @@ export default function PanelCards({ items }: { items: Panel[] }) {
       {items.map(({ src, alt, title, text }) => (
         <li key={title} className="flex flex-col rounded-lg border border-line-soft bg-white p-[12px]">
           <div className="flex h-[224px] items-center justify-center overflow-hidden rounded-md bg-grape-light/30 p-[16px]">
-            <img
+            <ZoomImage
               src={src}
               alt={alt}
-              loading="lazy"
-              draggable={false}
-              className="max-h-full max-w-full rounded-sm object-contain shadow-[0_1px_2px_rgba(30,5,37,0.08)]"
+              className="flex h-full max-w-full items-center justify-center"
+              imgClassName="max-h-full max-w-full rounded-sm object-contain shadow-[0_1px_2px_rgba(30,5,37,0.08)]"
             />
           </div>
           <div className="flex flex-col gap-[4px] px-[8px] pb-[8px] pt-[16px]">
