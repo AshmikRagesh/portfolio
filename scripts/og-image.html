@@ -1,7 +1,7 @@
 <!doctype html>
 <!-- The link-preview image (src/app/opengraph-image.png and twitter-image.png), 1200x630.
-     Kept minimal on purpose, like other designers' previews: one flat background, Bella, the
-     name in the primary serif and the role in the secondary font, all centred.
+     Bella in the centre of a framed card, like a hotel's front-desk card, with four small
+     labels in the corners: the name in the primary serif, the rest in Geist caps.
      To change it, edit this file, then from the repo root run:
      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars --allow-file-access-from-files --window-size=1200,630 --virtual-time-budget=3000 --screenshot=src/app/opengraph-image.png "file://$PWD/scripts/og-image.html"
      and copy the result to src/app/twitter-image.png. -->
@@ -11,18 +11,26 @@
 <style>
   @font-face { font-family: Serif; src: url("../src/app/fonts/source-serif-4-latin-wght-normal.woff2") format("woff2"); font-weight: 200 900; }
   @font-face { font-family: Geist; src: url("../src/app/fonts/Geist-Variable.woff2") format("woff2"); font-weight: 100 900; }
-  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #fbf9f6; }
-  .card { width: 1200px; height: 630px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-  img { width: 200px; height: auto; display: block; }
-  h1 { font-family: Serif; font-weight: 400; font-size: 80px; line-height: 88px; letter-spacing: -2.4px; color: #32073e; margin: 28px 0 0; }
-  p { font-family: Geist; font-weight: 400; font-size: 30px; line-height: 40px; color: #524555; margin: 12px 0 0; }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #f6ecf8; }
+  .card { position: relative; width: 1200px; height: 630px; }
+  .frame { position: absolute; inset: 32px; border: 1.5px solid rgba(50, 7, 62, 0.14); border-radius: 24px; }
+  .bella { position: absolute; left: 50%; top: 50%; width: 320px; transform: translate(-50%, -50%); }
+  .c { position: absolute; color: #32073e; }
+  .tl { left: 72px; top: 64px; font-family: Serif; font-size: 34px; line-height: 40px; letter-spacing: -0.8px; }
+  .label { font-family: Geist; font-weight: 500; font-size: 16px; line-height: 20px; letter-spacing: 2px; text-transform: uppercase; color: #6e0d4b; }
+  .tr { right: 72px; top: 74px; }
+  .bl { left: 72px; bottom: 70px; }
+  .br { right: 72px; bottom: 70px; }
 </style>
 </head>
 <body>
   <div class="card">
-    <img src="../public/images/bella/final-bella.svg" alt="">
-    <h1>Ashmik Ragesh</h1>
-    <p>Product designer turned design engineer</p>
+    <div class="frame"></div>
+    <div class="c tl">Ashmik Ragesh</div>
+    <div class="c label tr">Design Engineer</div>
+    <div class="c label bl">Portfolio · 2026</div>
+    <div class="c label br">Ring for service</div>
+    <img class="bella" src="../public/images/bella/final-bella.svg" alt="">
   </div>
 </body>
 </html>
