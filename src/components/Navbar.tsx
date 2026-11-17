@@ -30,29 +30,46 @@ const navLinks = [
   // Play is held back until the page is ready: { label: "Play", href: "/play" },
 ];
 
-// On the home page, the section tab whose section crosses the middle of the screen
-// (Works while the work cards are being read) is marked as where the visitor is.
+// Which tab marks where the visitor is. On the home page it's the section tab whose
+// section crosses the middle of the screen (Works while the work cards are being read);
+// inside a case study (/works/...) it's Works. The sections are looked up on every scroll
+// rather than once, because the home page's content can arrive after the navbar mounts
+// (the page transition and Bella's loader), and a one-time lookup then finds nothing.
 function useSectionInView(pathname: string) {
   const [inView, setInView] = useState<string | null>(null);
   useEffect(() => {
+    if (pathname.startsWith("/works/")) {
+      setInView("#works");
+      return;
+    }
     setInView(null);
     if (pathname !== "/") return;
-    const sections = navLinks
-      .filter((l) => l.href.startsWith("#"))
-      .map((l) => document.querySelector(l.href))
-      .filter((el): el is Element => el !== null);
-    if (!sections.length) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          const href = `#${e.target.id}`;
-          setInView((cur) => (e.isIntersecting ? href : cur === href ? null : cur));
-        }
-      },
-      { rootMargin: "-50% 0px -50% 0px" },
-    );
-    sections.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    const hrefs = navLinks.filter((l) => l.href.startsWith("#")).map((l) => l.href);
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const middle = window.innerHeight / 2;
+      let found: string | null = null;
+      for (const href of hrefs) {
+        const r = document.querySelector(href)?.getBoundingClientRect();
+        if (r && r.top <= middle && r.bottom >= middle) found = href;
+      }
+      setInView(found);
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(check);
+    };
+    schedule();
+    // Once more after the content has had time to arrive, in case nothing scrolls
+    const late = window.setTimeout(schedule, 1200);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(late);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
   }, [pathname]);
   return inView;
 }
