@@ -444,7 +444,7 @@ function Player({
 
 // ─── Expanded view ───────────────────────────────────────────────────────────
 /** The media large and centred over a dimmed page, sized to its own shape. Esc, the backdrop or ✕ close it. */
-function Expanded({
+export function Expanded({
   label,
   ratio,
   onClose,
