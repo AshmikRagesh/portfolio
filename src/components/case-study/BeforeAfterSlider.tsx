@@ -38,7 +38,19 @@ const Media = forwardRef<HTMLVideoElement, { shot: Shot; width: number; height: 
     const cls = "pointer-events-none absolute inset-0 h-full w-full object-cover";
     if (isVideo(shot)) {
       return (
-        <video ref={ref} src={shot.src} aria-label={shot.alt} width={width} height={height} muted loop playsInline preload="metadata" className={cls} style={style} />
+        <video
+          ref={ref}
+          src={shot.src}
+          aria-label={shot.alt}
+          width={width}
+          height={height}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className={cls}
+          style={style}
+        />
       );
     }
     // eslint-disable-next-line @next/next/no-img-element
@@ -351,6 +363,21 @@ export default function BeforeAfterSlider({
       >
         <Media ref={afterVid} shot={after} width={width} height={height} />
         <Media ref={beforeVid} shot={before} width={width} height={height} style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }} />
+        {/* Once the handle has given one side 80% or more, the sliver left of the other side
+            softens, like the backdrop behind an open sheet, so the eye stays on the side being
+            read. It's a frosted layer laid over just that sliver (a backdrop blur and a light
+            wash), not a filter on the picture: a filter on the clipped top picture would turn
+            its edges see-through and let the other picture show behind it */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 bg-white/40 backdrop-blur-[4px] transition-opacity duration-300 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none"
+          style={{
+            // Covers the narrower side (left of the handle when it's in the left half), so it
+            // fades in and out over the right sliver
+            ...(pos < 50 ? { left: 0, width: `${pos}%` } : { left: `${pos}%`, right: 0 }),
+            opacity: pos <= 20 || pos >= 80 ? 1 : 0,
+          }}
+        />
         {/* Each side's name shows while that side has room; one control runs both videos */}
         {labels && (isVideo(before) || isVideo(after)) && (
           <>

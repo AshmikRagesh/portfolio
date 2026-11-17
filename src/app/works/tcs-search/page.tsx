@@ -90,8 +90,8 @@ function Overview() {
           height={1076}
           start={50}
           sweepTo={14}
-          before={{ src: "/images/tcs-search/compare-before.webp", alt: "the old search page: a result count and a grid of mixed cards, with no filters" }}
-          after={{ src: "/images/tcs-search/compare-after.webp", alt: "the live V1 search page: tabs, a row of five filters, a result count, and trip cards showing each route" }}
+          before={{ src: "/images/tcs-search/compare-before.webp?v=3", alt: "the old search page: a result count and a grid of mixed cards, with no filters" }}
+          after={{ src: "/images/tcs-search/compare-after.webp?v=3", alt: "the live V1 search page: tabs, a row of five filters, a result count, and trip cards showing each route" }}
           labels={{
             before: { title: "The old search page", note: "Aug 2025: every result in one grid, with no filters" },
             after: { title: "The live V1 search page", note: "Five filters, a result count and each trip's route" },
@@ -227,7 +227,7 @@ function Context() {
               problem with a tag naming it. The Overview slider already shows the page
               plain, so here it carries the findings */}
           <AnnotatedFigure
-            src="/images/tcs-search/old-search.webp"
+            src="/images/tcs-search/old-search-blue.webp"
             width={1920}
             height={1280}
             alt="The old TCS search page, marked up with three findings: the tabs, the result count and a card title"
@@ -283,7 +283,7 @@ type OptionItem = {
 const OPTIONS: OptionItem[] = [
   {
     label: "Option 1",
-    video: "/videos/tcs-search/option-1.mp4",
+    video: "/videos/tcs-search/option-1.mp4?v=2",
     title: "Region shortcuts, with country tags on the card",
     worked: [
       "Every region is one tap away and always in view",
@@ -296,7 +296,7 @@ const OPTIONS: OptionItem[] = [
   },
   {
     label: "Option 2",
-    video: "/videos/tcs-search/option-2.mp4",
+    video: "/videos/tcs-search/option-2.mp4?v=2",
     title: "A Sort menu, with every country on the card",
     worked: [
       "One control everyone already knows from shopping sites",
@@ -309,7 +309,7 @@ const OPTIONS: OptionItem[] = [
   },
   {
     label: "Option 3",
-    video: "/videos/tcs-search/option-3.mp4",
+    video: "/videos/tcs-search/option-3.mp4?v=2",
     title: "A row of filters, with the full route on the card",
     shipped: true,
     worked: [
@@ -449,7 +449,7 @@ function Solution() {
             <Figure
               name={`Recording: ${title}`}
               alt={`Screen recording: ${title}`}
-              video={`/videos/tcs-search/solution-${num}.mp4`}
+              video={`/videos/tcs-search/solution-${num}.mp4?v=2`}
             />
           </Visual>
         </div>
