@@ -8,9 +8,9 @@ import { CaretLeft, CaretRight } from "@phosphor-icons/react";
  * in order (e.g. a pull request review, then the work behind it). All slides share one size so
  * the card never jumps between them.
  *
- * Modelled on Framer's Slideshow component with its controls outside the media:
- *  - Under the picture: a round arrow at each end, and between them a dot per slide (24px tap
- *    target around an 8px dot) above the caption. Nothing sits on top of the screenshot.
+ * Controls follow the usual gallery pattern:
+ *  - On the picture: a white arrow centred on each side, and the dots centred on the
+ *    bottom edge. The caption sits straight under the picture, like every other media card.
  *  - Drag or swipe the picture: it follows the pointer 1:1 and settles on the nearest slide; a
  *    quick flick is enough. The ends resist so the reader feels the edge.
  *  - Arrow keys move when the carousel has focus; Home and End go to the ends.
@@ -139,54 +139,54 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
             />
           ))}
         </div>
+
+        <Arrow dir="prev" off={i === 0} onGo={() => jump(i - 1)} />
+        <Arrow dir="next" off={i === last} onGo={() => jump(i + 1)} />
+
+        {/* Dots centred on the bottom edge, on a dark glass chip so they read over any
+            screenshot. Each dot is a 24px target around an 8px dot; the current one is a bar. */}
+        <div
+          className="absolute bottom-[8px] left-1/2 z-[2] flex -translate-x-1/2 items-center rounded-full bg-[rgba(30,5,37,0.72)] px-[4px] shadow-[0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-xl backdrop-saturate-150 md:bottom-[12px]"
+          onPointerDown={(e) => e.stopPropagation()}
+          onPointerUp={(e) => e.stopPropagation()}
+        >
+          {slides.map((s, n) => (
+            <button
+              key={s.src}
+              type="button"
+              aria-label={`Image ${n + 1} of ${slides.length}: ${s.caption}`}
+              aria-current={n === i ? "true" : undefined}
+              data-sound-click="toggle"
+              onClick={() => jump(n)}
+              className={`group/dot grid h-[24px] place-items-center rounded-full outline-none transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/[0.64] motion-reduce:transition-none ${
+                n === i ? "w-[32px] cursor-default" : "w-[24px]"
+              }`}
+            >
+              <span
+                className={`block h-[6px] rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                  n === i ? "w-[20px] bg-white" : "w-[6px] bg-white/[0.48] [@media(hover:hover)]:group-hover/dot:bg-white/[0.8]"
+                }`}
+              />
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Footer, after Framer's Slideshow with its controls placed outside the media: round
-          arrows at the ends, dots and the caption centred between them. Nothing covers the
-          screenshot, and the caption keeps the same centred Geist caps as every media card. */}
-      <figcaption className="flex items-start gap-[8px] px-[4px] pb-[4px] pt-[12px] md:gap-[16px] md:px-[8px]">
-        <Arrow dir="prev" off={i === 0} onGo={() => jump(i - 1)} />
-        <div className="flex min-w-0 flex-1 flex-col items-center gap-[8px] pt-[4px]">
-          <div className="flex items-center">
-            {slides.map((s, n) => (
-              <button
-                key={s.src}
-                type="button"
-                aria-label={`Image ${n + 1} of ${slides.length}: ${s.caption}`}
-                aria-current={n === i ? "true" : undefined}
-                data-sound-click="toggle"
-                onClick={() => jump(n)}
-                className={`group/dot grid h-[24px] place-items-center rounded-full outline-none transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-heading motion-reduce:transition-none ${
-                  n === i ? "w-[32px] cursor-default" : "w-[24px]"
-                }`}
-              >
-                <span
-                  className={`block h-[8px] rounded-full transition-[width,background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                    n === i
-                      ? "w-[20px] bg-heading"
-                      : "w-[8px] bg-heading/[0.32] group-active/dot:scale-[0.75] [@media(hover:hover)]:group-hover/dot:bg-heading/[0.64]"
-                  }`}
-                />
-              </button>
-            ))}
-          </div>
-          <p key={i} aria-live="polite" className="cs-caption-in m-0 text-center [text-wrap:balance]">
-            <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{slides[i].caption}</span>
-          </p>
-        </div>
-        <Arrow dir="next" off={i === last} onGo={() => jump(i + 1)} />
+      {/* Same look as CardFooter's caption; keyed by slide so it settles in each time it changes */}
+      <figcaption key={i} aria-live="polite" className="cs-caption-in flex flex-col items-center px-[12px] pb-[8px] pt-[16px] text-center [text-wrap:balance] md:px-[16px]">
+        <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{slides[i].caption}</span>
       </figcaption>
     </figure>
   );
 }
 
 /**
- * Framer Slideshow's arrow: a 40px white circle with a hairline edge and soft shadow.
- *  - Hover (mouse and trackpad only, so a tap on a phone never leaves it stuck): it fills with
- *    the heading colour, the chevron turns white and nudges 2px the way it goes.
- *  - Press: it sinks (scale 0.92) in 100ms, then springs back on release.
- *  - At an end it fades and shows a not-allowed cursor, but stays focusable (aria-disabled), so
- *    keyboard focus never drops to the page.
+ * The usual on-image arrow: a white circle centred on the picture's left or right edge.
+ *  - Always visible (no hover needed to find it); hidden at the first and last slide.
+ *  - Hover (mouse and trackpad only, so a tap never leaves it stuck): it grows a touch and its
+ *    shadow deepens. Press: it sinks (scale 0.92) in 100ms and springs back.
+ *  - At an end it stays focusable (aria-disabled, shown faint while focused), so keyboard focus
+ *    never drops to the page.
  */
 function Arrow({ dir, off, onGo }: { dir: "prev" | "next"; off: boolean; onGo: () => void }) {
   const Icon = dir === "prev" ? CaretLeft : CaretRight;
@@ -197,20 +197,17 @@ function Arrow({ dir, off, onGo }: { dir: "prev" | "next"; off: boolean; onGo: (
       aria-disabled={off || undefined}
       data-sound-click={off ? undefined : "toggle"}
       onClick={() => !off && onGo()}
-      className={`group/arrow grid size-[40px] shrink-0 place-items-center rounded-full bg-white text-heading outline-none transition-[opacity,background-color,color,transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-heading focus-visible:ring-offset-2 motion-reduce:transition-none ${
+      onPointerDown={(e) => e.stopPropagation()}
+      onPointerUp={(e) => e.stopPropagation()}
+      className={`absolute top-1/2 z-[2] grid size-[36px] -translate-y-1/2 place-items-center rounded-full bg-white text-heading shadow-[0_0_0_1px_rgba(30,5,37,0.08),0_4px_12px_-2px_rgba(30,5,37,0.32)] outline-none transition-[opacity,transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-heading focus-visible:ring-offset-2 motion-reduce:transition-none md:size-[40px] ${
+        dir === "prev" ? "left-[8px] md:left-[12px]" : "right-[8px] md:right-[12px]"
+      } ${
         off
-          ? "cursor-not-allowed opacity-[0.4] shadow-[0_0_0_1px_rgba(30,5,37,0.12)]"
-          : "shadow-[0_0_0_1px_rgba(30,5,37,0.12),0_1px_2px_rgba(30,5,37,0.08)] active:scale-[0.92] active:duration-100 [@media(hover:hover)]:hover:bg-heading [@media(hover:hover)]:hover:text-white [@media(hover:hover)]:hover:shadow-[0_0_0_1px_rgb(30,5,37),0_6px_16px_-6px_rgba(30,5,37,0.48)]"
+          ? "pointer-events-none opacity-0 focus-visible:opacity-[0.4]"
+          : "opacity-100 active:scale-[0.92] active:duration-100 [@media(hover:hover)]:hover:scale-[1.08] [@media(hover:hover)]:hover:shadow-[0_0_0_1px_rgba(30,5,37,0.08),0_8px_20px_-4px_rgba(30,5,37,0.4)]"
       }`}
     >
-      <Icon
-        size={16}
-        weight="bold"
-        aria-hidden="true"
-        className={`transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-          off ? "" : dir === "prev" ? "[@media(hover:hover)]:group-hover/arrow:-translate-x-[2px]" : "[@media(hover:hover)]:group-hover/arrow:translate-x-[2px]"
-        }`}
-      />
+      <Icon size={16} weight="bold" aria-hidden="true" />
     </button>
   );
 }

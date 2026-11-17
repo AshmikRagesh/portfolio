@@ -21,6 +21,7 @@ import {
   BarRows,
   Highlight,
   ResultsCard,
+  AnnotatedFigure,
   ChangeList,
   HelixLink,
   MoreDetail,
@@ -77,24 +78,23 @@ function Overview() {
           role="End-to-end Design & Developer Handoff"
           // TODO: add Travis's role once known
           team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content), TCS developers (Engineering)"
-          timeline={<>February – July 2026<br />Briefed in February 2026 · Designed in May 2026 · V1 launched in July 2026</>}
+          timeline={<>June – July 2026<br />Briefed in June 2026 · V1 built and launched in July 2026</>}
         />
       </Copy>
       <Visual>
-        {/* Both frames are 2000 × 1389. The old page's header is 34px shorter, so its frame is
-            pushed down by that much (padded with the header's own dark) to put the search bar,
-            tabs and first row of results at the same height in both. The handle rests mid-way;
-            the first-view sweep pulls it left over the new filter panel and back */}
+        {/* Both frames are 2000 × 1076: the old search page cropped to the live V1 screenshot's
+            height, 4px off its top so the two search bars sit at the same height. The handle
+            rests mid-way; the first-view sweep pulls it left over V1's filter row and back */}
         <BeforeAfterSlider
           width={2000}
-          height={1389}
+          height={1076}
           start={50}
           sweepTo={14}
           before={{ src: "/images/tcs-search/compare-before.webp", alt: "the old search page: a result count and a grid of mixed cards, with no filters" }}
-          after={{ src: "/images/tcs-search/compare-after.webp", alt: "the new search page: a filter panel, a result count with removable filter chips, sort, and trip cards showing each route" }}
+          after={{ src: "/images/tcs-search/compare-after.webp", alt: "the live V1 search page: tabs, a row of five filters, a result count, and trip cards showing each route" }}
           labels={{
-            before: { title: "The old search page", note: "Every result in one grid, with no filters" },
-            after: { title: "The new search page", note: "Filters, a result count and each trip's route" },
+            before: { title: "The old search page", note: "Aug 2025: every result in one grid, with no filters" },
+            after: { title: "The live V1 search page", note: "Five filters, a result count and each trip's route" },
           }}
         />
       </Visual>
@@ -110,12 +110,12 @@ function TheProblem() {
     <Chapter id="the-problem" num={1} title="Search made it hard for travellers to find the right trip">
       <Copy>
         <p>
-          Travellers often search with a destination, travel period or type of
-          experience in mind. But in March 2026, TCS&apos;s search page offered
-          limited ways to narrow results. The Trips tab displayed <Highlight>42 trip cards
-          in date order, with no filters, sorting or result count</Highlight>. Cards also
-          lacked country information, meaning travellers had to scan the list
-          and open individual trips to understand where each journey went.
+          The project started with a request to improve the search experience
+          on the TCS website. The existing search results <Highlight>didn&apos;t offer
+          filtering options</Highlight>, making it difficult for travellers to narrow
+          down relevant itineraries. The brief called for a filtered search
+          experience that would help users refine results based on trip
+          characteristics and availability.
         </p>
         <p>
           <Highlight>Search performance data wasn&apos;t available</Highlight> to the design team,
@@ -125,8 +125,8 @@ function TheProblem() {
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Travellers couldn’t easily identify trips that matched their interests. They had to work through a long list and open individual trips to determine which journeys were relevant."
-          consequence="For a business that relies on enquiries, making relevant trips harder to discover also created a potential barrier between browsing and enquiring."
+          situation="Search results offered no filters, making it difficult for travellers to narrow the list to trips that matched their interests."
+          consequence="Finding a relevant itinerary meant spending more time navigating the results before they could explore a trip further or make an enquiry."
         />
       </Visual>
     </Chapter>
@@ -195,8 +195,9 @@ function Context() {
         <Copy>
           <h3>What we heard from travellers</h3>
           <p>
-            <Highlight><span className="text-heading">7 frequent TCS travellers interviewed.</span></Highlight> Two
-            recurring observations stood out:
+            <Highlight><span className="text-heading">7 frequent TCS travellers interviewed.</span></Highlight> All
+            were existing TCS customers who volunteered, and I asked each of them a
+            few questions. Two recurring observations stood out:
           </p>
           <ChatQuotes label="What two frequent TCS travellers said" items={TRAVELLER_QUOTES} />
           <p>
@@ -222,16 +223,32 @@ function Context() {
           </p>
         </Copy>
         <Visual>
-          <Figure
+          {/* The old page marked up with what the audit found: an outline box on each
+              problem with a tag naming it. The Overview slider already shows the page
+              plain, so here it carries the findings */}
+          <AnnotatedFigure
             src="/images/tcs-search/old-search.webp"
-            alt="The old TCS search page: a long grid of trip and destination cards with no filters"
-            label="The old search page: every kind of result in one grid, with no filters"
+            width={1920}
+            height={1280}
+            alt="The old TCS search page, marked up with three findings: the tabs, the result count and a card title"
+            notes={[
+              { text: "252 results, no way to narrow", box: { x: 0.11, y: 0.243, w: 0.064, h: 0.04 }, place: "bottom" },
+              { text: "Tabs only, no filters or sort", box: { x: 0.354, y: 0.241, w: 0.29, h: 0.044 }, place: "top" },
+              { text: "A name, but no route", box: { x: 0.641, y: 0.486, w: 0.243, h: 0.098 }, place: "bottom" },
+            ]}
           />
         </Visual>
       </div>
       <div className="cs-sub">
         <Copy>
           <h3>Turning findings into design priorities</h3>
+          <p>
+            The brief asked for filters, but the interviews and audit showed
+            travellers also needed to see where a trip goes and how their
+            choices changed the results. That turned the brief into one
+            question: <Highlight>how might we make it easier for travellers to find
+            relevant itineraries through TCS search?</Highlight>
+          </p>
           <p>The interviews and product audit shaped five priorities for the redesign:</p>
         </Copy>
         <Visual>
@@ -555,7 +572,7 @@ const WORKED = [
   },
   {
     lead: "Ship, learn, and iterate.",
-    text: <><Highlight>V1 went live two months after the designs.</Highlight> Getting the experience into production gave us an opportunity to see how it worked in practice and identify what needed to improve in V2.</>,
+    text: <><Highlight>V1 went live a month after the brief.</Highlight> Getting the experience into production gave us an opportunity to see how it worked in practice and identify what needed to improve in V2.</>,
   },
   {
     lead: "Test with people who know the product.",

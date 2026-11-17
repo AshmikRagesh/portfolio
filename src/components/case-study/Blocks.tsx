@@ -130,7 +130,7 @@ export function CardFooter({
 }) {
   if (!label && !caption && !impact) return null;
   return (
-    <figcaption className="flex flex-col items-center gap-[4px] px-[12px] pb-[8px] pt-[16px] text-center [text-wrap:balance] md:px-[16px]">
+    <figcaption className="flex flex-col items-center gap-[4px] px-[12px] pb-[4px] pt-[12px] text-center [text-wrap:balance] md:px-[16px]">
       {/* Labels and captions both read in the heading colour: the footer names what the media shows */}
       {label && <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{label}</span>}
       {caption && (
@@ -214,13 +214,13 @@ export function CardGrid({
           <div className="shrink-0">{icon}</div>
           <h4
             className={`font-heading tracking-[0px] text-heading ${
-              plain ? "text-[20px] leading-[28px]" : "text-[24px] leading-[30px]"
+              plain ? "text-h4 md:text-h4-md" : "text-h3-md md:text-h3-lg"
             }`}
           >
             {title}
           </h4>
           {/* Sits a touch closer to its title than the title does to the icon */}
-          <p className="-mt-[4px] font-body text-[18px] leading-[30px] text-muted">{description}</p>
+          <p className="-mt-[4px] font-body text-body-md text-secondary md:text-lead-md">{description}</p>
         </div>
       ))}
     </div>
