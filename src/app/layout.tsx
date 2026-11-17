@@ -41,9 +41,23 @@ const nanumPen = localFont({
   display: "swap",
 });
 
+// The site's own address, so link previews (Slack, LinkedIn, WhatsApp) get full links to the
+// preview image in opengraph-image.png. On Vercel this is the production domain, which becomes
+// the custom domain once one is added; locally it's the dev server.
+const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
+const DESCRIPTION = "Product designer turned design engineer. I design it, then build it, so teams can try an idea early.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Ashmik Ragesh",
-  description: "Creator that designs for creators.",
+  description: DESCRIPTION,
+  // No title or description here: each page's own <title> and description are what
+  // previews fall back to, so a shared case study shows its own name
+  openGraph: { type: "website", siteName: "Ashmik Ragesh", locale: "en_IN" },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({

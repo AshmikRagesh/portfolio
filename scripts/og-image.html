@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- The link-preview image (src/app/opengraph-image.png and twitter-image.png), 1200x630.
+     To change it, edit this file, then from the repo root run:
+     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars --allow-file-access-from-files --window-size=1200,630 --virtual-time-budget=3000 --screenshot=src/app/opengraph-image.png "file://$PWD/scripts/og-image.html"
+     and copy the result to src/app/twitter-image.png. -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: Serif; src: url("../src/app/fonts/source-serif-4-latin-wght-normal.woff2") format("woff2"); font-weight: 200 900; }
+  @font-face { font-family: Geist; src: url("../src/app/fonts/Geist-Variable.woff2") format("woff2"); font-weight: 100 900; }
+  @font-face { font-family: Mono; src: url("../src/app/fonts/GeistMono-Variable.woff2") format("woff2"); font-weight: 100 900; }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #fff; }
+  .card { position: relative; width: 1200px; height: 630px; box-sizing: border-box; padding: 72px 80px; }
+  .eyebrow { font-family: Mono; font-size: 20px; letter-spacing: 2px; text-transform: uppercase; color: #8e8292; }
+  h1 { font-family: Serif; font-weight: 400; font-size: 64px; line-height: 72px; letter-spacing: -1.6px; color: #32073e; margin: 24px 0 0; max-width: 640px; }
+  p { font-family: Geist; font-size: 24px; line-height: 36px; color: #524555; margin: 24px 0 0; max-width: 680px; }
+  .url { position: absolute; left: 80px; bottom: 64px; font-family: Mono; font-size: 22px; color: #32073e; display: flex; align-items: center; gap: 12px; }
+  .dot { width: 12px; height: 12px; border-radius: 6px; background: #9D136A; }
+  .portrait { position: absolute; right: 24px; bottom: -8px; height: 560px; }
+  .band { position: absolute; left: 0; right: 0; top: 0; height: 12px; background: linear-gradient(120deg, #32073e 0%, #6e0d4b 55%, #9D136A 100%); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="band"></div>
+    <div class="eyebrow">Ashmik Ragesh · Portfolio</div>
+    <h1>Product designer turned design engineer.</h1>
+    <p>I design it, then build it, so teams can try an idea early.</p>
+    <div class="url"><span class="dot"></span>ashmikragesh.com</div>
+    <img class="portrait" src="../public/images/portrait-sketch-glasses-cutout.webp" alt="">
+  </div>
+</body>
+</html>
