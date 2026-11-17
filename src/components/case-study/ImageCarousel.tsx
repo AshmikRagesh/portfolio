@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { Expanded } from "./Media";
 
 /**
  * A few stills shown one at a time in the case study card, for a short sequence that reads
@@ -13,6 +14,7 @@ import { CaretLeft, CaretRight } from "@phosphor-icons/react";
  *    bottom edge. The caption sits straight under the picture, like every other media card.
  *  - Drag or swipe the picture: it follows the pointer 1:1 and settles on the nearest slide; a
  *    quick flick is enough. The ends resist so the reader feels the edge.
+ *  - Tap or click the picture (without dragging), or press Enter, to see the slide large.
  *  - Arrow keys move when the carousel has focus; Home and End go to the ends.
  *  - The caption is read out when the slide changes.
  *  - Reduced motion: slides switch without the glide.
@@ -30,6 +32,8 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
   const axis = useRef<"x" | "y" | null>(null);
   const frame = useRef<HTMLDivElement>(null);
   const last = slides.length - 1;
+  const [zoom, setZoom] = useState(false);
+  const shut = useCallback(() => setZoom(false), []);
 
   const go = (n: number, touch = false) => {
     const to = Math.min(last, Math.max(0, n));
@@ -50,6 +54,8 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
   const release = (clientX: number) => {
     const s = start.current;
     start.current = null;
+    // A tap that never moved far enough to pick a direction opens the slide large
+    if (s && axis.current === null) setZoom(true);
     if (!s || axis.current !== "x") {
       setDrag(null);
       return;
@@ -77,6 +83,11 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.target !== e.currentTarget) return;
+        if (e.key === "Enter") {
+          e.preventDefault();
+          setZoom(true);
+          return;
+        }
         const next = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : e.key === "Home" ? 0 : e.key === "End" ? last : null;
         if (next === null) return;
         e.preventDefault();
@@ -176,6 +187,13 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
       <figcaption key={i} aria-live="polite" className="cs-caption-in flex flex-col items-center px-[12px] pb-[8px] pt-[16px] text-center [text-wrap:balance] md:px-[16px]">
         <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{slides[i].caption}</span>
       </figcaption>
+
+      {zoom && (
+        <Expanded label={slides[i].caption} ratio={width / height} onClose={shut}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={slides[i].src} alt={slides[i].alt} className="block h-full w-full bg-white object-contain" />
+        </Expanded>
+      )}
     </figure>
   );
 }
