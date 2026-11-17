@@ -46,6 +46,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "choosing",     label: "The pick"       },
   { id: "finish",       label: "Finishing"      },
   { id: "solution",     label: "On the site"    },
+  { id: "behind",       label: "Behind the desk" },
   { id: "purpose",      label: "What it solves" },
 ];
 
@@ -431,6 +432,84 @@ function Solution() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Section: Behind the desk  (the private stats page, how it's built, and how fake
+// visits and spam are kept out). Facts from src/lib/curiosity, src/app/stats and the
+// 11 Nov 2026 commits. Not claimed: bot detection (headless browsers aren't filtered).
+// Joining copy is a placeholder for Ashmik to rewrite in his words.
+// ─────────────────────────────────────────────────────────────────────────────
+const STATS_VIEWS = [
+  { lead: "Time,", text: "as visits, visitors, average and median active time, and the longest visit so far." },
+  { lead: "Visits per day,", text: "as one bar per day, so a sudden jump stands out." },
+  { lead: "Where people come from,", text: "by site only, like linkedin.com, never the full link." },
+  { lead: "Where they leave,", text: "from the last page seen in each visit, so I know which case study ends a visit." },
+  { lead: "What they do with Bella,", text: "such as opening the sign, copying the email, earning a stamp or sharing their pass. Each one counts once per visit." },
+];
+
+const STATS_BUILD = [
+  { lead: "Every 20 seconds,", text: "an open tab sends its active time to the site, and once more when the tab closes." },
+  { lead: "Every day,", text: "the site saves a copy of the totals, with days counted in Indian time, so I can compare weeks later." },
+  { lead: "Every Monday,", text: "Claude writes me a short summary of the week, inside Claude instead of email." },
+  { lead: "Every morning,", text: "Claude checks for spikes: a day with at least 30 visits and five times the usual, or visits sitting near the two-hour limit." },
+];
+
+const HONEST = [
+  { lead: "Only real time counts.", text: "The clock pauses when the tab is hidden or nothing moves for 30 seconds. A video only counts when someone presses play." },
+  { lead: "The browser's numbers aren't trusted.", text: "A visit can never claim more time than has really passed since the site first saw it, and one visit tops out at two hours." },
+  { lead: "Nobody can edit someone else's visit.", text: "Only the visitor who started a visit can add to it, and a late report can never lower a score." },
+  { lead: "Spam hits a limit.", text: "Each connection can only send so many reports a minute and start so many visits an hour. The address is scrambled before it's stored, so no real address is kept." },
+  { lead: "My own visits don't count.", text: "One switch on the stats page marks my browser as mine, so testing the live site never changes the numbers." },
+  { lead: "Odd entries get flagged.", text: "A script lists anything that looks fake, and I decide what to clear. Nothing is deleted on its own." },
+];
+
+function Behind() {
+  return (
+    <Chapter id="behind" num={6} title="Behind the desk: reading the numbers and keeping them real">
+      <Copy>
+        <p>
+          Bella only helps if the numbers are true. Visitors never see them, so
+          I built <Highlight>a private stats page that only I can open</Highlight>,
+          and a set of checks that keep fake visits out of it.
+        </p>
+      </Copy>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What I see on the stats page</h3>
+          <p>
+            The page sits behind a key. <Highlight>Five wrong tries locks it for 15
+            minutes.</Highlight> It answers one question: did people read, and what?
+          </p>
+          <Pointers items={STATS_VIEWS} />
+        </Copy>
+        <Visual>
+          {/* Screenshot of /stats with real numbers goes here */}
+          <Figure name="Screenshot: stats page" alt="The private Curiosity stats page" />
+        </Visual>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>How the numbers get there</h3>
+          <p>
+            <Highlight>I don&apos;t have to remember to check.</Highlight> The numbers
+            are saved as visits happen, and Claude brings them to me.
+          </p>
+          <Pointers items={STATS_BUILD} />
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Keeping out fake visits and spam</h3>
+          <p>
+            Anyone can send the site a made-up visit. <Highlight>So the site checks every
+            report instead of believing it.</Highlight>
+          </p>
+          <Pointers items={HONEST} />
+        </Copy>
+      </div>
+    </Chapter>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Section: What it solves, and what it can be
 // ─────────────────────────────────────────────────────────────────────────────
 // What Bella solves, each with the live Bella in the state that shows it
@@ -461,7 +540,7 @@ const SOLVES: Parameters<typeof BellaSolves>[0]["items"] = [
 
 function Purpose() {
   return (
-    <Chapter id="purpose" num={6} title="What Bella solves">
+    <Chapter id="purpose" num={7} title="What Bella solves">
       <Copy>
         <p>
           Bella was designed with two goals: give visitors a reason to explore,
@@ -493,6 +572,7 @@ export default function BellaPage() {
       <Choosing />
       <Finishing />
       <Solution />
+      <Behind />
       <Purpose />
       <NextCase current="/works/bella" />
     </CaseStudyLayout>
