@@ -2238,7 +2238,7 @@ html[data-feedback="on"] .owner-badge {
 @keyframes review-progress { from { width: 0%; } to { width: 100%; } }
 
 /* ── The cursor (components/Cursor.tsx) ──────────────────────────────────────
-   One solid grape square with a white rim: 8px at rest, 20px over anything clickable.
+   A grape-gradient square with a hairline white rim: 8px at rest, 16px over anything clickable.
    Form fields, reels, embedded video, feedback mode and [data-native-cursor] keep the
    system cursor. */
 html[data-cursor]:not([data-feedback="on"]),
@@ -2269,19 +2269,26 @@ html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
   width: 8px;
   height: 8px;
   border-radius: 2px;
-  background: var(--cursor-ink);
+  /* A soft grape gradient rather than a flat fill: lighter grape top-left, deepening
+     toward blackcurrant bottom-right, with a faint inner highlight along the top edge */
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--cursor-ink), #fff 28%) 0%,
+    var(--cursor-ink) 48%,
+    color-mix(in oklab, var(--cursor-ink), #32073e 42%) 100%
+  );
   box-shadow:
-    0 0 0 2px #fff,
-    0 2px 8px rgba(50, 7, 62, 0.24); /* blackcurrant, soft */
+    0 0 0 1px #fff,
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 2px 6px rgba(50, 7, 62, 0.2); /* blackcurrant, soft */
   translate: -50% -50%;
   /* Size, not scale, so the white rim stays a crisp 2px at every size */
   transition:
     width 320ms var(--cursor-ease),
     height 320ms var(--cursor-ease),
-    scale 140ms ease-out,
-    background-color 240ms ease-out;
+    scale 140ms ease-out;
 }
-.site-cursor[data-mode="hover"] > span { width: 20px; height: 20px; }
+.site-cursor[data-mode="hover"] > span { width: 16px; height: 16px; }
 .site-cursor[data-pressed] > span { scale: 0.8; }
 
 /* Inside: a white centre dot, always dead centre; on hover a thin crosshair turns in round it */
@@ -2305,6 +2312,7 @@ html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
   fill: none;
   stroke: #fff;
   stroke-width: 1; /* hairline */
+  vector-effect: non-scaling-stroke;
   stroke-linecap: round;
   opacity: 0;
   rotate: -90deg;

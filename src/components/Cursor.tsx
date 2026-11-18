@@ -1,10 +1,10 @@
 "use client";
 
 // ── The cursor ────────────────────────────────────────────────────────────────
-// One solid grape square on mouse and trackpad screens, with a thin white rim so it
+// A small grape-gradient square on mouse and trackpad screens, with a hairline white rim so it
 // stays clear over grape buttons and images, and a soft shadow to lift it off the page.
 //   rest     8px, with a 2px white dot at its centre marking the exact point.
-//   hover    grows to 20px over anything you can click, and a thin white crosshair
+//   hover    grows to 16px over anything you can click, and a thin white crosshair
 //            turns in and locks on, like a sight.
 //   press    squeezes in while the button is down.
 // It glides after the pointer, settling within a few frames. Over the footer's dark
