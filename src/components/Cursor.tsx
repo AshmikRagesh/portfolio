@@ -1,13 +1,13 @@
 "use client";
 
 // ── The cursor ────────────────────────────────────────────────────────────────
-// A small grape square with grape-light corner brackets, like a viewfinder, takes the
-// arrow's place on mouse and trackpad screens.
-//   rest     16px square.
-//   hover    grows to 28px over anything you can click.
-//   press    squeezes to 75% while the button is down.
-// The square trails the pointer by a beat; a 4px white point sits exactly on it, so
-// aiming stays precise. Over the footer's dark band the colours swap so it stays visible.
+// One colour, two parts, on mouse and trackpad screens:
+//   dot      an 8px grape square, exactly on the pointer, so aiming stays precise.
+//   frame    four grape corner brackets that trail the dot. Hidden at rest, they open
+//            out to a 24px viewfinder over anything you can click, while the dot
+//            shrinks to 4px inside them.
+//   press    both squeeze in while the button is down.
+// Over the footer's dark band it turns grape-light so it stays visible.
 //
 // Native cursors stay where they mean something: form fields (text caret), the draggable
 // reels (grab hand), embedded video, feedback mode (crosshair), and anything marked
@@ -21,7 +21,7 @@ type Mode = "rest" | "hover" | "native";
 const NATIVE = "input, textarea, select, [contenteditable=''], [contenteditable='true'], [data-native-cursor], .reel, iframe";
 const HOVER = "a[href], button, [role='button'], [role='link'], [role='tab'], [role='menuitem'], label, summary, [data-sound-click], [data-cursor='hover']";
 
-const FOLLOW = 0.3; // share of the gap the square closes each frame: settles in about a tenth of a second
+const LAG = 70; // ms: how long the frame takes to close most of the gap — smooth at any refresh rate
 
 export default function Cursor() {
   const squareRef = useRef<HTMLDivElement>(null);
@@ -46,15 +46,20 @@ export default function Cursor() {
     let shown = false;
     let mode: Mode = "rest";
 
-    const draw = () => {
-      x += (tx - x) * FOLLOW;
-      y += (ty - y) * FOLLOW;
+    let last = 0;
+    const draw = (now: number) => {
+      const dt = last ? Math.min(64, now - last) : 16;
+      last = now;
+      const k = 1 - Math.exp(-dt / LAG);
+      x += (tx - x) * k;
+      y += (ty - y) * k;
       if (Math.abs(tx - x) < 0.1 && Math.abs(ty - y) < 0.1) {
         x = tx;
         y = ty;
       }
       square.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       frame = x === tx && y === ty ? 0 : requestAnimationFrame(draw);
+      if (!frame) last = 0;
     };
 
     const read = (target: Element | null) => {
@@ -140,8 +145,7 @@ export default function Cursor() {
     <>
       <div ref={squareRef} className="site-cursor" aria-hidden="true" data-mode="rest" data-tone="grape">
         <svg viewBox="0 0 24 24" focusable="false">
-          <path className="site-cursor__box" d="M0 0h24v24H0z" />
-          <path className="site-cursor__corners" d="M8 2H2v6M16 2h6v6M2 16v6h6M22 16v6h-6" />
+          <path d="M7 1H1v6M17 1h6v6M1 17v6h6M23 17v6h-6" />
         </svg>
       </div>
       <div ref={pointRef} className="site-cursor-point" aria-hidden="true" data-mode="rest" data-tone="grape" />

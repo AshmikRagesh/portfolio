@@ -2238,9 +2238,9 @@ html[data-feedback="on"] .owner-badge {
 @keyframes review-progress { from { width: 0%; } to { width: 100%; } }
 
 /* ── The cursor (components/Cursor.tsx) ──────────────────────────────────────
-   A grape viewfinder square in place of the arrow on mouse/trackpad screens: 16px at rest,
-   28px over anything clickable, with a 4px point exactly on the pointer. Form fields, reels,
-   embedded video, feedback mode and [data-native-cursor] keep the system cursor. */
+   One colour. An 8px grape dot exactly on the pointer; over anything clickable it shrinks
+   to 4px and four corner brackets open out round it to a 24px viewfinder. Form fields,
+   reels, embedded video, feedback mode and [data-native-cursor] keep the system cursor. */
 html[data-cursor]:not([data-feedback="on"]),
 html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   input, textarea, select, [contenteditable=""], [contenteditable="true"],
@@ -2250,8 +2250,8 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
 }
 .site-cursor,
 .site-cursor-point {
-  --cursor-fill: #9D136A;   /* grape */
-  --cursor-corner: #F9E4FF; /* grape-light */
+  --cursor-ink: #9D136A; /* grape */
+  --cursor-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: fixed;
   top: 0;
   left: 0;
@@ -2260,40 +2260,46 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   height: 0;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 200ms ease-out;
+  transition: opacity 240ms ease-out;
 }
-.site-cursor[data-tone="light"],
-.site-cursor-point[data-tone="light"] { --cursor-fill: #F9E4FF; --cursor-corner: #9D136A; }
+:is(.site-cursor, .site-cursor-point)[data-tone="light"] { --cursor-ink: #F9E4FF; /* grape-light, over the dark footer */ }
 html[data-cursor] :is(.site-cursor, .site-cursor-point)[data-visible]:not([data-mode="native"]) { opacity: 1; }
 html[data-feedback="on"] :is(.site-cursor, .site-cursor-point) { opacity: 0 !important; }
 
+/* The frame: closed down onto the dot and invisible at rest, opens out on hover */
 .site-cursor svg {
   display: block;
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   overflow: visible;
   translate: -50% -50%;
-  transition:
-    width 200ms cubic-bezier(0.23, 1, 0.32, 1),
-    height 200ms cubic-bezier(0.23, 1, 0.32, 1),
-    scale 100ms ease-out;
-}
-.site-cursor[data-mode="hover"] svg { width: 28px; height: 28px; }
-.site-cursor[data-pressed] svg { scale: 0.75; }
-.site-cursor__box { fill: var(--cursor-fill); transition: fill 160ms ease-out; }
-.site-cursor__corners {
+  scale: 0.4;
+  opacity: 0;
   fill: none;
-  stroke: var(--cursor-corner);
+  stroke: var(--cursor-ink);
   stroke-width: 2;
-  vector-effect: non-scaling-stroke; /* stays a crisp 2px line at both sizes */
-  transition: stroke 160ms ease-out;
+  stroke-linecap: square;
+  vector-effect: non-scaling-stroke;
+  transition:
+    scale 360ms var(--cursor-ease),
+    opacity 240ms ease-out,
+    stroke 240ms ease-out;
 }
+.site-cursor[data-mode="hover"] svg { scale: 1; opacity: 1; }
+.site-cursor[data-mode="hover"][data-pressed] svg { scale: 0.8; transition-duration: 160ms, 240ms, 240ms; }
+
+/* The dot */
 .site-cursor-point::before {
   content: "";
   display: block;
-  width: 4px;
-  height: 4px;
-  background: #fff;
-  box-shadow: 0 0 0 1px #32073e; /* blackcurrant ring */
+  width: 8px;
+  height: 8px;
+  background: var(--cursor-ink);
   translate: -50% -50%;
+  transition:
+    scale 360ms var(--cursor-ease),
+    background-color 240ms ease-out;
 }
+.site-cursor-point[data-mode="hover"]::before { scale: 0.5; }
+.site-cursor-point[data-pressed]::before { scale: 0.5; transition-duration: 160ms, 240ms; }
+.site-cursor-point[data-mode="hover"][data-pressed]::before { scale: 0.25; }
