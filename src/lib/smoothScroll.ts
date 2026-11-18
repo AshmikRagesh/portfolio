@@ -4,7 +4,9 @@
 
 let frame = 0;
 
-const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+// Ease-in-out sine: gentle start and finish, and a middle only ~1.6× the average speed
+// (cubic peaked at 3×, which read as a rush halfway through).
+const ease = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
 
 export function smoothScrollToElement(el: HTMLElement | null, reduce = false) {
   if (!el) return;
@@ -19,7 +21,7 @@ export function smoothScrollToElement(el: HTMLElement | null, reduce = false) {
     return;
   }
 
-  const duration = Math.min(1100, Math.max(450, Math.abs(distance) * 0.35));
+  const duration = Math.min(1600, Math.max(600, Math.abs(distance) * 0.5));
   const root = document.documentElement;
   const prev = root.style.scrollBehavior;
   root.style.scrollBehavior = "auto"; // no native smoothing fighting each frame
