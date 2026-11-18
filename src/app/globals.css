@@ -2238,9 +2238,9 @@ html[data-feedback="on"] .owner-badge {
 @keyframes review-progress { from { width: 0%; } to { width: 100%; } }
 
 /* ── The cursor (components/Cursor.tsx) ──────────────────────────────────────
-   One colour. An 8px grape dot exactly on the pointer; over anything clickable it shrinks
-   to 4px and four corner brackets open out round it to a 24px viewfinder. Form fields,
-   reels, embedded video, feedback mode and [data-native-cursor] keep the system cursor. */
+   One solid grape square with a white rim: 8px at rest, 20px over anything clickable.
+   Form fields, reels, embedded video, feedback mode and [data-native-cursor] keep the
+   system cursor. */
 html[data-cursor]:not([data-feedback="on"]),
 html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   input, textarea, select, [contenteditable=""], [contenteditable="true"],
@@ -2248,8 +2248,7 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
 )) {
   cursor: none !important;
 }
-.site-cursor,
-.site-cursor-point {
+.site-cursor {
   --cursor-ink: #9D136A; /* grape */
   --cursor-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: fixed;
@@ -2262,44 +2261,25 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   opacity: 0;
   transition: opacity 240ms ease-out;
 }
-:is(.site-cursor, .site-cursor-point)[data-tone="light"] { --cursor-ink: #F9E4FF; /* grape-light, over the dark footer */ }
-html[data-cursor] :is(.site-cursor, .site-cursor-point)[data-visible]:not([data-mode="native"]) { opacity: 1; }
-html[data-feedback="on"] :is(.site-cursor, .site-cursor-point) { opacity: 0 !important; }
-
-/* The frame: closed down onto the dot and invisible at rest, opens out on hover */
-.site-cursor svg {
-  display: block;
-  width: 24px;
-  height: 24px;
-  overflow: visible;
-  translate: -50% -50%;
-  scale: 0.4;
-  opacity: 0;
-  fill: none;
-  stroke: var(--cursor-ink);
-  stroke-width: 2;
-  stroke-linecap: square;
-  vector-effect: non-scaling-stroke;
-  transition:
-    scale 360ms var(--cursor-ease),
-    opacity 240ms ease-out,
-    stroke 240ms ease-out;
-}
-.site-cursor[data-mode="hover"] svg { scale: 1; opacity: 1; }
-.site-cursor[data-mode="hover"][data-pressed] svg { scale: 0.8; transition-duration: 160ms, 240ms, 240ms; }
-
-/* The dot */
-.site-cursor-point::before {
-  content: "";
+.site-cursor[data-tone="light"] { --cursor-ink: #F9E4FF; /* grape-light, over the dark footer */ }
+html[data-cursor] .site-cursor[data-visible]:not([data-mode="native"]) { opacity: 1; }
+html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
+.site-cursor > span {
   display: block;
   width: 8px;
   height: 8px;
+  border-radius: 2px;
   background: var(--cursor-ink);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 2px 8px rgba(50, 7, 62, 0.24); /* blackcurrant, soft */
   translate: -50% -50%;
+  /* Size, not scale, so the white rim stays a crisp 2px at every size */
   transition:
-    scale 360ms var(--cursor-ease),
+    width 320ms var(--cursor-ease),
+    height 320ms var(--cursor-ease),
+    scale 140ms ease-out,
     background-color 240ms ease-out;
 }
-.site-cursor-point[data-mode="hover"]::before { scale: 0.5; }
-.site-cursor-point[data-pressed]::before { scale: 0.5; transition-duration: 160ms, 240ms; }
-.site-cursor-point[data-mode="hover"][data-pressed]::before { scale: 0.25; }
+.site-cursor[data-mode="hover"] > span { width: 20px; height: 20px; }
+.site-cursor[data-pressed] > span { scale: 0.8; }

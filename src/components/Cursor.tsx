@@ -1,13 +1,13 @@
 "use client";
 
 // ── The cursor ────────────────────────────────────────────────────────────────
-// One colour, two parts, on mouse and trackpad screens:
-//   dot      an 8px grape square, exactly on the pointer, so aiming stays precise.
-//   frame    four grape corner brackets that trail the dot. Hidden at rest, they open
-//            out to a 24px viewfinder over anything you can click, while the dot
-//            shrinks to 4px inside them.
-//   press    both squeeze in while the button is down.
-// Over the footer's dark band it turns grape-light so it stays visible.
+// One solid grape square on mouse and trackpad screens, with a thin white rim so it
+// stays clear over grape buttons and images, and a soft shadow to lift it off the page.
+//   rest     8px.
+//   hover    grows to 20px over anything you can click.
+//   press    squeezes in while the button is down.
+// It glides after the pointer, settling within a few frames. Over the footer's dark
+// band it turns grape-light.
 //
 // Native cursors stay where they mean something: form fields (text caret), the draggable
 // reels (grab hand), embedded video, feedback mode (crosshair), and anything marked
@@ -21,11 +21,10 @@ type Mode = "rest" | "hover" | "native";
 const NATIVE = "input, textarea, select, [contenteditable=''], [contenteditable='true'], [data-native-cursor], .reel, iframe";
 const HOVER = "a[href], button, [role='button'], [role='link'], [role='tab'], [role='menuitem'], label, summary, [data-sound-click], [data-cursor='hover']";
 
-const LAG = 70; // ms: how long the frame takes to close most of the gap — smooth at any refresh rate
+const LAG = 45; // ms: how long the square takes to close most of the gap — smooth at any refresh rate
 
 export default function Cursor() {
   const squareRef = useRef<HTMLDivElement>(null);
-  const pointRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const query = window.matchMedia(
@@ -33,11 +32,9 @@ export default function Cursor() {
     );
     const root = document.documentElement;
     const square = squareRef.current;
-    const point = pointRef.current;
-    if (!square || !point) return;
-    const both = [square, point];
+    if (!square) return;
     const set = (key: string, value: string | null) =>
-      both.forEach((el) => (value === null ? delete el.dataset[key] : (el.dataset[key] = value)));
+      value === null ? delete square.dataset[key] : (square.dataset[key] = value);
 
     let on = false;
     let frame = 0;
@@ -80,7 +77,6 @@ export default function Cursor() {
       if (e.pointerType !== "mouse") return;
       tx = e.clientX;
       ty = e.clientY;
-      point.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
       if (!shown) {
         // First sight: appear on the pointer rather than sliding in from a corner
         x = tx;
@@ -142,13 +138,8 @@ export default function Cursor() {
   }, []);
 
   return (
-    <>
-      <div ref={squareRef} className="site-cursor" aria-hidden="true" data-mode="rest" data-tone="grape">
-        <svg viewBox="0 0 24 24" focusable="false">
-          <path d="M7 1H1v6M17 1h6v6M1 17v6h6M23 17v6h-6" />
-        </svg>
-      </div>
-      <div ref={pointRef} className="site-cursor-point" aria-hidden="true" data-mode="rest" data-tone="grape" />
-    </>
+    <div ref={squareRef} className="site-cursor" aria-hidden="true" data-mode="rest" data-tone="grape">
+      <span />
+    </div>
   );
 }
