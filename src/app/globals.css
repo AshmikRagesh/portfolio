@@ -2236,3 +2236,48 @@ html[data-feedback="on"] .owner-badge {
 
 /* Nivasa card: the active review dot fills up while that review is showing */
 @keyframes review-progress { from { width: 0%; } to { width: 100%; } }
+
+/* ── The cursor (components/Cursor.tsx) ──────────────────────────────────────
+   A grape square in place of the arrow on mouse/trackpad screens. Form fields, reels,
+   embedded video, feedback mode and [data-native-cursor] keep the system cursor. */
+html[data-cursor]:not([data-feedback="on"]),
+html[data-cursor]:not([data-feedback="on"]) *:not(:is(
+  input, textarea, select, [contenteditable=""], [contenteditable="true"],
+  [data-native-cursor], [data-native-cursor] *, .reel, .reel *, iframe
+)) {
+  cursor: none !important;
+}
+.site-cursor {
+  --cursor-fill: #9D136A; /* grape */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+html[data-cursor] .site-cursor[data-visible]:not([data-mode="native"]) { opacity: 1; }
+html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
+.site-cursor[data-tone="light"] { --cursor-fill: #F9E4FF; /* grape-light, over the dark footer */ }
+.site-cursor > span {
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: var(--cursor-fill);
+  transform: translate(-50%, -50%);
+  transition:
+    width 120ms ease-out,
+    height 120ms ease-out,
+    background-color 160ms ease-out,
+    scale 100ms ease-out;
+}
+.site-cursor[data-mode="link"] > span { width: 8px; height: 8px; }
+.site-cursor[data-mode="text"] > span {
+  width: 2px;
+  height: var(--caret, 20px);
+  transition: background-color 160ms ease-out, scale 100ms ease-out; /* snaps to a caret, like a text field */
+}
+.site-cursor[data-pressed] > span { scale: 0.75; }
