@@ -2238,7 +2238,7 @@ html[data-feedback="on"] .owner-badge {
 @keyframes review-progress { from { width: 0%; } to { width: 100%; } }
 
 /* ── The cursor (components/Cursor.tsx) ──────────────────────────────────────
-   A blackcurrant-gradient square with a hairline white rim: 8px at rest, 16px over anything
+   A grape-gradient square with a hairline white rim: 8px at rest, 16px over anything
    clickable. On dark panels it turns to a lilac tile with blackcurrant inside.
    Form fields, reels, embedded video, feedback mode and [data-native-cursor] keep the
    system cursor. */
@@ -2250,7 +2250,7 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   cursor: none !important;
 }
 .site-cursor {
-  --cursor-ink: #32073e; /* primary (blackcurrant) */
+  --cursor-ink: #9D136A; /* grape */
   --cursor-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: fixed;
   top: 0;
@@ -2269,17 +2269,14 @@ html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
   width: 8px;
   height: 8px;
   border-radius: 2px;
-  /* Lit from the top-left like a small enamel tile: a grape glow in the corner that
-     melts into blackcurrant and settles to near-black at the far edge. A radial blend
-     reads smoothly even at 8px, where a straight linear one looks banded. */
-  background:
-    radial-gradient(
-      130% 130% at 22% 18%,
-      color-mix(in oklab, #9D136A 72%, #32073e) 0%,
-      color-mix(in oklab, #9D136A 30%, #32073e) 38%,
-      var(--cursor-ink) 66%,
-      #1e0525 100%
-    );
+  /* The grape gradient: lighter grape top-left, grape through the middle, deepening
+     toward blackcurrant bottom-right */
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--cursor-ink), #fff 28%) 0%,
+    var(--cursor-ink) 48%,
+    color-mix(in oklab, var(--cursor-ink), #32073e 42%) 100%
+  );
   box-shadow:
     0 0 0 1px #fff,
     inset 0 1px 0 rgba(249, 228, 255, 0.32),
