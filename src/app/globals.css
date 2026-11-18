@@ -2249,7 +2249,8 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   cursor: none !important;
 }
 .site-cursor {
-  --cursor-ink: #9D136A; /* grape */
+  --cursor-ink: #32073e; /* primary (blackcurrant) — trying it in place of grape */
+  --cursor-deep: #1e0525; /* text — the gradient's darkest end */
   --cursor-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: fixed;
   top: 0;
@@ -2261,7 +2262,7 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   opacity: 0;
   transition: opacity 240ms ease-out;
 }
-.site-cursor[data-tone="light"] { --cursor-ink: #F9E4FF; /* grape-light, over the dark footer */ }
+.site-cursor[data-tone="light"] { --cursor-ink: #F9E4FF; --cursor-deep: #9D136A; /* grape-light, over the dark footer */ }
 html[data-cursor] .site-cursor[data-visible]:not([data-mode="native"]) { opacity: 1; }
 html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
 .site-cursor > span {
@@ -2273,9 +2274,9 @@ html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
      toward blackcurrant bottom-right, with a faint inner highlight along the top edge */
   background: linear-gradient(
     145deg,
-    color-mix(in oklab, var(--cursor-ink), #fff 28%) 0%,
+    color-mix(in oklab, var(--cursor-ink), #9D136A 30%) 0%,
     var(--cursor-ink) 48%,
-    color-mix(in oklab, var(--cursor-ink), #32073e 42%) 100%
+    color-mix(in oklab, var(--cursor-ink), var(--cursor-deep) 60%) 100%
   );
   box-shadow:
     0 0 0 1px #fff,
