@@ -3,8 +3,11 @@
 // ── The cursor ────────────────────────────────────────────────────────────────
 // One solid grape square on mouse and trackpad screens, with a thin white rim so it
 // stays clear over grape buttons and images, and a soft shadow to lift it off the page.
-//   rest     8px.
-//   hover    grows to 20px over anything you can click.
+//   rest     8px, with a 2px white pixel at its centre marking the exact point.
+//   hover    grows to 20px over anything you can click, and a small white glyph fades
+//            in to say what the click does: → goes to a page on the site, ↗ opens
+//            another site or a file, ▶ plays a video. Elements can pick one with
+//            data-cursor-icon="arrow|out|play".
 //   press    squeezes in while the button is down.
 // It glides after the pointer, settling within a few frames. Over the footer's dark
 // band it turns grape-light.
@@ -17,11 +20,22 @@
 import { useEffect, useRef } from "react";
 
 type Mode = "rest" | "hover" | "native";
+type Icon = "arrow" | "out" | "play";
 
 const NATIVE = "input, textarea, select, [contenteditable=''], [contenteditable='true'], [data-native-cursor], .reel, iframe";
-const HOVER = "a[href], button, [role='button'], [role='link'], [role='tab'], [role='menuitem'], label, summary, [data-sound-click], [data-cursor='hover']";
+const HOVER = "a[href], button, video, [role='button'], [role='link'], [role='tab'], [role='menuitem'], label, summary, [data-sound-click], [data-cursor='hover']";
 
 const LAG = 45; // ms: how long the square takes to close most of the gap — smooth at any refresh rate
+
+/** What a click on this element will do, as a glyph. */
+function iconFor(target: Element): Icon {
+  const chosen = target.closest("[data-cursor-icon]")?.getAttribute("data-cursor-icon");
+  if (chosen === "arrow" || chosen === "out" || chosen === "play") return chosen;
+  if (target.closest("video")) return "play";
+  const link = target.closest("a[href]") as HTMLAnchorElement | null;
+  if (link && (link.target === "_blank" || link.origin !== window.location.origin || /\.pdf$/i.test(link.pathname))) return "out";
+  return "arrow";
+}
 
 export default function Cursor() {
   const squareRef = useRef<HTMLDivElement>(null);
@@ -70,6 +84,7 @@ export default function Cursor() {
         mode = next;
         set("mode", mode);
       }
+      if (mode === "hover" && target) set("icon", iconFor(target));
       set("tone", target?.closest("footer, [data-cursor-tone='light']") ? "light" : "grape");
     };
 
@@ -138,8 +153,14 @@ export default function Cursor() {
   }, []);
 
   return (
-    <div ref={squareRef} className="site-cursor" aria-hidden="true" data-mode="rest" data-tone="grape">
-      <span />
+    <div ref={squareRef} className="site-cursor" aria-hidden="true" data-mode="rest" data-tone="grape" data-icon="arrow">
+      <span>
+        <svg viewBox="0 0 12 12" focusable="false">
+          <path className="site-cursor__arrow" d="M2 6h8M7 3l3 3-3 3" />
+          <path className="site-cursor__out" d="M3 9l6-6M4 3h5v5" />
+          <path className="site-cursor__play" d="M4 2.5v7l6-3.5z" />
+        </svg>
+      </span>
     </div>
   );
 }

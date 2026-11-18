@@ -2283,3 +2283,37 @@ html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
 }
 .site-cursor[data-mode="hover"] > span { width: 20px; height: 20px; }
 .site-cursor[data-pressed] > span { scale: 0.8; }
+
+/* Inside: a white centre pixel at rest, a glyph on hover */
+.site-cursor > span { display: grid; place-items: center; }
+.site-cursor > span::before {
+  content: "";
+  grid-area: 1 / 1;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  transition: opacity 160ms ease-out;
+}
+.site-cursor[data-mode="hover"] > span::before { opacity: 0; }
+.site-cursor svg {
+  grid-area: 1 / 1;
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  scale: 0.5;
+  transition: opacity 160ms ease-out, scale 320ms var(--cursor-ease);
+}
+.site-cursor[data-mode="hover"] svg { opacity: 1; scale: 1; transition-delay: 80ms; }
+.site-cursor svg path { display: none; }
+.site-cursor[data-icon="arrow"] .site-cursor__arrow,
+.site-cursor[data-icon="out"] .site-cursor__out,
+.site-cursor[data-icon="play"] .site-cursor__play { display: inline; }
+.site-cursor__play { fill: #fff; stroke-width: 1; }
+.site-cursor[data-tone="light"] > span::before { background: #32073e; }
+.site-cursor[data-tone="light"] svg { stroke: #32073e; }
+.site-cursor[data-tone="light"] .site-cursor__play { fill: #32073e; }
