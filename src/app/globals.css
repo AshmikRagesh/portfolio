@@ -2238,7 +2238,8 @@ html[data-feedback="on"] .owner-badge {
 @keyframes review-progress { from { width: 0%; } to { width: 100%; } }
 
 /* ── The cursor (components/Cursor.tsx) ──────────────────────────────────────
-   A grape-gradient square with a hairline white rim: 8px at rest, 16px over anything clickable.
+   A blackcurrant-gradient square with a hairline white rim: 8px at rest, 16px over anything
+   clickable. Same colour everywhere; a lilac glow on dark panels.
    Form fields, reels, embedded video, feedback mode and [data-native-cursor] keep the
    system cursor. */
 html[data-cursor]:not([data-feedback="on"]),
@@ -2249,8 +2250,7 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   cursor: none !important;
 }
 .site-cursor {
-  --cursor-ink: #32073e; /* primary (blackcurrant) — trying it in place of grape */
-  --cursor-deep: #1e0525; /* text — the gradient's darkest end */
+  --cursor-ink: #32073e; /* primary (blackcurrant) */
   --cursor-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: fixed;
   top: 0;
@@ -2262,7 +2262,6 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   opacity: 0;
   transition: opacity 240ms ease-out;
 }
-.site-cursor[data-tone="light"] { --cursor-ink: #F9E4FF; --cursor-deep: #9D136A; /* grape-light, over the dark footer */ }
 html[data-cursor] .site-cursor[data-visible]:not([data-mode="native"]) { opacity: 1; }
 html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
 .site-cursor > span {
@@ -2270,24 +2269,34 @@ html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
   width: 8px;
   height: 8px;
   border-radius: 2px;
-  /* A soft grape gradient rather than a flat fill: lighter grape top-left, deepening
-     toward blackcurrant bottom-right, with a faint inner highlight along the top edge */
-  background: linear-gradient(
-    145deg,
-    color-mix(in oklab, var(--cursor-ink), #9D136A 30%) 0%,
-    var(--cursor-ink) 48%,
-    color-mix(in oklab, var(--cursor-ink), var(--cursor-deep) 60%) 100%
-  );
+  /* Lit from the top-left like a small enamel tile: a grape glow in the corner that
+     melts into blackcurrant and settles to near-black at the far edge. A radial blend
+     reads smoothly even at 8px, where a straight linear one looks banded. */
+  background:
+    radial-gradient(
+      130% 130% at 22% 18%,
+      color-mix(in oklab, #9D136A 72%, #32073e) 0%,
+      color-mix(in oklab, #9D136A 30%, #32073e) 38%,
+      var(--cursor-ink) 66%,
+      #1e0525 100%
+    );
   box-shadow:
     0 0 0 1px #fff,
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    0 2px 6px rgba(50, 7, 62, 0.2); /* blackcurrant, soft */
-  translate: -50% -50%;
-  /* Size, not scale, so the white rim stays a crisp 2px at every size */
+    inset 0 1px 0 rgba(249, 228, 255, 0.32),
+    0 2px 6px rgba(50, 7, 62, 0.22);
   transition:
     width 320ms var(--cursor-ease),
     height 320ms var(--cursor-ease),
-    scale 140ms ease-out;
+    scale 140ms ease-out,
+    box-shadow 240ms ease-out;
+  translate: -50% -50%; /* size animates, not scale, so the rim stays a crisp 1px */
+}
+/* Same colour on dark panels; a soft lilac glow keeps it lifted off them */
+.site-cursor[data-tone="dark"] > span {
+  box-shadow:
+    0 0 0 1px #fff,
+    inset 0 1px 0 rgba(249, 228, 255, 0.32),
+    0 0 10px rgba(249, 228, 255, 0.45);
 }
 .site-cursor[data-mode="hover"] > span { width: 16px; height: 16px; }
 .site-cursor[data-pressed] > span { scale: 0.8; }
@@ -2324,5 +2333,4 @@ html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
     scale 420ms var(--cursor-ease);
 }
 .site-cursor[data-mode="hover"] svg { opacity: 1; rotate: 0deg; scale: 1; }
-.site-cursor[data-tone="light"] > span::before { background: #32073e; }
-.site-cursor[data-tone="light"] svg { stroke: #32073e; }
+

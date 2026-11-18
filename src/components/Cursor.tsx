@@ -1,14 +1,14 @@
 "use client";
 
 // ── The cursor ────────────────────────────────────────────────────────────────
-// A small grape-gradient square on mouse and trackpad screens, with a hairline white rim so it
+// A small blackcurrant-gradient square on mouse and trackpad screens, with a hairline white rim so it
 // stays clear over grape buttons and images, and a soft shadow to lift it off the page.
 //   rest     8px, with a 2px white dot at its centre marking the exact point.
 //   hover    grows to 16px over anything you can click, and a thin white crosshair
 //            turns in and locks on, like a sight.
 //   press    squeezes in while the button is down.
-// It glides after the pointer, settling within a few frames. Over the footer's dark
-// band it turns grape-light.
+// It glides after the pointer, settling within a few frames. The colour never changes;
+// over dark panels (the footer, the guestbook) a soft lilac glow lifts it off the page.
 //
 // Native cursors stay where they mean something: form fields (text caret), the draggable
 // reels (grab hand), embedded video, feedback mode (crosshair), and anything marked
@@ -23,6 +23,26 @@ const NATIVE = "input, textarea, select, [contenteditable=''], [contenteditable=
 const HOVER = "a[href], button, video, [role='button'], [role='link'], [role='tab'], [role='menuitem'], label, summary, [data-sound-click], [data-cursor='hover']";
 
 const LAG = 45; // ms: how long the square takes to close most of the gap — smooth at any refresh rate
+
+/** Whether the background behind an element is dark (the footer, the guestbook panel),
+ *  from the first solid background up its ancestors. Cached per element. */
+const darkCache = new WeakMap<Element, boolean>();
+function onDark(el: Element): boolean {
+  const cached = darkCache.get(el);
+  if (cached !== undefined) return cached;
+  let dark = false;
+  for (let node: Element | null = el; node; node = node.parentElement) {
+    if (node.closest("[data-cursor-tone='dark']") === node) { dark = true; break; }
+    const m = getComputedStyle(node).backgroundColor.match(/[\d.]+/g);
+    if (!m) continue;
+    const [r, g, b, a = "1"] = m;
+    if (parseFloat(a) < 0.5) continue;
+    dark = 0.2126 * +r + 0.7152 * +g + 0.0722 * +b < 90;
+    break;
+  }
+  darkCache.set(el, dark);
+  return dark;
+}
 
 export default function Cursor() {
   const squareRef = useRef<HTMLDivElement>(null);
@@ -71,7 +91,7 @@ export default function Cursor() {
         mode = next;
         set("mode", mode);
       }
-      set("tone", target?.closest("footer, [data-cursor-tone='light']") ? "light" : "grape");
+      set("tone", target && onDark(target) ? "dark" : "light");
     };
 
     const onMove = (e: PointerEvent) => {
@@ -139,7 +159,7 @@ export default function Cursor() {
   }, []);
 
   return (
-    <div ref={squareRef} className="site-cursor" aria-hidden="true" data-mode="rest" data-tone="grape">
+    <div ref={squareRef} className="site-cursor" aria-hidden="true" data-mode="rest" data-tone="light">
       <span>
         <svg viewBox="0 0 20 20" focusable="false">
           <path d="M10 3v4M10 13v4M3 10h4M13 10h4" />
