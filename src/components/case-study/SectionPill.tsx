@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { smoothScrollToElement } from "@/lib/smoothScroll";
 
 export interface CaseStudySection {
   id: string;
@@ -134,7 +135,7 @@ export default function SectionPill({
   const goTo = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    document.getElementById(id)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+    smoothScrollToElement(document.getElementById(id), reduce);
     setOpen(false);
   };
 

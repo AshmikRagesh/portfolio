@@ -238,8 +238,8 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
   useEffect(() => setOpen(false), [pathname]);
   const toggle = (e: React.MouseEvent) => {
     if (!touch || ducked) return;
-    // Off the home page the tap just goes home (the board, if it's down, goes back up)
-    if (!home && e.currentTarget.tagName === "A") return;
+    // Off the home page a tap goes home — unless the board is down, then it just puts it away
+    if (!home && !open && e.currentTarget.tagName === "A") return;
     e.preventDefault();
     if (!open) ringBell();
     setOpen((o) => !o);
@@ -261,8 +261,8 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
       {/* Above the board, so the hands overlap the rings they hold it by */}
       <Link
         href="/"
-        aria-label={touch && home ? "Bella, measuring your curiosity — show your time" : "Home — Bella, measuring your curiosity"}
-        aria-expanded={touch && home ? holding : undefined}
+        aria-label={touch && (home || open) ? "Bella, measuring your curiosity — show your time" : "Home — Bella, measuring your curiosity"}
+        aria-expanded={touch && (home || open) ? holding : undefined}
         onClick={toggle}
         data-sound="none"
         className="relative z-10 block select-none"
