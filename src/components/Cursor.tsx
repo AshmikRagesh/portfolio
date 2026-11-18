@@ -1,7 +1,7 @@
 "use client";
 
 // ── The cursor ────────────────────────────────────────────────────────────────
-// A small blackcurrant-gradient square on mouse and trackpad screens, with a hairline white rim so it
+// A small grape-gradient square on mouse and trackpad screens, with a hairline white rim so it
 // stays clear over grape buttons and images, and a soft shadow to lift it off the page.
 //   rest     8px, with a 2px white dot at its centre marking the exact point.
 //   hover    grows to 16px over anything you can click, and a thin white crosshair
