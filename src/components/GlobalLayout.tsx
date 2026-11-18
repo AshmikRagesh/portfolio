@@ -13,6 +13,7 @@ import BellaLoader from "@/components/host/BellaLoader";
 import SoundLayer from "@/components/SoundLayer";
 import PageTransition from "@/components/PageTransition";
 import OwnerBadge from "@/components/OwnerBadge";
+import Cursor from "@/components/Cursor";
 
 export default function GlobalLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -42,6 +43,8 @@ export default function GlobalLayout({ children }: { children: ReactNode }) {
       <OwnerBadge />
       {/* First visit in a session: Bella does tricks while the site loads */}
       <BellaLoader />
+      {/* The grape square that replaces the arrow on mouse and trackpad screens */}
+      <Cursor />
     </CuriosityProvider>
   );
 }

@@ -2236,3 +2236,124 @@ html[data-feedback="on"] .owner-badge {
 
 /* Nivasa card: the active review dot fills up while that review is showing */
 @keyframes review-progress { from { width: 0%; } to { width: 100%; } }
+
+/* ── The cursor (components/Cursor.tsx) ──────────────────────────────────────
+   A blackcurrant-gradient square with a hairline white rim: 8px at rest, 16px over anything
+   clickable. On dark panels it turns to a lilac tile with blackcurrant inside.
+   Form fields, reels, embedded video, feedback mode and [data-native-cursor] keep the
+   system cursor. */
+html[data-cursor]:not([data-feedback="on"]),
+html[data-cursor]:not([data-feedback="on"]) *:not(:is(
+  input, textarea, select, [contenteditable=""], [contenteditable="true"],
+  [data-native-cursor], [data-native-cursor] *, .reel, .reel *, iframe
+)) {
+  cursor: none !important;
+}
+.site-cursor {
+  --cursor-ink: #32073e; /* primary (blackcurrant) */
+  --cursor-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 240ms ease-out;
+}
+html[data-cursor] .site-cursor[data-visible]:not([data-mode="native"]) { opacity: 1; }
+html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
+.site-cursor > span {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  /* Lit from the top-left like a small enamel tile: a grape glow in the corner that
+     melts into blackcurrant and settles to near-black at the far edge. A radial blend
+     reads smoothly even at 8px, where a straight linear one looks banded. */
+  background:
+    radial-gradient(
+      130% 130% at 22% 18%,
+      color-mix(in oklab, #9D136A 72%, #32073e) 0%,
+      color-mix(in oklab, #9D136A 30%, #32073e) 38%,
+      var(--cursor-ink) 66%,
+      #1e0525 100%
+    );
+  box-shadow:
+    0 0 0 1px #fff,
+    inset 0 1px 0 rgba(249, 228, 255, 0.32),
+    0 2px 6px rgba(50, 7, 62, 0.22);
+  transition:
+    width 320ms var(--cursor-ease),
+    height 320ms var(--cursor-ease),
+    scale 140ms ease-out,
+    box-shadow 240ms ease-out;
+  translate: -50% -50%; /* size animates, not scale, so the rim stays a crisp 1px */
+}
+/* On dark panels (the footer, the guestbook) the tile turns to lilac: the same corner-lit
+   enamel, inverted — near-white in the corner, grape-light, then a grape-tinted lilac at
+   the far edge — with blackcurrant inside and a soft lilac glow. It crossfades over the
+   dark tile, so moving between sections blends rather than snaps. */
+.site-cursor > span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    130% 130% at 22% 18%,
+    #fff 0%,
+    #F9E4FF 40%,
+    color-mix(in oklab, #F9E4FF 72%, #9D136A) 100%
+  );
+  opacity: 0;
+  transition: opacity 280ms ease-out;
+}
+.site-cursor[data-tone="dark"] > span::after { opacity: 1; }
+.site-cursor[data-tone="dark"] > span {
+  box-shadow:
+    0 0 0 1px rgba(249, 228, 255, 0.5),
+    0 0 12px rgba(249, 228, 255, 0.35);
+}
+.site-cursor[data-mode="hover"] > span { width: 16px; height: 16px; }
+.site-cursor[data-pressed] > span { scale: 0.8; }
+
+/* Inside: a white centre dot, always dead centre; on hover a thin crosshair turns in round it */
+.site-cursor > span { position: relative; }
+.site-cursor > span::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #fff;
+  translate: -50% -50%;
+  z-index: 1;
+  transition: background-color 280ms ease-out;
+}
+.site-cursor[data-tone="dark"] > span::before { background: #32073e; }
+.site-cursor svg {
+  z-index: 1;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1; /* hairline */
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  opacity: 0;
+  rotate: -90deg;
+  scale: 1.6;
+  transition:
+    opacity 160ms ease-out,
+    rotate 420ms var(--cursor-ease),
+    scale 420ms var(--cursor-ease),
+    stroke 280ms ease-out;
+}
+.site-cursor[data-tone="dark"] svg { stroke: #32073e; }
+.site-cursor[data-mode="hover"] svg { opacity: 1; rotate: 0deg; scale: 1; }
+
