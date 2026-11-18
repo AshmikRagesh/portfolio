@@ -2238,7 +2238,8 @@ html[data-feedback="on"] .owner-badge {
 @keyframes review-progress { from { width: 0%; } to { width: 100%; } }
 
 /* ── The cursor (components/Cursor.tsx) ──────────────────────────────────────
-   A grape square in place of the arrow on mouse/trackpad screens. Form fields, reels,
+   A grape viewfinder square in place of the arrow on mouse/trackpad screens: 16px at rest,
+   28px over anything clickable, with a 4px point exactly on the pointer. Form fields, reels,
    embedded video, feedback mode and [data-native-cursor] keep the system cursor. */
 html[data-cursor]:not([data-feedback="on"]),
 html[data-cursor]:not([data-feedback="on"]) *:not(:is(
@@ -2247,8 +2248,10 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
 )) {
   cursor: none !important;
 }
-.site-cursor {
-  --cursor-fill: #9D136A; /* grape */
+.site-cursor,
+.site-cursor-point {
+  --cursor-fill: #9D136A;   /* grape */
+  --cursor-corner: #F9E4FF; /* grape-light */
   position: fixed;
   top: 0;
   left: 0;
@@ -2259,25 +2262,38 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   opacity: 0;
   transition: opacity 200ms ease-out;
 }
-html[data-cursor] .site-cursor[data-visible]:not([data-mode="native"]) { opacity: 1; }
-html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
-.site-cursor[data-tone="light"] { --cursor-fill: #F9E4FF; /* grape-light, over the dark footer */ }
-.site-cursor > span {
+.site-cursor[data-tone="light"],
+.site-cursor-point[data-tone="light"] { --cursor-fill: #F9E4FF; --cursor-corner: #9D136A; }
+html[data-cursor] :is(.site-cursor, .site-cursor-point)[data-visible]:not([data-mode="native"]) { opacity: 1; }
+html[data-feedback="on"] :is(.site-cursor, .site-cursor-point) { opacity: 0 !important; }
+
+.site-cursor svg {
   display: block;
-  width: 14px;
-  height: 14px;
-  background: var(--cursor-fill);
-  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  overflow: visible;
+  translate: -50% -50%;
   transition:
-    width 120ms ease-out,
-    height 120ms ease-out,
-    background-color 160ms ease-out,
+    width 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    height 200ms cubic-bezier(0.23, 1, 0.32, 1),
     scale 100ms ease-out;
 }
-.site-cursor[data-mode="link"] > span { width: 8px; height: 8px; }
-.site-cursor[data-mode="text"] > span {
-  width: 2px;
-  height: var(--caret, 20px);
-  transition: background-color 160ms ease-out, scale 100ms ease-out; /* snaps to a caret, like a text field */
+.site-cursor[data-mode="hover"] svg { width: 28px; height: 28px; }
+.site-cursor[data-pressed] svg { scale: 0.75; }
+.site-cursor__box { fill: var(--cursor-fill); transition: fill 160ms ease-out; }
+.site-cursor__corners {
+  fill: none;
+  stroke: var(--cursor-corner);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke; /* stays a crisp 2px line at both sizes */
+  transition: stroke 160ms ease-out;
 }
-.site-cursor[data-pressed] > span { scale: 0.75; }
+.site-cursor-point::before {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  box-shadow: 0 0 0 1px #32073e; /* blackcurrant ring */
+  translate: -50% -50%;
+}

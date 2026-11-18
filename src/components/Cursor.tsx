@@ -1,65 +1,47 @@
 "use client";
 
 // ── The cursor ────────────────────────────────────────────────────────────────
-// A grape square that takes the arrow's place on mouse and trackpad screens, and reads
-// what's under it:
-//   rest     14px square over empty page.
-//   link     shrinks to 8px over anything you can click.
-//   text     turns into a 2px caret, as tall as the line, over words.
+// A small grape square with grape-light corner brackets, like a viewfinder, takes the
+// arrow's place on mouse and trackpad screens.
+//   rest     16px square.
+//   hover    grows to 28px over anything you can click.
 //   press    squeezes to 75% while the button is down.
-// It trails the pointer by a beat, then settles exactly on it. Over the footer's dark
-// band it switches to grape-light so it stays visible.
+// The square trails the pointer by a beat; a 4px white point sits exactly on it, so
+// aiming stays precise. Over the footer's dark band the colours swap so it stays visible.
 //
 // Native cursors stay where they mean something: form fields (text caret), the draggable
-// reels (grab hand), feedback mode (crosshair), and anything marked data-native-cursor.
-// Phones, tablets, reduced motion and forced colours keep the system cursor entirely.
+// reels (grab hand), embedded video, feedback mode (crosshair), and anything marked
+// data-native-cursor. Phones, tablets, reduced motion and forced colours keep the system
+// cursor entirely.
 
 import { useEffect, useRef } from "react";
 
-type Mode = "rest" | "link" | "text" | "native";
+type Mode = "rest" | "hover" | "native";
 
 const NATIVE = "input, textarea, select, [contenteditable=''], [contenteditable='true'], [data-native-cursor], .reel, iframe";
-const LINK = "a[href], button, [role='button'], [role='link'], [role='tab'], [role='menuitem'], label, summary, select, [data-sound-click], [data-cursor='link']";
-const TEXT = "p, h1, h2, h3, h4, h5, h6, li, blockquote, figcaption, dt, dd, td, th, [data-cursor='text']";
+const HOVER = "a[href], button, [role='button'], [role='link'], [role='tab'], [role='menuitem'], label, summary, [data-sound-click], [data-cursor='hover']";
 
-const FOLLOW = 0.35; // share of the gap closed each frame: settles in about a tenth of a second
-
-/** Caret height for the text under the pointer: its line height, kept to an even number. */
-function caretHeight(el: Element) {
-  const s = getComputedStyle(el);
-  const size = parseFloat(s.fontSize) || 16;
-  const line = parseFloat(s.lineHeight) || size * 1.3;
-  const h = Math.min(line, size * 1.4);
-  return Math.max(16, Math.min(56, Math.round(h / 2) * 2));
-}
-
-/** True when the pointer sits on the words themselves, not the padding around a block. */
-function overText(el: Element, x: number, y: number) {
-  for (const node of Array.from(el.childNodes)) {
-    if (node.nodeType !== Node.TEXT_NODE || !node.textContent?.trim()) continue;
-    const range = document.createRange();
-    range.selectNodeContents(node);
-    for (const r of Array.from(range.getClientRects())) {
-      if (x >= r.left - 2 && x <= r.right + 2 && y >= r.top && y <= r.bottom) return true;
-    }
-  }
-  return false;
-}
+const FOLLOW = 0.3; // share of the gap the square closes each frame: settles in about a tenth of a second
 
 export default function Cursor() {
-  const ref = useRef<HTMLDivElement>(null);
+  const squareRef = useRef<HTMLDivElement>(null);
+  const pointRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const query = window.matchMedia(
       "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (forced-colors: none)",
     );
     const root = document.documentElement;
-    const el = ref.current;
-    if (!el) return;
+    const square = squareRef.current;
+    const point = pointRef.current;
+    if (!square || !point) return;
+    const both = [square, point];
+    const set = (key: string, value: string | null) =>
+      both.forEach((el) => (value === null ? delete el.dataset[key] : (el.dataset[key] = value)));
 
     let on = false;
     let frame = 0;
-    let x = -100, y = -100; // where it's drawn
+    let x = -100, y = -100; // where the square is drawn
     let tx = -100, ty = -100; // where the pointer is
     let shown = false;
     let mode: Mode = "rest";
@@ -71,61 +53,53 @@ export default function Cursor() {
         x = tx;
         y = ty;
       }
-      el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      square.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       frame = x === tx && y === ty ? 0 : requestAnimationFrame(draw);
     };
-    const kick = () => {
-      if (!frame) frame = requestAnimationFrame(draw);
-    };
 
-    const read = (target: Element | null, px: number, py: number) => {
-      let next: Mode = "rest";
-      let caret = 0;
-      if (!target || root.dataset.feedback === "on" || target.closest(NATIVE)) next = "native";
-      else if (target.closest(LINK)) next = "link";
-      else {
-        const block = target.closest(TEXT);
-        if (block && overText(target, px, py)) {
-          next = "text";
-          caret = caretHeight(target);
-        }
-      }
+    const read = (target: Element | null) => {
+      const next: Mode =
+        !target || root.dataset.feedback === "on" || target.closest(NATIVE)
+          ? "native"
+          : target.closest(HOVER)
+            ? "hover"
+            : "rest";
       if (next !== mode) {
         mode = next;
-        el.dataset.mode = mode;
+        set("mode", mode);
       }
-      if (caret) el.style.setProperty("--caret", `${caret}px`);
-      el.dataset.tone = target?.closest("footer, [data-cursor-tone='light']") ? "light" : "grape";
+      set("tone", target?.closest("footer, [data-cursor-tone='light']") ? "light" : "grape");
     };
 
     const onMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
       tx = e.clientX;
       ty = e.clientY;
+      point.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
       if (!shown) {
         // First sight: appear on the pointer rather than sliding in from a corner
         x = tx;
         y = ty;
         shown = true;
-        el.dataset.visible = "";
+        set("visible", "");
       }
-      read(e.target as Element, tx, ty);
-      kick();
+      read(e.target as Element);
+      if (!frame) frame = requestAnimationFrame(draw);
     };
     const hide = () => {
       shown = false;
-      delete el.dataset.visible;
+      set("visible", null);
     };
     const onOut = (e: MouseEvent) => {
       if (!e.relatedTarget) hide(); // left the window, or went into an embedded video
     };
     const onDown = (e: PointerEvent) => {
-      if (e.pointerType === "mouse") el.dataset.pressed = "";
+      if (e.pointerType === "mouse") set("pressed", "");
     };
-    const onUp = () => delete el.dataset.pressed;
+    const onUp = () => set("pressed", null);
     // Scrolling moves the page under a still pointer, so read what's there now
     const onScroll = () => {
-      if (shown) read(document.elementFromPoint(tx, ty), tx, ty);
+      if (shown) read(document.elementFromPoint(tx, ty));
     };
 
     const start = () => {
@@ -163,8 +137,14 @@ export default function Cursor() {
   }, []);
 
   return (
-    <div ref={ref} className="site-cursor" aria-hidden="true" data-mode="rest" data-tone="grape">
-      <span />
-    </div>
+    <>
+      <div ref={squareRef} className="site-cursor" aria-hidden="true" data-mode="rest" data-tone="grape">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path className="site-cursor__box" d="M0 0h24v24H0z" />
+          <path className="site-cursor__corners" d="M8 2H2v6M16 2h6v6M2 16v6h6M22 16v6h-6" />
+        </svg>
+      </div>
+      <div ref={pointRef} className="site-cursor-point" aria-hidden="true" data-mode="rest" data-tone="grape" />
+    </>
   );
 }
