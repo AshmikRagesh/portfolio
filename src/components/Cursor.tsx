@@ -7,8 +7,8 @@
 //   hover    grows to 16px over anything you can click, and a thin white crosshair
 //            turns in and locks on, like a sight.
 //   press    squeezes in while the button is down.
-// It glides after the pointer, settling within a few frames. The colour never changes;
-// over dark panels (the footer, the guestbook) a soft lilac glow lifts it off the page.
+// It glides after the pointer, settling within a few frames. Over dark panels (the footer,
+// the guestbook) it crossfades to a lilac tile with blackcurrant inside, so it blends there.
 //
 // Native cursors stay where they mean something: form fields (text caret), the draggable
 // reels (grab hand), embedded video, feedback mode (crosshair), and anything marked
