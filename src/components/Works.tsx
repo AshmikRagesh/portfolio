@@ -1,7 +1,10 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import PasswordGate, { useUnlocked, type PasswordGateHandle } from "@/components/PasswordGate";
+import { LOCKED } from "@/lib/caseLock";
 import { CtaPill } from "@/components/Cta";
 import KeyTag from "@/components/KeyTag";
 import NdaStamp from "@/components/NdaStamp";
@@ -19,6 +22,12 @@ import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 // circle (see .work-cta). NDA works show a stamp on a greyed image and a greyed-out pill.
 export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string }) {
   const isLink = work.href !== "#";
+  // Password-protected case studies (lib/caseLock): until the password's been entered, the
+  // card opens the password field instead of following its link
+  const lockedSlug = work.href.startsWith("/works/") ? work.href.slice(7) : "";
+  const unlocked = useUnlocked(lockedSlug);
+  const locked = Boolean(LOCKED[lockedSlug]) && unlocked === false;
+  const gate = useRef<PasswordGateHandle>(null);
   const Wrapper = isLink ? Link : "div";
   const isFlagship = work.layout === "flagship";
   const pad = "p-[24px] md:p-[32px]";
@@ -37,6 +46,17 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
   return (
     <Wrapper
       href={work.href as string}
+      // Locked: the page fade mustn't take the click (components/PageTransition)
+      data-no-transition={locked || undefined}
+      onClick={
+        locked
+          ? (e: React.MouseEvent) => {
+              e.preventDefault();
+              // A pointer click opens it where the pointer is; Enter on the focused card, in the middle
+              gate.current?.open(e.detail ? e.clientX : undefined, e.detail ? e.clientY : undefined);
+            }
+          : undefined
+      }
       className={`work-card group relative grid h-full min-w-0 rounded-xl text-heading ${
         isFlagship
           ? "grid-rows-[auto_1fr] lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:grid-rows-1"
@@ -84,6 +104,9 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
               style={{ objectPosition: work.imagePosition ?? "center" }}
               className={`work-media__img object-cover ${work.nda ? "grayscale" : ""}`}
             />
+
+            {/* Locked: the "Enter password" pill follows the pointer over the image */}
+            {locked && <PasswordGate ref={gate} slug={lockedSlug} href={work.href} />}
 
             {/* Pixel clouds roll in round the image's edges on hover: pink, or grey for NDA */}
             <PixelClouds seed={Number(room)} palette={work.nda ? "grey" : "brand"} className="z-[1]" />

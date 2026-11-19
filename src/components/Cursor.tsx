@@ -19,7 +19,8 @@ import { useEffect, useRef } from "react";
 
 type Mode = "rest" | "hover" | "native";
 
-const NATIVE = "input, textarea, select, [contenteditable=''], [contenteditable='true'], [data-native-cursor], .reel, iframe";
+// [data-cursor-off]: something else is the cursor there (the password pill), so the square steps aside
+const NATIVE = "input, textarea, select, [contenteditable=''], [contenteditable='true'], [data-native-cursor], [data-cursor-off], .reel, iframe";
 const HOVER = "a[href], button, video, [role='button'], [role='link'], [role='tab'], [role='menuitem'], label, summary, [data-sound-click], [data-cursor='hover']";
 
 const LAG = 45; // ms: how long the square takes to close most of the gap — smooth at any refresh rate
