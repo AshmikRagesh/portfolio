@@ -16,7 +16,14 @@ import { ArrowUpRight } from "lucide-react";
  */
 type Look = { size?: "md" | "sm"; dark?: boolean; off?: boolean };
 
-export function CtaPill({ children, size = "md", dark, off }: Look & { children: React.ReactNode }) {
+/** `icon` swaps the arrow that slides out on hover (a lock for locked work, mail for NDA). */
+export function CtaPill({
+  children,
+  size = "md",
+  dark,
+  off,
+  icon,
+}: Look & { children: React.ReactNode; icon?: React.ReactNode }) {
   const cls = [
     "work-cta font-geist font-medium",
     size === "sm" ? "work-cta--sm text-[14px] leading-[20px]" : "text-[16px] leading-[24px]",
@@ -31,7 +38,7 @@ export function CtaPill({ children, size = "md", dark, off }: Look & { children:
       {!off && (
         <span aria-hidden="true" className="work-cta__circle">
           <span>
-            <ArrowUpRight size={size === "sm" ? 16 : 18} strokeWidth={2} />
+            {icon ?? <ArrowUpRight size={size === "sm" ? 16 : 18} strokeWidth={2} />}
           </span>
         </span>
       )}

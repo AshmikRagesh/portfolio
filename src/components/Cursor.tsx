@@ -1,14 +1,11 @@
 "use client";
 
 // ── The cursor ────────────────────────────────────────────────────────────────
-// A small grape-gradient square on mouse and trackpad screens, with a hairline white rim so it
-// stays clear over grape buttons and images, and a soft shadow to lift it off the page.
-//   rest     8px, with a 2px white dot at its centre marking the exact point.
-//   hover    grows to 16px over anything you can click, and a thin white crosshair
-//            turns in and locks on, like a sight.
-//   press    squeezes in while the button is down.
-// It glides after the pointer, settling within a few frames. Over dark panels (the footer,
-// the guestbook) it crossfades to a lilac tile with blackcurrant inside, so it blends there.
+// Kept simple, after lydiashan.com: a small dot on mouse and trackpad screens.
+//   rest     an 8px blackcurrant dot.
+//   hover    opens into a 32px ring, faintly grape-filled, over anything you can click.
+//   out      over links to other sites or files, a 44px frosted circle with an ↗ arrow.
+// Over dark panels (the footer, the guestbook) it turns lilac so it stays visible.
 //
 // Native cursors stay where they mean something: form fields (text caret), the draggable
 // reels (grab hand), embedded video, feedback mode (crosshair), and anything marked
@@ -17,13 +14,13 @@
 
 import { useEffect, useRef } from "react";
 
-type Mode = "rest" | "hover" | "native";
+type Mode = "rest" | "hover" | "out" | "native";
 
-// [data-cursor-off]: something else is the cursor there (the password pill), so the square steps aside
+// [data-cursor-off]: something else is the cursor there (the password pill), so the dot steps aside
 const NATIVE = "input, textarea, select, [contenteditable=''], [contenteditable='true'], [data-native-cursor], [data-cursor-off], .reel, iframe";
 const HOVER = "a[href], button, video, [role='button'], [role='link'], [role='tab'], [role='menuitem'], label, summary, [data-sound-click], [data-cursor='hover']";
 
-const LAG = 45; // ms: how long the square takes to close most of the gap — smooth at any refresh rate
+const LAG = 24; // ms: a hair of glide, so it feels attached to the pointer without jitter
 
 /** Whether the background behind an element is dark (the footer, the guestbook panel),
  *  from the first solid background up its ancestors. Cached per element. */
@@ -45,22 +42,29 @@ function onDark(el: Element): boolean {
   return dark;
 }
 
+/** Links that leave the site, open a new tab, or are files. */
+function isOut(target: Element) {
+  const link = target.closest("a[href]") as HTMLAnchorElement | null;
+  if (!link || link.href.startsWith("mailto:")) return false;
+  return link.target === "_blank" || link.origin !== window.location.origin || /\.pdf$/i.test(link.pathname);
+}
+
 export default function Cursor() {
-  const squareRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const query = window.matchMedia(
       "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (forced-colors: none)",
     );
     const root = document.documentElement;
-    const square = squareRef.current;
-    if (!square) return;
+    const dot = dotRef.current;
+    if (!dot) return;
     const set = (key: string, value: string | null) =>
-      value === null ? delete square.dataset[key] : (square.dataset[key] = value);
+      value === null ? delete dot.dataset[key] : (dot.dataset[key] = value);
 
     let on = false;
     let frame = 0;
-    let x = -100, y = -100; // where the square is drawn
+    let x = -100, y = -100; // where the dot is drawn
     let tx = -100, ty = -100; // where the pointer is
     let shown = false;
     let mode: Mode = "rest";
@@ -76,7 +80,7 @@ export default function Cursor() {
         x = tx;
         y = ty;
       }
-      square.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       frame = x === tx && y === ty ? 0 : requestAnimationFrame(draw);
       if (!frame) last = 0;
     };
@@ -86,7 +90,7 @@ export default function Cursor() {
         !target || root.dataset.feedback === "on" || target.closest(NATIVE)
           ? "native"
           : target.closest(HOVER)
-            ? "hover"
+            ? isOut(target) ? "out" : "hover"
             : "rest";
       if (next !== mode) {
         mode = next;
@@ -160,12 +164,10 @@ export default function Cursor() {
   }, []);
 
   return (
-    <div ref={squareRef} className="site-cursor" aria-hidden="true" data-mode="rest" data-tone="light">
-      <span>
-        <svg viewBox="0 0 20 20" focusable="false">
-          <path d="M10 3v4M10 13v4M3 10h4M13 10h4" />
-        </svg>
-      </span>
+    <div ref={dotRef} className="site-cursor" aria-hidden="true" data-mode="rest" data-tone="light">
+      <svg viewBox="0 0 24 24" focusable="false">
+        <path d="M7 17 17 7M9 7h8v8" />
+      </svg>
     </div>
   );
 }

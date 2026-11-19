@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import PasswordGate, { useUnlocked, type PasswordGateHandle } from "@/components/PasswordGate";
 import { LOCKED } from "@/lib/caseLock";
+import { EMAIL } from "@/lib/contact";
+import { LockKeyhole, Mail } from "lucide-react";
 import { CtaPill } from "@/components/Cta";
 import KeyTag from "@/components/KeyTag";
 import NdaStamp from "@/components/NdaStamp";
@@ -21,7 +23,11 @@ import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 // the room key onto its hook, and turns the pill grape as it makes room for an arrow
 // circle (see .work-cta). NDA works show a stamp on a greyed image and a greyed-out pill.
 export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string }) {
-  const isLink = work.href !== "#";
+  // NDA works have no page: the card opens an email asking about the work instead
+  const href = work.nda
+    ? `mailto:${EMAIL}?subject=${encodeURIComponent(`Access to: ${work.title}`)}`
+    : work.href;
+  const isLink = href !== "#";
   // Password-protected case studies (lib/caseLock): until the password's been entered, the
   // card opens the password field instead of following its link
   const lockedSlug = work.href.startsWith("/works/") ? work.href.slice(7) : "";
@@ -41,11 +47,20 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
     <p className="m-0 max-w-[560px] text-pretty font-body text-lead-md text-secondary">{work.description}</p>
   );
   // Under NDA: the same pill, greyed out and inert
-  const cta = isLink ? <CtaPill>Read case study</CtaPill> : <CtaPill off>Read case study</CtaPill>;
+  // Locked works: unlock to read. NDA works can't be shown, so the card asks for a walkthrough by email.
+  const cta = work.nda ? (
+    <CtaPill icon={<Mail size={18} strokeWidth={2} />}>Request access</CtaPill>
+  ) : locked ? (
+    <CtaPill icon={<LockKeyhole size={18} strokeWidth={2} />}>Unlock to read case study</CtaPill>
+  ) : isLink ? (
+    <CtaPill>Read case study</CtaPill>
+  ) : (
+    <CtaPill off>Read case study</CtaPill>
+  );
 
   return (
     <Wrapper
-      href={work.href as string}
+      href={href}
       // Locked: the page fade mustn't take the click (components/PageTransition)
       data-no-transition={locked || undefined}
       onClick={
@@ -66,6 +81,9 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
             "grid-rows-[auto_auto_1fr] lg:row-span-3 lg:grid-rows-subgrid lg:gap-y-0"
       } ${isLink ? "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape" : ""}`}
     >
+      {/* Locked: the "Enter password" pill follows the pointer over the whole card */}
+      {locked && <PasswordGate ref={gate} slug={lockedSlug} href={work.href} />}
+
       {isFlagship ? (
         /* Words */
         <div className={`flex min-w-0 flex-col justify-between gap-[32px] md:gap-[40px] ${pad} pb-0 md:pb-0 lg:pb-[32px]`}>
@@ -104,9 +122,6 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
               style={{ objectPosition: work.imagePosition ?? "center" }}
               className={`work-media__img object-cover ${work.nda ? "grayscale" : ""}`}
             />
-
-            {/* Locked: the "Enter password" pill follows the pointer over the image */}
-            {locked && <PasswordGate ref={gate} slug={lockedSlug} href={work.href} />}
 
             {/* Pixel clouds roll in round the image's edges on hover: pink, or grey for NDA */}
             <PixelClouds seed={Number(room)} palette={work.nda ? "grey" : "brand"} className="z-[1]" />
