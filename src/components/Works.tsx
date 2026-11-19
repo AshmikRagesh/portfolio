@@ -32,7 +32,8 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
   // card opens the password field instead of following its link
   const lockedSlug = work.href.startsWith("/works/") ? work.href.slice(7) : "";
   const unlocked = useUnlocked(lockedSlug);
-  const locked = Boolean(LOCKED[lockedSlug]) && unlocked === false;
+  // Locked until this browser is known to have the password, so it never flashes as open
+  const locked = Boolean(LOCKED[lockedSlug]) && unlocked !== true;
   const gate = useRef<PasswordGateHandle>(null);
   const Wrapper = isLink ? Link : "div";
   const isFlagship = work.layout === "flagship";
@@ -49,9 +50,9 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
   // Under NDA: the same pill, greyed out and inert
   // Locked works: unlock to read. NDA works can't be shown, so the card asks for a walkthrough by email.
   const cta = work.nda ? (
-    <CtaPill icon={<Mail size={18} strokeWidth={2} />}>Request access</CtaPill>
+    <CtaPill muted icon={<Mail size={18} strokeWidth={2} />}>Request access</CtaPill>
   ) : locked ? (
-    <CtaPill icon={<LockKeyhole size={18} strokeWidth={2} />}>Unlock to read case study</CtaPill>
+    <CtaPill muted icon={<LockKeyhole size={18} strokeWidth={2} />}>Unlock to read case study</CtaPill>
   ) : isLink ? (
     <CtaPill>Read case study</CtaPill>
   ) : (

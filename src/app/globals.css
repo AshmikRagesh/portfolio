@@ -1133,6 +1133,12 @@ html[data-leaving] .page-enter {
 .cta-full .work-cta__inner { flex: 1; }
 /* Under NDA: the pill greyed out, and it doesn't react to the card's hover */
 .work-cta--off { color: #8e8292; cursor: not-allowed; }
+/* Muted: greyed like --off, for work behind a password or NDA, but still a working CTA —
+   it darkens a shade on hover and its icon circle slides out, in grey rather than grape */
+.work-cta--muted { color: #524555; /* secondary */ }
+.work-cta--muted .work-cta__inner, .work-cta--muted .work-cta__circle { background-color: #e5e7eb; }
+.group:hover .work-cta--muted .work-cta__inner, .group:focus-visible .work-cta--muted .work-cta__inner,
+.group:hover .work-cta--muted .work-cta__circle, .group:focus-visible .work-cta--muted .work-cta__circle { background-color: #dcdde2; }
 /* The same pill, smaller, for CTAs inside cards and dialogs */
 .work-cta--sm { --cta-h: 40px; }
 .work-cta--sm .work-cta__inner { padding-inline: 20px; }
