@@ -1133,6 +1133,12 @@ html[data-leaving] .page-enter {
 .cta-full .work-cta__inner { flex: 1; }
 /* Under NDA: the pill greyed out, and it doesn't react to the card's hover */
 .work-cta--off { color: #8e8292; cursor: not-allowed; }
+/* Muted: greyed like --off, for work behind a password or NDA, but still a working CTA —
+   it darkens a shade on hover and its icon circle slides out, in grey rather than grape */
+.work-cta--muted { color: #524555; /* secondary */ }
+.work-cta--muted .work-cta__inner, .work-cta--muted .work-cta__circle { background-color: #e5e7eb; }
+.group:hover .work-cta--muted .work-cta__inner, .group:focus-visible .work-cta--muted .work-cta__inner,
+.group:hover .work-cta--muted .work-cta__circle, .group:focus-visible .work-cta--muted .work-cta__circle { background-color: #dcdde2; }
 /* The same pill, smaller, for CTAs inside cards and dialogs */
 .work-cta--sm { --cta-h: 40px; }
 .work-cta--sm .work-cta__inner { padding-inline: 20px; }
@@ -2238,8 +2244,8 @@ html[data-feedback="on"] .owner-badge {
 @keyframes review-progress { from { width: 0%; } to { width: 100%; } }
 
 /* ── The cursor (components/Cursor.tsx) ──────────────────────────────────────
-   A grape-gradient square with a hairline white rim: 8px at rest, 16px over anything
-   clickable. On dark panels it turns to a lilac tile with blackcurrant inside.
+   Simple, after lydiashan.com: an 8px blackcurrant dot; a 32px faint grape ring over
+   anything clickable; a 44px frosted circle with ↗ over links that leave the site.
    Form fields, reels, embedded video, feedback mode and [data-native-cursor] keep the
    system cursor. */
 html[data-cursor]:not([data-feedback="on"]),
@@ -2250,7 +2256,8 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   cursor: none !important;
 }
 .site-cursor {
-  --cursor-ink: #9D136A; /* grape */
+  --cursor-ink: #32073e;  /* blackcurrant */
+  --cursor-ring: #9D136A; /* grape */
   --cursor-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: fixed;
   top: 0;
@@ -2260,97 +2267,181 @@ html[data-cursor]:not([data-feedback="on"]) *:not(:is(
   height: 0;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 240ms ease-out;
+  transition: opacity 200ms ease-out;
 }
+.site-cursor[data-tone="dark"] { --cursor-ink: #F9E4FF; --cursor-ring: #F9E4FF; }
 html[data-cursor] .site-cursor[data-visible]:not([data-mode="native"]) { opacity: 1; }
 html[data-feedback="on"] .site-cursor { opacity: 0 !important; }
-.site-cursor > span {
-  display: block;
+
+.site-cursor::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
   width: 8px;
   height: 8px;
-  border-radius: 2px;
-  /* The grape gradient: lighter grape top-left, grape through the middle, deepening
-     toward blackcurrant bottom-right */
-  background: linear-gradient(
-    145deg,
-    color-mix(in oklab, var(--cursor-ink), #fff 28%) 0%,
-    var(--cursor-ink) 48%,
-    color-mix(in oklab, var(--cursor-ink), #32073e 42%) 100%
-  );
-  box-shadow:
-    0 0 0 1px #fff,
-    inset 0 1px 0 rgba(249, 228, 255, 0.32),
-    0 2px 6px rgba(50, 7, 62, 0.22);
-  transition:
-    width 320ms var(--cursor-ease),
-    height 320ms var(--cursor-ease),
-    scale 140ms ease-out,
-    box-shadow 240ms ease-out;
-  translate: -50% -50%; /* size animates, not scale, so the rim stays a crisp 1px */
-}
-/* On dark panels (the footer, the guestbook) the tile turns to lilac: the same corner-lit
-   enamel, inverted — near-white in the corner, grape-light, then a grape-tinted lilac at
-   the far edge — with blackcurrant inside and a soft lilac glow. It crossfades over the
-   dark tile, so moving between sections blends rather than snaps. */
-.site-cursor > span::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(
-    130% 130% at 22% 18%,
-    #fff 0%,
-    #F9E4FF 40%,
-    color-mix(in oklab, #F9E4FF 72%, #9D136A) 100%
-  );
-  opacity: 0;
-  transition: opacity 280ms ease-out;
-}
-.site-cursor[data-tone="dark"] > span::after { opacity: 1; }
-.site-cursor[data-tone="dark"] > span {
-  box-shadow:
-    0 0 0 1px rgba(249, 228, 255, 0.5),
-    0 0 12px rgba(249, 228, 255, 0.35);
-}
-.site-cursor[data-mode="hover"] > span { width: 16px; height: 16px; }
-.site-cursor[data-pressed] > span { scale: 0.8; }
-
-/* Inside: a white centre dot, always dead centre; on hover a thin crosshair turns in round it */
-.site-cursor > span { position: relative; }
-.site-cursor > span::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 2px;
-  height: 2px;
   border-radius: 50%;
-  background: #fff;
   translate: -50% -50%;
-  z-index: 1;
-  transition: background-color 280ms ease-out;
+  background: color-mix(in srgb, var(--cursor-ink) 85%, transparent);
+  border: 1px solid transparent;
+  transition:
+    width 300ms var(--cursor-ease),
+    height 300ms var(--cursor-ease),
+    background-color 300ms var(--cursor-ease),
+    border-color 300ms var(--cursor-ease),
+    box-shadow 300ms var(--cursor-ease),
+    -webkit-backdrop-filter 300ms var(--cursor-ease),
+    backdrop-filter 300ms var(--cursor-ease);
 }
-.site-cursor[data-tone="dark"] > span::before { background: #32073e; }
+.site-cursor[data-mode="hover"]::before {
+  width: 32px;
+  height: 32px;
+  background: color-mix(in srgb, var(--cursor-ring) 6%, transparent);
+  border-color: color-mix(in srgb, var(--cursor-ring) 45%, transparent);
+}
+.site-cursor[data-mode="out"]::before {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.4);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  backdrop-filter: blur(10px) saturate(1.15);
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 0 0 1px rgba(50, 7, 62, 0.06),
+    0 4px 16px rgba(50, 7, 62, 0.12);
+}
 .site-cursor svg {
-  z-index: 1;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 14px;
+  height: 14px;
+  translate: -50% -50%;
+  fill: none;
+  stroke: #32073e;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  scale: 0.6;
+  transition: opacity 200ms ease-out, scale 300ms var(--cursor-ease);
+}
+.site-cursor[data-mode="out"] svg { opacity: 1; scale: 1; }
+.site-cursor[data-pressed]::before { scale: 0.85; }
+
+/* ── Password gate (components/PasswordGate.tsx) ──────────────────────────────
+   A frosted pill that follows the pointer over a locked case study's image and opens
+   out into the password field where it is. Modelled on lydiashan.com's locked cards. */
+.pw-gate { position: absolute; inset: 0; z-index: 4; border-radius: inherit; }
+html[data-cursor] .pw-gate[data-cursor-off],
+html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
+.pw-layer {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  fill: none;
-  stroke: #fff;
-  stroke-width: 1; /* hairline */
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
+  overflow: hidden;
+  border-radius: inherit;
   opacity: 0;
-  rotate: -90deg;
-  scale: 1.6;
-  transition:
-    opacity 160ms ease-out,
-    rotate 420ms var(--cursor-ease),
-    scale 420ms var(--cursor-ease),
-    stroke 280ms ease-out;
+  pointer-events: none;
+  transition: opacity 200ms ease-out;
 }
-.site-cursor[data-tone="dark"] svg { stroke: #32073e; }
-.site-cursor[data-mode="hover"] svg { opacity: 1; rotate: 0deg; scale: 1; }
+.pw-layer[data-visible] { opacity: 1; }
+.pw-gate[data-state="form"] .pw-layer,
+.pw-gate[data-state="checking"] .pw-layer,
+.pw-gate[data-state="open"] .pw-layer { pointer-events: auto; }
 
+.pw-pill,
+.pw-form {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  color: #32073e; /* heading */
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  backdrop-filter: blur(12px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 1px rgba(50, 7, 62, 0.06),
+    0 2px 6px rgba(50, 7, 62, 0.08),
+    0 8px 28px rgba(50, 7, 62, 0.14);
+  font-family: var(--font-geist), system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+.pw-pill {
+  gap: 8px;
+  padding: 0 20px 0 16px;
+  pointer-events: none;
+  will-change: transform;
+}
+.pw-pill[data-resting] { pointer-events: auto; cursor: pointer; animation: pw-rise 360ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.pw-pill svg, .pw-lock svg { color: #9D136A; /* grape */ flex-shrink: 0; }
+
+.pw-form {
+  width: 264px;
+  max-width: calc(100% - 24px);
+  padding: 0 6px 0 16px;
+  gap: 8px;
+  animation: pw-open 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.pw-lock { display: flex; }
+.pw-form[data-state="open"] .pw-lock { animation: pw-unlock 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.pw-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 16px; /* 16px stops iOS zooming in on focus */
+  animation: pw-field-in 260ms ease-out 80ms both;
+}
+.pw-input::placeholder { color: rgba(50, 7, 62, 0.4); }
+.pw-submit {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  color: rgba(157, 19, 106, 0.6);
+  background: rgba(157, 19, 106, 0.08);
+  transition: background-color 200ms ease-out, color 200ms ease-out, box-shadow 200ms ease-out, transform 120ms ease-out;
+  animation: pw-submit-in 360ms cubic-bezier(0.34, 1.56, 0.64, 1) 120ms both;
+}
+.pw-submit[data-ready] {
+  color: #fff;
+  background: linear-gradient(145deg, color-mix(in oklab, #9D136A, #fff 18%), #9D136A 55%, color-mix(in oklab, #9D136A, #32073e 35%));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 2px 8px rgba(157, 19, 106, 0.3);
+  cursor: pointer;
+}
+.pw-submit[data-ready]:hover svg { translate: 2px 0; }
+.pw-submit svg { transition: translate 200ms ease-out; }
+.pw-submit:active { transform: scale(0.92); }
+.pw-submit:focus-visible { outline: 2px solid #9D136A; outline-offset: 2px; }
+.pw-form--shake { animation: pw-shake 440ms ease-out; }
+
+@keyframes pw-rise { from { opacity: 0; translate: 0 8px; } }
+@keyframes pw-open { from { width: 168px; opacity: 0.6; } }
+@keyframes pw-field-in { from { opacity: 0; translate: -6px 0; } }
+@keyframes pw-submit-in { from { opacity: 0; scale: 0.4; } }
+@keyframes pw-unlock { 40% { rotate: -14deg; scale: 1.15; } 100% { rotate: 0deg; scale: 1; } }
+@keyframes pw-shake {
+  0%, 100% { translate: 0 0; }
+  20% { translate: -8px 0; }
+  40% { translate: 6px 0; }
+  60% { translate: -4px 0; }
+  80% { translate: 2px 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pw-pill, .pw-form, .pw-input, .pw-submit, .pw-lock { animation: none !important; }
+}
