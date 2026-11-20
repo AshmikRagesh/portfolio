@@ -6,6 +6,9 @@
 
 import { EVENT_PATH, INGEST_PATH, type BellaEvent, type CuriosityPayload } from "./config";
 
+// Browsers driven by a script (screenshots, tests, capture tools) say so; they aren't visitors
+const automated = () => typeof navigator !== "undefined" && navigator.webdriver === true;
+
 // The clock hands over its IDs once loaded, so events can be tied to this visit
 const ids = { visitorId: "", visitId: "" };
 const sent = new Set<string>();
@@ -17,7 +20,7 @@ export function setReportIds(visitorId: string, visitId: string) {
 /** Note that the visitor did something with Bella. Sent at most once per event per page load;
  *  the server counts it once per visit. */
 export function track(event: BellaEvent) {
-  if (!ids.visitId || sent.has(event)) return;
+  if (!ids.visitId || sent.has(event) || automated()) return;
   sent.add(event);
   fetch(EVENT_PATH, {
     method: "POST",
@@ -28,6 +31,7 @@ export function track(event: BellaEvent) {
 }
 
 export function report(payload: CuriosityPayload) {
+  if (automated()) return;
   const body = JSON.stringify(payload);
 
   if (payload.final && typeof navigator !== "undefined" && navigator.sendBeacon) {

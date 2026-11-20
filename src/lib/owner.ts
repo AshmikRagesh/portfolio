@@ -9,6 +9,8 @@
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { ipHash } from "@/lib/curiosity/guard";
+import { NS, pipeline, storeConfigured } from "@/lib/curiosity/store";
 
 export const OWNER_COOKIE = "site_owner";
 export const OWNER_FLAG = "ash_owner";
@@ -25,4 +27,52 @@ export async function isOwner() {
   const given = (await cookies()).get(OWNER_COOKIE)?.value;
   if (!expected || !given || given.length !== expected.length) return false;
   return timingSafeEqual(Buffer.from(given), Buffer.from(expected));
+}
+
+// ── Network switch ────────────────────────────────────────────────────────────
+// The cookie only covers one browser. Marking a network (from /stats) stops
+// Curiosity counting every device on it — phones, private windows, Claude's
+// browser — until it's unmarked. Only the hashed IP is kept (see guard.ts), and
+// a marked network never opens /stats or the feedback inbox: it only skips counting.
+
+const NETWORKS = `${NS}:owner:networks`;
+
+// Headless and scripted browsers (screenshots, link previews, crawlers) aren't visitors
+const AUTOMATED = /headless|bot\b|crawler|spider|playwright|puppeteer|lighthouse|vercel-screenshot/i;
+
+export async function isOwnNetwork(headers: Headers) {
+  if (!storeConfigured) return false;
+  try {
+    const [{ result }] = await pipeline([["HEXISTS", NETWORKS, ipHash(headers)]]);
+    return Number(result) === 1;
+  } catch {
+    return false;
+  }
+}
+
+export async function setOwnNetwork(headers: Headers, on: boolean) {
+  if (!storeConfigured) return;
+  const hash = ipHash(headers);
+  await pipeline([on ? ["HSET", NETWORKS, hash, Date.now()] : ["HDEL", NETWORKS, hash]]);
+}
+
+export async function forgetOwnNetworks() {
+  if (storeConfigured) await pipeline([["DEL", NETWORKS]]);
+}
+
+export async function ownNetworkCount() {
+  if (!storeConfigured) return 0;
+  try {
+    const [{ result }] = await pipeline([["HLEN", NETWORKS]]);
+    return Number(result ?? 0);
+  } catch {
+    return 0;
+  }
+}
+
+/** True when Curiosity should ignore this request: Ashmik's browser, his network, or an automated browser. */
+export async function skipCounting(headers: Headers) {
+  if (AUTOMATED.test(headers.get("user-agent") ?? "")) return true;
+  if (await isOwner()) return true;
+  return isOwnNetwork(headers);
 }

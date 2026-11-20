@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { readStats, STATS_DAYS, type Tally } from "@/lib/curiosity/stats";
-import { hasAccess, lock, markOwner, unlock, unmarkOwner } from "./actions";
-import { isOwner } from "@/lib/owner";
+import { forgetNetworks, hasAccess, lock, markNetwork, markOwner, unlock, unmarkNetwork, unmarkOwner } from "./actions";
+import { isOwner, isOwnNetwork, ownNetworkCount } from "@/lib/owner";
+import { headers } from "next/headers";
 import Cta from "@/components/Cta";
 
 // ── /stats ────────────────────────────────────────────────────────────────────
@@ -92,20 +93,56 @@ function Tile({ label, value }: { label: string; value: string }) {
 }
 
 /** Mark this browser as Ashmik's, so his own visits and test comments don't count. */
-function OwnerSwitch({ owner }: { owner: boolean }) {
+function SwitchRow({ title, note, label, action }: { title: string; note: string; label: string; action: () => Promise<void> }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-line-soft p-4 md:px-6">
+    <div className="flex flex-wrap items-center justify-between gap-4 p-4 md:px-6">
       <div className="flex flex-col gap-1">
-        <p className="text-body text-text-base">{owner ? "This browser is marked as yours" : "This browser is counted as a visitor"}</p>
-        <p className="text-caption text-muted">
-          {owner
-            ? "Your visits, time and downloads aren't counted here, and feedback you leave goes to the Test list in the inbox."
-            : "Mark it as yours to browse and try feedback without changing the real numbers. Do this once in each browser you use."}
-        </p>
+        <p className="text-body text-text-base">{title}</p>
+        <p className="text-caption text-muted">{note}</p>
       </div>
-      <form action={owner ? unmarkOwner : markOwner}>
-        <Cta type="submit">{owner ? "Count this browser again" : "Mark as mine"}</Cta>
+      <form action={action}>
+        <Cta type="submit">{label}</Cta>
       </form>
+    </div>
+  );
+}
+
+function OwnerSwitch({ owner, network, networks }: { owner: boolean; network: boolean; networks: number }) {
+  const others = networks - (network ? 1 : 0);
+  return (
+    <div className="flex flex-col divide-y divide-line-soft rounded-lg border border-line-soft">
+      <SwitchRow
+        title={owner ? "This browser is marked as yours" : "This browser is counted as a visitor"}
+        note={
+          owner
+            ? "Your visits, time and downloads aren't counted here, and feedback you leave goes to the Test list in the inbox."
+            : "Mark it as yours to browse and try feedback without changing the real numbers. Do this once in each browser you use."
+        }
+        label={owner ? "Count this browser again" : "Mark as mine"}
+        action={owner ? unmarkOwner : markOwner}
+      />
+      <SwitchRow
+        title={network ? "This network is marked as yours" : "This network is counted"}
+        note={
+          network
+            ? "No device on this Wi-Fi is counted: phones, private windows, other browsers. Feedback and the inbox aren't affected. If your internet provider changes your address, mark it again."
+            : "Mark the Wi-Fi you're on so every device on it stops counting, not just this browser. A real visitor on the same Wi-Fi wouldn't count either."
+        }
+        label={network ? "Count this network again" : "Mark network as mine"}
+        action={network ? unmarkNetwork : markNetwork}
+      />
+      {others > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-6">
+          <p className="text-caption text-muted">
+            {others} other {others === 1 ? "network is" : "networks are"} marked as yours, such as an office or an old home address.
+          </p>
+          <form action={forgetNetworks}>
+            <button type="submit" className="font-brand text-caption text-muted underline underline-offset-4 hover:text-grape">
+              Forget all networks
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
@@ -157,7 +194,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           </form>
         </header>
 
-        <OwnerSwitch owner={await isOwner()} />
+        <OwnerSwitch owner={await isOwner()} network={await isOwnNetwork(await headers())} networks={await ownNetworkCount()} />
 
         <div className="grid grid-cols-2 gap-2 md:grid-cols-5 md:gap-4">
           <Tile label="Visits" value={String(s.visits)} />
