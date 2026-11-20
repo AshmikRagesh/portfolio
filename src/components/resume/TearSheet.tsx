@@ -4,8 +4,8 @@
 // The flat résumé, with a stub along the bottom below a perforated line: "Tear to
 // download". A little is already torn at the left corner. Drag it from left to right
 // and the tear follows your hand along the perforation, the torn part hanging down from
-// the tear front. Let go early and it lies back down; drag past 60% and the tear runs
-// on by itself with your hand's momentum, catching slightly at each hole. (Enter or
+// the tear front. Let go early and it lies back down; drag past 60%, or flick it, and
+// the tear runs on by itself with your hand's momentum, catching slightly at each hole. (Enter or
 // Space tears it from the keyboard; a tap jiggles the torn corner as a hint.)
 //
 // Once the tear reaches the end, the stub lies flat where it is and the résumé itself
@@ -16,7 +16,7 @@
 //
 // Physics, all stepped per frame in small substeps:
 //   tear front   a critically damped spring after your hand: no lag, no overshoot
-//   hanging part a lightly damped spring for its angle, so it sways as you speed up or
+//   hanging part a damped spring for its angle, so it sways a little as you speed up or
 //                stop, and hangs further the more of it is torn
 //   fall         the résumé under gravity against air drag, with a sideways sway, a
 //                rocking turn and a 3D tip that build up as it drops
@@ -47,11 +47,15 @@ function seeded(seed: number) {
   };
 }
 
-/** The torn line, a point every 2px: wanders a pixel either side of the perforation, dipping at each hole. */
+// A point every 4px along the torn line: half the clip-path points of every 2px, which
+// is what each frame of the tear redraws, with no visible difference at this scale
+const STEP = 4;
+
+/** The torn line: wanders a pixel either side of the perforation, dipping at each hole. */
 function tornLine(width: number, y: number): Pt[] {
   const rand = seeded(11);
   const pts: Pt[] = [];
-  for (let x = 0; x <= width + 0.01; x += 2) {
+  for (let x = 0; x <= width + 0.01; x += STEP) {
     const hole = (x - PERF_GAP / 2) % PERF_GAP === 0;
     pts.push([x, y + (rand() - 0.5) * 1.6 + (hole ? 0.9 : 0)]);
   }
@@ -60,8 +64,8 @@ function tornLine(width: number, y: number): Pt[] {
 
 const yAt = (pts: Pt[], x: number) => {
   if (x <= 0) return pts[0][1];
-  const i = Math.min(pts.length - 2, Math.floor(x / 2));
-  const t = clamp01((x - pts[i][0]) / 2);
+  const i = Math.min(pts.length - 2, Math.floor(x / STEP));
+  const t = clamp01((x - pts[i][0]) / STEP);
   return pts[i][1] + (pts[i + 1][1] - pts[i][1]) * t;
 };
 const polygon = (pts: Pt[]) => {
@@ -82,21 +86,26 @@ const RUN_AT = 0.6;
 // Tear front: a critically damped spring after the hand (stiffness, and damping for ζ = 1)
 const FRONT_K = 520;
 const FRONT_C = 2 * Math.sqrt(FRONT_K);
-// Running out: sheet-widths per second
-const RUN_START = 0.8;
-const RUN_ACCEL = 3.2;
-const RUN_MAX = 3.4;
-const HOLE_CATCH = 0.95; // a little speed lost at each perforation
+// Running out: sheet-widths per second. It picks up from your hand's speed and gathers
+// pace evenly; the catch at the perforations is slight, so it reads as texture, not stutter.
+const RUN_START = 0.9;
+const RUN_ACCEL = 2.6;
+const RUN_MAX = 3.2;
+const HOLE_CATCH = 0.985;
+// A quick flick finishes the tear even short of RUN_AT (widths per second, once past this far)
+const FLICK_SPEED = 1.4;
+const FLICK_FROM = 0.22;
 
-// The hanging part's angle: a lightly damped spring, so it sways (ζ ≈ 0.32)
-const HANG_K = 170;
-const HANG_C = 2 * 0.32 * Math.sqrt(HANG_K);
+// The hanging part's angle: a damped spring, so it sways a little and settles (ζ ≈ 0.45;
+// lighter damping made it wobble on every change of speed)
+const HANG_K = 150;
+const HANG_C = 2 * 0.45 * Math.sqrt(HANG_K);
 
 // The résumé falling, in sheet px and seconds. A whole sheet is big and falls faster
 // than a scrap; air only takes the edge off (terminal speed ≈ 2700 px/s).
 const GRAVITY = 6200;
 const DRAG = 2.3;
-const POP = -130; // the little jump as the tension lets go
+const POP = -90; // the little lift as the tension lets go
 const SWAY = 26; // sideways, px
 const SWAY_HZ = 1.05;
 const ROCK = 5; // degrees of rocking turn
@@ -158,9 +167,9 @@ export default function TearSheet({
     const xf = p * w;
     const yf = yAt(line, xf);
     const below = boxH + 80;
-    untorn.current.style.clipPath = polygon([[xf, yf], ...line.slice(Math.max(0, Math.ceil(xf / 2))), [w + 40, yAt(line, w)], [w + 40, below], [xf, below]]);
+    untorn.current.style.clipPath = polygon([[xf, yf], ...line.slice(Math.max(0, Math.ceil(xf / STEP))), [w + 40, yAt(line, w)], [w + 40, below], [xf, below]]);
     flap.current.style.clipPath =
-      p > 0 ? polygon([[-40, line[0][1]], ...line.slice(0, Math.floor((xf + 1) / 2) + 1), [xf + 1, yAt(line, xf + 1)], [xf + 1, below], [-40, below]]) : "polygon(0 0, 0 0, 0 0)";
+      p > 0 ? polygon([[-40, line[0][1]], ...line.slice(0, Math.floor((xf + 1) / STEP) + 1), [xf + 1, yAt(line, xf + 1)], [xf + 1, below], [-40, below]]) : "polygon(0 0, 0 0, 0 0)";
     const fibre = String(clamp01(p * 6));
     fibres.current.forEach((f) => f && (f.style.opacity = fibre));
     // The body's torn edge only shows where the tear has been
@@ -280,11 +289,13 @@ export default function TearSheet({
       s.holes = passed;
       voice.current?.set(Math.abs(s.p - before) / Math.max(dt, 0.001));
 
-      if (Math.abs(s.p - s.drawnP) > 0.00015) {
+      // Redrawn only once the front has moved a third of a pixel: the clip-paths are the
+      // costly part of each frame, and smaller steps don't show
+      if (Math.abs(s.p - s.drawnP) * geo.current.w > 0.33) {
         cut(s.p);
         s.drawnP = s.p;
       }
-      if (Math.abs(s.angle - s.drawnAngle) > 0.005 || Number.isNaN(s.drawnAngle)) {
+      if (Math.abs(s.angle - s.drawnAngle) > 0.05 || Number.isNaN(s.drawnAngle)) {
         hang(s.p, s.angle);
         s.drawnAngle = s.angle;
       }
@@ -306,7 +317,7 @@ export default function TearSheet({
             if (scroller) scroller.style.overflowY = "";
             sheet.current.style.visibility = "hidden";
             cb.current.onTorn();
-            window.setTimeout(restock, 600);
+            window.setTimeout(restock, 420);
           }
         }
       }
@@ -383,7 +394,7 @@ export default function TearSheet({
 
   // ── Pointer ─────────────────────────────────────────────────────────────────
 
-  const drag = useRef<{ x: number; y: number; moved: boolean; from: number; width: number } | null>(null);
+  const drag = useRef<{ x: number; y: number; moved: boolean; from: number; width: number; touch: boolean; lastX: number; lastT: number; speed: number } | null>(null);
   const grabbing = (on: boolean) => {
     document.documentElement.style.cursor = on ? "grabbing" : "";
     if (hit.current) hit.current.style.cursor = on ? "grabbing" : "grab";
@@ -395,7 +406,17 @@ export default function TearSheet({
     if (s.mode !== "idle" || e.button !== 0) return;
     e.preventDefault(); // no text selection while dragging
     grabbing(true);
-    drag.current = { x: e.clientX, y: e.clientY, moved: false, from: Math.max(REST, s.p), width: hit.current?.getBoundingClientRect().width || 1 };
+    drag.current = {
+      x: e.clientX,
+      y: e.clientY,
+      moved: false,
+      from: Math.max(REST, s.p),
+      width: hit.current?.getBoundingClientRect().width || 1,
+      touch: e.pointerType !== "mouse",
+      lastX: e.clientX,
+      lastT: performance.now(),
+      speed: 0,
+    };
     const id = e.pointerId;
     const move = (ev: PointerEvent) => ev.pointerId === id && onMove(ev);
     const up = (ev: PointerEvent) => {
@@ -414,7 +435,13 @@ export default function TearSheet({
     if (!d) return;
     const s = sim.current;
     const dx = e.clientX - d.x, dy = e.clientY - d.y;
-    if (!d.moved && Math.hypot(dx, dy) < 3) return;
+    // The hand's speed along the line (widths per second), smoothed, for a flick on release
+    const now = performance.now();
+    const dt = Math.max(1, now - d.lastT) / 1000;
+    d.speed += ((e.clientX - d.lastX) / d.width / dt - d.speed) * 0.4;
+    d.lastX = e.clientX;
+    d.lastT = now;
+    if (!d.moved && Math.hypot(dx, dy) < (d.touch ? 6 : 3)) return;
     if (!d.moved) {
       d.moved = true;
       s.mode = "pulling";
@@ -444,6 +471,12 @@ export default function TearSheet({
     window.setTimeout(() => window.removeEventListener("click", swallow, { capture: true }), 0);
     if (s.mode !== "pulling") return;
     if (Math.max(s.p, s.target) > RUN_AT) return startRun();
+    // A quick flick to the right finishes it too, carrying the hand's speed on
+    const fresh = performance.now() - d.lastT < 80;
+    if (fresh && d.speed > FLICK_SPEED && Math.max(s.p, s.target) > FLICK_FROM) {
+      s.pv = Math.max(s.pv, Math.min(RUN_MAX, d.speed));
+      return startRun();
+    }
     // Not far enough: it lies back down along the line
     s.mode = "settling";
     s.target = REST;
@@ -493,7 +526,7 @@ export default function TearSheet({
           {inside(0)}
         </div>
         <div>
-          <div ref={flapWrap} className="absolute inset-0" style={{ filter: "drop-shadow(0 3px 4px rgba(48,40,26,0.16))", willChange: "transform" }}>
+          <div ref={flapWrap} className="absolute inset-0" style={{ filter: "drop-shadow(0 2px 3px rgba(48,40,26,0.16))", willChange: "transform" }}>
             <div ref={flap} className="absolute inset-0 overflow-hidden" style={{ backgroundColor: PAPER, clipPath: "polygon(0 0, 0 0, 0 0)" }}>
               {inside(1)}
               {fibre(1)}
