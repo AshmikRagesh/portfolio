@@ -4,7 +4,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { allow, ipHash } from "@/lib/curiosity/guard";
-import { OWNER_COOKIE, OWNER_FLAG, OWNER_MAX_AGE, ownerToken } from "@/lib/owner";
+import { forgetOwnNetworks, OWNER_COOKIE, OWNER_FLAG, OWNER_MAX_AGE, ownerToken, setOwnNetwork } from "@/lib/owner";
 
 /** Wrong keys allowed per IP in WRONG_WINDOW seconds before every try is refused. */
 const WRONG_TRIES = 5;
@@ -74,5 +74,26 @@ export async function unmarkOwner() {
   const jar = await cookies();
   jar.delete({ name: OWNER_COOKIE, path: "/" });
   jar.delete({ name: OWNER_FLAG, path: "/" });
+  redirect("/stats");
+}
+
+// ── Network switch (see lib/owner.ts) ─────────────────────────────────────────
+
+export async function markNetwork() {
+  if (!(await hasAccess())) redirect("/stats");
+  await setOwnNetwork(await headers(), true);
+  redirect("/stats");
+}
+
+export async function unmarkNetwork() {
+  if (!(await hasAccess())) redirect("/stats");
+  await setOwnNetwork(await headers(), false);
+  redirect("/stats");
+}
+
+/** For when the internet provider has handed out new addresses and old ones pile up */
+export async function forgetNetworks() {
+  if (!(await hasAccess())) redirect("/stats");
+  await forgetOwnNetworks();
   redirect("/stats");
 }
