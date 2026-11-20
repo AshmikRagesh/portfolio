@@ -36,7 +36,7 @@ export default async function LockedPage({ params }: { params: Promise<{ slug: s
               This case study is shared on request. Enter the password to read it.
             </p>
           </div>
-          <LockedCard slug={slug} href={`/works/${slug}`}>
+          <LockedCard slug={slug} href={`/works/${slug}`} comingSoon={c.comingSoon}>
             <Image src={c.cover} alt={c.coverAlt} fill priority sizes="(min-width: 1024px) 880px, 100vw" className="object-cover" />
           </LockedCard>
         </div>

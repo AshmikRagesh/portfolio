@@ -77,7 +77,7 @@ export const featuredWorks: FeaturedWork[] = [
       "Personalised trips in under 2 minutes, with real-time availability and smart suggestions.",
     image: "/images/works-cover.png",
     imageAlt: "AI Trip Planning preview",
-    href: "#",
+    href: "/works/ai-itinerary", // password-locked, nothing behind it yet (lib/caseLock)
     layout: "standard",
   },
 ];

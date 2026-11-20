@@ -10,6 +10,9 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // A dev server can build into its own folder (NEXT_DIST_DIR=.next-preview), so two servers
+  // running from this folder don't overwrite each other's build cache. Vercel uses .next.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

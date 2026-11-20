@@ -2348,7 +2348,8 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
 .pw-layer[data-visible] { opacity: 1; }
 .pw-gate[data-state="form"] .pw-layer,
 .pw-gate[data-state="checking"] .pw-layer,
-.pw-gate[data-state="open"] .pw-layer { pointer-events: auto; }
+.pw-gate[data-state="open"] .pw-layer,
+.pw-gate[data-state="soon"] .pw-layer { pointer-events: auto; }
 
 .pw-pill,
 .pw-form {
@@ -2381,6 +2382,7 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
   will-change: transform;
 }
 .pw-pill[data-resting] { pointer-events: auto; cursor: pointer; animation: pw-rise 360ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.pw-soon { pointer-events: auto; animation: pw-open 320ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .pw-pill svg, .pw-lock svg { color: #9D136A; /* grape */ flex-shrink: 0; }
 
 .pw-form {
@@ -2445,3 +2447,66 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .pw-pill, .pw-form, .pw-input, .pw-submit, .pw-lock { animation: none !important; }
 }
+
+/* ── Feedback mode hint (components/case-study/Feedback.tsx) ─────────────────
+   A quiet, tinted pill at the top of the page under the navbar — not a second dark bar
+   by the dock. Says how to comment and how to leave. */
+.fb-hint {
+  position: fixed;
+  top: 96px;
+  left: 50%;
+  z-index: 45;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 6px 8px 6px 12px;
+  max-width: calc(100vw - 32px);
+  border-radius: 999px;
+  background: rgba(249, 228, 255, 0.72); /* grape-light, tinted */
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  backdrop-filter: blur(10px) saturate(1.1);
+  border: 1px solid rgba(157, 19, 106, 0.14);
+  box-shadow: 0 4px 16px rgba(50, 7, 62, 0.08);
+  color: #32073e;
+  font-family: var(--font-geist), system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.fb-hint-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9D136A;
+  box-shadow: 0 0 0 4px rgba(157, 19, 106, 0.14);
+  animation: fb-hint-pulse 1.8s ease-in-out infinite;
+}
+.fb-hint-esc {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(50, 7, 62, 0.14);
+  color: #524555;
+}
+.fb-hint kbd {
+  padding: 0 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(50, 7, 62, 0.14);
+  font: inherit;
+  font-size: 12px;
+  line-height: 18px;
+  color: #32073e;
+}
+.fb-hint-touch { display: none; }
+@media (hover: none) {
+  .fb-hint-touch { display: inline; }
+  .fb-hint-mouse, .fb-hint-esc { display: none; }
+  .fb-hint { padding-right: 12px; }
+}
+@keyframes fb-hint-pulse { 50% { box-shadow: 0 0 0 6px rgba(157, 19, 106, 0.06); } }
+@media (prefers-reduced-motion: reduce) { .fb-hint-dot { animation: none; } }
