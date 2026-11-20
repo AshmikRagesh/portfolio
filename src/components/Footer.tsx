@@ -20,14 +20,14 @@ const socialLinks = [
     href: LINKEDIN,
     bg: "#1f88f9",
     tiltClass: "hover:rotate-6",
-    icon: <img src="/icons/social-linkedin.svg" alt="LinkedIn" className="w-[18px] h-[18px] md:w-[24px] md:h-[24px]" />,
+    icon: <img loading="lazy" decoding="async" src="/icons/social-linkedin.svg" alt="LinkedIn" className="w-[18px] h-[18px] md:w-[24px] md:h-[24px]" />,
   },
   {
     label: "Twitter / X",
     href: X_PROFILE,
     bg: "#091624",
     tiltClass: "hover:-rotate-3",
-    icon: <img src="/icons/social-x.svg" alt="Twitter / X" className="w-[18px] h-[18px] md:w-[24px] md:h-[24px]" />,
+    icon: <img loading="lazy" decoding="async" src="/icons/social-x.svg" alt="Twitter / X" className="w-[18px] h-[18px] md:w-[24px] md:h-[24px]" />,
   },
 ];
 

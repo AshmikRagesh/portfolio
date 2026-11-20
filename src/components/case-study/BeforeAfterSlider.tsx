@@ -54,7 +54,7 @@ const Media = forwardRef<HTMLVideoElement, { shot: Shot; width: number; height: 
       );
     }
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={shot.src} alt={shot.alt} width={width} height={height} draggable={false} className={cls} style={style} />;
+    return <img loading="lazy" decoding="async" src={shot.src} alt={shot.alt} width={width} height={height} draggable={false} className={cls} style={style} />;
   },
 );
 

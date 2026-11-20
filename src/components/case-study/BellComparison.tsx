@@ -26,7 +26,7 @@ export default function BellComparison({ questions, finalists }: { questions: st
           </div>
           <div className="flex h-[136px] items-center justify-center rounded-md bg-grape-light/30 p-[16px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt={name} className="max-h-full max-w-full object-contain" />
+            <img loading="lazy" decoding="async" src={src} alt={name} className="max-h-full max-w-full object-contain" />
           </div>
           <dl className="m-0 mt-[12px] flex flex-col px-[8px]">
             {questions.map((q, i) => {

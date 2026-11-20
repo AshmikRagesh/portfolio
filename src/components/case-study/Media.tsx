@@ -553,7 +553,7 @@ export function ZoomImage({
       {open && (
         <Expanded label={alt} ratio={ratio} onClose={shut}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={alt} className="block h-full w-full bg-white object-contain" />
+          <img loading="lazy" decoding="async" src={src} alt={alt} className="block h-full w-full bg-white object-contain" />
         </Expanded>
       )}
     </>
@@ -609,7 +609,7 @@ export default function Media({
     <>
       <button type="button" onClick={() => setImage(true)} aria-label={`Expand: ${label}`} data-sound="whisper" data-sound-click="pop" className="block w-full cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-grape">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <img loading="lazy" decoding="async"
           src={src}
           alt={label}
           onLoad={(e) => setRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight)}
@@ -619,7 +619,7 @@ export default function Media({
       {image && (
         <Expanded label={label} ratio={ratio} onClose={shutImage}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={label} className="block h-full w-full bg-white object-contain" />
+          <img loading="lazy" decoding="async" src={src} alt={label} className="block h-full w-full bg-white object-contain" />
         </Expanded>
       )}
     </>

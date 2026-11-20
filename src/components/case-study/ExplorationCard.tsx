@@ -34,7 +34,7 @@ export default function ExplorationCard({
       <div className="cs-pair-media mt-auto flex h-[136px] items-center justify-center rounded-sm bg-grape-light/30 p-[16px]">
         {src ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={src} alt={name} className="max-h-full max-w-full object-contain" />
+          <img loading="lazy" decoding="async" src={src} alt={name} className="max-h-full max-w-full object-contain" />
         ) : (
           children
         )}

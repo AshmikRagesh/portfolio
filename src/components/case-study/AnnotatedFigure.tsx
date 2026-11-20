@@ -84,7 +84,7 @@ function Marked({
   return (
     <div className="relative h-full w-full" style={{ aspectRatio: `${width} / ${height}` }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={alt} width={width} height={height} draggable={false} className="absolute inset-0 h-full w-full bg-white object-cover" />
+      <img loading="lazy" decoding="async" src={src} alt={alt} width={width} height={height} draggable={false} className="absolute inset-0 h-full w-full bg-white object-cover" />
       {notes.map((n, i) => {
         const right = n.box.x + n.box.w / 2 > 0.5;
         return (
