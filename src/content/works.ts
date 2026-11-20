@@ -63,7 +63,7 @@ export const featuredWorks: FeaturedWork[] = [
     title: "Designing Bella, the desk bell that hosts this portfolio, in Claude Code",
     description:
       "A front-desk bell in the navbar that counts how long you actually spend here.",
-    image: "/images/bella/cover.png",
+    image: "/images/bella/cover.webp",
     imageAlt: "Bella the desk bell in eight moods: idle, ringing, reading, watching, dozing, celebrating, surprised and champion",
     href: "/works/bella",
     layout: "standard",

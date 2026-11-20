@@ -29,6 +29,7 @@ export default function About() {
               src="/images/portrait.png"
               alt="Ashmik Ragesh"
               fill
+              sizes="(min-width: 1024px) 320px, 100vw"
               className="object-cover object-top"
             />
           </div>

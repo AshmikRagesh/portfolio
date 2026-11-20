@@ -586,7 +586,7 @@ export default function BellaPage() {
       <Hero
         title="Designing Bella, the desk bell that hosts this portfolio, in Claude Code"
         date="October 2026"
-        image="/images/bella/cover.png"
+        image="/images/bella/cover.webp"
       />
       <Overview />
       <Research />
