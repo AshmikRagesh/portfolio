@@ -83,7 +83,7 @@ export default function ReferencePlayground({ items }: { items: Ref[] }) {
               </span>
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <img loading="lazy" decoding="async"
                 src={`/images/bella/references/${slug}.png`}
                 alt=""
                 draggable={false}

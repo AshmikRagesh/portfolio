@@ -212,7 +212,7 @@ function Lineup({ items }: { items: { name: string; src: string }[] }) {
       {items.map(({ name, src }) => (
         <li key={name} className="flex flex-col items-center gap-[16px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={name} className="h-[104px] w-full object-contain" />
+          <img loading="lazy" decoding="async" src={src} alt={name} className="h-[104px] w-full object-contain" />
           <p className="font-body text-[16px] font-medium leading-[24px] text-heading">{name}</p>
         </li>
       ))}

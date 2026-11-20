@@ -565,7 +565,7 @@ export function OptionCard({
             <Media video={video} poster={poster} label={image} />
           ) : src ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={src} alt={image} className="aspect-[16/9] w-full bg-surface object-contain p-[32px]" />
+            <img loading="lazy" decoding="async" src={src} alt={image} className="aspect-[16/9] w-full bg-surface object-contain p-[32px]" />
           ) : (
             <ImagePlaceholder label={image} aspect="aspect-[16/9]" radius="rounded-sm" />
           )}
