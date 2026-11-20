@@ -30,10 +30,12 @@ export default function Hero() {
           <Image
             src={PORTRAIT_SRC}
             alt="Portrait of Ashmik Ragesh"
-            width={1144}
-            height={1199}
+            width={1004}
+            height={1053}
             priority
-            sizes="(min-width: 1024px) 502px, (min-width: 768px) 400px, 100vw"
+            // Already a sized, compressed WebP (157KB). Through the optimizer its fine hatching
+            // in the transparency came back nearly twice the size.
+            unoptimized
             className="absolute inset-0 h-full w-full object-contain object-bottom"
           />
         </div>
