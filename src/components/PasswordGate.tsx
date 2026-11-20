@@ -7,7 +7,8 @@
 //   click    the pill opens out, where it is, into a password field with a round submit
 //            button that turns grape once something's typed.
 //   wrong    the field shakes and clears.
-//   right    the lock springs open, then the case study loads.
+//   right    the lock springs open, then the case study loads — or, for a card with nothing
+//            behind it yet (comingSoon), the pill reads "Case study coming soon".
 // Phones and tablets have no hover, so the pill rests at the foot of the image instead
 // and a tap opens it. Escape, or a click away, folds the field back into the pill.
 //
@@ -18,7 +19,7 @@ import { ArrowRight, LockSimple, LockSimpleOpen } from "@phosphor-icons/react";
 import { flagName } from "@/lib/caseLock";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 
-type State = "pill" | "form" | "checking" | "open";
+type State = "pill" | "form" | "checking" | "open" | "soon";
 
 export type PasswordGateHandle = {
   /** Open the field — at the pointer when the click came from inside the image, else in the middle. */
@@ -44,11 +45,13 @@ type Props = {
   href: string;
   /** Always show the resting pill, not only on hover (the password screen) */
   pinned?: boolean;
+  /** No case study yet: the right password shows "coming soon" instead of loading a page */
+  comingSoon?: boolean;
   className?: string;
 };
 
 const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate(
-  { slug, href, pinned = false, className = "" },
+  { slug, href, pinned = false, comingSoon = false, className = "" },
   ref,
 ) {
   const touch = useTouchScreen();
@@ -108,17 +111,17 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
   }, [state]);
 
   const close = useCallback(() => {
-    setState((s) => (s === "form" ? "pill" : s));
+    setState((s) => (s === "form" || s === "soon" ? "pill" : s));
     setValue("");
     setMessage("");
   }, []);
 
   // Escape, or a press anywhere outside the field, folds it back into the pill
   useEffect(() => {
-    if (state !== "form") return;
+    if (state !== "form" && state !== "soon") return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     const onDown = (e: PointerEvent) => {
-      if (!(e.target as Element).closest(".pw-form")) close();
+      if (!(e.target as Element).closest(".pw-form, .pw-soon")) close();
     };
     document.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onDown, true);
@@ -139,6 +142,13 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug, password: value }),
       });
+      if (res.ok && comingSoon) {
+        setState("open");
+        setMessage("Case study coming soon");
+        window.setTimeout(() => setState("soon"), 560);
+        setValue("");
+        return;
+      }
       if (res.ok) {
         setState("open");
         setMessage("Unlocked");
@@ -192,7 +202,15 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
       }}
     >
       <div className="pw-layer" data-visible={visible || undefined}>
-        {!showForm ? (
+        {state === "soon" ? (
+          <div
+            className="pw-pill pw-soon"
+            style={{ transform: `translate(${pos!.x}px, ${pos!.y}px) translate(-50%, -50%)` }}
+          >
+            <LockSimpleOpen size={16} weight="regular" aria-hidden="true" />
+            Case study coming soon
+          </div>
+        ) : !showForm ? (
           <button
             type="button"
             className="pw-pill"

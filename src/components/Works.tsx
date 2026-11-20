@@ -23,17 +23,17 @@ import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 // the room key onto its hook, and turns the pill grape as it makes room for an arrow
 // circle (see .work-cta). NDA works show a stamp on a greyed image and a greyed-out pill.
 export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string }) {
-  // NDA works have no page: the card opens an email asking about the work instead
-  const href = work.nda
-    ? `mailto:${EMAIL}?subject=${encodeURIComponent(`Access to: ${work.title}`)}`
-    : work.href;
-  const isLink = href !== "#";
-  // Password-protected case studies (lib/caseLock): until the password's been entered, the
-  // card opens the password field instead of following its link
+  // Password-protected works (lib/caseLock): until the password's been entered, the card
+  // opens the password field instead of following its link. Locked until this browser is
+  // known to have the password, so it never flashes as open; a "coming soon" card stays locked.
   const lockedSlug = work.href.startsWith("/works/") ? work.href.slice(7) : "";
+  const lock = LOCKED[lockedSlug];
   const unlocked = useUnlocked(lockedSlug);
-  // Locked until this browser is known to have the password, so it never flashes as open
-  const locked = Boolean(LOCKED[lockedSlug]) && unlocked !== true;
+  const locked = Boolean(lock) && (lock.comingSoon || unlocked !== true);
+  // NDA works with no page or lock: the card opens an email asking about the work instead
+  const href =
+    work.nda && !lock ? `mailto:${EMAIL}?subject=${encodeURIComponent(`Access to: ${work.title}`)}` : work.href;
+  const isLink = href !== "#";
   const gate = useRef<PasswordGateHandle>(null);
   const Wrapper = isLink ? Link : "div";
   const isFlagship = work.layout === "flagship";
@@ -47,12 +47,12 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
   const description = (
     <p className="m-0 max-w-[560px] text-pretty font-body text-lead-md text-secondary">{work.description}</p>
   );
-  // Under NDA: the same pill, greyed out and inert
-  // Locked works: unlock to read. NDA works can't be shown, so the card asks for a walkthrough by email.
-  const cta = work.nda ? (
-    <CtaPill muted icon={<Mail size={18} strokeWidth={2} />}>Request access</CtaPill>
-  ) : locked ? (
+  // Locked works: unlock to read. NDA works can't be shown, so the card asks for access by email.
+  // Both greyed, as they can't simply be opened.
+  const cta = locked ? (
     <CtaPill muted icon={<LockKeyhole size={18} strokeWidth={2} />}>Unlock to read case study</CtaPill>
+  ) : work.nda ? (
+    <CtaPill muted icon={<Mail size={18} strokeWidth={2} />}>Request access</CtaPill>
   ) : isLink ? (
     <CtaPill>Read case study</CtaPill>
   ) : (
@@ -83,7 +83,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
       } ${isLink ? "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape" : ""}`}
     >
       {/* Locked: the "Enter password" pill follows the pointer over the whole card */}
-      {locked && <PasswordGate ref={gate} slug={lockedSlug} href={work.href} />}
+      {locked && <PasswordGate ref={gate} slug={lockedSlug} href={work.href} comingSoon={lock?.comingSoon} />}
 
       {isFlagship ? (
         /* Words */

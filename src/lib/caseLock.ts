@@ -13,18 +13,25 @@ export type LockedCase = {
   cover: string;
   coverAlt: string;
   env: string; // name of the environment variable holding the password
+  /** Used when the environment variable isn't set. It's in the public repo, so only for a
+   *  card with nothing behind it yet; set the variable once real content goes in. */
+  fallback?: string;
+  /** No case study yet: the right password opens to a "coming soon" note, not a page. */
+  comingSoon?: boolean;
   assets: string[]; // path prefixes served only once unlocked
   open: string[]; // exact paths that stay public (the cover)
 };
 
 export const LOCKED: Record<string, LockedCase> = {
-  "tcs-search": {
-    title: "From every trip at once to the few that fit: filters for TCS search",
-    cover: "/images/tcs-search/cover.webp",
-    coverAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
-    env: "TCS_CASE_PASSWORD",
-    assets: ["/images/tcs-search/", "/videos/tcs-search/"],
-    open: ["/images/tcs-search/cover.webp"],
+  "ai-itinerary": {
+    title: "Designing an AI-powered itinerary builder for modern travellers",
+    cover: "/images/works-cover.png",
+    coverAlt: "AI Trip Planning preview",
+    env: "AI_ITINERARY_PASSWORD",
+    fallback: "wanderlust",
+    comingSoon: true,
+    assets: [],
+    open: [],
   },
 };
 
@@ -65,7 +72,7 @@ export function sameText(a: string, b: string): boolean {
 
 export function passwordFor(slug: string): string | undefined {
   const c = LOCKED[slug];
-  return c ? process.env[c.env] || undefined : undefined;
+  return c ? process.env[c.env] || c.fallback || undefined : undefined;
 }
 
 /** Whether a cookie value unlocks this case study. */
