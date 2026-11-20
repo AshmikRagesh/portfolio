@@ -8,7 +8,7 @@ import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
  * to the front. With the keyboard, focus one and move it with the arrow keys. Positions are
  * kept as a share of the free space, so the layout holds when the card resizes.
  * A wide pose can take a wider box (`wide`, a multiple of the size).
- * Pictures live in public/images/bella/references/{slug}.png; until one exists, a soft
+ * Pictures live in public/images/bella/references/{slug}.webp; until one exists, a soft
  * stand-in with the name holds its place.
  */
 type Ref = { name: string; slug: string; x: number; y: number; wide?: number };
@@ -84,7 +84,7 @@ export default function ReferencePlayground({ items }: { items: Ref[] }) {
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
               <img loading="lazy" decoding="async"
-                src={`/images/bella/references/${slug}.png`}
+                src={`/images/bella/references/${slug}.webp`}
                 alt=""
                 draggable={false}
                 onError={() => setMissing((m) => ({ ...m, [slug]: true }))}

@@ -33,6 +33,7 @@ export default function Hero() {
             width={1144}
             height={1199}
             priority
+            sizes="(min-width: 1024px) 502px, (min-width: 768px) 400px, 100vw"
             className="absolute inset-0 h-full w-full object-contain object-bottom"
           />
         </div>
