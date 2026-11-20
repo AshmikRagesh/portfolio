@@ -846,13 +846,18 @@ export function FeedbackLayer({ sections }: { sections: CaseStudySection[] }) {
           </button>
         ))}
 
-      {/* Mode on, nothing picked yet: say how it works, just above the dock */}
+      {/* Mode on, nothing picked yet: a quiet tinted hint at the top of the page, under the
+          navbar, saying how it works and how to leave (Esc; phones tap the button again) */}
       {on && !open && (
-        <p
-          role="status"
-          className="cs-fade pointer-events-none fixed bottom-[88px] left-1/2 z-[45] m-0 -translate-x-1/2 whitespace-nowrap rounded-full bg-midnight px-[16px] py-[8px] text-[14px] leading-[20px] text-white shadow-[0_8px_24px_rgba(30,5,37,0.24)]"
-        >
-          Click any part of the page to comment
+        <p role="status" className="fb-hint cs-fade">
+          <span className="fb-hint-dot" aria-hidden="true" />
+          <span>
+            <span className="fb-hint-touch">Tap</span>
+            <span className="fb-hint-mouse">Click</span> any part of the page to comment
+          </span>
+          <span className="fb-hint-esc">
+            <kbd>Esc</kbd> to exit
+          </span>
         </p>
       )}
 
