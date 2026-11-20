@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 /** How long the old page takes to fade away before the new one is fetched in. */
-const LEAVE_MS = 180;
+const LEAVE_MS = 100;
 
 /** Big images a page shows at the top, fetched early so the page arrives with them in
  *  place instead of popping them in after it has faded up. */
@@ -66,20 +66,14 @@ export default function PageTransition() {
       clearTimeout(timer);
       timer = window.setTimeout(() => delete document.documentElement.dataset.leaving, 3000);
     };
-    // Heading for a link (hover, focus, touch): get its page and its big images ready
+    // Heading for a link (hover, focus, touch): get its page and its big images ready.
+    // Only on intent, so a home visit doesn't download the About page's frame for nothing.
     const onIntent = (e: Event) => {
       const path = internalPath(e.target);
       if (!path || path === location.pathname) return;
       router.prefetch(path);
       warm(path);
     };
-    // And once this page has settled, warm the pages the navbar points to anyway
-    const idle = window.setTimeout(() => {
-      document.querySelectorAll<HTMLAnchorElement>("header a[href], nav a[href]").forEach((a) => {
-        const path = internalPath(a);
-        if (path && path !== location.pathname) warm(path);
-      });
-    }, 2500);
     document.addEventListener("pointerover", onIntent, { capture: true, passive: true });
     document.addEventListener("focusin", onIntent, true);
     document.addEventListener("touchstart", onIntent, { capture: true, passive: true });
@@ -94,7 +88,6 @@ export default function PageTransition() {
       document.removeEventListener("focusin", onIntent, true);
       document.removeEventListener("touchstart", onIntent, true);
       clearTimeout(timer);
-      clearTimeout(idle);
     };
   }, [router]);
 
