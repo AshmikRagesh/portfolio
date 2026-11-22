@@ -186,9 +186,9 @@ function CoverInner() {
 
       {/* Title, debossed: a shadow above the letters, light below */}
       <div className="absolute left-7 top-8 right-7">
-        <p className="font-heading text-[16px] italic leading-none text-grape/70">Field notes, vol. 1</p>
+        <p className="font-geist text-[10px] font-medium uppercase leading-none tracking-[2px] text-grape/70">Field notes · Vol. 01</p>
         <p
-          className="mt-2 font-heading text-[44px] leading-[0.95] tracking-[-1.6px] text-grape"
+          className="mt-3 font-heading text-[44px] leading-[0.95] tracking-[-1.6px] text-grape"
           style={{ textShadow: "0 -1px 0 rgba(30,5,37,0.18), 0 1px 0 rgba(255,255,255,0.9)" }}
         >
           Itinerary
