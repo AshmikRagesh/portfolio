@@ -330,6 +330,7 @@ function NavTab({ label, href, pathname, inView }: { label: string; href: string
     // Opens the résumé sheet; the celebration plays once a copy is downloaded
     <a
       href={href}
+      data-cursor="hover"
       onClick={(e) => {
         e.preventDefault();
         openResume();
