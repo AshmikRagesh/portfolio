@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   if (typeof visitId !== "string" || !ID.test(visitId)) return new Response(null, { status: 400 });
   if (typeof event !== "string" || !(event in BELLA_EVENTS)) return new Response(null, { status: 400 });
   // Ashmik's own browser or network (switches on /stats) and automated browsers are never counted
-  if (await skipCounting(req.headers)) return new Response(null, { status: 204 });
+  if (await skipCounting(req.headers, typeof visitorId === "string" ? visitorId : undefined)) return new Response(null, { status: 204 });
 
   try {
     const ok = await recordEvent(visitId, typeof visitorId === "string" ? visitorId : "", event as BellaEvent);

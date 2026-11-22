@@ -121,6 +121,8 @@ visits.forEach((v, i) => {
 // Visitor-level scores: every leaderboard (all-time and each month), lifetime, in the house now
 for (const board of await scan(`${NS}:board:*`)) commands.push(["ZREM", board, visitorId]);
 commands.push(["ZREM", `${NS}:lifetime`, visitorId], ["ZREM", `${NS}:present`, visitorId]);
+// And stop counting this device from now on (read by skipCounting in lib/owner.ts)
+commands.push(["SADD", `${NS}:owner:visitors`, visitorId]);
 
 console.log(`Visitor ${visitorId} in ${NS}`);
 console.log(`  ${visits.length} stored visits, ${summary.visits} counted, ${Math.round(summary.seconds / 60)} min active`);
