@@ -33,13 +33,14 @@ export function MedalArt({ id, svgRef }: { id: string; svgRef?: React.Ref<SVGSVG
   return (
     <svg ref={svgRef} viewBox={`0 0 ${MEDAL_W} ${MEDAL_H}`} className="block h-full w-full overflow-visible" aria-hidden="true">
       <defs>
-        {/* Gold: warm, smooth, polished */}
+        {/* Gold and enamel: the same as the Chelsea badge beside it, so they read as one set */}
         <linearGradient id={f("gold")} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#fbe7a6" />
-          <stop offset="0.28" stopColor="#d9a845" />
-          <stop offset="0.52" stopColor="#a8761f" />
-          <stop offset="0.74" stopColor="#f3d27c" />
-          <stop offset="1" stopColor="#8f6014" />
+          <stop offset="0" stopColor="#fff1c4" />
+          <stop offset="0.22" stopColor="#e3b553" />
+          <stop offset="0.45" stopColor="#a06d17" />
+          <stop offset="0.62" stopColor="#f7d784" />
+          <stop offset="0.82" stopColor="#b8842a" />
+          <stop offset="1" stopColor="#6e480c" />
         </linearGradient>
         <linearGradient id={f("rim")} x1="0.15" y1="0" x2="0.85" y2="1">
           <stop offset="0" stopColor="#fff1c4" />
@@ -50,24 +51,23 @@ export function MedalArt({ id, svgRef }: { id: string; svgRef?: React.Ref<SVGSVG
         </linearGradient>
         {/* Satin facets, each lit differently so the folds read */}
         <linearGradient id={f("back")} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#7d0f56" />
-          <stop offset="1" stopColor="#5b0a3e" />
+          <stop offset="0" stopColor="#5b0a3e" />
+          <stop offset="1" stopColor="#32073e" />
         </linearGradient>
         <linearGradient id={f("left")} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#d3529f" />
-          <stop offset="0.45" stopColor="#b42a83" />
-          <stop offset="1" stopColor="#8c1260" />
+          <stop offset="0" stopColor="#b02a83" />
+          <stop offset="0.45" stopColor="#8a1160" />
+          <stop offset="1" stopColor="#5b0a3e" />
         </linearGradient>
         <linearGradient id={f("right")} x1="1" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#a81d75" />
-          <stop offset="0.6" stopColor="#8a1160" />
-          <stop offset="1" stopColor="#6e0d4b" />
+          <stop offset="0" stopColor="#7d0f56" />
+          <stop offset="0.6" stopColor="#5b0a3e" />
+          <stop offset="1" stopColor="#32073e" />
         </linearGradient>
         <radialGradient id={f("enamel")} cx="0.38" cy="0.3" r="0.78">
-          <stop offset="0" stopColor="#d4559f" />
-          <stop offset="0.45" stopColor="#a8197a" />
-          <stop offset="0.85" stopColor="#7d0f56" />
-          <stop offset="1" stopColor="#4a0832" />
+          <stop offset="0" stopColor="#b02a83" />
+          <stop offset="0.45" stopColor="#7d0f56" />
+          <stop offset="1" stopColor="#32073e" />
         </radialGradient>
         <linearGradient id={f("gloss")} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#fff" stopOpacity="0.55" />
