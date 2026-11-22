@@ -254,7 +254,9 @@ export default function ResumeOverlay() {
             style={wide ? { width: SHEET_W * scale, height: SHEET_H * scale } : undefined}
             onClick={(e) => e.stopPropagation()}
           >
-            <div ref={tilt} className={wide ? "absolute inset-0" : "relative"} style={{ transformStyle: "preserve-3d", willChange: wide ? "transform" : undefined }}>
+            {/* Flat, not preserve-3d: the lean is a slight 2D-looking tilt, and in a 3D context the
+                pointer sometimes hit this layer instead of the stub, so the cursor flickered */}
+            <div ref={tilt} className={wide ? "absolute inset-0" : "relative"} style={{ willChange: wide ? "transform" : undefined }}>
               {wide ? (
                 <div className="absolute left-0 top-0" style={{ width: SHEET_W, height: SHEET_H, transform: `scale(${scale})`, transformOrigin: "0 0" }}>
                   {content}

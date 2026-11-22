@@ -384,6 +384,12 @@ export default function TearSheet({
     window.setTimeout(starterTear, RESTOCK.duration);
   };
 
+  /** The pointer reaches the stub: the torn corner lifts a little, inviting a pull. */
+  const invite = (e: React.PointerEvent) => {
+    const s = sim.current;
+    if (e.pointerType === "mouse" && s.mode === "idle" && !drag.current) s.angleV += 45;
+  };
+
   /** A tap, not a drag: the torn corner jiggles, as a hint to drag it. */
   const jiggle = () => {
     const s = sim.current;
@@ -397,7 +403,12 @@ export default function TearSheet({
   // a cursor change on <html> restyles every element on the page underneath
   const grabbing = (on: boolean) => {
     const dialog = hit.current?.closest<HTMLElement>("[role=dialog]");
-    if (dialog) dialog.style.cursor = on ? "grabbing" : "";
+    if (dialog) {
+      dialog.style.cursor = on ? "grabbing" : "";
+      // Holds the site cursor (and hover sounds) steady while the hand crosses the sheet
+      if (on) dialog.dataset.dragging = "";
+      else delete dialog.dataset.dragging;
+    }
     if (hit.current) hit.current.style.cursor = on ? "grabbing" : "grab";
   };
   // The drag is followed on the window, not by capturing the pointer: a capture can be
@@ -549,6 +560,7 @@ export default function TearSheet({
         className="absolute inset-x-0 bottom-0 z-[3] touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-[#9D136A]/40"
         style={{ height: STUB_H, cursor: "grab" }}
         onPointerDown={onDown}
+        onPointerEnter={invite}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
