@@ -453,7 +453,7 @@ export default function ArtemisInsurancePage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels["artemis-insurance"]}>
       <Hero
-        title="Adding travel insurance to the Artemis guest booking experience"
+        title="Adding travel insurance to Artemis checkout: 7% to 52% adoption"
         date="November 2024"
       />
       <Overview />

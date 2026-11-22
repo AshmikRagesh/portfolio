@@ -48,7 +48,7 @@ export const reels = {
   },
   "artemis-insurance": {
     youtubeId: PLACEHOLDER,
-    title: "Integrating travel insurance into the Artemis booking flow",
+    title: "Adding travel insurance to Artemis checkout: 7% to 52% adoption",
     description:
       "Designed and shipped in 4 weeks — drove insurance adoption from 7% to 52% and generated $125K in Q1 revenue by embedding coverage directly into checkout.",
     href: "/works/artemis-insurance",
