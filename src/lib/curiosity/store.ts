@@ -34,7 +34,7 @@
 // The sorted sets are what Phase 2 reads: rank and count on them give "you've
 // stayed longer than N% of visitors" in a single round trip.
 
-import { MIN_RANK_SAMPLE, type BellaEvent, type CuriosityPayload, type RankResult } from "./config";
+import { isAction, MIN_RANK_SAMPLE, type BellaEvent, type CuriosityPayload, type RankResult } from "./config";
 import { istDay, istMonth } from "./day";
 
 /**
@@ -128,6 +128,8 @@ export async function recordVisit(p: CuriosityPayload, opts: { canStartVisit?: (
       "updatedAt", Date.now(),
       "closed", p.final ? 1 : 0,
     ],
+    // Opened a case study at some point in this visit (feeds the Reader tier on /stats)
+    ...(p.path.startsWith("/works/") ? [["HSET", visitKey, "caseStudy", 1] as Command] : []),
     ["EXPIRE", visitKey, VISIT_TTL_SECONDS],
     // GT: a score only ever moves up, so a stale or out-of-order report can't lower it
     ["ZADD", `${NS}:board:alltime`, "GT", p.activeSeconds, p.visitorId],
@@ -191,7 +193,13 @@ export async function recordEvent(visitId: string, visitorId: string, event: Bel
   const [{ result: owner }] = await pipeline([["HGET", `${NS}:visit:${visitId}`, "visitorId"]]);
   if (owner === null || owner !== visitorId) return false;
   const [{ result }] = await pipeline([["SET", `${NS}:visit:${visitId}:event:${event}`, 1, "NX", "EX", VISIT_TTL_SECONDS]]);
-  if (result === "OK") await pipeline([["HINCRBY", `${NS}:events`, event, 1]]);
+  if (result === "OK") {
+    await pipeline([
+      ["HINCRBY", `${NS}:events`, event, 1],
+      // Chosen actions on the visit itself, for the Engaged tier on /stats
+      ...(isAction(event) ? [["HINCRBY", `${NS}:visit:${visitId}`, "actions", 1] as Command] : []),
+    ]);
+  }
   return true;
 }
 

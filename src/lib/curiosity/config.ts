@@ -79,6 +79,10 @@ export const BELLA_EVENTS = {
 } as const;
 export type BellaEvent = keyof typeof BELLA_EVENTS;
 
+/** Something the visitor chose to do. Stamps are handed out automatically, so they don't
+ *  show intent; everything else does, and makes the visit "Engaged" on /stats. */
+export const isAction = (event: string) => event in BELLA_EVENTS && !event.startsWith("stamp_");
+
 /** The record only counts once at least this many other visitors have had a go at it. */
 export const MIN_RECORD_FIELD = 3;
 

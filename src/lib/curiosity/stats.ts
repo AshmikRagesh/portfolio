@@ -29,8 +29,46 @@ export interface Tally {
   seconds?: number;
 }
 
+// ── Visitor tiers ─────────────────────────────────────────────────────────────
+// How much a visit says a real person was here, highest first. A visitor's tier
+// is the best of their visits.
+//   Engaged  chose to do something: Bella's sign, copied the email, a video, the résumé…
+//   Reader   a minute or more of active time, or opened a case study
+//   Glance   10 seconds to a minute
+//   Bounce   under 10 seconds and nothing else: mostly link previews and bots
+export const TIERS = ["Engaged", "Reader", "Glance", "Bounce"] as const;
+export type Tier = (typeof TIERS)[number];
+/** Tiers that count as a real visitor. */
+export const REAL_TIERS: Tier[] = ["Engaged", "Reader"];
+
+function tierOf(v: { seconds: number; actions: number; caseStudy: boolean }): Tier {
+  if (v.actions > 0) return "Engaged";
+  if (v.seconds >= 60 || v.caseStudy) return "Reader";
+  if (v.seconds >= 10) return "Glance";
+  return "Bounce";
+}
+
+interface StoredVisit {
+  visitorId: string;
+  seconds: number;
+  lastPath: string;
+  referrer: string;
+  viewport: string;
+  updatedAt: number;
+  caseStudy: boolean;
+  actions: number;
+  tier: Tier;
+}
+
+export interface TierRow {
+  tier: Tier;
+  visitors: number;
+  visits: number;
+}
+
 /** One visitor (browser), totalled across their stored visits. */
 export interface VisitorRow {
+  tier: Tier;
   id: string;
   guestNo: number | null;
   visits: number;
@@ -62,6 +100,10 @@ export interface Stats {
   /** Most time on the site first, from stored visits (the newest RECENT_KEEP, up to 90 days). */
   topVisitors: VisitorRow[];
   visitorSample: number;
+  /** Visitors and visits per tier, from stored visits. */
+  tiers: TierRow[];
+  /** Visitors whose best visit is Engaged or Reader. */
+  realVisitors: number;
 }
 
 function hashToTallies(flat: string[] | null): Tally[] {
@@ -76,7 +118,8 @@ function median(sorted: number[]) {
   return sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
 }
 
-export async function readStats(): Promise<Stats> {
+/** showBounces: keep Bounce-only visitors in the Visitors list (they're always in the tier counts). */
+export async function readStats({ showBounces = false }: { showBounces?: boolean } = {}): Promise<Stats> {
   const empty: Stats = {
     configured: storeConfigured,
     visits: 0,
@@ -93,6 +136,8 @@ export async function readStats(): Promise<Stats> {
     events: Object.values(BELLA_EVENTS).map((label) => ({ label, count: 0 })),
     topVisitors: [],
     visitorSample: 0,
+    tiers: TIERS.map((tier) => ({ tier, visitors: 0, visits: 0 })),
+    realVisitors: 0,
   };
   if (!storeConfigured) return empty;
 
@@ -127,20 +172,26 @@ export async function readStats(): Promise<Stats> {
   // Every stored visit, newest first. Hashes expire after 90 days, so older visits
   // drop out; the totals above (visits, referrers, devices) still include them.
   const ids = (recent as string[]) ?? [];
-  const FIELDS = ["visitorId", "activeSeconds", "lastPath", "referrer", "viewport", "updatedAt"] as const;
+  const FIELDS = ["visitorId", "activeSeconds", "lastPath", "referrer", "viewport", "updatedAt", "entryPath", "caseStudy", "actions"] as const;
   const rows = ids.length
     ? (await pipeline(ids.map((id) => ["HMGET", `${NS}:visit:${id}`, ...FIELDS]))).map((r: { result: (string | null)[] }) => r.result)
     : [];
-  const stored = rows
+  const stored: StoredVisit[] = rows
     .filter((r: (string | null)[]) => r?.[0])
-    .map((r: (string | null)[]) => ({
-      visitorId: r[0] as string,
-      seconds: Number(r[1] ?? 0),
-      lastPath: r[2] ?? "/",
-      referrer: r[3] || "direct",
-      viewport: r[4] ?? "desktop",
-      updatedAt: Number(r[5] ?? 0),
-    }));
+    .map((r: (string | null)[]): StoredVisit => {
+      const v = {
+        visitorId: r[0] as string,
+        seconds: Number(r[1] ?? 0),
+        lastPath: r[2] ?? "/",
+        referrer: r[3] || "direct",
+        viewport: r[4] ?? "desktop",
+        updatedAt: Number(r[5] ?? 0),
+        // Visits from before the caseStudy flag still show it in where they began or ended
+        caseStudy: r[7] === "1" || [r[6], r[2]].some((path) => path?.startsWith("/works/")),
+        actions: Number(r[8] ?? 0),
+      };
+      return { ...v, tier: tierOf(v) };
+    });
 
   // Total active time per label, so lists can be ordered by time spent rather than visits
   const timeBy = (key: (v: (typeof stored)[number]) => string) => {
@@ -170,14 +221,20 @@ export async function readStats(): Promise<Stats> {
   // Visitors, most time on the site first
   const people = new Map<string, VisitorRow>();
   for (const v of stored) {
-    const p = people.get(v.visitorId) ?? { id: v.visitorId, guestNo: null, visits: 0, seconds: 0, device: v.viewport, referrer: "direct", lastSeen: 0 };
+    const p = people.get(v.visitorId) ?? { id: v.visitorId, tier: "Bounce" as Tier, guestNo: null, visits: 0, seconds: 0, device: v.viewport, referrer: "direct", lastSeen: 0 };
+    if (TIERS.indexOf(v.tier) < TIERS.indexOf(p.tier)) p.tier = v.tier;
     p.visits++;
     p.seconds += v.seconds;
     if (v.referrer !== "direct") p.referrer = v.referrer;
     p.lastSeen = Math.max(p.lastSeen, v.updatedAt);
     people.set(v.visitorId, p);
   }
-  const topVisitors = [...people.values()].sort((a, b) => b.seconds - a.seconds || b.visits - a.visits).slice(0, VISITOR_LIMIT);
+  const tiers = TIERS.map((tier) => ({
+    tier,
+    visitors: [...people.values()].filter((p) => p.tier === tier).length,
+    visits: stored.filter((v) => v.tier === tier).length,
+  }));
+  const topVisitors = [...people.values()].filter((p) => showBounces || p.tier !== "Bounce").sort((a, b) => b.seconds - a.seconds || b.visits - a.visits).slice(0, VISITOR_LIMIT);
   if (topVisitors.length) {
     const guestNos = await pipeline(topVisitors.map((p) => ["GET", `${NS}:guestno:${p.id}`]));
     guestNos.forEach((r: { result: string | null }, i: number) => (topVisitors[i].guestNo = r.result ? Number(r.result) : null));
@@ -199,6 +256,8 @@ export async function readStats(): Promise<Stats> {
     exitSample: Math.min(stored.length, EXIT_SAMPLE),
     topVisitors,
     visitorSample: people.size,
+    tiers,
+    realVisitors: tiers.filter((t) => REAL_TIERS.includes(t.tier)).reduce((n, t) => n + t.visitors, 0),
     recordSeconds: topFlat.length ? Number(topFlat[1]) : null,
     events: (() => {
       const counts = new Map(hashToTallies(events as string[]).map((t) => [t.label, t.count]));

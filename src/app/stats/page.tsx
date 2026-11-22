@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { readStats, STATS_DAYS, type Tally, type VisitorRow } from "@/lib/curiosity/stats";
+import { readStats, REAL_TIERS, STATS_DAYS, type Tally, type TierRow, type VisitorRow } from "@/lib/curiosity/stats";
 import { forgetNetworks, hasAccess, lock, markNetwork, markOwner, unlock, unmarkNetwork, unmarkOwner } from "./actions";
 import { isOwner, isOwnNetwork, ownNetworkCount } from "@/lib/owner";
 import { headers } from "next/headers";
@@ -74,6 +74,46 @@ function BarList({ rows, limit = 8 }: { rows: Tally[]; limit?: number }) {
   );
 }
 
+const TIER_NOTES: Record<TierRow["tier"], string> = {
+  Engaged: "Chose to do something: Bella's sign, copied the email, a video, the résumé, finished a case study",
+  Reader: "A minute or more, or opened a case study",
+  Glance: "10 seconds to a minute",
+  Bounce: "Under 10 seconds and nothing else: mostly link previews and bots",
+};
+
+/** Visitors per tier, best visit wins. Engaged and Reader count as real visitors. */
+function TierList({ rows }: { rows: TierRow[] }) {
+  const max = Math.max(1, ...rows.map((r) => r.visitors));
+  if (!rows.some((r) => r.visits)) return <Empty />;
+  return (
+    <ul className="flex flex-col gap-4">
+      {rows.map((r) => (
+        <li key={r.tier} className="grid grid-cols-[minmax(0,1fr)_88px] items-center gap-3 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_88px]">
+          <span className="flex min-w-0 flex-col">
+            <span className="text-body text-secondary">
+              {r.tier}
+              {REAL_TIERS.includes(r.tier) && <span className="text-muted"> · real</span>}
+            </span>
+            <span className="text-caption text-muted">{TIER_NOTES[r.tier]}</span>
+          </span>
+          <span
+            className={`hidden h-2 rounded-r-sm md:block ${REAL_TIERS.includes(r.tier) ? "bg-grape" : "bg-line"}`}
+            style={{ width: `${(r.visitors / max) * 100}%`, minWidth: r.visitors ? 2 : 0 }}
+          />
+          <span className="flex flex-col items-end">
+            <span className="font-brand text-caption text-text-base">
+              {r.visitors} {r.visitors === 1 ? "visitor" : "visitors"}
+            </span>
+            <span className="font-brand text-caption text-muted">
+              {r.visits} {r.visits === 1 ? "visit" : "visits"}
+            </span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /** Each visitor (browser), most time on the site first. */
 function VisitorList({ rows }: { rows: VisitorRow[] }) {
   if (!rows.length) return <Empty />;
@@ -87,7 +127,7 @@ function VisitorList({ rows }: { rows: VisitorRow[] }) {
           <span className="flex min-w-0 flex-col">
             <span className="truncate text-body text-secondary">{r.guestNo ? `Guest ${r.guestNo}` : `Visitor ${r.id.slice(0, 8)}`}</span>
             <span className="truncate text-caption text-muted">
-              {r.device} · {r.referrer} · last {day(r.lastSeen)}
+              {r.tier} · {r.device} · {r.referrer} · last {day(r.lastSeen)}
             </span>
           </span>
           <span className="hidden h-2 rounded-r-sm bg-grape md:block" style={{ width: `${(r.seconds / max) * 100}%`, minWidth: r.seconds ? 2 : 0 }} />
@@ -216,11 +256,12 @@ function KeyForm({ wrong }: { wrong: string | undefined }) {
   );
 }
 
-export default async function StatsPage({ searchParams }: { searchParams: Promise<{ wrong?: string }> }) {
+export default async function StatsPage({ searchParams }: { searchParams: Promise<{ wrong?: string; bounces?: string }> }) {
   if (!process.env.STATS_KEY) notFound();
   if (!(await hasAccess())) return <KeyForm wrong={(await searchParams).wrong} />;
 
-  const s = await readStats();
+  const showBounces = (await searchParams).bounces === "1";
+  const s = await readStats({ showBounces });
   const updated = new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" });
 
   return (
@@ -242,9 +283,10 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
 
         <OwnerSwitch owner={await isOwner()} network={await isOwnNetwork(await headers())} networks={await ownNetworkCount()} />
 
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-5 md:gap-4">
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 lg:grid-cols-6">
+          <Tile label="Real visitors" value={String(s.realVisitors)} />
+          <Tile label="All visitors" value={String(s.visitors)} />
           <Tile label="Visits" value={String(s.visits)} />
-          <Tile label="Visitors" value={String(s.visitors)} />
           <Tile label="Average active time" value={duration(s.averageSeconds)} />
           <Tile label="Median active time" value={duration(s.medianSeconds)} />
           <Tile label="Record" value={s.recordSeconds === null ? "None yet" : duration(s.recordSeconds)} />
@@ -254,8 +296,18 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           <DayColumns days={s.days} />
         </Section>
 
-        <Section title="Visitors" note={`Most time on the site first. Top ${s.topVisitors.length} of ${s.visitorSample} visitors with stored visits (last 90 days).`}>
+        <Section title="Visitor quality" note="Each visitor sits in the tier of their best visit. Engaged and Reader are counted as real visitors.">
+          <TierList rows={s.tiers} />
+        </Section>
+
+        <Section
+          title="Visitors"
+          note={`Most time on the site first. Top ${s.topVisitors.length} of ${s.visitorSample} visitors with stored visits (last 90 days)${showBounces ? "" : ", Bounces hidden"}.`}
+        >
           <VisitorList rows={s.topVisitors} />
+          <a href={showBounces ? "/stats" : "/stats?bounces=1"} className="self-start font-brand text-caption text-muted underline underline-offset-4 hover:text-grape">
+            {showBounces ? "Hide Bounces" : "Show Bounces too"}
+          </a>
         </Section>
 
         <div className="grid gap-4 md:grid-cols-2">
