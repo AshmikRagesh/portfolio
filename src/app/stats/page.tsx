@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { readStats, STATS_DAYS, type Tally } from "@/lib/curiosity/stats";
+import { readStats, STATS_DAYS, type Tally, type VisitorRow } from "@/lib/curiosity/stats";
 import { forgetNetworks, hasAccess, lock, markNetwork, markOwner, unlock, unmarkNetwork, unmarkOwner } from "./actions";
 import { isOwner, isOwnNetwork, ownNetworkCount } from "@/lib/owner";
 import { headers } from "next/headers";
@@ -39,21 +39,67 @@ function Empty() {
   return <p className="text-body text-muted">Nothing recorded yet.</p>;
 }
 
-/** Horizontal bars, one row per tally, value printed beside each bar. */
+/** Horizontal bars, one row per tally. Rows that carry time are drawn by time (they come
+ *  ordered by it) with the visit count beside it; the rest by count. */
 function BarList({ rows, limit = 8 }: { rows: Tally[]; limit?: number }) {
   const shown = rows.slice(0, limit);
-  const max = Math.max(1, ...shown.map((r) => r.count));
+  const timed = shown.some((r) => r.seconds !== undefined);
+  const value = (r: Tally) => (timed ? (r.seconds ?? 0) : r.count);
+  const max = Math.max(1, ...shown.map(value));
   if (!shown.some((r) => r.count)) return <Empty />;
   return (
     <ul className="flex flex-col gap-2">
-      {shown.map((r) => (
-        <li key={r.label} className="grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)_40px] items-center gap-3" title={`${r.label}: ${r.count}`}>
-          <span className="truncate text-body text-secondary">{r.label}</span>
-          <span className="h-2 rounded-r-sm bg-grape" style={{ width: `${(r.count / max) * 100}%`, minWidth: r.count ? 2 : 0 }} />
-          <span className="text-right font-brand text-caption text-text-base">{r.count}</span>
+      {shown.map((r) => {
+        const visits = `${r.count} ${r.count === 1 ? "visit" : "visits"}`;
+        return (
+          <li
+            key={r.label}
+            className={`grid items-center gap-3 ${timed ? "grid-cols-[minmax(0,2fr)_minmax(0,3fr)_88px]" : "grid-cols-[minmax(0,2fr)_minmax(0,3fr)_40px]"}`}
+            title={timed ? `${r.label}: ${duration(r.seconds ?? 0)} across ${visits}` : `${r.label}: ${r.count}`}
+          >
+            <span className="truncate text-body text-secondary">{r.label}</span>
+            <span className="h-2 rounded-r-sm bg-grape" style={{ width: `${(value(r) / max) * 100}%`, minWidth: value(r) ? 2 : 0 }} />
+            {timed ? (
+              <span className="flex flex-col items-end">
+                <span className="font-brand text-caption text-text-base">{duration(r.seconds ?? 0)}</span>
+                <span className="font-brand text-caption text-muted">{visits}</span>
+              </span>
+            ) : (
+              <span className="text-right font-brand text-caption text-text-base">{r.count}</span>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/** Each visitor (browser), most time on the site first. */
+function VisitorList({ rows }: { rows: VisitorRow[] }) {
+  if (!rows.length) return <Empty />;
+  const max = Math.max(1, ...rows.map((r) => r.seconds));
+  const day = (ms: number) => new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
+  return (
+    <ol className="flex flex-col gap-4">
+      {rows.map((r, i) => (
+        <li key={r.id} className="grid grid-cols-[24px_minmax(0,1fr)_88px] items-center gap-3 md:grid-cols-[24px_minmax(0,2fr)_minmax(0,3fr)_88px]">
+          <span className="font-brand text-caption text-muted">{i + 1}</span>
+          <span className="flex min-w-0 flex-col">
+            <span className="truncate text-body text-secondary">{r.guestNo ? `Guest ${r.guestNo}` : `Visitor ${r.id.slice(0, 8)}`}</span>
+            <span className="truncate text-caption text-muted">
+              {r.device} · {r.referrer} · last {day(r.lastSeen)}
+            </span>
+          </span>
+          <span className="hidden h-2 rounded-r-sm bg-grape md:block" style={{ width: `${(r.seconds / max) * 100}%`, minWidth: r.seconds ? 2 : 0 }} />
+          <span className="flex flex-col items-end">
+            <span className="font-brand text-caption text-text-base">{duration(r.seconds)}</span>
+            <span className="font-brand text-caption text-muted">
+              {r.visits} {r.visits === 1 ? "visit" : "visits"}
+            </span>
+          </span>
         </li>
       ))}
-    </ul>
+    </ol>
   );
 }
 
@@ -208,17 +254,21 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           <DayColumns days={s.days} />
         </Section>
 
+        <Section title="Visitors" note={`Most time on the site first. Top ${s.topVisitors.length} of ${s.visitorSample} visitors with stored visits (last 90 days).`}>
+          <VisitorList rows={s.topVisitors} />
+        </Section>
+
         <div className="grid gap-4 md:grid-cols-2">
           <Section title="Visit length" note="Active time per visit">
             <BarList rows={s.distribution} limit={s.distribution.length} />
           </Section>
-          <Section title="Devices" note="By screen width">
+          <Section title="Devices" note="By screen width, most time first">
             <BarList rows={s.devices} />
           </Section>
-          <Section title="Top referrers" note="Domain only. Direct means no referrer.">
+          <Section title="Top referrers" note="Domain only, most time first. Direct means no referrer.">
             <BarList rows={s.referrers} />
           </Section>
-          <Section title="Exit pages" note={`Last page seen, across the ${s.exitSample} newest visits`}>
+          <Section title="Exit pages" note={`Last page seen, across the ${s.exitSample} newest visits, most time first`}>
             <BarList rows={s.exits} />
           </Section>
           <Section title="Bella" note="Visits that did each, counted once per visit">

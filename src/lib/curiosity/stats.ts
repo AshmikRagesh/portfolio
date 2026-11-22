@@ -25,7 +25,23 @@ export const STATS_DAYS = 30;
 export interface Tally {
   label: string;
   count: number;
+  /** Total active seconds across these visits, when known. Lists that have it are ordered by it. */
+  seconds?: number;
 }
+
+/** One visitor (browser), totalled across their stored visits. */
+export interface VisitorRow {
+  id: string;
+  guestNo: number | null;
+  visits: number;
+  seconds: number;
+  device: string;
+  referrer: string;
+  lastSeen: number;
+}
+
+/** How many visitors the Visitors list shows. */
+const VISITOR_LIMIT = 25;
 
 export interface Stats {
   configured: boolean;
@@ -43,6 +59,9 @@ export interface Stats {
   recordSeconds: number | null;
   /** Visits that did each thing with Bella, in BELLA_EVENTS order. */
   events: Tally[];
+  /** Most time on the site first, from stored visits (the newest RECENT_KEEP, up to 90 days). */
+  topVisitors: VisitorRow[];
+  visitorSample: number;
 }
 
 function hashToTallies(flat: string[] | null): Tally[] {
@@ -72,6 +91,8 @@ export async function readStats(): Promise<Stats> {
     exitSample: 0,
     recordSeconds: null,
     events: Object.values(BELLA_EVENTS).map((label) => ({ label, count: 0 })),
+    topVisitors: [],
+    visitorSample: 0,
   };
   if (!storeConfigured) return empty;
 
@@ -84,7 +105,7 @@ export async function readStats(): Promise<Stats> {
     ["HGETALL", `${NS}:referrers`],
     ["HGETALL", `${NS}:devices`],
     ["ZREVRANGE", `${NS}:board:alltime`, 0, 0, "WITHSCORES"],
-    ["ZREVRANGE", `${NS}:recent`, 0, EXIT_SAMPLE - 1],
+    ["ZREVRANGE", `${NS}:recent`, 0, -1],
     ["HGETALL", `${NS}:events`],
   ]).then((rows: { result: unknown }[]) => rows.map((r) => r.result));
 
@@ -103,17 +124,64 @@ export async function readStats(): Promise<Stats> {
     dayList.push({ label: key, count: perDay.get(key) ?? 0 });
   }
 
-  // Exit page = lastPath on each recent visit's hash. Hashes expire after 90 days,
-  // so anything older simply drops out of the sample.
+  // Every stored visit, newest first. Hashes expire after 90 days, so older visits
+  // drop out; the totals above (visits, referrers, devices) still include them.
   const ids = (recent as string[]) ?? [];
-  const paths: (string | null)[] = ids.length
-    ? (await pipeline(ids.map((id) => ["HGET", `${NS}:visit:${id}`, "lastPath"]))).map(
-        (r: { result: string | null }) => r.result,
-      )
+  const FIELDS = ["visitorId", "activeSeconds", "lastPath", "referrer", "viewport", "updatedAt"] as const;
+  const rows = ids.length
+    ? (await pipeline(ids.map((id) => ["HMGET", `${NS}:visit:${id}`, ...FIELDS]))).map((r: { result: (string | null)[] }) => r.result)
     : [];
-  const exitCounts = new Map<string, number>();
-  for (const p of paths) if (p) exitCounts.set(p, (exitCounts.get(p) ?? 0) + 1);
-  const exits = [...exitCounts].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count);
+  const stored = rows
+    .filter((r: (string | null)[]) => r?.[0])
+    .map((r: (string | null)[]) => ({
+      visitorId: r[0] as string,
+      seconds: Number(r[1] ?? 0),
+      lastPath: r[2] ?? "/",
+      referrer: r[3] || "direct",
+      viewport: r[4] ?? "desktop",
+      updatedAt: Number(r[5] ?? 0),
+    }));
+
+  // Total active time per label, so lists can be ordered by time spent rather than visits
+  const timeBy = (key: (v: (typeof stored)[number]) => string) => {
+    const m = new Map<string, { count: number; seconds: number }>();
+    for (const v of stored) {
+      const t = m.get(key(v)) ?? { count: 0, seconds: 0 };
+      t.count++;
+      t.seconds += v.seconds;
+      m.set(key(v), t);
+    }
+    return m;
+  };
+  const byTime = (a: Tally, b: Tally) => (b.seconds ?? 0) - (a.seconds ?? 0) || b.count - a.count;
+  const withTime = (tallies: Tally[], times: Map<string, { seconds: number }>) =>
+    tallies.map((t) => ({ ...t, seconds: times.get(t.label)?.seconds ?? 0 })).sort(byTime);
+
+  // Exit page = lastPath on each of the newest EXIT_SAMPLE visits
+  const exitTimes = new Map<string, { count: number; seconds: number }>();
+  for (const v of stored.slice(0, EXIT_SAMPLE)) {
+    const t = exitTimes.get(v.lastPath) ?? { count: 0, seconds: 0 };
+    t.count++;
+    t.seconds += v.seconds;
+    exitTimes.set(v.lastPath, t);
+  }
+  const exits = [...exitTimes].map(([label, t]) => ({ label, ...t })).sort(byTime);
+
+  // Visitors, most time on the site first
+  const people = new Map<string, VisitorRow>();
+  for (const v of stored) {
+    const p = people.get(v.visitorId) ?? { id: v.visitorId, guestNo: null, visits: 0, seconds: 0, device: v.viewport, referrer: "direct", lastSeen: 0 };
+    p.visits++;
+    p.seconds += v.seconds;
+    if (v.referrer !== "direct") p.referrer = v.referrer;
+    p.lastSeen = Math.max(p.lastSeen, v.updatedAt);
+    people.set(v.visitorId, p);
+  }
+  const topVisitors = [...people.values()].sort((a, b) => b.seconds - a.seconds || b.visits - a.visits).slice(0, VISITOR_LIMIT);
+  if (topVisitors.length) {
+    const guestNos = await pipeline(topVisitors.map((p) => ["GET", `${NS}:guestno:${p.id}`]));
+    guestNos.forEach((r: { result: string | null }, i: number) => (topVisitors[i].guestNo = r.result ? Number(r.result) : null));
+  }
 
   const topFlat = (top as string[]) ?? [];
 
@@ -125,10 +193,12 @@ export async function readStats(): Promise<Stats> {
     medianSeconds: median(seconds),
     distribution,
     days: dayList,
-    referrers: hashToTallies(referrers as string[]),
-    devices: hashToTallies(devices as string[]),
+    referrers: withTime(hashToTallies(referrers as string[]), timeBy((v) => v.referrer)),
+    devices: withTime(hashToTallies(devices as string[]), timeBy((v) => v.viewport)),
     exits,
-    exitSample: paths.filter(Boolean).length,
+    exitSample: Math.min(stored.length, EXIT_SAMPLE),
+    topVisitors,
+    visitorSample: people.size,
     recordSeconds: topFlat.length ? Number(topFlat[1]) : null,
     events: (() => {
       const counts = new Map(hashToTallies(events as string[]).map((t) => [t.label, t.count]));
