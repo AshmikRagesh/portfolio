@@ -70,9 +70,23 @@ export async function ownNetworkCount() {
   }
 }
 
-/** True when Curiosity should ignore this request: Ashmik's browser, his network, or an automated browser. */
-export async function skipCounting(headers: Headers) {
+// Ashmik's own devices by Curiosity visitor ID, added by scripts/curiosity-remove-visitor.mjs
+// when it takes a visitor's past visits out. Survives network changes; lost only if
+// that browser's storage is cleared (it then gets a new ID).
+const VISITORS = `${NS}:owner:visitors`;
+
+/** True when Curiosity should ignore this request: Ashmik's browser, network or device, or an automated browser. */
+export async function skipCounting(headers: Headers, visitorId?: string) {
   if (AUTOMATED.test(headers.get("user-agent") ?? "")) return true;
   if (await isOwner()) return true;
-  return isOwnNetwork(headers);
+  if (!storeConfigured) return false;
+  try {
+    const [network, device] = await pipeline([
+      ["HEXISTS", NETWORKS, ipHash(headers)],
+      ["SISMEMBER", VISITORS, visitorId ?? ""],
+    ]);
+    return Number(network.result) === 1 || Number(device.result) === 1;
+  } catch {
+    return false;
+  }
 }

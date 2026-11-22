@@ -54,7 +54,7 @@ export async function POST(req: Request) {
   const payload = clean(body);
   if (!payload) return new Response(null, { status: 400 });
   // Ashmik's own browser or network (switches on /stats) and automated browsers are never counted
-  if (await skipCounting(req.headers)) return new Response(null, { status: 204 });
+  if (await skipCounting(req.headers, payload.visitorId)) return new Response(null, { status: 204 });
 
   try {
     const outcome = await recordVisit(payload, { canStartVisit: () => allow("newvisit", ip, NEW_VISITS_PER_HOUR, 3600) });
