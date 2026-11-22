@@ -16,6 +16,7 @@ import {
   OptionCard,
   Metrics,
   NextCase,
+  Highlight,
 } from "@/components/case-study";
 
 export const metadata: Metadata = {
@@ -43,7 +44,7 @@ function Overview() {
       <Copy>
         <p>
           Designed an in-flow travel insurance option for the Artemis platform —
-          achieving 52% adoption, reducing booking drop-offs by 15%, and
+          <Highlight>achieving 52% adoption</Highlight>, reducing booking drop-offs by 15%, and
           generating $125K in Q1 revenue.
         </p>
         <Meta
@@ -72,15 +73,15 @@ function Background() {
     <Chapter id="discovery" num={2} title="The guest booking flow — and the gap in it">
       <Copy>
         <p>
-          The guest booking flow is Enchanting Travels&apos; only direct
-          digital touchpoint with guests — where high-value trips
+          The guest booking flow is Enchanting Travels&apos; <Highlight>only direct
+          digital touchpoint with guests</Highlight> — where high-value trips
           ($5,000–$50,000+) are formally confirmed: traveller details,
           payment, and trip sign-off.
         </p>
         <p>
           It&apos;s the moment guests are most open to insurance. They&apos;ve
-          committed emotionally and are about to pay. Yet the platform had
-          no option for it — guests had to ask their TC separately or find
+          committed emotionally and are about to pay. Yet <Highlight>the platform had
+          no option for it</Highlight> — guests had to ask their TC separately or find
           coverage on their own, mid-booking.
         </p>
       </Copy>
@@ -123,8 +124,8 @@ function Research() {
         <p>
           Mixpanel data showed a clear drop-off spike at the payment step —
           the point where guests encountered no insurance option and had to
-          leave the platform to seek coverage elsewhere. 25% of users were
-          abandoning at this exact step, translating to an estimated $250K of
+          leave the platform to seek coverage elsewhere. <Highlight>25% of users were
+          abandoning at this exact step</Highlight>, translating to an estimated $250K of
           unrealised insurance revenue per quarter.
         </p>
 
@@ -132,8 +133,8 @@ function Research() {
         <p>
           A 3-month review of Intercom email and chat logs revealed a
           consistent pattern: guests pausing mid-booking to ask about
-          insurance. The question was never about the product — it was always
-          about where to find it.
+          insurance. The question was never about the product — <Highlight>it was always
+          about where to find it</Highlight>.
         </p>
       </Copy>
       <Visual>
@@ -148,7 +149,7 @@ function Research() {
           first-time travellers and those booking long-haul, high-value
           trips. Exactly the guests Enchanting Travels most wants to retain.
           When TCs informally asked guests whether they&apos;d want in-flow
-          insurance, 80% said yes.
+          insurance, <Highlight>80% said yes</Highlight>.
         </p>
       </Copy>
     </div>
@@ -194,8 +195,8 @@ function Insights() {
       <Copy>
         <p>
           Every research track — analytics, support logs, TC interviews —
-          converged on the same finding: guests wanted insurance but the
-          platform gave them no path to it.
+          converged on the same finding: <Highlight>guests wanted insurance but the
+          platform gave them no path to it</Highlight>.
         </p>
       </Copy>
       <Visual>
@@ -215,12 +216,12 @@ function TheProblem() {
         <p>
           Enchanting Travels offered insurance. Guests wanted it. The
           problem was structural: there was no path between the two inside
-          Artemis. Guests who wanted coverage had to exit the booking flow,
+          Artemis. Guests who wanted coverage <Highlight>had to exit the booking flow</Highlight>,
           contact a consultant separately, and re-enter. Most didn&apos;t.
         </p>
         <p>
-          The result was a gap that hurt in both directions — guests lost
-          confidence and abandoned; the business lost revenue and burdened
+          The result was a gap that hurt in both directions — <Highlight>guests lost
+          confidence and abandoned; the business lost revenue</Highlight> and burdened
           its TC team with avoidable queries. A single design decision had
           been quietly creating both problems for years.
         </p>
@@ -294,8 +295,8 @@ function Process() {
     <Chapter id="exploration" num={3} title="Three iterations to find the right integration point">
       <Copy>
         <p>
-          With the problem defined, the design question became: where in the
-          booking flow should insurance live — and how much visual weight
+          With the problem defined, the design question became: <Highlight>where in the
+          booking flow should insurance live</Highlight> — and how much visual weight
           should it carry? Three iterations tested different answers, each
           building on what the previous one revealed.
         </p>
@@ -325,22 +326,22 @@ const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "Placed just before payment — not as a separate step",
-    body: "Insurance appears at the highest-intent moment in the booking journey: right before payment, as part of the existing flow. This placement was deliberate — guests are already in a commitment mindset. Introducing insurance here feels like a natural extension of protecting their investment, not an interruption of it.",
+    body: <>Insurance appears at the highest-intent moment in the booking journey: <Highlight>right before payment, as part of the existing flow</Highlight>. This placement was deliberate — guests are already in a commitment mindset. Introducing insurance here feels like a natural extension of protecting their investment, not an interruption of it.</>,
   },
   {
     num: 2,
     title: "Side-by-side plan comparison with value-first copy",
-    body: 'The final design presents Basic and CFAR plans in a clear two-column layout, with benefits written in plain language. "Cancel for any reason" leads over technical terms. A "POPULAR" badge creates a gentle nudge without overriding guest autonomy. The structure makes the comparison effortless — guests don\'t need to remember what one plan said before reading the next.',
+    body: <>The final design presents Basic and CFAR plans in a clear two-column layout, with benefits written in plain language. <Highlight>&quot;Cancel for any reason&quot; leads over technical terms</Highlight>. A &quot;POPULAR&quot; badge creates a gentle nudge without overriding guest autonomy. The structure makes the comparison effortless — guests don&apos;t need to remember what one plan said before reading the next.</>,
   },
   {
     num: 3,
     title: "Trust-first visual language",
-    body: "Shield icons, checkmarks, and a clear colour system were chosen specifically because insurance is an anxiety-laden category. Guests aren't uncertain about what insurance is — they're uncertain whether they can trust it. Every visual decision reinforced safety and transparency rather than trying to persuade.",
+    body: <>Shield icons, checkmarks, and a clear colour system were chosen specifically because insurance is an anxiety-laden category. Guests aren&apos;t uncertain about what insurance is — <Highlight>they&apos;re uncertain whether they can trust it</Highlight>. Every visual decision reinforced safety and transparency rather than trying to persuade.</>,
   },
   {
     num: 4,
     title: "Recommended plan auto-selected to reduce decision fatigue",
-    body: "The CFAR plan is pre-selected as the recommended option. This reduces the cognitive load of a cold decision mid-checkout — guests can accept the default, switch, or skip entirely. The skip option is always visible and never hidden, which preserved trust while improving adoption.",
+    body: <>The CFAR plan is pre-selected as the recommended option. This reduces the cognitive load of a cold decision mid-checkout — guests can accept the default, switch, or skip entirely. <Highlight>The skip option is always visible and never hidden</Highlight>, which preserved trust while improving adoption.</>,
   },
 ];
 
@@ -350,7 +351,7 @@ function Solution() {
       <Copy>
         <p>
           The final solution wasn&apos;t about designing a better insurance
-          screen — it was about finding the right integration point and giving
+          screen — it was about <Highlight>finding the right integration point</Highlight> and giving
           the choice enough visual weight to be noticed, without turning it
           into a barrier.
         </p>
@@ -397,7 +398,7 @@ function Impact() {
       <Copy>
         <p>
           Three metrics — each mapping directly to one of the gaps research
-          identified. The adoption jump from 7% to 52% was the clearest signal
+          identified. <Highlight>The adoption jump from 7% to 52%</Highlight> was the clearest signal
           that the integration point and design approach were right.
         </p>
       </Copy>
@@ -416,7 +417,7 @@ function Reflection() {
     <Chapter id="reflection" num={6} title="What I learned">
       <Copy>
         <p>
-          The biggest lesson was about placement over polish. The first
+          The biggest lesson was about <Highlight>placement over polish</Highlight>. The first
           iteration was visually reasonable — clear plans, good copy, clean
           layout. But it was wrong because of where it sat in the flow, not
           how it looked. Iteration 1 failed because it interrupted. Iteration
@@ -428,8 +429,8 @@ function Reflection() {
           The research phase paid off disproportionately here. Without the
           Mixpanel data confirming the exact drop-off point, I might have
           placed the insurance module earlier in the flow — which would have
-          reduced adoption, not increased it. Guests are most receptive to
-          protecting a trip immediately before they pay for it. That&apos;s
+          reduced adoption, not increased it. <Highlight>Guests are most receptive to
+          protecting a trip immediately before they pay for it</Highlight>. That&apos;s
           not an intuition; it&apos;s in the data.
         </p>
         <p>
@@ -437,8 +438,8 @@ function Reflection() {
           tracking — specifically whether guests who purchased insurance felt
           more confident about their trip overall, and whether that translated
           to higher rebooking rates. The adoption and revenue numbers are
-          strong, but the longer-term signal — does insurance increase guest
-          lifetime value? — is the metric I&apos;d want to follow.
+          strong, but the longer-term signal — <Highlight>does insurance increase guest
+          lifetime value?</Highlight> — is the metric I&apos;d want to follow.
         </p>
       </Copy>
     </Chapter>
