@@ -538,6 +538,9 @@ export default function TearSheet({
         ref={hit}
         type="button"
         aria-label="Tear off the stub to download the résumé (PDF)"
+        // Silent on hover: the tear has its own paper sounds, and the site's button tick
+        // fired again every time the pointer crossed back over the strip
+        data-sound="none"
         className="absolute inset-x-0 bottom-0 z-[3] touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-[#9D136A]/40"
         style={{ height: STUB_H, cursor: "grab" }}
         onPointerDown={onDown}
