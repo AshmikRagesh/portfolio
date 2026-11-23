@@ -86,21 +86,72 @@ function overlay(host: HTMLElement, html: string, style: Partial<CSSStyleDeclara
 
 // ── The pill ──────────────────────────────────────────────────────────────────
 // No fill: the word in the heading colour, a touch heavier than the text around it, with
-// a pen line drawn under it in grape (slightly uneven, as if by hand). Each word's own
-// effect still plays on hover; the word lifts a pixel.
-const PEN_LINE = `url("data:image/svg+xml;utf8,${encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 6" preserveAspectRatio="none"><path d="M1.5 3.6C22 2.2 44 4.6 66 3.2S90 2.6 98.5 3.4" fill="none" stroke="#9D136A" stroke-width="1.7" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>',
-)}")`;
+// a pen line under it in grape (after atulkhola.com's marks): two sketchy strokes drawn on
+// once the page is up, then the line "boils", flicking between three hand-drawn versions
+// of itself a few times a second, so it never sits quite still (.pen-line in globals.css).
+// Each word's own effect still plays on hover; the word lifts a pixel.
 const PILL =
   "group/pill relative inline-block whitespace-nowrap px-[1px] align-baseline font-geist text-[16px] font-medium leading-[26px] tracking-[0px] text-heading antialiased md:text-[18px] md:leading-[30px] " +
-  "bg-no-repeat [background-position:0_100%] [background-size:100%_6px] " +
   "transition-transform duration-200 ease-out [@media(hover:hover)]:hover:-translate-y-[1px]";
+
+/** A seeded random, so each word's line is the same shape on every visit. */
+function rng(seed: number) {
+  return () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+}
+const seedOf = (text: string) => [...text].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+
+/** One rough underline stroke across a 100 × 10 box: overshooting ends, a slight sag. */
+function stroke(r: () => number) {
+  const y = () => 4.6 + (r() - 0.5) * 3.2;
+  const x0 = -1 + r() * 3;
+  const x1 = 98 + r() * 3;
+  return `M${x0.toFixed(1)} ${y().toFixed(2)}C${(28 + r() * 10).toFixed(1)} ${y().toFixed(2)} ${(62 + r() * 10).toFixed(1)} ${y().toFixed(2)} ${x1.toFixed(1)} ${y().toFixed(2)}`;
+}
+
+function PenLine({ seed }: { seed: number }) {
+  const ref = useRef<SVGSVGElement>(null);
+  // Drawn on in turn, by its place on the page, once the page is up; then it boils
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const order = Array.from(document.querySelectorAll(".pen-line")).indexOf(el);
+    let done = 0;
+    const start = window.setTimeout(() => {
+      el.classList.add("is-drawing");
+      done = window.setTimeout(() => el.classList.replace("is-drawing", "is-drawn"), 720);
+    }, 350 + Math.max(0, order) * 140);
+    return () => {
+      window.clearTimeout(start);
+      window.clearTimeout(done);
+    };
+  }, []);
+  const r = rng(seed);
+  const versions = [0, 1, 2].map(() => [stroke(r), stroke(r)]);
+  return (
+    <svg ref={ref} aria-hidden="true" className="pen-line" viewBox="0 0 100 10" preserveAspectRatio="none" style={{ ["--boil-off" as string]: `${-((seed % 6) * 0.1).toFixed(1)}s` }}>
+      {versions.map((paths, i) => (
+        <g key={i}>
+          {paths.map((d, j) => (
+            <path key={j} d={d} pathLength={1} vectorEffect="non-scaling-stroke" style={{ opacity: j ? 0.75 : 1 }} />
+          ))}
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+const textOf = (n: React.ReactNode): string =>
+  typeof n === "string" || typeof n === "number" ? String(n) : Array.isArray(n) ? n.map(textOf).join("") : "";
 
 type PlayProps = ReturnType<typeof usePlay>["props"];
 function Pill({ color, play, className = "", children }: { color: string; play?: PlayProps; className?: string; children: React.ReactNode }) {
   return (
-    <span {...play} data-sound="tick" className={`${PILL} ${className}`} style={{ ["--pill" as string]: pillColour(color), backgroundImage: PEN_LINE }}>
+    <span {...play} data-sound="tick" className={`${PILL} ${className}`} style={{ ["--pill" as string]: pillColour(color) }}>
       {children}
+      <PenLine seed={seedOf(textOf(children))} />
     </span>
   );
 }
@@ -281,9 +332,10 @@ export function WorkflowPill() {
     <Link
       href="/works/helix"
       className={`${PILL} outline-none focus-visible:ring-2 focus-visible:ring-[#9D136A]/40 focus-visible:ring-offset-2`}
-      style={{ ["--pill" as string]: pillColour(COLORS.pink), backgroundImage: PEN_LINE }}
+      style={{ ["--pill" as string]: pillColour(COLORS.pink) }}
     >
       a workflow
+      <PenLine seed={seedOf("a workflow")} />
       <span aria-hidden="true" className="pointer-events-none absolute bottom-full left-0 z-20 mb-[8px] flex items-center">
         <span className={`${CHIP} ${HIDE} ${SHOW} ${DELAY[0]}`}>
           <span className="h-[6px] w-[6px] rounded-full bg-[#6D3BFF]" />

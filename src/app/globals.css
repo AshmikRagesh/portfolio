@@ -2520,3 +2520,25 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
 /* Labels (font-brand) are Geist capitals now, not mono: keep their digits fixed-width so
    counters, the timer and the ruler don't shift as numbers change */
 .font-brand { font-variant-numeric: tabular-nums; }
+
+/* ── About: pen lines under the highlighted words (components/about/Pills) ──
+   Three hand-drawn versions of each line, two strokes each. Hidden until drawn on, then the
+   first draws in; after that the three take turns, about five times a second ("line boil"). */
+.pen-line { position: absolute; left: -2px; right: -2px; bottom: -4px; width: calc(100% + 4px); height: 10px; overflow: visible; pointer-events: none; }
+.pen-line path { fill: none; stroke: #9D136A; stroke-width: 1.6px; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.pen-line g { visibility: hidden; }
+.pen-line g:first-child { visibility: visible; }
+.pen-line.is-drawing g:first-child path { animation: pen-draw 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.pen-line.is-drawing g:first-child path:nth-child(2) { animation-delay: 90ms; }
+.pen-line.is-drawn path { stroke-dashoffset: 0; }
+@keyframes pen-draw { to { stroke-dashoffset: 0; } }
+@keyframes pen-boil { 0% { visibility: visible; } 33.333%, 100% { visibility: hidden; } }
+.pen-line.is-drawn g { animation: pen-boil 600ms step-end infinite; }
+.pen-line.is-drawn g:nth-child(1) { animation-delay: var(--boil-off, 0s); }
+.pen-line.is-drawn g:nth-child(2) { animation-delay: calc(var(--boil-off, 0s) - 400ms); }
+.pen-line.is-drawn g:nth-child(3) { animation-delay: calc(var(--boil-off, 0s) - 200ms); }
+@media (prefers-reduced-motion: reduce) {
+  .pen-line path { stroke-dashoffset: 0; }
+  .pen-line.is-drawn g { animation: none; }
+  .pen-line.is-drawn g:first-child { visibility: visible; }
+}
