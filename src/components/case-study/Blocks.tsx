@@ -338,9 +338,13 @@ export function PullQuote({
   emphasis: string;
 }) {
   return (
-    <div className="my-[40px] border-l-[4px] border-grape pl-[24px] md:my-[48px] md:pl-[32px]">
+    // A large opening quote mark in grape hangs above it, in place of a side bar
+    <div className="my-[40px] md:my-[48px]">
       {label && <Tag face="geist" tone="grey">{label}</Tag>}
-      <p className={`${label ? "mt-[16px]" : ""} font-heading text-[22px] leading-[32px] text-heading md:text-[26px] md:leading-[38px]`}>
+      <span aria-hidden="true" className={`${label ? "mt-[16px]" : ""} block h-[28px] font-heading text-[72px] leading-[72px] text-grape md:h-[32px] md:text-[88px] md:leading-[88px]`}>
+        &ldquo;
+      </span>
+      <p className="mt-[8px] font-heading text-[22px] leading-[32px] text-heading md:text-[26px] md:leading-[38px]">
         {text} <span className="text-grape">{emphasis}</span>
       </p>
     </div>
