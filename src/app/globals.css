@@ -2576,8 +2576,10 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
     var(--badge, #5a1a67);
   box-shadow:
     0 0 0 1px rgba(30, 5, 37, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 2px 4px rgba(255, 255, 255, 0.06),
     inset 0 -1px 0 rgba(12, 0, 16, 0.22),
+    inset 0 -6px 10px -4px rgba(12, 0, 16, 0.22),
     0 1px 2px rgba(10, 0, 14, 0.45),
     0 10px 20px -10px rgba(10, 0, 14, 0.7);
   transition-property: transform, filter, box-shadow;
@@ -2593,16 +2595,32 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
   mix-blend-mode: soft-light;
   pointer-events: none;
 }
+/* A fine inner bevel a few pixels in, like the pressed edge of a coin */
+.social-badge::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(12, 0, 16, 0.16), 0 1px 0 rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
 .social-badge > img,
 .social-badge > svg {
-  opacity: 0.94;
-  filter: drop-shadow(0 -1px 0 rgba(12, 0, 16, 0.45)) drop-shadow(0 1px 0 rgba(255, 255, 255, 0.14));
+  opacity: 0.95;
+  /* Pressed in: a dark edge along the top, a light edge along the bottom, and a soft shade
+     just inside the top so the recess reads deeper */
+  filter:
+    drop-shadow(0 -1px 0 rgba(12, 0, 16, 0.6))
+    drop-shadow(0 -2px 1.5px rgba(12, 0, 16, 0.22))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.26));
 }
 .social-badge:hover {
   box-shadow:
     0 0 0 1px rgba(30, 5, 37, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.08),
     inset 0 -1px 0 rgba(12, 0, 16, 0.22),
+    inset 0 -6px 10px -4px rgba(12, 0, 16, 0.2),
     0 2px 3px rgba(10, 0, 14, 0.45),
     0 18px 28px -12px rgba(10, 0, 14, 0.75);
 }

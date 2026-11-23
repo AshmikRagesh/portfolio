@@ -21,9 +21,13 @@ import PaperTooth from "@/components/PaperTooth";
 const SOCIAL =
   "social-badge group/social relative flex size-[44px] shrink-0 items-center justify-center rounded-full text-white " +
   "z-[var(--z)] transition-[transform,filter,box-shadow] duration-[420ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:z-20 hover:scale-[1.18] hover:brightness-[1.12] " +
-  "focus-visible:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F9E4FF] md:size-[56px]";
+  "focus-visible:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F9E4FF] md:size-[60px]";
 // The same filled marks the original coloured circles used
-const MARK = "relative h-[18px] w-[18px] md:h-[24px] md:w-[24px]";
+const MARK_BASE = "relative transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/social:-translate-y-[1px]";
+// Sized by eye so the three read as the same weight: the LinkedIn and X files fill their
+// box, the envelope's drawing sits inside padding, so it's drawn a size up
+const MARK = `${MARK_BASE} h-[18px] w-[18px] md:h-[22px] md:w-[22px]`;
+const MAIL_MARK = `${MARK_BASE} h-[22px] w-[22px] md:h-[28px] md:w-[28px]`;
 
 const socialLinks = [
   {
@@ -589,8 +593,10 @@ export default function Footer() {
               <br className="hidden md:block" />
               {" "}Don&apos;t be a stranger.
             </h2>
-            <p className="font-body font-normal text-[16px] leading-[26px] text-white/70 text-balance max-w-[320px] md:max-w-[500px] md:text-[18px] md:leading-[28px] lg:text-[20px] lg:leading-[30px] lg:max-w-[504px]">
-              Always open to new opportunities. I'd love to connect.
+            <p className="font-body font-normal text-[16px] leading-[26px] text-white/70 text-balance max-w-[320px] md:max-w-[560px] md:text-[18px] md:leading-[28px] lg:text-[20px] lg:leading-[30px] lg:max-w-[560px]">
+              Looking for a designer who can ship it in code too?
+              <br className="hidden md:block" />{" "}
+              Feel free to reach out to me anytime.
             </p>
           </div>
 
@@ -603,6 +609,8 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
+                // The plain hover ring, as on the email button: the ↗ circle would cover the icon
+                data-cursor="hover"
                 className={`${SOCIAL} ${tiltClass}`}
                 style={{ marginRight: "-4px", ["--z" as string]: i + 1, ["--badge" as string]: color }}
               >
@@ -618,7 +626,7 @@ export default function Footer() {
               style={{ ["--z" as string]: socialLinks.length + 1, ["--badge" as string]: "#ea4335" }}
             >
               {/* The original filled envelope */}
-              <svg viewBox="0 0 24 24" aria-hidden="true" className={MARK}>
+              <svg viewBox="0 0 24 24" aria-hidden="true" className={MAIL_MARK}>
                 <path fill="currentColor" d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v.3l-9 5.6-9-5.6v-.3Z" />
                 <path fill="currentColor" d="M3 9.1V17.5A2.5 2.5 0 0 0 5.5 20h13a2.5 2.5 0 0 0 2.5-2.5V9.1l-8.47 5.27a1 1 0 0 1-1.06 0L3 9.1Z" />
               </svg>
