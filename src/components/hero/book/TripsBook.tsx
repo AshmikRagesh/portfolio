@@ -675,16 +675,15 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
       {turned === 0 && phase === "open" && (
         <button type="button" onClick={nav.next} className="absolute top-0 z-[70] cursor-pointer rounded-[3px_10px_10px_3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape" style={{ left: PW, width: PW, height: PH }} aria-label="Open the book" />
       )}
-      {/* The page corners lift under the pointer: a hint that they turn. Bottom right goes
-          forward, bottom left goes back */}
+      {/* The bottom-right page corner lifts under the pointer: a hint that it turns forward.
+          Going back is the arrows below, or dragging a page */}
       {phase === "open" && !viewing && (
         <>
-          {/* On a phone only the corners of the page in view. They fade in once the pages
-              have settled and out as soon as a turn starts */}
+          {/* On a phone only on the page in view. It fades in once the pages have settled and
+              out as soon as a turn starts */}
           {(!compact || side === "r") && (
             <PageCorner corner="r" label="Turn the page" onClick={nav.next} left={PW * 2 - 48} shown={atRest && turned > 0 && turned < MAX_TURN} />
           )}
-          {(!compact || side === "l") && <PageCorner corner="l" label="Turn back" onClick={nav.prev} left={0} shown={atRest && turned > 0} />}
         </>
       )}
     </div>
