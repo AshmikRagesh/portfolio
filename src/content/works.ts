@@ -21,9 +21,20 @@ export interface FeaturedWork {
   layout: FeaturedLayout;
 }
 
-// Helix, search and Find a Trip as flagships, then Bella and the NDA project as the
-// smaller pair. The Artemis case studies stay live at their URLs but are off the list.
+// Artemis insurance leads, then Helix and Find a Trip as flagships; Bella and the
+// password-protected TCS search case study are the smaller pair.
 export const featuredWorks: FeaturedWork[] = [
+  {
+    type: "Case study",
+    discipline: "Product design",
+    title: "Adding travel insurance to Artemis checkout: 7% to 52% adoption",
+    description:
+      "Designed and shipped in 4 weeks: insurance adoption went from 7% to 52%, with $125K in Q1 revenue, by offering coverage inside checkout.",
+    image: "/images/works-cover.png", // TODO: Artemis insurance cover
+    imageAlt: "Artemis insurance integration preview",
+    href: "/works/artemis-insurance",
+    layout: "flagship",
+  },
   {
     type: "Case study",
     discipline: "Design systems",
@@ -33,17 +44,6 @@ export const featuredWorks: FeaturedWork[] = [
     image: "/images/helix/cover.webp",
     imageAlt: "An expedition card built from Helix components, with the component list beside it",
     href: "/works/helix",
-    layout: "flagship",
-  },
-  {
-    type: "Case study",
-    discipline: "Product design",
-    title: "From every trip at once to the few that fit: filters for TCS search",
-    description:
-      "Filters, a result count and each trip's route on its card, so travellers can find the trips that fit. Live since July 2026.",
-    image: "/images/tcs-search/cover.webp",
-    imageAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
-    href: "/works/tcs-search",
     layout: "flagship",
   },
   {
@@ -69,15 +69,15 @@ export const featuredWorks: FeaturedWork[] = [
     layout: "standard",
   },
   {
-    type: "Side project",
-    nda: true, // TODO: confirm which works are under NDA
-    discipline: "AI",
-    title: "Designing an AI-powered itinerary builder for modern travellers",
+    type: "Case study",
+    nda: true, // password-protected (lib/caseLock): shown as confidential until unlocked
+    discipline: "Product design",
+    title: "From every trip at once to the few that fit: filters for TCS search",
     description:
-      "Personalised trips in under 2 minutes, with real-time availability and smart suggestions.",
-    image: "/images/works-cover.png",
-    imageAlt: "AI Trip Planning preview",
-    href: "/works/ai-itinerary", // password-locked, nothing behind it yet (lib/caseLock)
+      "Filters, a result count and each trip's route on its card, so travellers can find the trips that fit. Live since July 2026.",
+    image: "/images/tcs-search/cover.webp",
+    imageAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
+    href: "/works/tcs-search",
     layout: "standard",
   },
 ];
