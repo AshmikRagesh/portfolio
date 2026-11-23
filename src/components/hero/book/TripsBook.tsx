@@ -253,8 +253,12 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
     const open = (1 - Math.cos((a[0] * Math.PI) / 180)) / 2;
     const shift = compactRef.current ? sim.current.p : open * PW * 0.5;
     if (root.current) root.current.style.transform = `translateX(${shift.toFixed(2)}px)`;
-    if (board.current) board.current.style.left = `${((1 - open) * PW - 4).toFixed(2)}px`;
-    if (tableShadow.current) tableShadow.current.style.left = `${((1 - open) * PW + 16).toFixed(2)}px`;
+    // The back board (and the shadow under it) opens out with the cover's own edge: it stays
+    // put while the cover is still over the right-hand side, then follows the edge as it
+    // comes down on the left, so no bare board shows beside the turning cover
+    const edge = PW * (1 + Math.min(0, Math.cos((a[0] * Math.PI) / 180)));
+    if (board.current) board.current.style.left = `${(edge - 4).toFixed(2)}px`;
+    if (tableShadow.current) tableShadow.current.style.left = `${(edge + 16).toFixed(2)}px`;
   }, []);
 
   // ── The spring ──
@@ -541,7 +545,7 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
     <div
       ref={root}
       className="absolute top-0 select-none"
-      style={{ left: -PW, width: PW * 2, height: PH, perspective: 2400, touchAction: "pan-y" }}
+      style={{ left: -PW, width: PW * 2, height: PH, perspective: 1700, touchAction: "pan-y" }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}

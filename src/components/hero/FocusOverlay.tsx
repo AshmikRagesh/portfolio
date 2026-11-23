@@ -140,9 +140,15 @@ export default function FocusOverlay({ source, open, onClosed, label, width, hei
     const before = html.style.overflow;
     html.style.overflow = "hidden";
     root.current?.focus({ preventScroll: true });
+    // Quick clicks to open (and then open the book) would select the hero text underneath,
+    // which shows as a blue block behind the blur: clear it, and stop it while open
+    window.getSelection()?.removeAllRanges();
+    const beforeSelect = html.style.userSelect;
+    html.style.userSelect = "none";
     return () => {
       window.removeEventListener("keydown", onKey);
       html.style.overflow = before;
+      html.style.userSelect = beforeSelect;
     };
   }, [open, close]);
 
