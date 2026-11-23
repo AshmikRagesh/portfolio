@@ -21,7 +21,7 @@ import PaperTooth from "@/components/PaperTooth";
 // on purpose: it's the footer's one playful moment).
 const SOCIAL =
   "social-badge group/social relative flex size-[44px] shrink-0 items-center justify-center rounded-full text-white " +
-  "z-[var(--z)] transition-[transform,filter] duration-[420ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:z-20 hover:scale-[1.18] hover:brightness-[1.12] " +
+  "z-[var(--z)] transition-[transform,filter,box-shadow] duration-[420ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:z-20 hover:scale-[1.18] hover:brightness-[1.12] " +
   "focus-visible:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F9E4FF] md:size-[56px]";
 // The same filled marks the original coloured circles used
 const MARK = "relative h-[18px] w-[18px] md:h-[24px] md:w-[24px]";

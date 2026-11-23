@@ -2561,15 +2561,50 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
   .ai-pill:hover .ai-spark, .ai-pill[data-on="true"] .ai-spark { animation: none; opacity: 1; transform: none; }
 }
 
-/* Footer social buttons: matte, one lighter shade of the primary blackcurrant. No gloss:
-   a flat fill, the faintest light along the top edge and shade along the bottom so it reads
-   as a solid disc, a soft shadow under it, and a ring in the footer's own colour so
-   overlapping buttons stay distinct. */
+/* Footer social buttons: real matte buttons, like soft-touch powder-coated metal.
+   - A lighter blackcurrant, with light falling softly from the top left and the far side
+     turning away into shade (two gentle radial falloffs, no gloss or specular streak).
+   - A fine grain over the surface, so it reads as a matte material, not flat paint.
+   - A rounded edge: a hairline of light along the top rim, a darker lower rim.
+   - Resting on the footer: a tight contact shadow and a soft ambient one.
+   - The marks are stamped into it: a dark edge above, a faint light edge below.
+   A ring in the footer's own colour keeps overlapping buttons distinct. */
 .social-badge {
-  background: #5a1a67;
+  background:
+    radial-gradient(120% 120% at 28% 18%, rgba(255, 236, 255, 0.13) 0%, rgba(255, 236, 255, 0) 55%),
+    radial-gradient(110% 110% at 76% 92%, rgba(18, 0, 24, 0.32) 0%, rgba(18, 0, 24, 0) 62%),
+    #5a1a67;
   box-shadow:
     0 0 0 2px #32073e,
-    inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -2px 0 rgba(20, 0, 26, 0.22),
-    0 6px 14px -6px rgba(10, 0, 14, 0.5);
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1.5px 0 rgba(12, 0, 16, 0.32),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 1px 2px rgba(10, 0, 14, 0.5),
+    0 10px 20px -10px rgba(10, 0, 14, 0.7);
+  transition-property: transform, filter, box-shadow;
+}
+.social-badge::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/></filter><rect width='80' height='80' filter='url(%23g)'/></svg>");
+  background-size: 80px 80px;
+  opacity: 0.07;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+.social-badge > img,
+.social-badge > svg {
+  opacity: 0.94;
+  filter: drop-shadow(0 -1px 0 rgba(12, 0, 16, 0.45)) drop-shadow(0 1px 0 rgba(255, 255, 255, 0.14));
+}
+.social-badge:hover {
+  box-shadow:
+    0 0 0 2px #32073e,
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1.5px 0 rgba(12, 0, 16, 0.32),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 2px 3px rgba(10, 0, 14, 0.45),
+    0 18px 28px -12px rgba(10, 0, 14, 0.75);
 }
