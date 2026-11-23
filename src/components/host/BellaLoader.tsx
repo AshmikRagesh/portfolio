@@ -77,12 +77,18 @@ export default function BellaLoader() {
 
   useEffect(() => {
     const html = document.documentElement;
+    // The scripts are running: switch off the CSS safety net that fades the loader out on
+    // its own when they never start (globals.css, .bella-loader:not([data-live]))
+    document.querySelector(".bella-loader")?.setAttribute("data-live", "");
     const forced = new URLSearchParams(window.location.search).has("loader");
     let seen = false;
     try {
       seen = !!sessionStorage.getItem(SEEN_KEY);
     } catch {}
-    if (seen && !forced) {
+    // Scripts that start this late (a very slow connection) find the safety net has already
+    // faded the loader out and the page in view: don't bring it back
+    const late = performance.now() > 10500;
+    if ((seen || late) && !forced) {
       setGone(true);
       return;
     }
@@ -232,7 +238,7 @@ export default function BellaLoader() {
   return (
     <div
       ref={rootRef}
-      className={`bella-loader fixed inset-0 z-[1000] select-none font-brand text-caption uppercase`}
+      className={`bella-loader fixed inset-0 z-[1000] select-none font-brand text-caption uppercase tracking-[1px]`}
       role="progressbar"
       aria-label="Loading the site"
       aria-valuemin={0}

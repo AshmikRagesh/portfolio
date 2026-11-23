@@ -188,7 +188,7 @@ function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
 }
 
 function Code({ children }: { children: ReactNode }) {
-  return <code className="rounded-sm bg-surface px-[6px] py-[2px] font-brand text-[12px] text-heading">{children}</code>;
+  return <code className="rounded-sm bg-surface px-[6px] py-[2px] font-code text-[12px] text-heading">{children}</code>;
 }
 
 // ── Sections ──────────────────────────────────────────────────────────────────
@@ -259,7 +259,7 @@ function Palette() {
           <div className="h-[64px]" style={{ background: hex }} />
           <div className="p-[12px]">
             <p className="font-body font-medium text-[14px] leading-[20px] text-heading">{name}</p>
-            <p className="font-brand text-[12px] leading-[16px] text-muted uppercase">{hex}</p>
+            <p className="font-brand text-[12px] leading-[16px] text-muted uppercase tracking-[1px]">{hex}</p>
             <p className="mt-[4px] font-body text-[12px] leading-[18px] text-secondary">{use}</p>
           </div>
         </div>

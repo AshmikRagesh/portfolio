@@ -100,7 +100,7 @@ export default function Testimonials() {
                   >
                     {/* Number + punch hole — the hole is filled with the panel colour so the
                         dark section shows "through" the paper. */}
-                    <div className="mb-5 flex items-center justify-between border-b border-line/60 pb-[10px] font-brand text-[10px] uppercase leading-[14px] tracking-[0px] text-muted">
+                    <div className="mb-5 flex items-center justify-between border-b border-line/60 pb-[10px] font-brand text-[10px] uppercase leading-[14px] tracking-[1px] text-muted">
                       <span>{String(i + 1).padStart(2, "0")}</span>
                       <PunchHole index={i} />
                     </div>

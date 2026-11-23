@@ -1,6 +1,6 @@
 "use client";
 
-// Highlighted words in the About intro. Each is a bright pill that does one small thing
+// Highlighted words in the About intro. Each is underlined in pen and does one small thing
 // about what it says when you hover it (or tap it on a touch screen):
 //
 //   self-taught      a pencil underlines it by hand
@@ -85,61 +85,103 @@ function overlay(host: HTMLElement, html: string, style: Partial<CSSStyleDeclara
 }
 
 // ── The pill ──────────────────────────────────────────────────────────────────
-// Geist medium a step smaller than the text around it, a soft top light and a hairline
-// lower edge so it reads as a solid, pressed shape; it lifts a pixel on hover.
+// No fill: the word in the heading colour, a touch heavier than the text around it, with
+// a pen line under it in grape (after atulkhola.com's marks): two sketchy strokes drawn on
+// once the page is up, then the line "boils", flicking between three hand-drawn versions
+// of itself a few times a second, so it never sits quite still (.pen-line in globals.css).
+// Each word's own effect still plays on hover; the word lifts a pixel.
 const PILL =
-  "group/pill relative inline-block whitespace-nowrap rounded-full px-[10px] align-baseline font-geist text-[14px] font-medium leading-[24px] tracking-[0px] text-white antialiased md:px-[12px] md:text-[16px] md:leading-[28px] " +
-  "bg-[var(--pill)] [background-image:linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0)_60%)] " +
-  "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.24),inset_0_-1px_0_rgba(0,0,0,0.16),0_1px_2px_rgba(22,18,26,0.16)] " +
-  "transition-[transform,box-shadow] duration-200 ease-out [@media(hover:hover)]:hover:-translate-y-[1px] " +
-  "[@media(hover:hover)]:hover:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.24),inset_0_-1px_0_rgba(0,0,0,0.16),0_6px_14px_-6px_var(--pill)]";
+  "group/pill relative inline-block whitespace-nowrap px-[1px] align-baseline font-geist text-[16px] font-medium leading-[26px] tracking-[0px] text-heading antialiased md:text-[18px] md:leading-[30px] " +
+  "transition-transform duration-200 ease-out [@media(hover:hover)]:hover:-translate-y-[1px]";
+
+/** A seeded random, so each word's line is the same shape on every visit. */
+function rng(seed: number) {
+  return () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+}
+const seedOf = (text: string) => [...text].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+
+/** One rough underline stroke across a 100 × 10 box: overshooting ends, a slight sag. */
+function stroke(r: () => number) {
+  const y = () => 4.6 + (r() - 0.5) * 3.2;
+  const x0 = -2 + r() * 1.5;
+  const x1 = 100.5 + r() * 1.5;
+  return `M${x0.toFixed(1)} ${y().toFixed(2)}C${(28 + r() * 10).toFixed(1)} ${y().toFixed(2)} ${(62 + r() * 10).toFixed(1)} ${y().toFixed(2)} ${x1.toFixed(1)} ${y().toFixed(2)}`;
+}
+
+function PenLine({ seed }: { seed: number }) {
+  const ref = useRef<SVGSVGElement>(null);
+  // Drawn on in turn, by its place on the page, once the page is up; then it boils
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const order = Array.from(document.querySelectorAll(".pen-line")).indexOf(el);
+    let done = 0;
+    const start = window.setTimeout(() => {
+      el.classList.add("is-drawing");
+      done = window.setTimeout(() => el.classList.replace("is-drawing", "is-drawn"), 720);
+    }, 350 + Math.max(0, order) * 140);
+    return () => {
+      window.clearTimeout(start);
+      window.clearTimeout(done);
+    };
+  }, []);
+  const r = rng(seed);
+  const versions = [0, 1, 2].map(() => [stroke(r), stroke(r)]);
+  return (
+    <svg ref={ref} aria-hidden="true" className="pen-line" viewBox="0 0 100 10" preserveAspectRatio="none" style={{ ["--boil-off" as string]: `${-((seed % 6) * 0.1).toFixed(1)}s` }}>
+      {versions.map((paths, i) => (
+        <g key={i}>
+          {paths.map((d, j) => (
+            <path key={j} d={d} pathLength={1} style={{ opacity: j ? 0.75 : 1 }} />
+          ))}
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+const textOf = (n: React.ReactNode): string =>
+  typeof n === "string" || typeof n === "number" ? String(n) : Array.isArray(n) ? n.map(textOf).join("") : "";
 
 type PlayProps = ReturnType<typeof usePlay>["props"];
 function Pill({ color, play, className = "", children }: { color: string; play?: PlayProps; className?: string; children: React.ReactNode }) {
   return (
     <span {...play} data-sound="tick" className={`${PILL} ${className}`} style={{ ["--pill" as string]: pillColour(color) }}>
       {children}
+      <PenLine seed={seedOf(textOf(children))} />
     </span>
   );
 }
 
-// ── self-taught: a pencil underlines it ───────────────────────────────────────
-const PENCIL = `<svg viewBox="0 0 44 12" width="40" height="11" style="display:block;transform:rotate(-34deg);transform-origin:0 6px;filter:drop-shadow(0 2px 1.5px rgba(22,18,26,.25))">
-<defs><linearGradient id="pw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6DDB6"/><stop offset="1" stop-color="#D5AE7C"/></linearGradient>
-<linearGradient id="pf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4F6F8"/><stop offset=".5" stop-color="#B8C0C9"/><stop offset="1" stop-color="#8A939E"/></linearGradient></defs>
-<path d="M0 6 5.4 4.5v3Z" fill="#2B2B33"/>
-<path d="M5.4 4.5 12 2.4v7.2L5.4 7.5Z" fill="url(#pw)"/>
-<path d="M12 2.4h21v2.4H12Z" fill="#FFD453"/><path d="M12 4.8h21v2.4H12Z" fill="#F5B300"/><path d="M12 7.2h21v2.4H12Z" fill="#D69500"/>
-<path d="M12 2.4c.8.8.8 1.6 0 2.4.8.8.8 1.6 0 2.4.8.8.8 1.6 0 2.4" fill="none" stroke="#C99A5E" stroke-width=".5"/>
-<path d="M33 2.2h4.2v7.6H33Z" fill="url(#pf)"/><path d="M34.4 2.2v7.6M35.8 2.2v7.6" stroke="#7D8691" stroke-width=".35"/>
-<path d="M37.2 2.2h4.4a1.6 1.6 0 0 1 1.6 1.6v4.4a1.6 1.6 0 0 1-1.6 1.6h-4.4Z" fill="#F08FA6"/><path d="M37.2 7.6h5.8" stroke="#D96C88" stroke-width=".6"/>
+// ── self-taught: graded A+ by hand ────────────────────────────────────────────
+// The word already has its pen line, so instead a pen marks it like homework: "A+" written
+// just above its end, then circled, held a moment, and faded.
+const GRADE = `<svg width="44" height="30" viewBox="0 0 44 30" fill="none" stroke="#9D136A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:block;overflow:visible;transform:rotate(-8deg)">
+<path d="M9 21 14.2 6.5 19.6 21" pathLength="1"/><path d="M11 16.2h6.6" pathLength="1"/>
+<path d="M23 13.4h8.2" pathLength="1"/><path d="M27.1 9.4v8.2" pathLength="1"/>
+<path d="M36 9.5C34 3.5 8.5 2.5 4.2 10.5 0 18.5 16 25.5 29 23 41 20.5 41.5 12 33.5 6.5" pathLength="1" stroke-width="1.5" opacity=".85"/>
 </svg>`;
 
 export function SelfTaughtPill() {
   const { props } = usePlay(async (pill) => {
-    const w = pill.offsetWidth;
-    const h = pill.offsetHeight;
-    const d = `M3 4.2 C ${w * 0.28} 2.2, ${w * 0.55} 6, ${w - 3} 3.4`;
-    const line = overlay(
-      pill,
-      `<svg width="${w}" height="8" overflow="visible"><path d="${d}" fill="none" stroke="#2B2B33" stroke-opacity=".85" stroke-width="1.6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>`,
-      { top: `${h + 1}px` },
-    );
-    const stroke = line.querySelector("path") as SVGPathElement;
-    const pencil = overlay(pill, PENCIL, {
-      top: `${h + 1}px`,
-      offsetPath: `path('${d}')`,
-      offsetRotate: "0deg",
-      offsetAnchor: "0px 6px",
-    } as Partial<CSSStyleDeclaration>);
-    pencil.animate([{ opacity: 0, transform: "translateY(-4px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 160, easing: EASE_OUT, fill: "backwards" });
-    stroke.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 640, delay: 120, easing: EASE_IN_OUT, fill: "forwards" });
-    await pencil.animate([{ offsetDistance: "0%" }, { offsetDistance: "100%" }], { duration: 640, delay: 120, easing: EASE_IN_OUT, fill: "forwards" }).finished;
-    await pencil.animate([{ opacity: 1, transform: "translate(0,0)" }, { opacity: 0, transform: "translate(6px,-8px)" }], { duration: 200, easing: "ease-in", fill: "forwards" }).finished;
-    pencil.remove();
-    await wait(700);
-    await line.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished;
-    line.remove();
+    const mark = overlay(pill, GRADE, { left: "auto", right: "-30px", top: "-24px" });
+    const strokes = Array.from(mark.querySelectorAll("path"));
+    strokes.forEach((p) => Object.assign(p.style, { strokeDasharray: "1", strokeDashoffset: "1" }));
+    // Written in order: the A (two strokes), the plus (two), then the circle round it all
+    const times = [180, 110, 120, 110, 420];
+    let at = 0;
+    const draws = strokes.map((p, i) => {
+      const anim = p.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: times[i], delay: at, easing: EASE_IN_OUT, fill: "forwards" });
+      at += times[i] + 40;
+      return anim.finished;
+    });
+    await Promise.all(draws);
+    await wait(900);
+    await mark.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-4px)" }], { duration: 260, easing: "ease-in", fill: "forwards" }).finished;
+    mark.remove();
   });
   return (
     <Pill color={COLORS.orange} play={props}>
@@ -148,8 +190,6 @@ export function SelfTaughtPill() {
   );
 }
 
-// ── design engineer: turns over into {design + code} ──────────────────────────
-// The pill keeps the width of "design engineer"; the code line is scaled to fit inside it.
 export function DesignEngineerPill() {
   const label = useRef<HTMLSpanElement>(null);
   const alt = useRef<HTMLSpanElement>(null);
@@ -231,37 +271,28 @@ export function TravelopiaPill() {
   );
 }
 
-// ── code and AI: a glint and a spark ──────────────────────────────────────────
-// Quick and quiet, like the rest: a soft light glints across the tag and a small gold
-// spark twinkles at its corner. Under 700ms, all of it.
-const SPARK = `<svg viewBox="0 0 16 16" width="12" height="12" style="display:block"><path d="M8 0c.5 4.4 3.6 7.5 8 8-4.4.5-7.5 3.6-8 8-.5-4.4-3.6-7.5-8-8 4.4-.5 7.5-3.6 8-8Z" fill="#FFC21A"/></svg>`;
+// ── code and AI: a blinking caret and twinkling sparkles ──────────────────────
+// While the pointer stays on it (or for a moment after a tap), a text caret blinks just
+// after the words, as if still being typed, and three small sparkles twinkle round them in
+// turn. Both keep going for as long as you hover (.ai-caret / .ai-spark in globals.css).
+const STAR = "M6 0C6.6 3.6 8.4 5.4 12 6 8.4 6.6 6.6 8.4 6 12 5.4 8.4 3.6 6.6 0 6 3.6 5.4 5.4 3.6 6 0Z";
+function Spark({ className, size, fill }: { className: string; size: number; fill: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 12 12" width={size} height={size} className={`ai-spark absolute ${className}`}>
+      <path d={STAR} fill={fill} />
+    </svg>
+  );
+}
 
 export function CodeAndAIPill() {
-  const { props } = usePlay(async (pill) => {
-    const glint = overlay(
-      pill,
-      '<span style="position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(100deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.34) 50%,rgba(255,255,255,0) 100%)"></span>',
-      { inset: "0", width: "100%", height: "100%", borderRadius: "9999px", overflow: "hidden", zIndex: "1" },
-    );
-    const band = glint.firstElementChild as HTMLElement;
-    const spark = overlay(pill, SPARK, { left: "auto", right: "-5px", top: "-6px" });
-    await Promise.all([
-      band.animate([{ transform: "translateX(-110%)" }, { transform: "translateX(260%)" }], { duration: 520, easing: EASE_IN_OUT, fill: "forwards" }).finished,
-      spark.animate(
-        [
-          { transform: "scale(0) rotate(-45deg)", opacity: 0 },
-          { transform: "scale(1) rotate(0deg)", opacity: 1, offset: 0.45 },
-          { transform: "scale(0) rotate(45deg)", opacity: 0 },
-        ],
-        { duration: 560, delay: 140, easing: EASE_OUT, fill: "both" },
-      ).finished,
-    ]);
-    glint.remove();
-    spark.remove();
-  });
+  const { props } = usePlay(() => wait(2400));
   return (
-    <Pill color={COLORS.ink} play={props}>
+    <Pill color={COLORS.ink} play={props} className="ai-pill">
       code and AI
+      <span aria-hidden="true" className="ai-caret" />
+      <Spark className="-right-[14px] -top-[10px]" size={12} fill="#9D136A" />
+      <Spark className="left-[34%] -top-[12px]" size={8} fill="#e3b553" />
+      <Spark className="-right-[6px] top-[60%]" size={7} fill="#D66FB6" />
     </Pill>
   );
 }
@@ -278,10 +309,11 @@ export function WorkflowPill() {
   return (
     <Link
       href="/works/helix"
-      className={`${PILL} outline-none focus-visible:ring-2 focus-visible:ring-[#E8137A]/40 focus-visible:ring-offset-2`}
+      className={`${PILL} outline-none focus-visible:ring-2 focus-visible:ring-[#9D136A]/40 focus-visible:ring-offset-2`}
       style={{ ["--pill" as string]: pillColour(COLORS.pink) }}
     >
       a workflow
+      <PenLine seed={seedOf("a workflow")} />
       <span aria-hidden="true" className="pointer-events-none absolute bottom-full left-0 z-20 mb-[8px] flex items-center">
         <span className={`${CHIP} ${HIDE} ${SHOW} ${DELAY[0]}`}>
           <span className="h-[6px] w-[6px] rounded-full bg-[#6D3BFF]" />
@@ -532,7 +564,7 @@ ${fringe(10, -1)}${fringe(146, 1)}
 <rect x="10" y="2" width="136" height="20" rx="1.6" fill="#034694"/>
 <path d="M16 2h8v20h-8ZM132 2h8v20h-8Z" fill="#F4F6FA"/>
 <path d="M27 2h3v20h-3ZM126 2h3v20h-3Z" fill="#F4F6FA"/>
-<text x="78" y="16.2" text-anchor="middle" font-family="var(--font-brand), monospace" font-weight="500" font-size="11" letter-spacing="3" fill="#F4F6FA">CHELSEA</text>
+<text x="78" y="16.2" text-anchor="middle" font-family="var(--font-geist), sans-serif" font-weight="500" font-size="11" letter-spacing="3" fill="#F4F6FA">CHELSEA</text>
 <rect x="10" y="2" width="136" height="20" rx="1.6" fill="url(#kn${id})"/>
 <rect x="10" y="2" width="136" height="20" rx="1.6" fill="url(#sh${id})"/>
 </svg>`;

@@ -180,6 +180,37 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
   const champion = record || preview === "champion" || preview === "gold-dozing";
   const mood: HostMood = preview === "dozing" || preview === "gold-dozing" || (paused && !holding) ? "dozing" : champion ? "champion" : "idle";
 
+  // Mouse leave alone can miss: the page can move under a still pointer (the header sliding
+  // away, the bell ducking for the footer), and leaving the window never reports one. While
+  // the board is down, check where the pointer really is.
+  useEffect(() => {
+    if (!hovered || touch) return;
+    let x = -1, y = -1;
+    const away = () => setHovered(false);
+    const inside = (el: Element | null) => !!el && !!wrapRef.current?.contains(el);
+    const onMove = (e: PointerEvent) => {
+      x = e.clientX;
+      y = e.clientY;
+      if (!inside(e.target as Element) && !(document.activeElement && wrapRef.current?.contains(document.activeElement) && document.activeElement.matches(":focus-visible"))) away();
+    };
+    const onScroll = () => {
+      if (x >= 0 && !inside(document.elementFromPoint(x, y))) away();
+    };
+    const onHidden = () => document.visibilityState === "hidden" && away();
+    document.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("blur", away);
+    document.addEventListener("visibilitychange", onHidden);
+    document.documentElement.addEventListener("mouseleave", away);
+    return () => {
+      document.removeEventListener("pointermove", onMove);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("blur", away);
+      document.removeEventListener("visibilitychange", onHidden);
+      document.documentElement.removeEventListener("mouseleave", away);
+    };
+  }, [hovered, touch]);
+
   // Count the sign being opened, once per visit, for the stats page
   useEffect(() => {
     if (holding && !preview) track("sign_open");
@@ -255,7 +286,10 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
         if (!ducked) ringBell();
       }}
       onMouseLeave={() => setHovered(false)}
-      onFocus={() => !touch && setHovered(true)}
+      // Keyboard focus only: a click also focuses the bell, and the browser hands that focus
+      // back on returning to the tab or closing the résumé, which brought the board down
+      // with no pointer anywhere near it
+      onFocus={(e) => !touch && (e.target as Element).matches(":focus-visible") && setHovered(true)}
       onBlur={() => setHovered(false)}
     >
       {/* Above the board, so the hands overlap the rings they hold it by */}
@@ -330,6 +364,7 @@ function NavTab({ label, href, pathname, inView }: { label: string; href: string
     // Opens the résumé sheet; the celebration plays once a copy is downloaded
     <a
       href={href}
+      data-cursor="hover"
       onClick={(e) => {
         e.preventDefault();
         openResume();

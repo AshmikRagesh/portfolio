@@ -12,6 +12,8 @@ import {
   DesignEngineerPill,
   FootballPill,
   SelfTaughtPill,
+  TravelopiaPill,
+  WorkflowPill,
 } from "@/components/about/Pills";
 
 export const metadata: Metadata = {
@@ -29,8 +31,8 @@ export default function AboutPage() {
           {/* Text — the frame beside it stands exactly as tall as this */}
           <div id="about-text" className="flex w-full flex-col gap-[40px] md:gap-[48px]">
             <h1 className="font-heading text-[40px] font-normal leading-[44px] text-heading md:text-[56px] md:leading-[60px] md:tracking-[-2px]">
-              Building products that <br className="hidden md:block" />
-              people care about
+              Meet your host, <br className="hidden md:block" />
+              a designer who codes
             </h1>
     
             <div className="flex max-w-[600px] flex-col gap-[20px] font-body text-[16px] leading-[28px] text-secondary md:gap-[24px] lg:gap-[20px] md:text-[18px] md:leading-[30px]">
@@ -42,9 +44,9 @@ export default function AboutPage() {
                 Travelopia. I work across design, technology and everything it takes to bring a product to life.
               </p>
               <p>
-                Over time, I&apos;ve also started getting more hands-on with <CodeAndAIPill />. I helped build
-                a workflow that lets designers build components directly in code, within their brand&apos;s design
-                system. Since then, I&apos;ve been building components directly in code across Travelopia&apos;s brands,
+                Over time, I&apos;ve also started getting more hands-on with <CodeAndAIPill />. I helped build{" "}
+                <WorkflowPill /> that lets designers build components directly in code, within their brand&apos;s design
+                system. Since then, I&apos;ve been building components directly in code across <TravelopiaPill />&apos;s brands,
                 alongside my design work.
               </p>
               <p>

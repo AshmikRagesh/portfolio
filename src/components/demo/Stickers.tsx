@@ -26,7 +26,7 @@ export function Postcard({ flipped }: { flipped: boolean }) {
             >
               Bangalore
             </span>
-            <span className="mt-2 font-brand text-[10px] uppercase leading-[12px] tracking-[0px] text-primary/70">
+            <span className="mt-2 font-brand text-[10px] uppercase leading-[12px] tracking-[1px] text-primary/70">
               Garden City · Est. 1537
             </span>
             <span className="absolute bottom-[6px] right-[8px] font-brand text-[10px] leading-[12px] text-primary/50">tap to flip ↻</span>
@@ -92,7 +92,7 @@ export function CoffeeStamp() {
           {/* dabara */}
           <path d="M4 42h40c0 6-8 10-20 10S4 48 4 42z" fill="#ece5d8" stroke="#32073e" strokeWidth="1.6" strokeLinejoin="round" />
         </svg>
-        <span className="font-brand text-[10px] uppercase leading-[12px] tracking-[0px] text-primary">Filter kaapi</span>
+        <span className="font-brand text-[10px] uppercase leading-[12px] tracking-[1px] text-primary">Filter kaapi</span>
       </div>
     </div>
   );
@@ -149,9 +149,9 @@ export function WifiCard() {
         <Wifi size={16} strokeWidth={1.8} className="text-grape" />
       </div>
       <div className="grid grid-cols-[64px_1fr] items-baseline gap-y-1">
-        <span className="font-brand text-[10px] uppercase leading-[16px] text-muted">Network</span>
+        <span className="font-brand text-[10px] uppercase tracking-[1px] leading-[16px] text-muted">Network</span>
         <span className="font-[family-name:var(--font-demo-body)] text-[14px] leading-[20px] text-heading">ashmik-guest</span>
-        <span className="font-brand text-[10px] uppercase leading-[16px] text-muted">Password</span>
+        <span className="font-brand text-[10px] uppercase tracking-[1px] leading-[16px] text-muted">Password</span>
         <span className="font-handwriting text-[22px] leading-[20px] text-grape">say-hello</span>
       </div>
     </div>

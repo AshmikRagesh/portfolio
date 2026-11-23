@@ -16,7 +16,7 @@ export default function SessionLog({ when, lines }: { when: string; lines: Line[
             <span key={d} className="h-[10px] w-[10px] rounded-full bg-white/20" />
           ))}
         </span>
-        <span className="ml-[8px] font-brand text-caption uppercase text-white/60">
+        <span className="ml-[8px] font-brand text-caption uppercase tracking-[1px] text-white/60">
           Claude Code <span className="text-white/40">·</span> {when}
         </span>
       </figcaption>

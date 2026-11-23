@@ -170,8 +170,9 @@ export default function TimerBoard({ seconds, champion = false, grips = [], bare
           className="relative rounded-md px-[8px] pt-[8px] pb-[8px] shadow-[inset_0_1px_3px_rgba(40,25,10,0.25),inset_0_-1px_0_rgba(255,255,255,0.7)]"
           style={{ background: edition.face }}
         >
-          {/* Engraved title — a light edge under the letters reads as cut into the face */}
-          <p className="text-center whitespace-nowrap font-brand font-medium text-[10px] leading-[12px] uppercase tracking-[0px] text-primary/60 [text-shadow:0_1px_0_rgba(255,255,255,0.6)]">
+          {/* Engraved title, small and quiet so the clock leads (it sits within the clock's
+              width rather than setting the board's) — a light edge under the letters reads as cut in */}
+          <p className="text-center whitespace-nowrap font-geist font-medium text-[10px] leading-[12px] tracking-[0px] text-primary/55 [text-shadow:0_1px_0_rgba(255,255,255,0.6)]">
             {title}
           </p>
 

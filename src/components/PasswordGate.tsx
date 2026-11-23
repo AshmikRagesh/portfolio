@@ -15,7 +15,8 @@
 // The check happens on the server (/api/unlock); this is only the way in.
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { ArrowRight, LockSimple, LockSimpleOpen } from "@phosphor-icons/react";
+// The same lucide icons, at the same 2px stroke, as the card's "Unlock to read case study" button
+import { ArrowRight, LockKeyhole, LockKeyholeOpen } from "lucide-react";
 import { flagName } from "@/lib/caseLock";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
 
@@ -207,7 +208,7 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
             className="pw-pill pw-soon"
             style={{ transform: `translate(${pos!.x}px, ${pos!.y}px) translate(-50%, -50%)` }}
           >
-            <LockSimpleOpen size={16} weight="regular" aria-hidden="true" />
+            <LockKeyholeOpen size={16} strokeWidth={2} aria-hidden="true" />
             Case study coming soon
           </div>
         ) : !showForm ? (
@@ -219,7 +220,7 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
             data-resting={resting || undefined}
             style={{ transform: `translate(${pillPos.x}px, ${pillPos.y}px) translate(-50%, -50%)` }}
           >
-            <LockSimple size={16} weight="regular" aria-hidden="true" />
+            <LockKeyhole size={16} strokeWidth={2} aria-hidden="true" />
             Enter password
           </button>
         ) : (
@@ -232,7 +233,7 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
             style={{ transform: `translate(${pos!.x}px, ${pos!.y}px) translate(-50%, -50%)` }}
           >
             <span className="pw-lock" aria-hidden="true">
-              {state === "open" ? <LockSimpleOpen size={16} /> : <LockSimple size={16} />}
+              {state === "open" ? <LockKeyholeOpen size={16} strokeWidth={2} /> : <LockKeyhole size={16} strokeWidth={2} />}
             </span>
             <input
               ref={inputRef}
@@ -253,7 +254,7 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
               aria-label="Open the case study"
               disabled={!value || state !== "form"}
             >
-              <ArrowRight size={16} weight="bold" aria-hidden="true" />
+              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </button>
           </form>
         )}

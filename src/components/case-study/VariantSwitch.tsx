@@ -55,7 +55,7 @@ function VariantSwitch({
     >
       <span
         aria-hidden="true"
-        className="absolute left-[4px] top-[4px] h-[36px] rounded-full bg-primary shadow-[0_2px_6px_rgba(50,7,62,0.25)] transition-[transform,width] duration-[400ms] ease-[cubic-bezier(0.34,1.3,0.64,1)] motion-reduce:transition-none"
+        className="absolute left-[4px] top-[4px] h-[36px] rounded-full bg-primary shadow-[0_2px_6px_rgba(50,7,62,0.25)] transition-[transform,width] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
         style={{ transform: `translateX(${thumb.x}px)`, width: thumb.w }}
       />
       {variants.map((v, i) => {

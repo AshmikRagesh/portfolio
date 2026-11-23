@@ -175,7 +175,7 @@ export default function ReviewThread({
         <span
           key={merged ? "merged" : "open"}
           className={`inline-flex h-[32px] items-center gap-[4px] rounded-full px-[12px] text-[14px] font-medium leading-[20px] text-white ${
-            merged ? "animate-[thread-pop_500ms_cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:animate-none" : ""
+            merged ? "animate-[thread-pop_500ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:animate-none" : ""
           } ${
             merged ? GH.purple : GH.green
           }`}
@@ -185,8 +185,8 @@ export default function ReviewThread({
         </span>
         <p className={`m-0 text-[14px] leading-[20px] ${GH.muted}`}>
           <span className={`font-medium ${GH.text}`}>Designer</span> {merged ? "merged 1 commit into" : "wants to merge 1 commit into"}{" "}
-          <code className="whitespace-nowrap rounded-md bg-[#ddf4ff] px-[6px] py-[2px] font-mono text-[12px] text-[#0969da]">main</code> from{" "}
-          <code className="whitespace-nowrap rounded-md bg-[#ddf4ff] px-[6px] py-[2px] font-mono text-[12px] text-[#0969da]">{branch}</code>
+          <code className="whitespace-nowrap rounded-md bg-[#ddf4ff] px-[6px] py-[2px] font-code text-[12px] text-[#0969da]">main</code> from{" "}
+          <code className="whitespace-nowrap rounded-md bg-[#ddf4ff] px-[6px] py-[2px] font-code text-[12px] text-[#0969da]">{branch}</code>
         </p>
       </div>
 
@@ -217,7 +217,7 @@ export default function ReviewThread({
                 {link}
                 <div className="relative flex items-center gap-[12px] pl-[54px]">
                   <span
-                    className={`flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-white ring-2 ring-surface transition-transform delay-[100ms] duration-[500ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+                    className={`flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-white ring-2 ring-surface transition-transform delay-[100ms] duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                       done || live ? "scale-100" : "scale-50"
                     } ${
                       approved ? GH.green : GH.purple
@@ -230,7 +230,7 @@ export default function ReviewThread({
                     {/* A commit hash shows in GitHub's bold mono */}
                     {item.text.split(/\b([0-9a-f]{7})\b/).map((part, j) =>
                       j % 2 ? (
-                        <code key={j} className={`font-mono text-[12px] font-semibold ${GH.text}`}>
+                        <code key={j} className={`font-code text-[12px] font-semibold ${GH.text}`}>
                           {part}
                         </code>
                       ) : (

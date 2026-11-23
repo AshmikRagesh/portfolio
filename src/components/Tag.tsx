@@ -21,7 +21,7 @@ const BASE =
 // it reads as the marker and the word as the label, and a hairline light along the top edge
 // lifts the filled tones off the card.
 const FACES = {
-  mono: "h-[24px] gap-[4px] px-[8px] text-[12px] leading-[16px] rounded-xs font-brand uppercase tracking-[0px]",
+  mono: "h-[24px] gap-[4px] px-[8px] text-[12px] leading-[16px] rounded-xs font-brand uppercase tracking-[1px]",
   geist:
     "h-[20px] gap-[4px] rounded-full px-[8px] text-[10px] leading-[12px] font-geist font-medium uppercase tracking-[0.6px] has-[>svg:first-child]:pl-[2px] [&>svg:first-child]:box-content [&>svg:first-child]:size-[10px] [&>svg:first-child]:rounded-full [&>svg:first-child]:p-[2px]",
 };

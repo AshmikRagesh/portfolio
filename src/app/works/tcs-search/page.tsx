@@ -55,7 +55,7 @@ const SECTIONS: CaseStudySection[] = [
 ];
 
 // Shared table styles, as on the Find a Trip page
-const TH = "pb-[12px] pr-[16px] font-brand text-[12px] font-normal uppercase leading-[16px] text-muted";
+const TH = "pb-[12px] pr-[16px] font-brand text-[12px] font-normal uppercase tracking-[1px] leading-[16px] text-muted";
 const TD = "py-[14px] pr-[16px] align-top";
 const TABLE = "w-full border-collapse text-left font-body text-[14px] leading-[22px] md:text-[16px] md:leading-[24px]";
 
@@ -411,8 +411,8 @@ function FilterFields() {
         {FILTER_FIELDS.map(({ filter, field, url }) => (
           <tr key={filter} className="border-b border-line-soft">
             <th scope="row" className={`${TD} font-normal text-heading`}>{filter}</th>
-            <td className={`${TD} font-mono text-[12px] text-secondary md:text-[14px]`}>{field}</td>
-            <td className={`${TD} pr-0 font-mono text-[12px] text-secondary md:text-[14px]`}>{url}=</td>
+            <td className={`${TD} font-code text-[12px] text-secondary md:text-[14px]`}>{field}</td>
+            <td className={`${TD} pr-0 font-code text-[12px] text-secondary md:text-[14px]`}>{url}=</td>
           </tr>
         ))}
       </tbody>

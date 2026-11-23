@@ -266,7 +266,6 @@ export default function TearSheet({
         tearFree();
         if (sheet.current) {
           const { w, h } = geo.current;
-          sheet.current.style.willChange = "transform";
           // In front of the stub while it falls (only then: at rest the stub must stay grabbable)
           sheet.current.style.zIndex = "2";
           sheet.current.style.transformOrigin = `${w / 2}px ${h * 0.45}px`;
@@ -371,7 +370,6 @@ export default function TearSheet({
     if (el) {
       el.style.transform = "";
       el.style.visibility = "visible";
-      el.style.willChange = "";
       el.style.zIndex = "";
       el.animate(
         [
@@ -386,6 +384,12 @@ export default function TearSheet({
     window.setTimeout(starterTear, RESTOCK.duration);
   };
 
+  /** The pointer reaches the stub: the torn corner lifts a little, inviting a pull. */
+  const invite = (e: React.PointerEvent) => {
+    const s = sim.current;
+    if (e.pointerType === "mouse" && s.mode === "idle" && !drag.current) s.angleV += 45;
+  };
+
   /** A tap, not a drag: the torn corner jiggles, as a hint to drag it. */
   const jiggle = () => {
     const s = sim.current;
@@ -395,8 +399,16 @@ export default function TearSheet({
   // ── Pointer ─────────────────────────────────────────────────────────────────
 
   const drag = useRef<{ x: number; y: number; moved: boolean; from: number; width: number; touch: boolean; lastX: number; lastT: number; speed: number } | null>(null);
+  // The grabbing hand over the résumé while dragging. Set on the dialog, not on <html>:
+  // a cursor change on <html> restyles every element on the page underneath
   const grabbing = (on: boolean) => {
-    document.documentElement.style.cursor = on ? "grabbing" : "";
+    const dialog = hit.current?.closest<HTMLElement>("[role=dialog]");
+    if (dialog) {
+      dialog.style.cursor = on ? "grabbing" : "";
+      // Holds the site cursor (and hover sounds) steady while the hand crosses the sheet
+      if (on) dialog.dataset.dragging = "";
+      else delete dialog.dataset.dragging;
+    }
     if (hit.current) hit.current.style.cursor = on ? "grabbing" : "grab";
   };
   // The drag is followed on the window, not by capturing the pointer: a capture can be
@@ -513,10 +525,14 @@ export default function TearSheet({
   return (
     <div className="relative">
       {/* The body: drawn once, its shadow included. This is what falls once it's torn off */}
-      <div ref={sheet} className="relative" style={{ filter: "drop-shadow(0 1px 1.5px rgba(48,40,26,0.1)) drop-shadow(0 12px 18px rgba(48,40,26,0.15))" }}>
-        <div ref={body} className="relative" style={{ ...TOP_EDGE, backgroundColor: PAPER }}>
-          <Grain />
-          <Sheet />
+      {/* Moved as one layer (will-change), with its shadow on the layer inside, so the shadow
+          is drawn once and only moved while it falls, not redrawn over the blurred page each frame */}
+      <div ref={sheet} className="relative" style={{ willChange: "transform" }}>
+        <div style={{ filter: "drop-shadow(0 1px 1.5px rgba(48,40,26,0.1)) drop-shadow(0 12px 18px rgba(48,40,26,0.15))" }}>
+          <div ref={body} className="relative" style={{ ...TOP_EDGE, backgroundColor: PAPER }}>
+            <Grain />
+            <Sheet />
+          </div>
         </div>
       </div>
       {/* The stub strip: the only part that moves */}
@@ -538,9 +554,13 @@ export default function TearSheet({
         ref={hit}
         type="button"
         aria-label="Tear off the stub to download the résumé (PDF)"
+        // Silent on hover: the tear has its own paper sounds, and the site's button tick
+        // fired again every time the pointer crossed back over the strip
+        data-sound="none"
         className="absolute inset-x-0 bottom-0 z-[3] touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-[#9D136A]/40"
         style={{ height: STUB_H, cursor: "grab" }}
         onPointerDown={onDown}
+        onPointerEnter={invite}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();

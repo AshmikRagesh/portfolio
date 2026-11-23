@@ -14,20 +14,39 @@ import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
 import PaperTooth from "@/components/PaperTooth";
 
+// The social buttons: three overlapping matte buttons in their own colours (LinkedIn blue,
+// X black, mail red; .social-badge in globals.css), carrying the original filled white marks. A ring in the footer's colour keeps the overlaps clean. On hover
+// a button rises above the others, grows and tips a little, with a springy overshoot (kept
+// on purpose: it's the footer's one playful moment).
+const SOCIAL =
+  "social-badge group/social relative flex size-[44px] shrink-0 items-center justify-center rounded-full text-white " +
+  "z-[var(--z)] transition-[transform,filter,box-shadow] duration-[420ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:z-20 hover:scale-[1.18] hover:brightness-[1.12] " +
+  "focus-visible:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F9E4FF] md:size-[60px]";
+// The same filled marks the original coloured circles used
+const MARK_BASE = "relative transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/social:-translate-y-[1px]";
+// Sized by eye so the three read as the same weight: the LinkedIn and X files fill their
+// box, the envelope's drawing sits inside padding, so it's drawn a size up
+const MARK = `${MARK_BASE} h-[18px] w-[18px] md:h-[22px] md:w-[22px]`;
+const MAIL_MARK = `${MARK_BASE} h-[22px] w-[22px] md:h-[28px] md:w-[28px]`;
+
 const socialLinks = [
   {
     label: "LinkedIn",
     href: LINKEDIN,
-    bg: "#1f88f9",
+    color: "#1f88f9",
     tiltClass: "hover:rotate-6",
-    icon: <img loading="lazy" decoding="async" src="/icons/social-linkedin.svg" alt="LinkedIn" className="w-[18px] h-[18px] md:w-[24px] md:h-[24px]" />,
+    icon: (
+      <img loading="lazy" decoding="async" src="/icons/social-linkedin.svg" alt="" className={MARK} />
+    ),
   },
   {
     label: "Twitter / X",
     href: X_PROFILE,
-    bg: "#091624",
+    color: "#091624",
     tiltClass: "hover:-rotate-3",
-    icon: <img loading="lazy" decoding="async" src="/icons/social-x.svg" alt="Twitter / X" className="w-[18px] h-[18px] md:w-[24px] md:h-[24px]" />,
+    icon: (
+      <img loading="lazy" decoding="async" src="/icons/social-x.svg" alt="" className={MARK} />
+    ),
   },
 ];
 
@@ -574,27 +593,26 @@ export default function Footer() {
               <br className="hidden md:block" />
               {" "}Don&apos;t be a stranger.
             </h2>
-            <p className="font-body font-normal text-[16px] leading-[26px] text-white/70 text-balance max-w-[320px] md:max-w-[500px] md:text-[18px] md:leading-[28px] lg:text-[20px] lg:leading-[30px] lg:max-w-[504px]">
-              For any work inquiries, feel free to reach out to me anytime.
+            <p className="font-body font-normal text-[16px] leading-[26px] text-white/70 text-balance max-w-[320px] md:max-w-[560px] md:text-[18px] md:leading-[28px] lg:text-[20px] lg:leading-[30px] lg:max-w-[560px]">
+              I&apos;m currently open to new roles and collaborations.
+              <br className="hidden md:block" />{" "}
+              Feel free to reach out to me anytime.
             </p>
           </div>
 
           {/* Social icons */}
           <div className="flex items-center relative z-10">
-            {socialLinks.map(({ label, href, bg, tiltClass, icon }, i) => (
+            {socialLinks.map(({ label, href, color, tiltClass, icon }, i) => (
               <a
                 key={label}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className={`size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] ${tiltClass}`}
-                style={{
-                  background: bg,
-                  marginRight: "-4px",
-                  zIndex: i + 1,
-                  position: "relative",
-                }}
+                // The plain hover ring, as on the email button: the ↗ circle would cover the icon
+                data-cursor="hover"
+                className={`${SOCIAL} ${tiltClass}`}
+                style={{ marginRight: "-4px", ["--z" as string]: i + 1, ["--badge" as string]: color }}
               >
                 {icon}
               </a>
@@ -604,11 +622,11 @@ export default function Footer() {
               type="button"
               aria-label="Copy Ashmik's email address"
               onClick={() => window.dispatchEvent(new Event(COPY_EMAIL_EVENT))}
-              className="relative size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 bg-[#ea4335] text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] hover:rotate-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              style={{ zIndex: socialLinks.length + 1 }}
+              className={`${SOCIAL} hover:rotate-3`}
+              style={{ ["--z" as string]: socialLinks.length + 1, ["--badge" as string]: "#ea4335" }}
             >
-              {/* A filled envelope */}
-              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] md:h-[24px] md:w-[24px]">
+              {/* The original filled envelope */}
+              <svg viewBox="0 0 24 24" aria-hidden="true" className={MAIL_MARK}>
                 <path fill="currentColor" d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v.3l-9 5.6-9-5.6v-.3Z" />
                 <path fill="currentColor" d="M3 9.1V17.5A2.5 2.5 0 0 0 5.5 20h13a2.5 2.5 0 0 0 2.5-2.5V9.1l-8.47 5.27a1 1 0 0 1-1.06 0L3 9.1Z" />
               </svg>

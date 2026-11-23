@@ -26,7 +26,7 @@ import TearSheet from "./TearSheet";
 import { EASE, lerp, spring } from "./motion";
 import { playOpen, preloadOpen } from "./paperSound";
 
-const RISE = spring(120, 17);
+const RISE = spring(120, 22); // critically damped: no overshoot
 const TILT_DEG = 2.4;
 
 function useViewport() {
@@ -254,7 +254,9 @@ export default function ResumeOverlay() {
             style={wide ? { width: SHEET_W * scale, height: SHEET_H * scale } : undefined}
             onClick={(e) => e.stopPropagation()}
           >
-            <div ref={tilt} className={wide ? "absolute inset-0" : "relative"} style={{ transformStyle: "preserve-3d" }}>
+            {/* Flat, not preserve-3d: the lean is a slight 2D-looking tilt, and in a 3D context the
+                pointer sometimes hit this layer instead of the stub, so the cursor flickered */}
+            <div ref={tilt} className={wide ? "absolute inset-0" : "relative"} style={{ willChange: wide ? "transform" : undefined }}>
               {wide ? (
                 <div className="absolute left-0 top-0" style={{ width: SHEET_W, height: SHEET_H, transform: `scale(${scale})`, transformOrigin: "0 0" }}>
                   {content}

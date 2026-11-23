@@ -159,7 +159,7 @@ function Swatch({ hex, name, code, use, note }: { hex: string; name: string; cod
       <div className="h-[64px] border-b border-line-soft" style={{ background: hex }} />
       <div className="p-[12px]">
         <p className="font-body font-medium text-[14px] leading-[20px] text-heading">{name}</p>
-        <p className="break-all font-brand text-[12px] leading-[16px] text-muted uppercase">{hex}</p>
+        <p className="break-all font-brand text-[12px] leading-[16px] text-muted uppercase tracking-[1px]">{hex}</p>
         {code && <p className="mt-[4px] font-brand text-[12px] leading-[16px] text-grape">{code}</p>}
         <p className="mt-[4px] font-body text-[12px] leading-[18px] text-secondary">{use}</p>
         {note && <p className="mt-[8px] border-t border-line-soft pt-[8px] font-body text-[12px] leading-[18px] text-secondary">{note}</p>}

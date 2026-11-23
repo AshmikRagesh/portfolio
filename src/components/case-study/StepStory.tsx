@@ -66,7 +66,7 @@ export default function StepStory({ steps, start = 0 }: { steps: Step[]; start?:
                   } ${on ? "ring-4 ring-grape-light" : ""}`}
                 />
                 <span className="flex flex-col gap-[4px]">
-                  <span className="font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted">{s.when}</span>
+                  <span className="font-brand text-[12px] uppercase leading-[16px] tracking-[1px] text-muted">{s.when}</span>
                   <span
                     className={`text-[14px] leading-[20px] transition-colors duration-200 md:text-[16px] md:leading-[24px] ${
                       on ? "font-medium text-heading" : "text-secondary group-hover:text-heading"

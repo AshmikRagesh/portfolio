@@ -45,7 +45,9 @@ function onDark(el: Element): boolean {
 /** Links that leave the site, open a new tab, or are files. */
 function isOut(target: Element) {
   const link = target.closest("a[href]") as HTMLAnchorElement | null;
-  if (!link || link.href.startsWith("mailto:")) return false;
+  // data-cursor="hover": a link that stays on the page (Fancy paper opens the résumé here,
+  // though its href is the PDF for no-JS and new tabs)
+  if (!link || link.href.startsWith("mailto:") || link.dataset.cursor === "hover") return false;
   return link.target === "_blank" || link.origin !== window.location.origin || /\.pdf$/i.test(link.pathname);
 }
 
@@ -86,8 +88,10 @@ export default function Cursor() {
     };
 
     const read = (target: Element | null) => {
-      const next: Mode =
-        !target || root.dataset.feedback === "on" || target.closest(NATIVE)
+      // Mid-drag (the résumé's tear), the ring holds steady over whatever the hand crosses
+      const next: Mode = target?.closest("[data-dragging]")
+        ? "hover"
+        : !target || root.dataset.feedback === "on" || target.closest(NATIVE)
           ? "native"
           : target.closest(HOVER)
             ? isOut(target) ? "out" : "hover"

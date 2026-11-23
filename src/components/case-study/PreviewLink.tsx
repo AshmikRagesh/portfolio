@@ -46,7 +46,7 @@ export default function PreviewLink({
         aria-hidden={!open}
         className={`absolute left-0 top-full z-50 block w-[288px] origin-top-left pt-[10px] transition-[opacity,transform] motion-reduce:transition-none ${
           open
-            ? "pointer-events-auto translate-y-0 scale-100 opacity-100 duration-[420ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+            ? "pointer-events-auto translate-y-0 scale-100 opacity-100 duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
             : "pointer-events-none translate-y-[8px] scale-[0.92] opacity-0 duration-[180ms] ease-out"
         }`}
       >

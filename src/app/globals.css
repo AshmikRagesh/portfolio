@@ -35,7 +35,7 @@ html[data-leaving] .page-enter {
   height: 40px;
   border-radius: 999px;
   color: #9D136A;
-  transition: color 200ms ease, transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: color 200ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
   -webkit-tap-highlight-color: transparent;
 }
 .sound-toggle[data-muted] { color: rgba(30, 5, 37, 0.45); }
@@ -44,7 +44,7 @@ html[data-leaving] .page-enter {
 .sound-toggle:focus-visible { outline: 2px solid #9D136A; outline-offset: 2px; }
 .sound-toggle-wave {
   transform-origin: 11px 12px;
-  transition: opacity 240ms ease, transform 360ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 240ms ease, transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .sound-toggle-wave-2 { transition-delay: 60ms; }
 .sound-toggle-cross {
@@ -412,14 +412,14 @@ html[data-leaving] .page-enter {
   85%  { transform: rotate(0.6deg); }
   100% { opacity: 1; transform: rotate(0); }
 }
-.host-board { transform-origin: var(--grip-x, 50%) 0; animation: host-board-in 700ms cubic-bezier(0.3, 1.2, 0.5, 1) both; }
+.host-board { transform-origin: var(--grip-x, 50%) 0; animation: host-board-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 /* The bare clock settles into the navbar bell's spot while the bell is ducked out */
 @keyframes clock-in {
   from { opacity: 0; transform: translateY(-8px) scale(0.92); }
   60%  { opacity: 1; transform: translateY(2px) scale(1.02); }
   to   { opacity: 1; transform: none; }
 }
-.clock-in { transform-origin: 50% 50%; animation: clock-in 360ms cubic-bezier(0.3, 1.2, 0.5, 1) both; }
+.clock-in { transform-origin: 50% 50%; animation: clock-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 /* …and lifts away when the navbar bell comes back up and takes it down */
 @keyframes host-board-out { to { opacity: 0; transform: translateY(-12px) scale(0.92); } }
 .host-board-out { transform-origin: 50% 0; animation: host-board-out 200ms ease-in both; }
@@ -428,7 +428,7 @@ html[data-leaving] .page-enter {
 @keyframes flap-fall { from { transform: rotateX(0); } to { transform: rotateX(-90deg); } }
 @keyframes flap-drop { from { transform: rotateX(90deg); } to { transform: rotateX(0); } }
 .flap-fall { transform-origin: 50% 100%; animation: flap-fall 180ms ease-in both; backface-visibility: hidden; }
-.flap-drop { transform-origin: 50% 0; animation: flap-drop 200ms 180ms cubic-bezier(0.3, 1.4, 0.6, 1) both; backface-visibility: hidden; }
+.flap-drop { transform-origin: 50% 0; animation: flap-drop 200ms 180ms cubic-bezier(0.22, 1, 0.36, 1) both; backface-visibility: hidden; }
 
 /* Host tooltip — a quick fade and lift from its pointer, like any tooltip */
 @keyframes host-tip-in {
@@ -707,7 +707,7 @@ html[data-leaving] .page-enter {
 /* A touch roomier than the reference (187px wide, 14px 20px padding, 32px rows);
    grows with longer titles. Opens with a soft spring up from the pill, closes quickly. */
 .cs-pill-panel {
-  --spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --spring: cubic-bezier(0.22, 1, 0.36, 1);
   min-width: 200px;
   padding: 16px 24px;
   border-radius: theme("borderRadius.xl");
@@ -840,7 +840,7 @@ html[data-leaving] .page-enter {
   user-select: none;
   -webkit-user-select: none;
   outline: none;
-  transition: transform 560ms cubic-bezier(0.3, 1.2, 0.5, 1);
+  transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .reel[data-ready="false"],
 .reel[data-dragging="true"] { transition: none; }
@@ -1276,6 +1276,11 @@ html[data-leaving] .page-enter {
    A terminal-style check-in on grape. Repeat visits in the same session get
    .loader-skip on <html> before paint (layout.tsx), so it never flashes. */
 .loader-skip .bella-loader { display: none; }
+/* Safety net: if the page's scripts never start (a browser too old for them, a blocked
+   file), the loader would cover the page for good. Until the loader's script marks it
+   data-live, it fades itself out after 11s, longer than it ever runs, so the page shows. */
+@keyframes loader-failsafe { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+.bella-loader:not([data-live]) { animation: loader-failsafe 400ms ease-out 11s forwards; }
 /* Midnight screen, vanilla text and highlight bar. The screen colour is on the two
    curtain halves, so the page shows through as they part. */
 .bella-loader { --ld-bg: #1e0525; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #1e0525; color: var(--ld-ink); }
@@ -1500,7 +1505,7 @@ html[data-feedback="on"] .owner-badge {
 .fb-card {
   /* A plum palette drawn from midnight and grape — no neutral greys */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --spring: cubic-bezier(0.22, 1, 0.36, 1);
   --fb-raise: #2b0c34;      /* fields and the composer */
   --fb-raise-2: #3a1545;    /* pills and hovers on a field */
   --fb-line: #48204f;       /* field borders */
@@ -2394,7 +2399,7 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
   animation: pw-open 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .pw-lock { display: flex; }
-.pw-form[data-state="open"] .pw-lock { animation: pw-unlock 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.pw-form[data-state="open"] .pw-lock { animation: pw-unlock 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .pw-input {
   flex: 1;
   min-width: 0;
@@ -2419,7 +2424,7 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
   color: rgba(157, 19, 106, 0.6);
   background: rgba(157, 19, 106, 0.08);
   transition: background-color 200ms ease-out, color 200ms ease-out, box-shadow 200ms ease-out, transform 120ms ease-out;
-  animation: pw-submit-in 360ms cubic-bezier(0.34, 1.56, 0.64, 1) 120ms both;
+  animation: pw-submit-in 360ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
 }
 .pw-submit[data-ready] {
   color: #fff;
@@ -2511,3 +2516,111 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
 }
 @keyframes fb-hint-pulse { 50% { box-shadow: 0 0 0 6px rgba(157, 19, 106, 0.06); } }
 @media (prefers-reduced-motion: reduce) { .fb-hint-dot { animation: none; } }
+
+/* Labels (font-brand) are Geist capitals now, not mono: keep their digits fixed-width so
+   counters, the timer and the ruler don't shift as numbers change */
+.font-brand { font-variant-numeric: tabular-nums; }
+
+/* ── About: pen lines under the highlighted words (components/about/Pills) ──
+   Three hand-drawn versions of each line, two strokes each. Hidden until drawn on, then the
+   first draws in; after that the three take turns, about five times a second ("line boil"). */
+.pen-line { position: absolute; left: -2px; right: -2px; bottom: -4px; width: calc(100% + 4px); height: 10px; overflow: visible; pointer-events: none; }
+.pen-line path { fill: none; stroke: #9D136A; stroke-width: 1.6px; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.pen-line g { visibility: hidden; }
+.pen-line g:first-child { visibility: visible; }
+.pen-line.is-drawing g:first-child path { animation: pen-draw 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.pen-line.is-drawing g:first-child path:nth-child(2) { animation-delay: 90ms; }
+.pen-line.is-drawn path { stroke-dashoffset: 0; }
+@keyframes pen-draw { to { stroke-dashoffset: 0; } }
+@keyframes pen-boil { 0% { visibility: visible; } 33.333%, 100% { visibility: hidden; } }
+.pen-line.is-drawn g { animation: pen-boil 600ms step-end infinite; }
+.pen-line.is-drawn g:nth-child(1) { animation-delay: var(--boil-off, 0s); }
+.pen-line.is-drawn g:nth-child(2) { animation-delay: calc(var(--boil-off, 0s) - 400ms); }
+.pen-line.is-drawn g:nth-child(3) { animation-delay: calc(var(--boil-off, 0s) - 200ms); }
+@media (prefers-reduced-motion: reduce) {
+  .pen-line path { stroke-dashoffset: 0; }
+  .pen-line.is-drawn g { animation: none; }
+  .pen-line.is-drawn g:first-child { visibility: visible; }
+}
+
+/* About, "code and AI": a caret and sparkles while hovered (or briefly after a tap) */
+.ai-caret { position: absolute; left: 100%; top: 18%; bottom: 18%; width: 2px; margin-left: 3px; border-radius: 1px; background: #9D136A; opacity: 0; }
+.ai-spark { opacity: 0; transform: scale(0); pointer-events: none; }
+@keyframes ai-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes ai-twinkle { 0%, 100% { opacity: 0; transform: scale(0.2) rotate(-30deg); } 40%, 60% { opacity: 1; transform: scale(1) rotate(0deg); } }
+@media (hover: hover) {
+  .ai-pill:hover .ai-caret { animation: ai-blink 1s step-end infinite; }
+  .ai-pill:hover .ai-spark { animation: ai-twinkle 1.5s ease-in-out infinite; }
+}
+.ai-pill[data-on="true"] .ai-caret { animation: ai-blink 1s step-end infinite; }
+.ai-pill[data-on="true"] .ai-spark { animation: ai-twinkle 1.5s ease-in-out infinite; }
+.ai-pill .ai-spark:nth-of-type(2) { animation-delay: -1s; }
+.ai-pill .ai-spark:nth-of-type(3) { animation-delay: -0.5s; }
+@media (prefers-reduced-motion: reduce) {
+  .ai-pill:hover .ai-caret, .ai-pill[data-on="true"] .ai-caret { animation: none; opacity: 1; }
+  .ai-pill:hover .ai-spark, .ai-pill[data-on="true"] .ai-spark { animation: none; opacity: 1; transform: none; }
+}
+
+/* Footer social buttons: real matte buttons, like soft-touch powder-coated metal.
+   - Each in its own colour (--badge: LinkedIn blue, X black, mail red), with light falling softly from the top left and the far side
+     turning away into shade (two gentle radial falloffs, no gloss or specular streak).
+   - A fine grain over the surface, so it reads as a matte material, not flat paint.
+   - A rounded edge: a hairline of light along the top rim, a darker lower rim.
+   - Resting on the footer: a tight contact shadow and a soft ambient one.
+   - The marks are stamped into it: a dark edge above, a faint light edge below.
+   A fine 1px dark ring keeps overlapping buttons distinct without outlining them. */
+.social-badge {
+  background:
+    radial-gradient(120% 120% at 28% 18%, rgba(255, 236, 255, 0.13) 0%, rgba(255, 236, 255, 0) 55%),
+    radial-gradient(110% 110% at 76% 92%, rgba(18, 0, 24, 0.28) 0%, rgba(18, 0, 24, 0) 62%),
+    var(--badge, #5a1a67);
+  box-shadow:
+    0 0 0 1px rgba(30, 5, 37, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 2px 4px rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(12, 0, 16, 0.22),
+    inset 0 -6px 10px -4px rgba(12, 0, 16, 0.22),
+    0 1px 2px rgba(10, 0, 14, 0.45),
+    0 10px 20px -10px rgba(10, 0, 14, 0.7);
+  transition-property: transform, filter, box-shadow;
+}
+.social-badge::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/></filter><rect width='80' height='80' filter='url(%23g)'/></svg>");
+  background-size: 80px 80px;
+  opacity: 0.07;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+/* A fine inner bevel a few pixels in, like the pressed edge of a coin */
+.social-badge::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(12, 0, 16, 0.16), 0 1px 0 rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+.social-badge > img,
+.social-badge > svg {
+  opacity: 0.95;
+  /* Pressed in: a dark edge along the top, a light edge along the bottom, and a soft shade
+     just inside the top so the recess reads deeper */
+  filter:
+    drop-shadow(0 -1px 0 rgba(12, 0, 16, 0.38))
+    drop-shadow(0 -1px 1px rgba(12, 0, 16, 0.12))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.22));
+}
+.social-badge:hover {
+  box-shadow:
+    0 0 0 1px rgba(30, 5, 37, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(12, 0, 16, 0.22),
+    inset 0 -6px 10px -4px rgba(12, 0, 16, 0.2),
+    0 2px 3px rgba(10, 0, 14, 0.45),
+    0 18px 28px -12px rgba(10, 0, 14, 0.75);
+}

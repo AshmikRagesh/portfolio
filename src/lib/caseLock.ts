@@ -28,7 +28,7 @@ export const LOCKED: Record<string, LockedCase> = {
     cover: "/images/works-cover.png",
     coverAlt: "AI Trip Planning preview",
     env: "AI_ITINERARY_PASSWORD",
-    fallback: "wanderlust",
+    fallback: "TCS search",
     comingSoon: true,
     assets: [],
     open: [],
@@ -54,8 +54,12 @@ export function lockedPath(path: string): { slug: string; kind: "page" | "asset"
 
 const encoder = new TextEncoder();
 
+/** Passwords are forgiving about case and spaces: "TCS search", "tcs search" and
+ *  "tcssearch" all match. */
+const loose = (password: string) => password.toLowerCase().replace(/\s+/g, "");
+
 export async function tokenFor(slug: string, password: string): Promise<string> {
-  const key = await crypto.subtle.importKey("raw", encoder.encode(password), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const key = await crypto.subtle.importKey("raw", encoder.encode(loose(password)), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(`case:${slug}`)));
   let bin = "";
   for (const b of sig) bin += String.fromCharCode(b);
