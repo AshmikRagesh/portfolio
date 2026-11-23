@@ -2610,9 +2610,9 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
   /* Pressed in: a dark edge along the top, a light edge along the bottom, and a soft shade
      just inside the top so the recess reads deeper */
   filter:
-    drop-shadow(0 -1px 0 rgba(12, 0, 16, 0.6))
-    drop-shadow(0 -2px 1.5px rgba(12, 0, 16, 0.22))
-    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.26));
+    drop-shadow(0 -1px 0 rgba(12, 0, 16, 0.38))
+    drop-shadow(0 -1px 1px rgba(12, 0, 16, 0.12))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.22));
 }
 .social-badge:hover {
   box-shadow:
