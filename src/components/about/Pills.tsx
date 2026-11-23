@@ -1,6 +1,6 @@
 "use client";
 
-// Highlighted words in the About intro. Each is a bright pill that does one small thing
+// Highlighted words in the About intro. Each is underlined in pen and does one small thing
 // about what it says when you hover it (or tap it on a touch screen):
 //
 //   self-taught      a pencil underlines it by hand
@@ -85,19 +85,21 @@ function overlay(host: HTMLElement, html: string, style: Partial<CSSStyleDeclara
 }
 
 // ── The pill ──────────────────────────────────────────────────────────────────
-// Geist medium a step smaller than the text around it, a soft top light and a hairline
-// lower edge so it reads as a solid, pressed shape; it lifts a pixel on hover.
+// No fill: the word in the heading colour, a touch heavier than the text around it, with
+// a pen line drawn under it in grape (slightly uneven, as if by hand). Each word's own
+// effect still plays on hover; the word lifts a pixel.
+const PEN_LINE = `url("data:image/svg+xml;utf8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 6" preserveAspectRatio="none"><path d="M1.5 3.6C22 2.2 44 4.6 66 3.2S90 2.6 98.5 3.4" fill="none" stroke="#9D136A" stroke-width="1.7" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>',
+)}")`;
 const PILL =
-  "group/pill relative inline-block whitespace-nowrap rounded-full px-[10px] align-baseline font-geist text-[14px] font-medium leading-[24px] tracking-[0px] text-white antialiased md:px-[12px] md:text-[16px] md:leading-[28px] " +
-  "bg-[var(--pill)] [background-image:linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0)_60%)] " +
-  "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.24),inset_0_-1px_0_rgba(0,0,0,0.16),0_1px_2px_rgba(22,18,26,0.16)] " +
-  "transition-[transform,box-shadow] duration-200 ease-out [@media(hover:hover)]:hover:-translate-y-[1px] " +
-  "[@media(hover:hover)]:hover:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.24),inset_0_-1px_0_rgba(0,0,0,0.16),0_6px_14px_-6px_var(--pill)]";
+  "group/pill relative inline-block whitespace-nowrap px-[1px] align-baseline font-geist text-[16px] font-medium leading-[26px] tracking-[0px] text-heading antialiased md:text-[18px] md:leading-[30px] " +
+  "bg-no-repeat [background-position:0_100%] [background-size:100%_6px] " +
+  "transition-transform duration-200 ease-out [@media(hover:hover)]:hover:-translate-y-[1px]";
 
 type PlayProps = ReturnType<typeof usePlay>["props"];
 function Pill({ color, play, className = "", children }: { color: string; play?: PlayProps; className?: string; children: React.ReactNode }) {
   return (
-    <span {...play} data-sound="tick" className={`${PILL} ${className}`} style={{ ["--pill" as string]: pillColour(color) }}>
+    <span {...play} data-sound="tick" className={`${PILL} ${className}`} style={{ ["--pill" as string]: pillColour(color), backgroundImage: PEN_LINE }}>
       {children}
     </span>
   );
@@ -278,8 +280,8 @@ export function WorkflowPill() {
   return (
     <Link
       href="/works/helix"
-      className={`${PILL} outline-none focus-visible:ring-2 focus-visible:ring-[#E8137A]/40 focus-visible:ring-offset-2`}
-      style={{ ["--pill" as string]: pillColour(COLORS.pink) }}
+      className={`${PILL} outline-none focus-visible:ring-2 focus-visible:ring-[#9D136A]/40 focus-visible:ring-offset-2`}
+      style={{ ["--pill" as string]: pillColour(COLORS.pink), backgroundImage: PEN_LINE }}
     >
       a workflow
       <span aria-hidden="true" className="pointer-events-none absolute bottom-full left-0 z-20 mb-[8px] flex items-center">
