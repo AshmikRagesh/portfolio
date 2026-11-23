@@ -101,6 +101,9 @@ export default function PixelClouds({
   useEffect(() => {
     const canvas = ref.current;
     const card = canvas?.closest<HTMLElement>(".group");
+    // Touch screens never hover, so they never see the clouds: don't size a full-resolution
+    // canvas for them (it would only take memory on a phone)
+    if (!window.matchMedia("(hover: hover)").matches) return;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !card || !ctx) return;
 

@@ -1276,6 +1276,11 @@ html[data-leaving] .page-enter {
    A terminal-style check-in on grape. Repeat visits in the same session get
    .loader-skip on <html> before paint (layout.tsx), so it never flashes. */
 .loader-skip .bella-loader { display: none; }
+/* Safety net: if the page's scripts never start (a browser too old for them, a blocked
+   file), the loader would cover the page for good. Until the loader's script marks it
+   data-live, it fades itself out after 11s, longer than it ever runs, so the page shows. */
+@keyframes loader-failsafe { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+.bella-loader:not([data-live]) { animation: loader-failsafe 400ms ease-out 11s forwards; }
 /* Midnight screen, vanilla text and highlight bar. The screen colour is on the two
    curtain halves, so the page shows through as they part. */
 .bella-loader { --ld-bg: #1e0525; --ld-ink: #ece5d8; --ld-bar: #ece5d8; --ld-bar-ink: #1e0525; color: var(--ld-ink); }
