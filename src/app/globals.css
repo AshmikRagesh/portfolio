@@ -2542,3 +2542,34 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
   .pen-line.is-drawn g { animation: none; }
   .pen-line.is-drawn g:first-child { visibility: visible; }
 }
+
+/* About, "code and AI": a caret and sparkles while hovered (or briefly after a tap) */
+.ai-caret { position: absolute; left: 100%; top: 18%; bottom: 18%; width: 2px; margin-left: 3px; border-radius: 1px; background: #9D136A; opacity: 0; }
+.ai-spark { opacity: 0; transform: scale(0); pointer-events: none; }
+@keyframes ai-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes ai-twinkle { 0%, 100% { opacity: 0; transform: scale(0.2) rotate(-30deg); } 40%, 60% { opacity: 1; transform: scale(1) rotate(0deg); } }
+@media (hover: hover) {
+  .ai-pill:hover .ai-caret { animation: ai-blink 1s step-end infinite; }
+  .ai-pill:hover .ai-spark { animation: ai-twinkle 1.5s ease-in-out infinite; }
+}
+.ai-pill[data-on="true"] .ai-caret { animation: ai-blink 1s step-end infinite; }
+.ai-pill[data-on="true"] .ai-spark { animation: ai-twinkle 1.5s ease-in-out infinite; }
+.ai-pill .ai-spark:nth-of-type(2) { animation-delay: -1s; }
+.ai-pill .ai-spark:nth-of-type(3) { animation-delay: -0.5s; }
+@media (prefers-reduced-motion: reduce) {
+  .ai-pill:hover .ai-caret, .ai-pill[data-on="true"] .ai-caret { animation: none; opacity: 1; }
+  .ai-pill:hover .ai-spark, .ai-pill[data-on="true"] .ai-spark { animation: none; opacity: 1; transform: none; }
+}
+
+/* Footer social buttons: matte, one lighter shade of the primary blackcurrant. No gloss:
+   a flat fill, the faintest light along the top edge and shade along the bottom so it reads
+   as a solid disc, a soft shadow under it, and a ring in the footer's own colour so
+   overlapping buttons stay distinct. */
+.social-badge {
+  background: #5a1a67;
+  box-shadow:
+    0 0 0 2px #32073e,
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -2px 0 rgba(20, 0, 26, 0.22),
+    0 6px 14px -6px rgba(10, 0, 14, 0.5);
+}

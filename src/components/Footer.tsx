@@ -12,21 +12,19 @@ import { COPY_EMAIL_EVENT, EMAIL, LINKEDIN, X_PROFILE } from "@/lib/contact";
 import TimerBoard, { messageBoardWidth } from "@/components/host/TimerBoard";
 import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
-import { Mail } from "lucide-react";
 import PaperTooth from "@/components/PaperTooth";
 
-// The social buttons: three overlapping circles, all in the design system's light grape
-// (grape-light) with blackcurrant line icons at the DS's 2px stroke. A ring in the footer's
-// blackcurrant keeps the overlaps clean. On hover a circle rises above the others, grows,
-// tips a little and brightens to white, with a springy overshoot (kept on purpose: it's the
-// footer's one playful moment).
+// The social buttons: three overlapping buttons in a lighter shade of the primary
+// blackcurrant with a matte finish (.social-badge in globals.css), carrying the same filled
+// white marks the original coloured circles used. A ring in the footer's colour keeps the overlaps clean. On hover
+// a button rises above the others, grows and tips a little, with a springy overshoot (kept
+// on purpose: it's the footer's one playful moment).
 const SOCIAL =
-  "group/social relative flex size-[44px] shrink-0 items-center justify-center rounded-full bg-grape-light text-primary " +
-  "[box-shadow:0_0_0_2px_#32073e,inset_0_-2px_0_rgba(50,7,62,0.10)] " +
-  "z-[var(--z)] transition-[transform,background-color] duration-[420ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:z-20 hover:scale-[1.18] hover:bg-white " +
+  "social-badge group/social relative flex size-[44px] shrink-0 items-center justify-center rounded-full text-white " +
+  "z-[var(--z)] transition-[transform,filter] duration-[420ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:z-20 hover:scale-[1.18] hover:brightness-[1.12] " +
   "focus-visible:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F9E4FF] md:size-[56px]";
-const MARK = "h-[20px] w-[20px] md:h-[24px] md:w-[24px]";
-const LINE = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
+// The same filled marks the original coloured circles used
+const MARK = "relative h-[18px] w-[18px] md:h-[24px] md:w-[24px]";
 
 const socialLinks = [
   {
@@ -34,10 +32,7 @@ const socialLinks = [
     href: LINKEDIN,
     tiltClass: "hover:rotate-6",
     icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className={MARK} {...LINE}>
-        <path d="M3 7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-        <path d="M8 11v5M8 8v.01M12 16v-5M16 16v-3a2 2 0 1 0-4 0" />
-      </svg>
+      <img loading="lazy" decoding="async" src="/icons/social-linkedin.svg" alt="" className={MARK} />
     ),
   },
   {
@@ -45,10 +40,7 @@ const socialLinks = [
     href: X_PROFILE,
     tiltClass: "hover:-rotate-3",
     icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className={MARK} {...LINE}>
-        <path d="M4 4l11.733 16H20L8.267 4Z" />
-        <path d="M4 20l6.768-6.768m2.46-2.46L20 4" />
-      </svg>
+      <img loading="lazy" decoding="async" src="/icons/social-x.svg" alt="" className={MARK} />
     ),
   },
 ];
@@ -624,8 +616,11 @@ export default function Footer() {
               className={`${SOCIAL} hover:rotate-3`}
               style={{ ["--z" as string]: socialLinks.length + 1 }}
             >
-              {/* The design system's mail icon (lucide), in the same line style */}
-              <Mail className={MARK} strokeWidth={2} aria-hidden="true" />
+              {/* The original filled envelope */}
+              <svg viewBox="0 0 24 24" aria-hidden="true" className={MARK}>
+                <path fill="currentColor" d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v.3l-9 5.6-9-5.6v-.3Z" />
+                <path fill="currentColor" d="M3 9.1V17.5A2.5 2.5 0 0 0 5.5 20h13a2.5 2.5 0 0 0 2.5-2.5V9.1l-8.47 5.27a1 1 0 0 1-1.06 0L3 9.1Z" />
+              </svg>
             </button>
           </div>
 
