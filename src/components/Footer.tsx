@@ -14,20 +14,34 @@ import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
 import PaperTooth from "@/components/PaperTooth";
 
+// The social buttons: a lighter plum than the footer, a fine lilac ring and lilac marks.
+// On hover they fill with lilac and the mark turns blackcurrant.
+const SOCIAL =
+  "group/social relative flex size-[44px] shrink-0 items-center justify-center rounded-full bg-[#4b1158] text-[#F9E4FF] " +
+  "[box-shadow:inset_0_0_0_1px_rgba(249,228,255,0.28),inset_0_1px_0_rgba(255,255,255,0.08)] " +
+  "transition-[transform,background-color,color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] " +
+  "hover:-translate-y-[2px] hover:bg-[#F9E4FF] hover:text-primary hover:[box-shadow:inset_0_0_0_1px_rgba(249,228,255,1),0_8px_20px_-8px_rgba(249,228,255,0.45)] " +
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F9E4FF] md:size-[56px]";
+const MARK = "h-[18px] w-[18px] md:h-[22px] md:w-[22px]";
+
 const socialLinks = [
   {
     label: "LinkedIn",
     href: LINKEDIN,
-    bg: "#1f88f9",
-    tiltClass: "hover:rotate-6",
-    icon: <img loading="lazy" decoding="async" src="/icons/social-linkedin.svg" alt="LinkedIn" className="w-[18px] h-[18px] md:w-[24px] md:h-[24px]" />,
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className={MARK}>
+        <path fill="currentColor" d="M5.2 3.5a1.95 1.95 0 1 1 0 3.9 1.95 1.95 0 0 1 0-3.9ZM3.6 9h3.2v11.5H3.6V9Zm5.4 0h3.05v1.6h.05c.43-.8 1.47-1.86 3.1-1.86 3.3 0 3.9 2.17 3.9 5v6.76h-3.2v-6c0-1.43-.03-3.27-2-3.27-2 0-2.3 1.56-2.3 3.17v6.1H9V9Z" />
+      </svg>
+    ),
   },
   {
     label: "Twitter / X",
     href: X_PROFILE,
-    bg: "#091624",
-    tiltClass: "hover:-rotate-3",
-    icon: <img loading="lazy" decoding="async" src="/icons/social-x.svg" alt="Twitter / X" className="w-[18px] h-[18px] md:w-[24px] md:h-[24px]" />,
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className={MARK}>
+        <path fill="currentColor" d="M17.3 3.5h2.9l-6.35 7.26 7.47 9.74h-5.85l-4.58-5.98-5.24 5.98H2.74l6.8-7.77L2.4 3.5h6l4.14 5.47L17.3 3.5Zm-1.02 15.3h1.6L7.6 5.12H5.88L16.28 18.8Z" />
+      </svg>
+    ),
   },
 ];
 
@@ -580,22 +594,9 @@ export default function Footer() {
           </div>
 
           {/* Social icons */}
-          <div className="flex items-center relative z-10">
-            {socialLinks.map(({ label, href, bg, tiltClass, icon }, i) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className={`size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.18] ${tiltClass}`}
-                style={{
-                  background: bg,
-                  marginRight: "-4px",
-                  zIndex: i + 1,
-                  position: "relative",
-                }}
-              >
+          <div className="flex items-center gap-[12px] relative z-10 md:gap-[16px]">
+            {socialLinks.map(({ label, href, icon }) => (
+              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className={SOCIAL}>
                 {icon}
               </a>
             ))}
@@ -604,11 +605,10 @@ export default function Footer() {
               type="button"
               aria-label="Copy Ashmik's email address"
               onClick={() => window.dispatchEvent(new Event(COPY_EMAIL_EVENT))}
-              className="relative size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 bg-[#ea4335] text-white transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.18] hover:rotate-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              style={{ zIndex: socialLinks.length + 1 }}
+              className={SOCIAL}
             >
-              {/* A filled envelope */}
-              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] md:h-[24px] md:w-[24px]">
+              {/* An envelope, solid like the LinkedIn and X marks */}
+              <svg viewBox="0 0 24 24" aria-hidden="true" className={MARK}>
                 <path fill="currentColor" d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v.3l-9 5.6-9-5.6v-.3Z" />
                 <path fill="currentColor" d="M3 9.1V17.5A2.5 2.5 0 0 0 5.5 20h13a2.5 2.5 0 0 0 2.5-2.5V9.1l-8.47 5.27a1 1 0 0 1-1.06 0L3 9.1Z" />
               </svg>
