@@ -185,8 +185,8 @@ export default function ReviewThread({
         </span>
         <p className={`m-0 text-[14px] leading-[20px] ${GH.muted}`}>
           <span className={`font-medium ${GH.text}`}>Designer</span> {merged ? "merged 1 commit into" : "wants to merge 1 commit into"}{" "}
-          <code className="whitespace-nowrap rounded-md bg-[#ddf4ff] px-[6px] py-[2px] font-mono text-[12px] text-[#0969da]">main</code> from{" "}
-          <code className="whitespace-nowrap rounded-md bg-[#ddf4ff] px-[6px] py-[2px] font-mono text-[12px] text-[#0969da]">{branch}</code>
+          <code className="whitespace-nowrap rounded-md bg-[#ddf4ff] px-[6px] py-[2px] font-code text-[12px] text-[#0969da]">main</code> from{" "}
+          <code className="whitespace-nowrap rounded-md bg-[#ddf4ff] px-[6px] py-[2px] font-code text-[12px] text-[#0969da]">{branch}</code>
         </p>
       </div>
 
@@ -230,7 +230,7 @@ export default function ReviewThread({
                     {/* A commit hash shows in GitHub's bold mono */}
                     {item.text.split(/\b([0-9a-f]{7})\b/).map((part, j) =>
                       j % 2 ? (
-                        <code key={j} className={`font-mono text-[12px] font-semibold ${GH.text}`}>
+                        <code key={j} className={`font-code text-[12px] font-semibold ${GH.text}`}>
                           {part}
                         </code>
                       ) : (

@@ -2511,3 +2511,7 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
 }
 @keyframes fb-hint-pulse { 50% { box-shadow: 0 0 0 6px rgba(157, 19, 106, 0.06); } }
 @media (prefers-reduced-motion: reduce) { .fb-hint-dot { animation: none; } }
+
+/* Labels (font-brand) are Geist capitals now, not mono: keep their digits fixed-width so
+   counters, the timer and the ruler don't shift as numbers change */
+.font-brand { font-variant-numeric: tabular-nums; }

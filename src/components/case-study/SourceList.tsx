@@ -46,7 +46,7 @@ export default function SourceList({ sources }: { sources: Source[] }) {
             className="flex animate-[step-in_400ms_ease-out_both] flex-col gap-[12px] rounded-xl border border-line-soft bg-white p-[24px] motion-reduce:animate-none"
             style={{ animationDelay: `${i * 60}ms` }}
           >
-            <span className="font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted">{s.topic}</span>
+            <span className="font-brand text-[12px] uppercase leading-[16px] tracking-[1px] text-muted">{s.topic}</span>
             <p className="m-0 text-[16px] leading-[26px] text-heading">{s.finding}</p>
             <p className="m-0 text-[14px] leading-[22px] text-secondary">
               <span className="font-medium text-heading">Used for:</span> {s.applies}

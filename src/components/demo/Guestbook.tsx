@@ -66,7 +66,7 @@ export default function Guestbook() {
                   i === 0 ? "-rotate-[0.35deg]" : "rotate-[0.4deg]"
                 }`}
               >
-                <div className="mb-5 flex items-center justify-between border-b border-line/60 pb-[10px] font-brand text-[10px] uppercase leading-[14px] tracking-[0px] text-muted">
+                <div className="mb-5 flex items-center justify-between border-b border-line/60 pb-[10px] font-brand text-[10px] uppercase leading-[14px] tracking-[1px] text-muted">
                   <span>{String(i + 1).padStart(2, "0")} · Room {t.room}</span>
                   <span
                     aria-hidden="true"

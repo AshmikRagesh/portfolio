@@ -532,7 +532,7 @@ ${fringe(10, -1)}${fringe(146, 1)}
 <rect x="10" y="2" width="136" height="20" rx="1.6" fill="#034694"/>
 <path d="M16 2h8v20h-8ZM132 2h8v20h-8Z" fill="#F4F6FA"/>
 <path d="M27 2h3v20h-3ZM126 2h3v20h-3Z" fill="#F4F6FA"/>
-<text x="78" y="16.2" text-anchor="middle" font-family="var(--font-brand), monospace" font-weight="500" font-size="11" letter-spacing="3" fill="#F4F6FA">CHELSEA</text>
+<text x="78" y="16.2" text-anchor="middle" font-family="var(--font-geist), sans-serif" font-weight="500" font-size="11" letter-spacing="3" fill="#F4F6FA">CHELSEA</text>
 <rect x="10" y="2" width="136" height="20" rx="1.6" fill="url(#kn${id})"/>
 <rect x="10" y="2" width="136" height="20" rx="1.6" fill="url(#sh${id})"/>
 </svg>`;

@@ -171,7 +171,7 @@ export default function TimerBoard({ seconds, champion = false, grips = [], bare
           style={{ background: edition.face }}
         >
           {/* Engraved title — a light edge under the letters reads as cut into the face */}
-          <p className="text-center whitespace-nowrap font-brand font-medium text-[10px] leading-[12px] uppercase tracking-[0px] text-primary/60 [text-shadow:0_1px_0_rgba(255,255,255,0.6)]">
+          <p className="text-center whitespace-nowrap font-brand font-medium text-[10px] leading-[12px] uppercase tracking-[1px] text-primary/60 [text-shadow:0_1px_0_rgba(255,255,255,0.6)]">
             {title}
           </p>
 

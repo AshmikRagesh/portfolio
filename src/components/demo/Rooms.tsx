@@ -80,7 +80,7 @@ function RoomCard({ work, room, stayed, onEnter }: { work: FeaturedWork; room: s
 
       {/* Body */}
       <div className={`flex flex-1 flex-col gap-4 p-6 md:p-8 ${isFlagship ? "lg:col-start-1 lg:row-start-1" : ""}`}>
-        <p className="m-0 flex flex-wrap gap-x-2 gap-y-1 pr-12 font-brand text-[10px] uppercase leading-[16px] tracking-[0px] text-muted">
+        <p className="m-0 flex flex-wrap gap-x-2 gap-y-1 pr-12 font-brand text-[10px] uppercase leading-[16px] tracking-[1px] text-muted">
           <span className="font-medium text-grape">Room {room}</span>
           <span aria-hidden="true">/</span>
           <span>{[work.type, work.discipline].join(" · ")}</span>

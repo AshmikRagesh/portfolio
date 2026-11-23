@@ -38,6 +38,7 @@ const config: Config = {
       },
       fontFamily: {
         brand: [...tokens.fontFamily.brand],
+        code: [...tokens.fontFamily.code],
         geist: [...tokens.fontFamily.geist],
         body: [...tokens.fontFamily.body],
         heading: [...tokens.fontFamily.heading],

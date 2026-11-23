@@ -165,7 +165,7 @@ export function Quotes({ items }: { items: { text: React.ReactNode; attribution:
                 TILTS[i % TILTS.length]
               }`}
             >
-              <div className="mb-[20px] flex items-center justify-between border-b border-line/60 pb-[10px] font-brand text-[10px] uppercase leading-[14px] tracking-[0px] text-muted">
+              <div className="mb-[20px] flex items-center justify-between border-b border-line/60 pb-[10px] font-brand text-[10px] uppercase leading-[14px] tracking-[1px] text-muted">
                 <span>{String(i + 1).padStart(2, "0")}</span>
                 <PunchHole index={i} light />
               </div>
@@ -243,7 +243,7 @@ export function ProblemStatement({
   return (
     <div className="-rotate-[0.35deg] rounded-sm border border-line p-[20px] shadow-[0_4px_18px_rgba(30,5,37,0.10)] [background:linear-gradient(rgba(50,7,62,0.05)_1px,transparent_1px)_0_32px/100%_24px,#faf6ef] transition-transform duration-[260ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-[4px] hover:rotate-0 md:p-[32px] motion-reduce:transform-none motion-reduce:transition-none">
       <div className="mb-[20px] flex items-center justify-between border-b border-line/60 pb-[10px]">
-        <h3 className="font-brand text-[16px] font-medium uppercase leading-[20px] tracking-[0px] text-heading">
+        <h3 className="font-brand text-[16px] font-medium uppercase leading-[20px] tracking-[1px] text-heading">
           The Problem Statement
         </h3>
         <PunchHole index={2} light />
@@ -295,7 +295,7 @@ export function BarRows({
   return (
     <div className="mt-[32px]">
       {heads && (
-        <div className="mb-[16px] flex justify-between border-b border-line pb-[12px] font-brand text-caption uppercase text-muted">
+        <div className="mb-[16px] flex justify-between border-b border-line pb-[12px] font-brand text-caption uppercase tracking-[1px] text-muted">
           <span>{heads[0]}</span>
           <span>{heads[1]}</span>
         </div>
@@ -429,7 +429,7 @@ function Mark({ tone, children }: { tone: "pro" | "con" | "reason"; children: Re
 
 const NOTE = "flex gap-[12px] font-body text-[16px] leading-[26px] text-secondary md:text-[18px] md:leading-[30px]";
 
-const NOTE_HEAD = "font-brand text-[12px] uppercase leading-[16px] tracking-[0.5px] text-muted";
+const NOTE_HEAD = "font-brand text-[12px] uppercase leading-[16px] tracking-[1px] text-muted";
 
 // One column of notes under the option card's media, headed in the body face
 function NotePanel({ heading, children }: { heading: string; children: React.ReactNode }) {

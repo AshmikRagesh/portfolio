@@ -32,8 +32,11 @@ export const tokens = {
     warning:        "#c5444a",  // Negative — cons, alerts
   },
   fontFamily: {
-    // Geist Mono — nav links, CTA chips (self-hosted via next/font/local in layout.tsx)
-    brand: ["var(--font-brand)", "monospace"],
+    // Labels: nav links, eyebrows, tags, chips, set in Geist capitals with tracking. It was
+    // Geist Mono; monospace on labels that aren't code read as a generated-site default.
+    brand: ["var(--font-geist)", "sans-serif"],
+    // Geist Mono — only for real code (inline code, URLs, tokens). Not preloaded.
+    code: ["var(--font-code)", "ui-monospace", "monospace"],
     // Geist — plain UI sans, used for the host's tooltip (self-hosted via next/font/local in layout.tsx)
     geist: ["var(--font-geist)", "sans-serif"],
     // Geist — the secondary font: body / lead / captions, and the page default (next/font/local in layout.tsx)
