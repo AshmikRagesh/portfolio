@@ -199,7 +199,7 @@ function Chart({ metric, shown: inView }: { metric: Metric; shown: boolean }) {
                     <span className="absolute inset-0 animate-ping rounded-full bg-grape/30 motion-reduce:hidden" style={{ animationDuration: "2400ms" }} />
                   )}
                   <span
-                    className={`relative block rounded-full border-2 border-grape transition-[transform,opacity,background-color] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+                    className={`relative block rounded-full border-2 border-grape transition-[transform,opacity,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                       on ? "size-[12px] bg-grape" : "size-[10px] bg-white"
                     } ${shown ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
                     style={{ transitionDelay: shown && !touched ? `${(x(i) / 100) * DRAW}ms` : "0ms" }}

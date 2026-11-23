@@ -211,7 +211,7 @@ export function RoundButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>
 
 export const TURN_MS = 560;
 const TURN_EASE_OUT = "cubic-bezier(0.55, 0, 0.75, 0.4)"; // gathering speed to edge-on
-const TURN_EASE_IN = "cubic-bezier(0.2, 0.7, 0.3, 1.12)"; // and settling, with a little give
+const TURN_EASE_IN = "cubic-bezier(0.22, 1, 0.36, 1)"; // and settling, with a little give
 
 export function FlipStage({ phase, front, back }: { phase: FocusPhase; front: ReactNode; back: ReactNode }) {
   const turned = phase === "open";

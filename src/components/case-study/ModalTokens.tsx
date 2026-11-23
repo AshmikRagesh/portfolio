@@ -131,7 +131,7 @@ export default function ModalTokens() {
       <div className="grid items-center gap-[48px] font-geist text-heading md:grid-cols-[minmax(0,420px)_240px] md:justify-center md:gap-[64px]">
         {/* The modal */}
         <div
-          className={`flex flex-col items-center gap-[40px] transition-[opacity,transform] duration-[700ms] ease-[cubic-bezier(0.34,1.3,0.64,1)] motion-reduce:transition-none ${
+          className={`flex flex-col items-center gap-[40px] transition-[opacity,transform] duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
             shown ? "translate-y-0 scale-100 opacity-100" : "translate-y-[16px] scale-[0.96] opacity-0"
           }`}
         >

@@ -78,7 +78,7 @@ export default function ChatQuotes({ items, label }: { items: Message[]; label: 
           <li key={i} className="flex items-end gap-[12px]">
             <span
               aria-hidden="true"
-              className={`flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+              className={`flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                 TONES[senders.indexOf(from) % TONES.length]
               } ${here ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}
             >
@@ -105,7 +105,7 @@ export default function ChatQuotes({ items, label }: { items: Message[]; label: 
                   ))}
                 </span>
                 <blockquote
-                  className={`m-0 inline-block origin-bottom-left rounded-[22px] rounded-bl-[6px] bg-white px-[20px] py-[14px] font-geist text-lead text-heading shadow-[0_1px_2px_rgba(30,5,37,0.06),0_4px_16px_rgba(30,5,37,0.06)] ring-1 ring-line-soft transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.34,1.4,0.64,1)] motion-reduce:transition-none md:text-lead-md ${
+                  className={`m-0 inline-block origin-bottom-left rounded-[22px] rounded-bl-[6px] bg-white px-[20px] py-[14px] font-geist text-lead text-heading shadow-[0_1px_2px_rgba(30,5,37,0.06),0_4px_16px_rgba(30,5,37,0.06)] ring-1 ring-line-soft transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none md:text-lead-md ${
                     shown ? "scale-100 opacity-100" : "scale-[0.85] opacity-0"
                   }`}
                 >

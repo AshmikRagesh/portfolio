@@ -588,7 +588,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className={`size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] ${tiltClass}`}
+                className={`size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.18] ${tiltClass}`}
                 style={{
                   background: bg,
                   marginRight: "-4px",
@@ -604,7 +604,7 @@ export default function Footer() {
               type="button"
               aria-label="Copy Ashmik's email address"
               onClick={() => window.dispatchEvent(new Event(COPY_EMAIL_EVENT))}
-              className="relative size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 bg-[#ea4335] text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.18] hover:rotate-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="relative size-[44px] md:size-[56px] rounded-full border border-line-soft flex items-center justify-center shrink-0 bg-[#ea4335] text-white transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.18] hover:rotate-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               style={{ zIndex: socialLinks.length + 1 }}
             >
               {/* A filled envelope */}

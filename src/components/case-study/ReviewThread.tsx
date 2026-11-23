@@ -175,7 +175,7 @@ export default function ReviewThread({
         <span
           key={merged ? "merged" : "open"}
           className={`inline-flex h-[32px] items-center gap-[4px] rounded-full px-[12px] text-[14px] font-medium leading-[20px] text-white ${
-            merged ? "animate-[thread-pop_500ms_cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:animate-none" : ""
+            merged ? "animate-[thread-pop_500ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:animate-none" : ""
           } ${
             merged ? GH.purple : GH.green
           }`}
@@ -217,7 +217,7 @@ export default function ReviewThread({
                 {link}
                 <div className="relative flex items-center gap-[12px] pl-[54px]">
                   <span
-                    className={`flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-white ring-2 ring-surface transition-transform delay-[100ms] duration-[500ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+                    className={`flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-white ring-2 ring-surface transition-transform delay-[100ms] duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                       done || live ? "scale-100" : "scale-50"
                     } ${
                       approved ? GH.green : GH.purple

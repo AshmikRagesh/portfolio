@@ -694,7 +694,7 @@ export function Metrics({ items }: { items: { stat: string; label: string }[] })
       {items.map(({ stat, label }) => (
         <div key={stat} className="group/metric flex flex-col gap-[16px] rounded-xl bg-success-bg p-[24px]">
           {/* The arrow rises a touch on hover */}
-          <div className="flex justify-end transition-transform duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover/metric:-translate-y-[6px] motion-reduce:transition-none motion-reduce:group-hover/metric:translate-y-0">
+          <div className="flex justify-end transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/metric:-translate-y-[6px] motion-reduce:transition-none motion-reduce:group-hover/metric:translate-y-0">
             <TrendUpArrow />
           </div>
           <div className="flex flex-1 flex-col gap-[12px]">
