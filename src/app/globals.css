@@ -2562,24 +2562,23 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
 }
 
 /* Footer social buttons: real matte buttons, like soft-touch powder-coated metal.
-   - A lighter blackcurrant, with light falling softly from the top left and the far side
+   - Each in its own colour (--badge: LinkedIn blue, X black, mail red), with light falling softly from the top left and the far side
      turning away into shade (two gentle radial falloffs, no gloss or specular streak).
    - A fine grain over the surface, so it reads as a matte material, not flat paint.
    - A rounded edge: a hairline of light along the top rim, a darker lower rim.
    - Resting on the footer: a tight contact shadow and a soft ambient one.
    - The marks are stamped into it: a dark edge above, a faint light edge below.
-   A ring in the footer's own colour keeps overlapping buttons distinct. */
+   A fine 1px dark ring keeps overlapping buttons distinct without outlining them. */
 .social-badge {
   background:
     radial-gradient(120% 120% at 28% 18%, rgba(255, 236, 255, 0.13) 0%, rgba(255, 236, 255, 0) 55%),
-    radial-gradient(110% 110% at 76% 92%, rgba(18, 0, 24, 0.32) 0%, rgba(18, 0, 24, 0) 62%),
-    #5a1a67;
+    radial-gradient(110% 110% at 76% 92%, rgba(18, 0, 24, 0.28) 0%, rgba(18, 0, 24, 0) 62%),
+    var(--badge, #5a1a67);
   box-shadow:
-    0 0 0 2px #32073e,
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    inset 0 -1.5px 0 rgba(12, 0, 16, 0.32),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-    0 1px 2px rgba(10, 0, 14, 0.5),
+    0 0 0 1px rgba(30, 5, 37, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(12, 0, 16, 0.22),
+    0 1px 2px rgba(10, 0, 14, 0.45),
     0 10px 20px -10px rgba(10, 0, 14, 0.7);
   transition-property: transform, filter, box-shadow;
 }
@@ -2601,10 +2600,9 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
 }
 .social-badge:hover {
   box-shadow:
-    0 0 0 2px #32073e,
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -1.5px 0 rgba(12, 0, 16, 0.32),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 0 0 1px rgba(30, 5, 37, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(12, 0, 16, 0.22),
     0 2px 3px rgba(10, 0, 14, 0.45),
     0 18px 28px -12px rgba(10, 0, 14, 0.75);
 }

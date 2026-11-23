@@ -14,9 +14,8 @@ import { track } from "@/lib/curiosity/report";
 import Image from "next/image";
 import PaperTooth from "@/components/PaperTooth";
 
-// The social buttons: three overlapping buttons in a lighter shade of the primary
-// blackcurrant with a matte finish (.social-badge in globals.css), carrying the same filled
-// white marks the original coloured circles used. A ring in the footer's colour keeps the overlaps clean. On hover
+// The social buttons: three overlapping matte buttons in their own colours (LinkedIn blue,
+// X black, mail red; .social-badge in globals.css), carrying the original filled white marks. A ring in the footer's colour keeps the overlaps clean. On hover
 // a button rises above the others, grows and tips a little, with a springy overshoot (kept
 // on purpose: it's the footer's one playful moment).
 const SOCIAL =
@@ -30,6 +29,7 @@ const socialLinks = [
   {
     label: "LinkedIn",
     href: LINKEDIN,
+    color: "#1f88f9",
     tiltClass: "hover:rotate-6",
     icon: (
       <img loading="lazy" decoding="async" src="/icons/social-linkedin.svg" alt="" className={MARK} />
@@ -38,6 +38,7 @@ const socialLinks = [
   {
     label: "Twitter / X",
     href: X_PROFILE,
+    color: "#091624",
     tiltClass: "hover:-rotate-3",
     icon: (
       <img loading="lazy" decoding="async" src="/icons/social-x.svg" alt="" className={MARK} />
@@ -595,7 +596,7 @@ export default function Footer() {
 
           {/* Social icons */}
           <div className="flex items-center relative z-10">
-            {socialLinks.map(({ label, href, tiltClass, icon }, i) => (
+            {socialLinks.map(({ label, href, color, tiltClass, icon }, i) => (
               <a
                 key={label}
                 href={href}
@@ -603,7 +604,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 aria-label={label}
                 className={`${SOCIAL} ${tiltClass}`}
-                style={{ marginRight: "-4px", ["--z" as string]: i + 1 }}
+                style={{ marginRight: "-4px", ["--z" as string]: i + 1, ["--badge" as string]: color }}
               >
                 {icon}
               </a>
@@ -614,7 +615,7 @@ export default function Footer() {
               aria-label="Copy Ashmik's email address"
               onClick={() => window.dispatchEvent(new Event(COPY_EMAIL_EVENT))}
               className={`${SOCIAL} hover:rotate-3`}
-              style={{ ["--z" as string]: socialLinks.length + 1 }}
+              style={{ ["--z" as string]: socialLinks.length + 1, ["--badge" as string]: "#ea4335" }}
             >
               {/* The original filled envelope */}
               <svg viewBox="0 0 24 24" aria-hidden="true" className={MARK}>
