@@ -26,5 +26,5 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // One entry per locked case study in lib/caseLock (its page, plus any asset folders)
-  matcher: ["/works/tcs-search", "/works/tcs-search/:path*", "/images/tcs-search/:path*", "/videos/tcs-search/:path*"],
+  matcher: ["/works/ai-itinerary", "/works/ai-itinerary/:path*"],
 };

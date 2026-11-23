@@ -23,16 +23,15 @@ export type LockedCase = {
 };
 
 export const LOCKED: Record<string, LockedCase> = {
-  "tcs-search": {
-    title: "From every trip at once to the few that fit: filters for TCS search",
-    cover: "/images/tcs-search/cover.webp",
-    coverAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
-    // A separate variable from the old TCS_CASE_PASSWORD, so the agreed password applies
-    // until this one is set in Vercel (the repo is public, so set it there to keep it private)
-    env: "TCS_SEARCH_PASSWORD",
+  "ai-itinerary": {
+    title: "Designing an AI-powered itinerary builder for modern travellers",
+    cover: "/images/works-cover.png",
+    coverAlt: "AI Trip Planning preview",
+    env: "AI_ITINERARY_PASSWORD",
     fallback: "TCS search",
-    assets: ["/images/tcs-search/", "/videos/tcs-search/"],
-    open: ["/images/tcs-search/cover.webp"],
+    comingSoon: true,
+    assets: [],
+    open: [],
   },
 };
 
