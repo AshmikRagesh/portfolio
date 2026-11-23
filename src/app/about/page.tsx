@@ -12,6 +12,8 @@ import {
   DesignEngineerPill,
   FootballPill,
   SelfTaughtPill,
+  TravelopiaPill,
+  WorkflowPill,
 } from "@/components/about/Pills";
 
 export const metadata: Metadata = {
@@ -42,9 +44,9 @@ export default function AboutPage() {
                 Travelopia. I work across design, technology and everything it takes to bring a product to life.
               </p>
               <p>
-                Over time, I&apos;ve also started getting more hands-on with <CodeAndAIPill />. I helped build
-                a workflow that lets designers build components directly in code, within their brand&apos;s design
-                system. Since then, I&apos;ve been building components directly in code across Travelopia&apos;s brands,
+                Over time, I&apos;ve also started getting more hands-on with <CodeAndAIPill />. I helped build{" "}
+                <WorkflowPill /> that lets designers build components directly in code, within their brand&apos;s design
+                system. Since then, I&apos;ve been building components directly in code across <TravelopiaPill />&apos;s brands,
                 alongside my design work.
               </p>
               <p>
