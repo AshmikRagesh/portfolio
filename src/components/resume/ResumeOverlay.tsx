@@ -26,7 +26,7 @@ import TearSheet from "./TearSheet";
 import { EASE, lerp, spring } from "./motion";
 import { playOpen, preloadOpen } from "./paperSound";
 
-const RISE = spring(120, 17);
+const RISE = spring(120, 22); // critically damped: no overshoot
 const TILT_DEG = 2.4;
 
 function useViewport() {

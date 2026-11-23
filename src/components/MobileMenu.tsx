@@ -19,8 +19,8 @@ import { spring } from "@/components/resume/motion";
 
 type Link = { label: string; href: string };
 
-const DROP = spring(260, 24);
-const ITEM = spring(300, 26);
+const DROP = spring(260, 32); // critically damped: settles without overshooting
+const ITEM = spring(300, 35);
 const STAGGER = 45;
 // The card sits this far below the top of the screen: under the floating bar
 const CARD_TOP = 20 + 8 + 60 + 10;

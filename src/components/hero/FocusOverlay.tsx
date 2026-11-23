@@ -15,7 +15,7 @@ import { createPortal } from "react-dom";
 import { Backdrop } from "@/components/resume/paper";
 import { EASE, spring } from "@/components/resume/motion";
 
-const RISE = spring(120, 17);
+const RISE = spring(120, 22); // critically damped: no overshoot
 const HOME_MS = 460;
 
 export type FocusPhase = "flying" | "open" | "closing";
