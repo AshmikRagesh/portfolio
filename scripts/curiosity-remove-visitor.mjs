@@ -10,6 +10,7 @@
 //   node scripts/curiosity-remove-visitor.mjs <visitorId or its first 8+ chars>
 //   node scripts/curiosity-remove-visitor.mjs <visitorId> --apply
 //   node scripts/curiosity-remove-visitor.mjs <visitorId> --ns dev:curiosity
+//   node scripts/curiosity-remove-visitor.mjs <visitorId> --apply --keep-counting   # not Ashmik: remove, but count them if they come back
 //
 // Daily snapshots already taken are history and stay as they are. Visits older
 // than 90 days have expired, so only their totals remain and can't be undone.
@@ -31,6 +32,7 @@ if (!env.UPSTASH_REDIS_REST_URL || !env.UPSTASH_REDIS_REST_TOKEN) {
 
 const args = process.argv.slice(2);
 const APPLY = args.includes("--apply");
+const KEEP_COUNTING = args.includes("--keep-counting");
 const nsAt = args.indexOf("--ns");
 const NS = nsAt >= 0 ? args[nsAt + 1] : "curiosity";
 const wanted = args.find((a, i) => !a.startsWith("--") && args[i - 1] !== "--ns");
@@ -121,8 +123,9 @@ visits.forEach((v, i) => {
 // Visitor-level scores: every leaderboard (all-time and each month), lifetime, in the house now
 for (const board of await scan(`${NS}:board:*`)) commands.push(["ZREM", board, visitorId]);
 commands.push(["ZREM", `${NS}:lifetime`, visitorId], ["ZREM", `${NS}:present`, visitorId]);
-// And stop counting this device from now on (read by skipCounting in lib/owner.ts)
-commands.push(["SADD", `${NS}:owner:visitors`, visitorId]);
+// And stop counting this device from now on (read by skipCounting in lib/owner.ts),
+// unless --keep-counting: for clearing out someone else's visits, not Ashmik's own
+if (!KEEP_COUNTING) commands.push(["SADD", `${NS}:owner:visitors`, visitorId]);
 
 console.log(`Visitor ${visitorId} in ${NS}`);
 console.log(`  ${visits.length} stored visits, ${summary.visits} counted, ${Math.round(summary.seconds / 60)} min active`);
