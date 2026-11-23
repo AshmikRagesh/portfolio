@@ -575,7 +575,7 @@ export default function Footer() {
               {" "}Don&apos;t be a stranger.
             </h2>
             <p className="font-body font-normal text-[16px] leading-[26px] text-white/70 text-balance max-w-[320px] md:max-w-[500px] md:text-[18px] md:leading-[28px] lg:text-[20px] lg:leading-[30px] lg:max-w-[504px]">
-              The front desk is always open for work enquiries. Drop me a line.
+              Always open to new opportunities. I'd love to connect.
             </p>
           </div>
 
