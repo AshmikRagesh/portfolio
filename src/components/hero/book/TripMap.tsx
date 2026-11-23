@@ -7,7 +7,7 @@
 // pin at each. Pick a stop (here or in the list) and the map glides in on it, its label
 // slides out; pick it again and it eases back out to the whole map.
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { MAPS } from "./maps";
 import type { Trip } from "./trip";
 import { useReducedMotion } from "../FocusOverlay";
@@ -17,7 +17,7 @@ type View = { x: number; y: number; w: number; h: number };
 const FULL: View = { x: 0, y: 0, w: PW, h: PH };
 const ZOOM = 0.42; // zoomed view, as a fraction of the page
 
-export default function TripMap({ trip, active, onPick, id }: { trip: Trip; active: number | null; onPick: (i: number | null) => void; id: string }) {
+function TripMap({ trip, active, onPick, id }: { trip: Trip; active: number | null; onPick: (i: number | null) => void; id: string }) {
   const svg = useRef<SVGSVGElement>(null);
   const view = useRef<View>({ ...FULL });
   const reduced = useReducedMotion();
@@ -138,3 +138,6 @@ export default function TripMap({ trip, active, onPick, id }: { trip: Trip; acti
     </svg>
   );
 }
+
+// Memoized: the book re-renders on every turn, the map only needs to when its trip or stop changes
+export default memo(TripMap);

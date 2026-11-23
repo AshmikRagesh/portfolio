@@ -35,7 +35,7 @@ export const tokens = {
     // Labels: nav links, eyebrows, tags, chips, set in Geist capitals with tracking. It was
     // Geist Mono; monospace on labels that aren't code read as a generated-site default.
     brand: ["var(--font-geist)", "sans-serif"],
-    // Geist Mono — only for real code (inline code, URLs, tokens). Not preloaded.
+    // Geist Mono — the navbar tabs, the curiosity board title, and real code (inline code, URLs, tokens)
     code: ["var(--font-code)", "ui-monospace", "monospace"],
     // Geist — plain UI sans, used for the host's tooltip (self-hosted via next/font/local in layout.tsx)
     geist: ["var(--font-geist)", "sans-serif"],

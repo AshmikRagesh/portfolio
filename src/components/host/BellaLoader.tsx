@@ -238,7 +238,7 @@ export default function BellaLoader() {
   return (
     <div
       ref={rootRef}
-      className={`bella-loader fixed inset-0 z-[1000] select-none font-brand text-caption uppercase tracking-[1px]`}
+      className={`bella-loader fixed inset-0 z-[1000] select-none font-code text-caption uppercase`}
       role="progressbar"
       aria-label="Loading the site"
       aria-valuemin={0}

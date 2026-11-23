@@ -349,7 +349,8 @@ function NavTab({ label, href, pathname, inView }: { label: string; href: string
   const resume = href === RESUME_PDF;
   const page = href.startsWith("/") && pathname === href;
   const current = page || inView === href;
-  const className = `nav-tab font-brand text-body font-normal uppercase tracking-[1px] whitespace-nowrap ${
+  // The navbar tabs keep Geist Mono (font-code), as the curiosity board does
+  const className = `nav-tab font-code text-body font-normal uppercase tracking-[1px] whitespace-nowrap ${
     current ? "text-grape" : "text-text-base/70"
   }`;
   const inner = (

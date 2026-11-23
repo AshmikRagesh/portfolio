@@ -20,7 +20,7 @@
 // at full width: a swipe slides from a trip's stops to its route, and the next swipe turns
 // the leaf over while the book slides along with it, so the turned page lands in view.
 
-import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import HoverTip from "../HoverTip";
 import FocusOverlay, { RoundButton, useReducedMotion, type FocusPhase } from "../FocusOverlay";
 import { Cover, ClosedEdges, PH, PW } from "./Cover";
@@ -68,7 +68,7 @@ function Thumbs({ stop, onOpen }: { stop: Trip["stops"][number]; onOpen: (p: num
   );
 }
 
-function Itinerary({ trip, index, active, setActive, openPhoto }: { trip: Trip; index: number; active: number | null; setActive: (i: number | null) => void; openPhoto: (s: number, p: number) => void }) {
+const Itinerary = memo(function Itinerary({ trip, index, active, setActive, openPhoto }: { trip: Trip; index: number; active: number | null; setActive: (i: number | null) => void; openPhoto: (s: number, p: number) => void }) {
   return (
     <div className="flex h-full flex-col pl-7 pr-9 pt-7">
       <p className="font-geist text-[10px] font-medium uppercase leading-none tracking-[1.6px] text-muted">
@@ -115,7 +115,7 @@ function Itinerary({ trip, index, active, setActive, openPhoto }: { trip: Trip; 
       </div>
     </div>
   );
-}
+});
 
 function EndPaper() {
   return (
@@ -195,6 +195,8 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
   const castR = useRef<HTMLDivElement>(null);
   const castL = useRef<HTMLDivElement>(null);
   const board = useRef<HTMLDivElement>(null);
+  // Each leaf's two faces [front, back], shown by angle (Safari doesn't honour backface-visibility here)
+  const faceEls = useRef<(HTMLDivElement | null)[]>([]);
   const tableShadow = useRef<HTMLDivElement>(null);
   const sim = useRef<Sim>({ a: Array(LEAVES).fill(0), v: Array(LEAVES).fill(0), target: Array(LEAVES).fill(0), startAt: Array(LEAVES).fill(0), p: 0, pv: 0, pt: 0 });
   const dragging = useRef<{ leaf: number; r: number; lastA: number; lastT: number; w: number; a0: number; scale: number } | null>(null);
@@ -223,6 +225,14 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
         lead = i;
       }
       el.style.transform = `rotateY(${(-th).toFixed(3)}deg)`;
+      // The side facing away is faded out: Safari shows it mirrored through the page otherwise
+      // (backface-visibility alone isn't enough there). A near-zero opacity rather than
+      // visibility: hidden, so the browser keeps both sides drawn and has nothing to paint
+      // for the first time halfway through a turn.
+      const showBack = th > 90;
+      const fF = faceEls.current[i * 2], fB = faceEls.current[i * 2 + 1];
+      if (fF) fF.style.opacity = showBack ? "0.001" : "1";
+      if (fB) fB.style.opacity = showBack ? "1" : "0.001";
       // Stacking: on the left the later page lies on top, on the right the earlier one does.
       // A page in the air is lifted above the resting pages but keeps that same order, so
       // two pages moving at once (closing) never pass through each other.
@@ -230,31 +240,40 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
       el.style.zIndex = String(side + (d === i ? 40 : lift > 0.02 ? 25 : 0));
       const [front, back] = [shadeEls.current[i * 2], shadeEls.current[i * 2 + 1]];
       // Shading across the lifting page: darker towards the spine, a soft highlight along the curve
-      const sh = (0.28 * lift).toFixed(3);
-      const hi = (0.22 * lift).toFixed(3);
+      const sh = (0.16 * lift).toFixed(3);
+      const hi = (0.14 * lift).toFixed(3);
       if (front) front.style.background = `linear-gradient(to left, rgba(255,255,255,${hi}) 0%, rgba(255,255,255,0) 22%, rgba(30,5,37,0) 55%, rgba(30,5,37,${sh}) 100%)`;
       if (back) back.style.background = `linear-gradient(to right, rgba(255,255,255,${hi}) 0%, rgba(255,255,255,0) 22%, rgba(30,5,37,0) 55%, rgba(30,5,37,${sh}) 100%)`;
     }
     // The lifted page's shadow on whichever page it's over
     const th = lead >= 0 ? a[lead] : 0;
     const proj = Math.cos((th * Math.PI) / 180); // where its edge is, -1 left … 1 right
-    const strength = (0.32 * leadLift).toFixed(3);
+    const strength = (0.2 * leadLift).toFixed(3);
     if (castR.current) {
       const on = lead >= 0 && proj > 0;
       castR.current.style.opacity = on ? "1" : "0";
-      if (on) castR.current.style.background = `linear-gradient(to right, rgba(30,5,37,${strength}) 0%, rgba(30,5,37,${(0.6 * Number(strength)).toFixed(3)}) ${(proj * 100).toFixed(1)}%, rgba(30,5,37,0) ${Math.min(100, proj * 100 + 18).toFixed(1)}%)`;
+      if (on) castR.current.style.background = `linear-gradient(to right, rgba(30,5,37,${strength}) 0%, rgba(30,5,37,${(0.6 * Number(strength)).toFixed(3)}) ${(proj * 100).toFixed(1)}%, rgba(30,5,37,0) ${Math.min(100, proj * 100 + 12).toFixed(1)}%)`;
     }
     if (castL.current) {
       const on = lead >= 0 && proj < 0;
       castL.current.style.opacity = on ? "1" : "0";
-      if (on) castL.current.style.background = `linear-gradient(to left, rgba(30,5,37,${strength}) 0%, rgba(30,5,37,${(0.6 * Number(strength)).toFixed(3)}) ${(-proj * 100).toFixed(1)}%, rgba(30,5,37,0) ${Math.min(100, -proj * 100 + 18).toFixed(1)}%)`;
+      if (on) castL.current.style.background = `linear-gradient(to left, rgba(30,5,37,${strength}) 0%, rgba(30,5,37,${(0.6 * Number(strength)).toFixed(3)}) ${(-proj * 100).toFixed(1)}%, rgba(30,5,37,0) ${Math.min(100, -proj * 100 + 12).toFixed(1)}%)`;
     }
     // Closed, the cover sits in the middle; as it opens the whole book slides over so the spread is centred
     const open = (1 - Math.cos((a[0] * Math.PI) / 180)) / 2;
     const shift = compactRef.current ? sim.current.p : open * PW * 0.5;
     if (root.current) root.current.style.transform = `translateX(${shift.toFixed(2)}px)`;
-    if (board.current) board.current.style.left = `${((1 - open) * PW - 4).toFixed(2)}px`;
-    if (tableShadow.current) tableShadow.current.style.left = `${((1 - open) * PW + 16).toFixed(2)}px`;
+    // The back board (and the shadow under it) opens out with the cover's own edge: it stays
+    // put while the cover is still over the right-hand side, then follows the edge as it
+    // comes down on the left, so no bare board shows beside the turning cover
+    // Done with transforms only (no left/width changes), so the turn needs no layout or
+    // repaint each frame: the left half of the board scales out from the spine, and the
+    // shadow under the book stretches from its right end.
+    const edge = PW * (1 + Math.min(0, Math.cos((a[0] * Math.PI) / 180)));
+    // The left half of the board fades in as the cover lands on it (stretching it after the
+    // cover's edge never quite lines up under perspective, so its edge peeked out)
+    if (board.current) board.current.style.opacity = Math.min(1, Math.max(0, (a[0] - 150) / 26)).toFixed(3);
+    if (tableShadow.current) tableShadow.current.style.transform = `scaleX(${((2 * PW - edge - 32) / (2 * PW - 32)).toFixed(4)})`;
   }, []);
 
   // ── The spring ──
@@ -519,20 +538,26 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
     run();
   };
 
-  const openPhoto = (t: number) => (s: number, p: number) => setPhoto({ t, s, p });
-  const faces: { front: ReactNode; back: ReactNode }[] = [];
-  for (let i = 0; i < LEAVES; i++) {
-    const front = i === 0 ? <Cover /> : <Paper side="right"><TripMap trip={TRIPS[i - 1]} active={active[i - 1]} onPick={(s) => setActive((a) => a.map((x, k) => (k === i - 1 ? s : x)))} id={`${uid}-m${i}`} /></Paper>;
-    const back =
-      i < TRIPS.length ? (
-        <Paper side="left">
-          <Itinerary trip={TRIPS[i]} index={i} active={active[i]} setActive={(s) => setActive((a) => a.map((x, k) => (k === i ? s : x)))} openPhoto={openPhoto(i)} />
-        </Paper>
-      ) : (
-        <Paper side="left"><EndPaper /></Paper>
-      );
-    faces.push({ front, back });
-  }
+  // Stable callbacks per trip, so turning a page doesn't re-render every map and itinerary
+  // (that work landed on the first frames of each turn and made it stutter)
+  const pickers = useMemo(() => TRIPS.map((_, t) => (stop: number | null) => setActive((a) => a.map((x, k) => (k === t ? stop : x)))), []);
+  const photoOpeners = useMemo(() => TRIPS.map((_, t) => (stop: number, p: number) => setPhoto({ t, s: stop, p })), []);
+  const faces = useMemo(() => {
+    const list: { front: ReactNode; back: ReactNode }[] = [];
+    for (let i = 0; i < LEAVES; i++) {
+      const front = i === 0 ? <Cover /> : <Paper side="right"><TripMap trip={TRIPS[i - 1]} active={active[i - 1]} onPick={pickers[i - 1]} id={`${uid}-m${i}`} /></Paper>;
+      const back =
+        i < TRIPS.length ? (
+          <Paper side="left">
+            <Itinerary trip={TRIPS[i]} index={i} active={active[i]} setActive={pickers[i]} openPhoto={photoOpeners[i]} />
+          </Paper>
+        ) : (
+          <Paper side="left"><EndPaper /></Paper>
+        );
+      list.push({ front, back });
+    }
+    return list;
+  }, [active, pickers, photoOpeners, uid]);
   const viewing = photo && turned === photo.t + 1 ? photo : null;
   // A photo opens over the right-hand page, or on a phone over the page in view
   const photoLeft = compact && side === "l" ? 0 : PW;
@@ -541,7 +566,7 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
     <div
       ref={root}
       className="absolute top-0 select-none"
-      style={{ left: -PW, width: PW * 2, height: PH, perspective: 2400, touchAction: "pan-y" }}
+      style={{ left: -PW, width: PW * 2, height: PH, perspective: 1700, touchAction: "pan-y" }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -556,9 +581,21 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
     >
       {/* A soft contact shadow under the book; it covers only the cover while closed and
           widens with the spread as it opens */}
-      <div ref={tableShadow} className="pointer-events-none absolute -bottom-3 h-6 rounded-[50%] bg-midnight/15 blur-lg" style={{ left: PW + 16, right: 16 }} aria-hidden="true" />
-      {/* Back board and page block, under everything */}
-      <div ref={board} className="absolute -bottom-1 -top-1 right-[-4px] rounded-[4px_10px_10px_4px] bg-[#e9e3d6] shadow-[0_1px_2px_rgba(30,5,37,0.10),0_10px_24px_rgba(30,5,37,0.10)]" style={{ left: PW - 4 }} aria-hidden="true" />
+      <div
+        ref={tableShadow}
+        className="pointer-events-none absolute -bottom-3 h-6 rounded-[50%] bg-midnight/15 blur-lg will-change-transform"
+        style={{ left: 16, right: 16, transformOrigin: "100% 50%", transform: `scaleX(${((PW - 32) / (2 * PW - 32)).toFixed(4)})` }}
+        aria-hidden="true"
+      />
+      {/* Back board and page block, under everything: the right half stays put; the left half
+          (under the open cover) fades in as the cover lands */}
+      <div className="absolute -bottom-1 -top-1 right-[-4px] rounded-[4px_10px_10px_4px] bg-[#e9e3d6] shadow-[0_1px_2px_rgba(30,5,37,0.10),0_10px_24px_rgba(30,5,37,0.10)]" style={{ left: PW - 4 }} aria-hidden="true" />
+      <div
+        ref={board}
+        className="absolute -bottom-1 -top-1 left-[-4px] rounded-[10px_0_0_10px] bg-[#e9e3d6] shadow-[0_1px_2px_rgba(30,5,37,0.10),0_10px_24px_rgba(30,5,37,0.10)] will-change-[opacity]"
+        style={{ width: PW + 4, opacity: 0 }}
+        aria-hidden="true"
+      />
       <div className="pointer-events-none absolute top-0" style={{ left: PW, width: PW, height: PH }} aria-hidden="true">
         <ClosedEdges />
       </div>
@@ -574,11 +611,25 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
             className="absolute top-0 will-change-transform"
             style={{ left: PW, width: PW, height: PH, transformOrigin: "0 50%", transformStyle: "preserve-3d", zIndex: 10 + LEAVES - i }}
           >
-            <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }} inert={isTurned ? true : undefined}>
+            <div
+              ref={(el) => {
+                faceEls.current[i * 2] = el;
+              }}
+              className="absolute inset-0"
+              style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", opacity: sim.current.a[i] > 90 ? 0.001 : 1 }}
+              inert={isTurned ? true : undefined}
+            >
               {f.front}
               <div ref={(el) => { shadeEls.current[i * 2] = el; }} className={`pointer-events-none absolute inset-0 ${i === 0 ? "rounded-[3px_10px_10px_3px]" : "rounded-r-[6px]"}`} />
             </div>
-            <div className="absolute inset-0" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }} inert={!isTurned ? true : undefined}>
+            <div
+              ref={(el) => {
+                faceEls.current[i * 2 + 1] = el;
+              }}
+              className="absolute inset-0"
+              style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)", opacity: sim.current.a[i] > 90 ? 1 : 0.001 }}
+              inert={!isTurned ? true : undefined}
+            >
               {f.back}
               <div ref={(el) => { shadeEls.current[i * 2 + 1] = el; }} className="pointer-events-none absolute inset-0 rounded-l-[6px]" />
             </div>
@@ -586,9 +637,10 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
         );
       })}
 
-      {/* Shadows the turning page casts on the pages under it */}
-      <div ref={castR} className="pointer-events-none absolute top-0 z-[35] rounded-r-[6px] opacity-0" style={{ left: PW, width: PW, height: PH }} aria-hidden="true" />
-      <div ref={castL} className="pointer-events-none absolute top-0 z-[35] rounded-l-[6px] opacity-0" style={{ left: 0, width: PW, height: PH }} aria-hidden="true" />
+      {/* Shadows the turning page casts on the pages under it: above the resting pages (z 10–15)
+          but below the lifted one (z 35 and up), so a page never shades itself as it lands */}
+      <div ref={castR} className="pointer-events-none absolute top-0 z-[30] rounded-r-[6px] opacity-0" style={{ left: PW, width: PW, height: PH }} aria-hidden="true" />
+      <div ref={castL} className="pointer-events-none absolute top-0 z-[30] rounded-l-[6px] opacity-0" style={{ left: 0, width: PW, height: PH }} aria-hidden="true" />
 
       {/* A photo, open over the right-hand page */}
       {viewing && (

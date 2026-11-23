@@ -8,13 +8,13 @@ import "./globals.css";
 // crashes when Google returns a font address without a file extension, which failed
 // production builds on Vercel.
 
-// Geist Mono — only for real code (inline code, URLs, tokens), so it isn't preloaded
+// Geist Mono — the navbar tabs and the curiosity board, plus real code (inline code, URLs,
+// tokens). Preloaded, since the navbar is on screen on every page
 const geistMono = localFont({
   src: "./fonts/GeistMono-Variable.woff2",
   variable: "--font-code",
   weight: "100 900",
   display: "swap",
-  preload: false,
 });
 
 // Geist — the secondary font: body text everywhere, and plain UI
