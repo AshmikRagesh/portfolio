@@ -225,12 +225,14 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
         lead = i;
       }
       el.style.transform = `rotateY(${(-th).toFixed(3)}deg)`;
-      // The side facing away is hidden outright: Safari shows it mirrored through the page
-      // otherwise (backface-visibility alone isn't enough there)
+      // The side facing away is faded out: Safari shows it mirrored through the page otherwise
+      // (backface-visibility alone isn't enough there). A near-zero opacity rather than
+      // visibility: hidden, so the browser keeps both sides drawn and has nothing to paint
+      // for the first time halfway through a turn.
       const showBack = th > 90;
       const fF = faceEls.current[i * 2], fB = faceEls.current[i * 2 + 1];
-      if (fF) fF.style.visibility = showBack ? "hidden" : "visible";
-      if (fB) fB.style.visibility = showBack ? "visible" : "hidden";
+      if (fF) fF.style.opacity = showBack ? "0.001" : "1";
+      if (fB) fB.style.opacity = showBack ? "1" : "0.001";
       // Stacking: on the left the later page lies on top, on the right the earlier one does.
       // A page in the air is lifted above the resting pages but keeps that same order, so
       // two pages moving at once (closing) never pass through each other.
@@ -268,7 +270,9 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
     // repaint each frame: the left half of the board scales out from the spine, and the
     // shadow under the book stretches from its right end.
     const edge = PW * (1 + Math.min(0, Math.cos((a[0] * Math.PI) / 180)));
-    if (board.current) board.current.style.transform = `scaleX(${((PW - edge) / PW).toFixed(4)})`;
+    // The left half of the board fades in as the cover lands on it (stretching it after the
+    // cover's edge never quite lines up under perspective, so its edge peeked out)
+    if (board.current) board.current.style.opacity = Math.min(1, Math.max(0, (a[0] - 150) / 26)).toFixed(3);
     if (tableShadow.current) tableShadow.current.style.transform = `scaleX(${((2 * PW - edge - 32) / (2 * PW - 32)).toFixed(4)})`;
   }, []);
 
@@ -584,12 +588,12 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
         aria-hidden="true"
       />
       {/* Back board and page block, under everything: the right half stays put; the left half
-          (the back cover's inside, seen once it's open) unfolds from the spine as the cover turns */}
+          (under the open cover) fades in as the cover lands */}
       <div className="absolute -bottom-1 -top-1 right-[-4px] rounded-[4px_10px_10px_4px] bg-[#e9e3d6] shadow-[0_1px_2px_rgba(30,5,37,0.10),0_10px_24px_rgba(30,5,37,0.10)]" style={{ left: PW - 4 }} aria-hidden="true" />
       <div
         ref={board}
-        className="absolute -bottom-1 -top-1 left-[-4px] rounded-[10px_0_0_10px] bg-[#e9e3d6] shadow-[0_1px_2px_rgba(30,5,37,0.10),0_10px_24px_rgba(30,5,37,0.10)] will-change-transform"
-        style={{ width: PW + 4, transformOrigin: "100% 50%", transform: "scaleX(0)" }}
+        className="absolute -bottom-1 -top-1 left-[-4px] rounded-[10px_0_0_10px] bg-[#e9e3d6] shadow-[0_1px_2px_rgba(30,5,37,0.10),0_10px_24px_rgba(30,5,37,0.10)] will-change-[opacity]"
+        style={{ width: PW + 4, opacity: 0 }}
         aria-hidden="true"
       />
       <div className="pointer-events-none absolute top-0" style={{ left: PW, width: PW, height: PH }} aria-hidden="true">
@@ -612,7 +616,7 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
                 faceEls.current[i * 2] = el;
               }}
               className="absolute inset-0"
-              style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", visibility: sim.current.a[i] > 90 ? "hidden" : "visible" }}
+              style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", opacity: sim.current.a[i] > 90 ? 0.001 : 1 }}
               inert={isTurned ? true : undefined}
             >
               {f.front}
@@ -623,7 +627,7 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
                 faceEls.current[i * 2 + 1] = el;
               }}
               className="absolute inset-0"
-              style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)", visibility: sim.current.a[i] > 90 ? "visible" : "hidden" }}
+              style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)", opacity: sim.current.a[i] > 90 ? 1 : 0.001 }}
               inert={!isTurned ? true : undefined}
             >
               {f.back}
