@@ -15,15 +15,15 @@ import Image from "next/image";
 import { Mail } from "lucide-react";
 import PaperTooth from "@/components/PaperTooth";
 
-// The social buttons: three circles that overlap, each in a shade from the site's own
-// palette (grape, midnight, orchid), with line icons at the design system's 2px stroke.
-// A ring in the footer's blackcurrant keeps the overlaps clean. On hover a circle rises
-// above the others, grows and tips a little, with a springy overshoot (kept on purpose:
-// it's the footer's one playful moment).
+// The social buttons: three overlapping circles, all in the design system's light grape
+// (grape-light) with blackcurrant line icons at the DS's 2px stroke. A ring in the footer's
+// blackcurrant keeps the overlaps clean. On hover a circle rises above the others, grows,
+// tips a little and brightens to white, with a springy overshoot (kept on purpose: it's the
+// footer's one playful moment).
 const SOCIAL =
-  "group/social relative flex size-[44px] shrink-0 items-center justify-center rounded-full text-white " +
-  "[box-shadow:0_0_0_2px_#32073e,inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(0,0,0,0.18)] " +
-  "z-[var(--z)] transition-transform duration-[420ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:z-20 hover:scale-[1.18] " +
+  "group/social relative flex size-[44px] shrink-0 items-center justify-center rounded-full bg-grape-light text-primary " +
+  "[box-shadow:0_0_0_2px_#32073e,inset_0_-2px_0_rgba(50,7,62,0.10)] " +
+  "z-[var(--z)] transition-[transform,background-color] duration-[420ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:z-20 hover:scale-[1.18] hover:bg-white " +
   "focus-visible:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F9E4FF] md:size-[56px]";
 const MARK = "h-[20px] w-[20px] md:h-[24px] md:w-[24px]";
 const LINE = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
@@ -32,7 +32,6 @@ const socialLinks = [
   {
     label: "LinkedIn",
     href: LINKEDIN,
-    bg: "#9D136A", // grape
     tiltClass: "hover:rotate-6",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true" className={MARK} {...LINE}>
@@ -44,7 +43,6 @@ const socialLinks = [
   {
     label: "Twitter / X",
     href: X_PROFILE,
-    bg: "#1e0525", // midnight
     tiltClass: "hover:-rotate-3",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true" className={MARK} {...LINE}>
@@ -605,7 +603,7 @@ export default function Footer() {
 
           {/* Social icons */}
           <div className="flex items-center relative z-10">
-            {socialLinks.map(({ label, href, bg, tiltClass, icon }, i) => (
+            {socialLinks.map(({ label, href, tiltClass, icon }, i) => (
               <a
                 key={label}
                 href={href}
@@ -613,7 +611,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 aria-label={label}
                 className={`${SOCIAL} ${tiltClass}`}
-                style={{ background: bg, marginRight: "-4px", ["--z" as string]: i + 1 }}
+                style={{ marginRight: "-4px", ["--z" as string]: i + 1 }}
               >
                 {icon}
               </a>
@@ -624,7 +622,7 @@ export default function Footer() {
               aria-label="Copy Ashmik's email address"
               onClick={() => window.dispatchEvent(new Event(COPY_EMAIL_EVENT))}
               className={`${SOCIAL} hover:rotate-3`}
-              style={{ background: "#D66FB6", ["--z" as string]: socialLinks.length + 1 }}
+              style={{ ["--z" as string]: socialLinks.length + 1 }}
             >
               {/* The design system's mail icon (lucide), in the same line style */}
               <Mail className={MARK} strokeWidth={2} aria-hidden="true" />
