@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ShieldCheck, TrendDown, UsersThree, Warning } from "@phosphor-icons/react/dist/ssr";
+import { ShieldCheck, UsersThree, Warning } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -49,8 +49,8 @@ function Overview() {
           arranged it through an outside provider. I designed a travel
           protection section inside the traveller details step, with <Highlight>two
           plans side by side that guests can add without leaving the
-          booking</Highlight>. Muzamil built it and set it up in Artemis, and since its
-          December 2024 launch, adoption has gone from 7% to 52%.
+          booking</Highlight>. It launched in December 2024, and adoption has since
+          gone from 7% to 52%.
         </p>
         <Meta
           role="End-to-end Design & Developer Handoff"
@@ -66,147 +66,100 @@ function Overview() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Background
+// Section: Discovery  (how the problem came up, what we checked, and the reframe)
 // ─────────────────────────────────────────────────────────────────────────────
-function Background() {
+// Facts from case-studies/artemis-insurance-notes.md (my-portfolio), confirmed by Ashmik
+// 24 Nov 2026. The conversation is paraphrased: it happened, the wording is reconstructed.
+const CONVERSATION = [
+  { text: "Can I add travel insurance to this trip? I couldn’t find it anywhere in the booking.", from: "Guest" },
+  { text: "We don’t sell insurance ourselves, but I can arrange cover through an outside provider for you.", from: "Travel consultant" },
+  { text: "So I have to sort that out separately before I pay?", from: "Guest" },
+  { text: "Guests keep coming back to us to add insurance, and we’re arranging it one booking at a time.", from: "Travel consultant, to the project team" },
+];
+
+const FINDINGS = [
+  {
+    icon: <Warning size={28} weight="fill" className="text-grape" />,
+    title: "Guests had to leave the booking to ask",
+    description: "Artemis had no insurance option, so adding cover meant contacting a consultant in the middle of booking.",
+  },
+  {
+    icon: <UsersThree size={28} weight="fill" className="text-grape" />,
+    title: "Consultants handled every request by hand",
+    description: "Each guest who wanted cover meant a consultant arranging it with an outside provider, one booking at a time.",
+  },
+  {
+    icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
+    title: "Every guest we interviewed wanted it",
+    description: "All the frequent guests we spoke to raised insurance, and wanted to add it inside the booking flow.",
+  },
+];
+
+function Discovery() {
   return (
-    <Chapter id="discovery" num={2} title="The guest booking flow — and the gap in it">
+    <Chapter id="discovery" num={2} title="From a consultant’s request to a design question">
       <Copy>
         <p>
-          The guest booking flow is Enchanting Travels&apos; <Highlight>only direct
-          digital touchpoint with guests</Highlight> — where high-value trips
-          ($5,000–$50,000+) are formally confirmed: traveller details,
-          payment, and trip sign-off.
-        </p>
-        <p>
-          It&apos;s the moment guests are most open to insurance. They&apos;ve
-          committed emotionally and are about to pay. Yet <Highlight>the platform had
-          no option for it</Highlight> — guests had to ask their TC separately or find
-          coverage on their own, mid-booking.
+          The problem came from the front line. Travel consultants told Anish,
+          our project manager, that <Highlight>guests kept asking them to add travel
+          insurance</Highlight> to their trips. The team picked it up and brought me
+          in to find out how big the problem was and where it sat in the booking.
         </p>
       </Copy>
       <Visual>
         <Figure label="Artemis booking flow — before state" />
       </Visual>
-      <Research />
-      <Insights />
+      <div className="cs-sub">
+        <Copy>
+          <h3>What guests and consultants were saying</h3>
+          <p>
+            Guests found no way to add cover while booking, so they went back to
+            their consultant, who had to <Highlight>arrange it through an outside
+            provider</Highlight>. A typical exchange went like this:
+          </p>
+          <ChatQuotes label="A typical exchange between a guest and a travel consultant, paraphrased" items={CONVERSATION} />
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Checking the booking data</h3>
+          {/* TODO: add what the drop-off check showed, once Ashmik confirms the figures */}
+          <p>
+            We checked drop-off rates in the Artemis booking flow to see
+            whether <Highlight>guests were leaving the booking</Highlight> when they
+            couldn&apos;t add insurance.
+          </p>
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What guests told us</h3>
+          {/* TODO: confirm the exact number interviewed (Ashmik: "around 8 to 9") */}
+          <p>
+            We interviewed eight frequent guests about what bothered them in the
+            booking flow. Some raised other issues, but <Highlight>every one of them
+            mentioned insurance</Highlight>, and all of them wanted to add it while
+            they booked.
+          </p>
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>From a request to a design question</h3>
+          <p>
+            The request was &ldquo;guests keep asking consultants for
+            insurance&rdquo;. The research showed something more specific: guests
+            didn&apos;t want to ask anyone. They wanted to add cover themselves,
+            while they booked. That turned the request into one
+            question: <Highlight>how might we let guests add travel insurance themselves
+            while they book?</Highlight>
+          </p>
+        </Copy>
+        <Visual>
+          <CardGrid items={FINDINGS} />
+        </Visual>
+      </div>
     </Chapter>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Research
-// ─────────────────────────────────────────────────────────────────────────────
-const RESEARCH_QUOTES = [
-  {
-    text: "Is travel insurance included? Do I need to call someone to add it?",
-    from: "Guest, via Intercom support log",
-  },
-  {
-    text: "Most guests asking about insurance are high-value, long-haul travellers. When they can't find it in the platform, they pause — and sometimes don't come back.",
-    from: "Travel Consultant, internal interview",
-  },
-];
-
-function Research() {
-  return (
-    <>
-      <div className="cs-sub">
-        <Copy>
-          <h3>Finding the leak before designing the fix</h3>
-          <p>
-            Before touching a frame, I needed to understand where guests were
-            falling off and why. Research ran across three tracks simultaneously.
-          </p>
-        </Copy>
-      </div>
-      <div className="cs-sub">
-        <Copy>
-          <h3>Funnel analytics</h3>
-          <p>
-            Mixpanel data showed a clear drop-off spike at the payment step —
-            the point where guests encountered no insurance option and had to
-            leave the platform to seek coverage elsewhere. <Highlight>25% of users were
-            abandoning at this exact step</Highlight>, translating to an estimated $250K of
-            unrealised insurance revenue per quarter.
-          </p>
-        </Copy>
-      </div>
-      <div className="cs-sub">
-        <Copy>
-          <h3>Support log audit</h3>
-          <p>
-            A 3-month review of Intercom email and chat logs revealed a
-            consistent pattern: guests pausing mid-booking to ask about
-            insurance. The question was never about the product — <Highlight>it was always
-            about where to find it</Highlight>.
-          </p>
-          <ChatQuotes label="What a guest and a travel consultant said" items={RESEARCH_QUOTES} />
-        </Copy>
-      </div>
-      <div className="cs-sub">
-        <Copy>
-          <h3>TC interviews &amp; guest surveys</h3>
-          <p>
-            Travel Consultants who handle post-booking queries were surveyed
-            and interviewed. They confirmed what the data showed — and added
-            a behavioural nuance: the guests most likely to pause were
-            first-time travellers and those booking long-haul, high-value
-            trips. Exactly the guests Enchanting Travels most wants to retain.
-            When TCs informally asked guests whether they&apos;d want in-flow
-            insurance, <Highlight>80% said yes</Highlight>.
-          </p>
-        </Copy>
-      </div>
-    </>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Insights
-// ─────────────────────────────────────────────────────────────────────────────
-const INSIGHT_CARDS = [
-  {
-    icon: <TrendDown size={28} weight="fill" className="text-grape" />,
-    title: "25% drop-off at checkout",
-    description:
-      "Funnel data confirmed a consistent abandonment spike at the payment step — the exact point where no insurance option existed.",
-  },
-  {
-    icon: <Warning size={28} weight="fill" className="text-grape" />,
-    title: "Guests lacked trip confidence",
-    description:
-      "Support logs showed guests pausing to ask about insurance, especially on high-value or first international trips. Uncertainty at checkout translated directly to abandonment.",
-  },
-  {
-    icon: <UsersThree size={28} weight="fill" className="text-grape" />,
-    title: "TCs carrying the operational load",
-    description:
-      "Without an in-flow option, Travel Consultants were manually handling all post-booking insurance queries — a scaling bottleneck that grew with the business.",
-  },
-  {
-    icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
-    title: "$250K/quarter in missed revenue",
-    description:
-      "The drop-offs weren't just a UX problem. Analytics confirmed the business was losing a significant, quantifiable revenue stream each quarter.",
-  },
-];
-
-function Insights() {
-  return (
-    <div className="cs-sub">
-      <Copy>
-        <h3>Four signals pointing to the same gap</h3>
-        <p>
-          Every research track — analytics, support logs, TC interviews —
-          converged on the same finding: <Highlight>guests wanted insurance but the
-          platform gave them no path to it</Highlight>.
-        </p>
-      </Copy>
-      <Visual>
-        <CardGrid items={INSIGHT_CARDS} />
-      </Visual>
-    </div>
   );
 }
 
@@ -467,7 +420,7 @@ export default function ArtemisInsurancePage() {
       />
       <Overview />
       <TheProblem />
-      <Background />
+      <Discovery />
       <Process />
       <Solution />
       <Impact />
