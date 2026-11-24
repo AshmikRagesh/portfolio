@@ -247,10 +247,12 @@ function Chart({ metric, shown: inView }: { metric: Metric; shown: boolean }) {
 
 // A stat value that counts up from zero, keeping any suffix like "%"
 function CountUp({ value, run }: { value: string; run: boolean }) {
-  const [, num = "0", rest = ""] = value.match(/^([\d.]+)(.*)$/) ?? [];
+  // A leading symbol such as "$" stays put while the number counts up
+  const [, lead = "", num = "0", rest = ""] = value.match(/^(\D*)([\d.]+)(.*)$/) ?? [];
   const n = useCountUp(Number(num), run, num.includes(".") ? 1 : 0, 1000);
   return (
     <span className="tabular-nums">
+      {lead}
       {n}
       {rest}
     </span>
@@ -262,13 +264,14 @@ export default function ResultsCard({
   title,
   body,
   stats,
-  metrics,
+  metrics = [],
 }: {
   headline: { value: number; decimals?: number; suffix?: string };
   title: string;
   body: string;
   stats: Stat[];
-  metrics: Metric[];
+  // Optional: a case study without tracked data over time shows the stats alone
+  metrics?: Metric[];
 }) {
   const [ref, shown] = useInView<HTMLDivElement>(0.25);
   const [tab, setTab] = useState(0);
@@ -345,6 +348,7 @@ export default function ResultsCard({
         ))}
       </dl>
 
+      {metrics.length > 0 && (
       <div {...rise(500)}>
         <div className="mt-[32px] border-t border-primary/10 pt-[24px]">
           {metrics.length > 1 && (
@@ -370,6 +374,7 @@ export default function ResultsCard({
           <Chart key={tab} metric={metrics[tab]} shown={shown} />
         </div>
       </div>
+      )}
     </div>
   );
 }

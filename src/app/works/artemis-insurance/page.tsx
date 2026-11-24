@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Shield, AlertTriangle, TrendingDown, Users } from "lucide-react";
+import { ShieldCheck, TrendDown, UsersThree, Warning } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -9,12 +9,13 @@ import {
   Meta,
   Visual,
   Figure,
-  Quotes,
+  ChatQuotes,
   CardGrid,
   ProblemStatement,
   ProsCons,
   OptionCard,
-  Metrics,
+  ResultsCard,
+  Pointers,
   NextCase,
   Highlight,
 } from "@/components/case-study";
@@ -31,7 +32,7 @@ const SECTIONS: CaseStudySection[] = [
   { id: "discovery", label: "Discovery" },
   { id: "exploration", label: "Exploration" },
   { id: "solution", label: "Solution" },
-  { id: "outcome", label: "Where it stands" },
+  { id: "outcome", label: "Results" },
   { id: "reflection", label: "Reflection" },
 ];
 
@@ -48,14 +49,10 @@ function Overview() {
           generating $125K in Q1 revenue.
         </p>
         <Meta
-          role={
-            <>
-              Lead UX Designer. Owned end-to-end — research, iterations, final
-              design, and engineering handoff.
-            </>
-          }
-          team="Vishwa (Design), Parv (PM), Aman (Frontend), Swapnil Negi (Backend)"
-          timeline={<>4 weeks design<br />Launched Dec 2024</>}
+          role="End-to-end Design & Developer Handoff"
+          // TODO: add Muzamil's and Anish's roles once known
+          team="Ashmik Ragesh, Muzamil, Anish"
+          timeline={<>November – December 2024<br />4 weeks of design · Launched in December 2024</>}
         />
       </Copy>
       <Visual>
@@ -100,59 +97,65 @@ function Background() {
 const RESEARCH_QUOTES = [
   {
     text: "Is travel insurance included? Do I need to call someone to add it?",
-    attribution: "— Guest, via Intercom support log",
+    from: "Guest, via Intercom support log",
   },
   {
     text: "Most guests asking about insurance are high-value, long-haul travellers. When they can't find it in the platform, they pause — and sometimes don't come back.",
-    attribution: "— Travel Consultant, internal interview",
+    from: "Travel Consultant, internal interview",
   },
 ];
 
 function Research() {
   return (
-    <div className="cs-sub">
-      <Copy>
-        <h3>Finding the leak before designing the fix</h3>
-      </Copy>
-      <Copy>
-        <p>
-          Before touching a frame, I needed to understand where guests were
-          falling off and why. Research ran across three tracks simultaneously.
-        </p>
-
-        <h3>Funnel analytics</h3>
-        <p>
-          Mixpanel data showed a clear drop-off spike at the payment step —
-          the point where guests encountered no insurance option and had to
-          leave the platform to seek coverage elsewhere. <Highlight>25% of users were
-          abandoning at this exact step</Highlight>, translating to an estimated $250K of
-          unrealised insurance revenue per quarter.
-        </p>
-
-        <h3>Support log audit</h3>
-        <p>
-          A 3-month review of Intercom email and chat logs revealed a
-          consistent pattern: guests pausing mid-booking to ask about
-          insurance. The question was never about the product — <Highlight>it was always
-          about where to find it</Highlight>.
-        </p>
-      </Copy>
-      <Visual>
-        <Quotes items={RESEARCH_QUOTES} />
-      </Visual>
-      <Copy>
-        <h3>TC interviews &amp; guest surveys</h3>
-        <p>
-          Travel Consultants who handle post-booking queries were surveyed
-          and interviewed. They confirmed what the data showed — and added
-          a behavioural nuance: the guests most likely to pause were
-          first-time travellers and those booking long-haul, high-value
-          trips. Exactly the guests Enchanting Travels most wants to retain.
-          When TCs informally asked guests whether they&apos;d want in-flow
-          insurance, <Highlight>80% said yes</Highlight>.
-        </p>
-      </Copy>
-    </div>
+    <>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Finding the leak before designing the fix</h3>
+          <p>
+            Before touching a frame, I needed to understand where guests were
+            falling off and why. Research ran across three tracks simultaneously.
+          </p>
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Funnel analytics</h3>
+          <p>
+            Mixpanel data showed a clear drop-off spike at the payment step —
+            the point where guests encountered no insurance option and had to
+            leave the platform to seek coverage elsewhere. <Highlight>25% of users were
+            abandoning at this exact step</Highlight>, translating to an estimated $250K of
+            unrealised insurance revenue per quarter.
+          </p>
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Support log audit</h3>
+          <p>
+            A 3-month review of Intercom email and chat logs revealed a
+            consistent pattern: guests pausing mid-booking to ask about
+            insurance. The question was never about the product — <Highlight>it was always
+            about where to find it</Highlight>.
+          </p>
+          <ChatQuotes label="What a guest and a travel consultant said" items={RESEARCH_QUOTES} />
+        </Copy>
+      </div>
+      <div className="cs-sub">
+        <Copy>
+          <h3>TC interviews &amp; guest surveys</h3>
+          <p>
+            Travel Consultants who handle post-booking queries were surveyed
+            and interviewed. They confirmed what the data showed — and added
+            a behavioural nuance: the guests most likely to pause were
+            first-time travellers and those booking long-haul, high-value
+            trips. Exactly the guests Enchanting Travels most wants to retain.
+            When TCs informally asked guests whether they&apos;d want in-flow
+            insurance, <Highlight>80% said yes</Highlight>.
+          </p>
+        </Copy>
+      </div>
+    </>
   );
 }
 
@@ -161,25 +164,25 @@ function Research() {
 // ─────────────────────────────────────────────────────────────────────────────
 const INSIGHT_CARDS = [
   {
-    icon: <TrendingDown size={26} className="text-grape" strokeWidth={2} />,
+    icon: <TrendDown size={28} weight="fill" className="text-grape" />,
     title: "25% drop-off at checkout",
     description:
       "Funnel data confirmed a consistent abandonment spike at the payment step — the exact point where no insurance option existed.",
   },
   {
-    icon: <AlertTriangle size={26} className="text-grape" strokeWidth={2} />,
+    icon: <Warning size={28} weight="fill" className="text-grape" />,
     title: "Guests lacked trip confidence",
     description:
       "Support logs showed guests pausing to ask about insurance, especially on high-value or first international trips. Uncertainty at checkout translated directly to abandonment.",
   },
   {
-    icon: <Users size={26} className="text-grape" strokeWidth={2} />,
+    icon: <UsersThree size={28} weight="fill" className="text-grape" />,
     title: "TCs carrying the operational load",
     description:
       "Without an in-flow option, Travel Consultants were manually handling all post-booking insurance queries — a scaling bottleneck that grew with the business.",
   },
   {
-    icon: <Shield size={26} className="text-grape" strokeWidth={2} />,
+    icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
     title: "$250K/quarter in missed revenue",
     description:
       "The drop-offs weren't just a UX problem. Analytics confirmed the business was losing a significant, quantifiable revenue stream each quarter.",
@@ -191,8 +194,6 @@ function Insights() {
     <div className="cs-sub">
       <Copy>
         <h3>Four signals pointing to the same gap</h3>
-      </Copy>
-      <Copy>
         <p>
           Every research track — analytics, support logs, TC interviews —
           converged on the same finding: <Highlight>guests wanted insurance but the
@@ -308,6 +309,7 @@ function Process() {
               label={label}
               title={title}
               shipped={didntWork.length === 0}
+              stamp="Selected"
               image={`${label} — design preview`}
             >
               <ProsCons pros={worked} cons={didntWork} />
@@ -374,24 +376,10 @@ function Solution() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Impact
 // ─────────────────────────────────────────────────────────────────────────────
-const METRICS: { stat: string; label: string }[] = [
-  {
-    stat: "52%",
-    label:
-      "Insurance adoption rate — up from 7% before the integration. Clear hierarchy, value-first copy, and seamless flow placement drove the shift.",
-  },
-  {
-    stat: "$125K",
-    label:
-      "Additional revenue generated in Q1 2025 — the first full quarter post-launch. A new revenue stream with minimal tech overhead.",
-  },
-  {
-    stat: "15%",
-    label:
-      "Reduction in booking drop-off at checkout. Removing the off-platform detour gave guests a complete, confident path to confirmation.",
-  },
-];
-
+// The results, on the shared results card the live case studies use. Wording is carried
+// over from the old metric cards; the copy pass comes next.
+// CHECK: Ashmik has said some of this case study's numbers are partly made up; confirm
+// each one before the page is promoted.
 function Impact() {
   return (
     <Chapter id="outcome" num={5} title="Numbers from the first quarter post-launch">
@@ -402,46 +390,70 @@ function Impact() {
           that the integration point and design approach were right.
         </p>
       </Copy>
-      <Visual>
-        <Metrics items={METRICS} />
-      </Visual>
+      <Copy>
+        <ResultsCard
+          headline={{ value: 52, suffix: "%" }}
+          title="Insurance adoption rate"
+          body="Clear hierarchy, value-first copy, and seamless flow placement drove the shift."
+          stats={[
+            {
+              before: "7%",
+              after: "52%",
+              change: "+45 pts",
+              label: "Insurance adoption rate",
+              note: "Up from 7% before the integration.",
+            },
+            {
+              after: "$125K",
+              label: "Additional revenue generated in Q1 2025",
+              note: "The first full quarter post-launch. A new revenue stream with minimal tech overhead.",
+            },
+            {
+              after: "15%",
+              label: "Reduction in booking drop-off at checkout",
+              note: "Removing the off-platform detour gave guests a complete, confident path to confirmation.",
+            },
+          ]}
+        />
+      </Copy>
     </Chapter>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Reflection
+// Section: Reflection  (pointers, as on the live case studies)
 // ─────────────────────────────────────────────────────────────────────────────
+const WORKED = [
+  {
+    lead: "Placement over polish.",
+    text: <>The first iteration was visually reasonable — clear plans, good copy, clean layout. But it was wrong because of where it sat in the flow, not how it looked. Iteration 1 failed because it interrupted. Iteration 3 succeeded because it extended. That distinction — <Highlight>between a step that interrupts and a choice that extends</Highlight> — became the design principle that guided everything.</>,
+  },
+  {
+    lead: "Research paid off.",
+    text: <>The research phase paid off disproportionately here. Without the Mixpanel data confirming the exact drop-off point, I might have placed the insurance module earlier in the flow — which would have reduced adoption, not increased it. <Highlight>Guests are most receptive to protecting a trip immediately before they pay for it</Highlight>. That&apos;s not an intuition; it&apos;s in the data.</>,
+  },
+];
+
+const NEXT_TIME = [
+  {
+    lead: "Track what happens after purchase.",
+    text: <>If I had more time, I&apos;d invest in post-purchase satisfaction tracking — specifically whether guests who purchased insurance felt more confident about their trip overall, and whether that translated to higher rebooking rates. The adoption and revenue numbers are strong, but the longer-term signal — <Highlight>does insurance increase guest lifetime value?</Highlight> — is the metric I&apos;d want to follow.</>,
+  },
+];
+
 function Reflection() {
   return (
     <Chapter id="reflection" num={6} title="What I learned">
       <Copy>
-        <p>
-          The biggest lesson was about <Highlight>placement over polish</Highlight>. The first
-          iteration was visually reasonable — clear plans, good copy, clean
-          layout. But it was wrong because of where it sat in the flow, not
-          how it looked. Iteration 1 failed because it interrupted. Iteration
-          3 succeeded because it extended. That distinction — between a step
-          that interrupts and a choice that extends — became the design
-          principle that guided everything.
-        </p>
-        <p>
-          The research phase paid off disproportionately here. Without the
-          Mixpanel data confirming the exact drop-off point, I might have
-          placed the insurance module earlier in the flow — which would have
-          reduced adoption, not increased it. <Highlight>Guests are most receptive to
-          protecting a trip immediately before they pay for it</Highlight>. That&apos;s
-          not an intuition; it&apos;s in the data.
-        </p>
-        <p>
-          If I had more time, I&apos;d invest in post-purchase satisfaction
-          tracking — specifically whether guests who purchased insurance felt
-          more confident about their trip overall, and whether that translated
-          to higher rebooking rates. The adoption and revenue numbers are
-          strong, but the longer-term signal — <Highlight>does insurance increase guest
-          lifetime value?</Highlight> — is the metric I&apos;d want to follow.
-        </p>
+        <h3>What worked</h3>
+        <Pointers items={WORKED} />
       </Copy>
+      <div className="cs-sub">
+        <Copy>
+          <h3>What I&apos;d do differently</h3>
+          <Pointers items={NEXT_TIME} />
+        </Copy>
+      </div>
     </Chapter>
   );
 }
