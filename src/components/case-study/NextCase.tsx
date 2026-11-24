@@ -29,7 +29,7 @@ export default function NextCase({ current }: { current: string }) {
             </p>
             <h2
               id="next-case-study"
-              className="m-0 font-heading text-[34px] font-normal leading-[40px] tracking-[-2px] text-white md:text-[42px] md:leading-[48px]"
+              className="m-0 font-heading text-[34px] font-normal leading-[40px] tracking-[-2px] text-white md:text-[40px] md:leading-[48px]"
             >
               Down the hall
             </h2>

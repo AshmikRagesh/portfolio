@@ -484,7 +484,7 @@ html[data-leaving] .page-enter {
     @apply mt-[64px] md:mt-[80px];
   }
   .cs-h2 {
-    @apply mb-[40px] font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[42px] md:leading-[44px];
+    @apply mb-[40px] font-heading text-[34px] font-normal leading-[36px] tracking-[-2px] text-heading md:text-[40px] md:leading-[44px];
   }
   .cs-number {
     @apply mr-[12px] tabular-nums md:mr-[14px];
