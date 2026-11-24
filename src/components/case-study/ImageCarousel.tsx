@@ -75,7 +75,7 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
 
   return (
     <figure
-      className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px] outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
+      className="m-0 flex min-w-0 flex-col rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-4"
       role="region"
       aria-roledescription="carousel"
       aria-label={`${slides.length} images`}
@@ -96,7 +96,7 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
     >
       <div
         ref={frame}
-        className={`cs-pair-media relative touch-pan-y select-none overflow-hidden rounded-sm bg-grape-light/40 ${
+        className={`cs-pair-media relative touch-pan-y select-none overflow-hidden rounded-lg bg-grape-light/40 ${
           drag !== null ? "cursor-grabbing" : "cursor-grab"
         }`}
         style={{ aspectRatio: `${width} / ${height}` }}
@@ -184,8 +184,8 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
       </div>
 
       {/* Same look as CardFooter's caption; keyed by slide so it settles in each time it changes */}
-      <figcaption key={i} aria-live="polite" className="cs-caption-in flex flex-col items-center px-[12px] pb-[8px] pt-[16px] text-center [text-wrap:balance] md:px-[16px]">
-        <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{slides[i].caption}</span>
+      <figcaption key={i} aria-live="polite" className="cs-caption-in flex flex-col items-center pt-[16px] text-center [text-wrap:balance]">
+        <span className="font-body text-body-md text-subtle">{slides[i].caption}</span>
       </figcaption>
 
       {zoom && (

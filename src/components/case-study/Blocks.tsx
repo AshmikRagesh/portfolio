@@ -106,9 +106,9 @@ export function Figure({
       <ImagePlaceholder label={called} aspect={aspect} />
     );
   return (
-    <figure className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px]">
+    <figure className="m-0 flex min-w-0 flex-col">
       {(kicker || title) && <CardHeader kicker={kicker} title={title} />}
-      <div className="cs-pair-media relative overflow-hidden rounded-sm bg-grape-light/40">{media}</div>
+      <div className="cs-pair-media relative overflow-hidden rounded-lg bg-grape-light/40">{media}</div>
       <CardFooter label={label} caption={caption} impact={impact} />
     </figure>
   );
@@ -130,12 +130,10 @@ export function CardFooter({
 }) {
   if (!label && !caption && !impact) return null;
   return (
-    <figcaption className="flex flex-col items-center gap-[4px] px-[12px] pb-[4px] pt-[12px] text-center [text-wrap:balance] md:px-[16px]">
-      {/* Labels and captions both read in the heading colour: the footer names what the media shows */}
-      {label && <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{label}</span>}
-      {caption && (
-        <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{caption}</span>
-      )}
+    <figcaption className="flex flex-col items-center gap-[4px] pt-[16px] text-center [text-wrap:balance]">
+      {/* Plain support text centred under the media, lighter than the body copy */}
+      {label && <span className="font-body text-body-md text-subtle">{label}</span>}
+      {caption && <span className="font-body text-body-md text-subtle">{caption}</span>}
       {impact && <span className="mt-[4px] font-body text-body uppercase text-success">{impact}</span>}
     </figcaption>
   );
@@ -507,14 +505,17 @@ export function CardHeader({
   title,
   note,
   className = "",
+  inset,
 }: {
   kicker?: React.ReactNode;
   title?: React.ReactNode;
   note?: string;
   className?: string;
+  /** Inside a white card (OptionCard): padded in from the card edge */
+  inset?: boolean;
 }) {
   return (
-    <div className={`flex flex-col gap-[8px] px-[12px] pb-[16px] pt-[12px] md:px-[16px] md:pb-[20px] md:pt-[16px] ${className}`}>
+    <div className={`flex flex-col gap-[8px] pb-[16px] md:pb-[20px] ${inset ? "px-[12px] pt-[12px] md:px-[16px] md:pt-[16px]" : ""} ${className}`}>
       {kicker && <CardKicker>{kicker}</CardKicker>}
       {title && <p className="m-0 font-heading text-h3 text-heading md:text-h3-md lg:text-h3-lg">{title}</p>}
       {note && <p className={NOTE_HEAD}>{note}</p>}
@@ -560,7 +561,7 @@ export function OptionCard({
 }) {
   return (
     <div className={`cs-pair-card group relative rounded-md p-[8px] ${shipped ? "cs-pair-card--chosen" : ""}`}>
-      <CardHeader kicker={label} title={title} note={note} className={`min-h-[64px] ${shipped ? "pb-[28px] md:pr-[248px]" : ""}`} />
+      <CardHeader inset kicker={label} title={title} note={note} className={`min-h-[64px] ${shipped ? "pb-[28px] md:pr-[248px]" : ""}`} />
       {/* The stamp is pressed onto the media's top-right corner, half on the work and half
           above it, and the frame takes a small thud as it lands */}
       <div className="relative">

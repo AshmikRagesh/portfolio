@@ -140,7 +140,7 @@ export default function AnnotatedFigure({
   const close = useCallback(() => setOpen(false), []);
 
   return (
-    <figure className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px]">
+    <figure className="m-0 flex min-w-0 flex-col">
       <div
         ref={ref}
         role="button"
@@ -155,13 +155,13 @@ export default function AnnotatedFigure({
         }}
         data-sound="whisper"
         data-sound-click="pop"
-        className="cs-pair-media relative cursor-zoom-in overflow-hidden rounded-sm bg-grape-light/40 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-grape"
+        className="cs-pair-media relative cursor-zoom-in overflow-hidden rounded-lg bg-grape-light/40 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-grape"
       >
         <Marked src={src} alt={alt} width={width} height={height} notes={notes} shown={shown} />
       </div>
 
       {/* The findings in words, numbered like the boxes: shown on phones, for screen readers on every size */}
-      <List notes={notes} className="px-[12px] pb-[4px] pt-[12px] md:sr-only" />
+      <List notes={notes} className="pt-[16px] md:sr-only" />
 
       <CardFooter label={label} />
 

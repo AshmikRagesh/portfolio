@@ -20,6 +20,7 @@ const config: Config = {
         heading:       tokens.colors.heading,
         secondary:     tokens.colors.secondary,
         muted:         tokens.colors.muted,
+        subtle:        tokens.colors.subtle,
         // Surfaces
         background:    tokens.colors.background,
         surface:       tokens.colors.surface,

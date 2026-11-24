@@ -11,6 +11,7 @@ export const tokens = {
     heading:        "#32073e",  // Headings H1–H6 — same as primary
     secondary:      "#524555",  // Secondary body text
     muted:          "#8e8292",  // Labels, captions, eyebrows
+    subtle:         "#766a79",  // Text under case study media — lighter than body, still AA on white
 
     // ── Surfaces ──────────────────────────────────────────────────────
     background:     "#FFFFFF",  // Page background
