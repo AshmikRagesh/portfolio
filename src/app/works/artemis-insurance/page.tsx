@@ -101,13 +101,28 @@ function Discovery() {
           The problem came from the front line. Travel consultants told Anish,
           our project manager, that <Highlight>guests kept asking them to add travel
           insurance</Highlight> to their trips. The team picked it up and brought me
-          in. We checked drop-off rates in the Artemis booking flow and talked
-          to guests directly.
+          in. We checked where guests were leaving the booking and talked to
+          guests directly.
         </p>
       </Copy>
       <Visual>
         <Figure label="The Artemis booking flow before insurance" />
       </Visual>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Where guests stopped</h3>
+          {/* TODO: add the drop-off figures for both pages once Ashmik has them */}
+          <p>
+            Drop-offs clustered on two pages near the end of the booking: Your
+            Travel Checklist, where guests review their trip before paying, and
+            the payment page. That&apos;s where guests looked for insurance once
+            their details were in. When they couldn&apos;t find it, they <Highlight>left
+            to ask their consultant, then came back to finish the booking</Highlight> once
+            cover was arranged. Most asked before paying; a few booked first and
+            asked after.
+          </p>
+        </Copy>
+      </div>
       <div className="cs-sub">
         <Copy>
           <h3>What we heard</h3>
@@ -116,9 +131,13 @@ function Discovery() {
             We interviewed eight frequent guests about what bothered them in the
             booking flow. Some raised other issues, but <Highlight>every one of them
             mentioned insurance</Highlight>, and all of them wanted to add it while
-            they booked. With no way to do that, they went back to their
-            consultant, who arranged cover through an outside provider. A typical
-            exchange went like this:
+            they booked.
+          </p>
+          <p>
+            Most Enchanting Travels guests are 45 to 60-plus, well off and short on
+            time. <Highlight>None of them went looking for cover on their own</Highlight>; they
+            waited for their consultant to arrange it through an outside
+            provider. A typical exchange went like this:
           </p>
           <ChatQuotes label="A typical exchange between a guest and a travel consultant, paraphrased" items={CONVERSATION} />
         </Copy>
