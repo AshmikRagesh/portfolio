@@ -106,9 +106,9 @@ export function Figure({
       <ImagePlaceholder label={called} aspect={aspect} />
     );
   return (
-    <figure className="cs-pair-card m-0 flex min-w-0 flex-col rounded-md p-[8px]">
+    <figure className="m-0 flex min-w-0 flex-col">
       {(kicker || title) && <CardHeader kicker={kicker} title={title} />}
-      <div className="cs-pair-media relative overflow-hidden rounded-sm bg-grape-light/40">{media}</div>
+      <div className="cs-pair-media relative overflow-hidden rounded-lg bg-grape-light/40">{media}</div>
       <CardFooter label={label} caption={caption} impact={impact} />
     </figure>
   );
@@ -130,12 +130,10 @@ export function CardFooter({
 }) {
   if (!label && !caption && !impact) return null;
   return (
-    <figcaption className="flex flex-col items-center gap-[4px] px-[12px] pb-[4px] pt-[12px] text-center [text-wrap:balance] md:px-[16px]">
-      {/* Labels and captions both read in the heading colour: the footer names what the media shows */}
-      {label && <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{label}</span>}
-      {caption && (
-        <span className="font-geist text-caption-md font-medium uppercase tracking-[0.5px] text-heading">{caption}</span>
-      )}
+    <figcaption className="flex flex-col gap-[4px] pt-[16px] text-left [text-wrap:pretty]">
+      {/* Plain support text under the media, left-aligned with it, lighter than the body copy */}
+      {label && <span className="font-body text-body-md text-subtle">{label}</span>}
+      {caption && <span className="font-body text-body-md text-subtle">{caption}</span>}
       {impact && <span className="mt-[4px] font-body text-body uppercase text-success">{impact}</span>}
     </figcaption>
   );
@@ -438,7 +436,7 @@ const NOTE_HEAD = "font-brand text-[12px] uppercase leading-[16px] tracking-[1px
 // One column of notes under the option card's media, headed in the body face
 function NotePanel({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-[16px] px-[12px] pb-[12px] pt-[20px] md:px-[16px] md:pb-[16px]">
+    <div className="flex flex-col gap-[16px] py-[20px] md:pb-0">
       <p className="font-body text-[16px] font-semibold leading-[24px] text-heading">{heading}</p>
       {children}
     </div>
@@ -461,7 +459,7 @@ export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: str
     </ul>
   );
   return (
-    <div className={`grid grid-cols-1 divide-y divide-line-soft ${pros.length && cons.length ? "md:grid-cols-2 md:divide-x md:divide-y-0" : ""}`}>
+    <div className={`grid grid-cols-1 divide-y divide-line-soft ${pros.length && cons.length ? "md:grid-cols-2 md:divide-x md:divide-y-0 md:[&>*:first-child]:pr-[24px] md:[&>*+*]:pl-[24px]" : ""}`}>
       {pros.length > 0 && <NotePanel heading="What worked">{list(pros, "pro")}</NotePanel>}
       {cons.length > 0 && <NotePanel heading="What didn’t">{list(cons, "con")}</NotePanel>}
     </div>
@@ -514,7 +512,7 @@ export function CardHeader({
   className?: string;
 }) {
   return (
-    <div className={`flex flex-col gap-[8px] px-[12px] pb-[16px] pt-[12px] md:px-[16px] md:pb-[20px] md:pt-[16px] ${className}`}>
+    <div className={`flex flex-col gap-[8px] pb-[16px] md:pb-[20px] ${className}`}>
       {kicker && <CardKicker>{kicker}</CardKicker>}
       {title && <p className="m-0 font-heading text-h3 text-heading md:text-h3-md lg:text-h3-lg">{title}</p>}
       {note && <p className={NOTE_HEAD}>{note}</p>}
@@ -559,12 +557,12 @@ export function OptionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`cs-pair-card group relative rounded-md p-[8px] ${shipped ? "cs-pair-card--chosen" : ""}`}>
-      <CardHeader kicker={label} title={title} note={note} className={`min-h-[64px] ${shipped ? "pb-[28px] md:pr-[248px]" : ""}`} />
+    <div className="group relative">
+      <CardHeader kicker={label} title={title} note={note} className={shipped ? "pb-[28px] md:pr-[248px]" : ""} />
       {/* The stamp is pressed onto the media's top-right corner, half on the work and half
           above it, and the frame takes a small thud as it lands */}
       <div className="relative">
-        <div className={`cs-pair-media relative overflow-hidden rounded-sm ${shipped ? "stamp-thud" : ""}`}>
+        <div className={`cs-pair-media relative overflow-hidden rounded-lg ${shipped ? "stamp-thud" : ""}`}>
           {video ? (
             <Media video={video} poster={poster} label={image} />
           ) : src ? (

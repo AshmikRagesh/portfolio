@@ -20,10 +20,10 @@ export default function ExplorationCard({
   children?: React.ReactNode;
 }) {
   return (
-    <li className={`cs-pair-card flex flex-col rounded-md p-[8px] ${kept ? "cs-pair-card--chosen" : ""}`}>
+    <li className="flex flex-col">
       {/* Phones: the tag sits above the name, so narrow cards keep the whole width for it.
           Tablet up: beside it, level with the first line, so a name that wraps never pushes it off */}
-      <div className="flex min-h-[40px] flex-col-reverse items-start gap-[8px] px-[12px] pb-[12px] pt-[8px] md:flex-row md:justify-between">
+      <div className="flex min-h-[40px] flex-col-reverse items-start gap-[8px] pb-[12px] md:flex-row md:justify-between">
         <p className="m-0 min-w-0 font-body text-body font-medium text-heading">{name}</p>
         {kept && (
           <span className="shrink-0 md:mt-[1px]">
@@ -31,7 +31,7 @@ export default function ExplorationCard({
           </span>
         )}
       </div>
-      <div className="cs-pair-media mt-auto flex h-[136px] items-center justify-center rounded-sm bg-grape-light/30 p-[16px]">
+      <div className="cs-pair-media mt-auto flex h-[136px] items-center justify-center rounded-lg bg-grape-light/30 p-[16px]">
         {src ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img loading="lazy" decoding="async" src={src} alt={name} className="max-h-full max-w-full object-contain" />
