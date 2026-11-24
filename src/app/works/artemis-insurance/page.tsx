@@ -56,7 +56,7 @@ function Overview() {
         <Meta
           role="End-to-end Design & Developer Handoff"
           team="Ashmik Ragesh (Design), Anish (Project Manager), Muzamil (Engineering)"
-          timeline={<>November – December 2024<br />4 weeks of design · Launched in December 2024</>}
+          timeline={<>November – December 2024<br />1.5 weeks of design · Launched in December 2024</>}
         />
       </Copy>
       <Visual>
@@ -176,11 +176,15 @@ function TheProblem() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Process  (3 iterations)
+// Section: Exploration  (the two places insurance sat: a page of its own, then the guest
+// details step). Confirmed by Ashmik 24 Nov 2026: the first iteration was a separate page,
+// the final one sat in the guest details step. CHECK: the pros and cons are drafted from
+// the designs; Ashmik to confirm the real reasons the separate page lost.
 // ─────────────────────────────────────────────────────────────────────────────
 type IterationItem = {
   label: string;
   title: string;
+  shipped?: boolean;
   worked: string[];
   didntWork: string[];
 };
@@ -188,67 +192,50 @@ type IterationItem = {
 const ITERATIONS: IterationItem[] = [
   {
     label: "Iteration 1",
-    title: "Insurance as a dedicated booking step",
+    title: "A separate insurance page in the booking",
     worked: [
-      "Clear plan differentiation between Basic and CFAR",
-      "Right-side pricing context kept total trip cost visible",
-      '"Recommended" tag created a subtle nudge toward the higher-value plan',
+      "Room to explain both plans in full",
+      "Insurance had the guest’s full attention for one step",
     ],
     didntWork: [
-      "Felt like a flow interruption — a separate page added friction guests didn't expect",
-      "Drop-off at this step increased; guests felt the process had been derailed",
-      "Value communication was unclear — 'What does it cover?' wasn't prominent enough",
+      "Added one more page to the booking, right before payment",
+      "Guests who didn’t want cover still had to pass through it",
     ],
   },
   {
     label: "Iteration 2",
-    title: "Insurance embedded in the traveller details step",
+    title: "Insurance inside the traveller details step",
+    shipped: true,
     worked: [
-      "No page break reduced cognitive load — insurance felt less intimidating",
-      "Improved microcopy helped demystify what guests were paying for",
-      "One-screen flow aligned with the 'setting up my trip' mental model",
+      "No extra page: guests see it while they’re already filling in trip details",
+      "Both plans side by side, each with its price",
+      "The recommended plan is added by default and removed with one tap",
     ],
     didntWork: [
-      "Buried visual hierarchy — the module read as a continuation of the form, not a decision",
-      "No visual affordance drew the eye to insurance; easily missed on large screens",
-      "Microcopy still too technical — built information, not emotional confidence",
+      "Among the form fields it could be missed, so it needed its own card and banner to stand out",
     ],
-  },
-  {
-    label: "Iteration 3",
-    title: "Visually-elevated, embedded insurance selection",
-    worked: [
-      "Clear side-by-side plan comparison — Basic vs CFAR with benefit callouts",
-      '"POPULAR" badge and placement nudged guests without overwhelming them',
-      "Value-first copy — 'Cancel for any reason' prioritised over technical terms",
-      "Shield icons and checkmarks reinforced trust and safety",
-      '"View more benefits" link supported detail-oriented users without cluttering the default view',
-      "Scalable layout — easy to add future plans without redesign",
-    ],
-    didntWork: [],
   },
 ];
 
 function Process() {
   return (
-    <Chapter id="exploration" num={3} title="Three iterations to find the right integration point">
+    <Chapter id="exploration" num={3} title="Finding the right place for insurance in the booking">
       <Copy>
         <p>
-          With the problem defined, the design question became: <Highlight>where in the
-          booking flow should insurance live</Highlight> — and how much visual weight
-          should it carry? Three iterations tested different answers, each
-          building on what the previous one revealed.
+          With the priorities set, the main decision was where insurance should
+          sit in the booking. I started with <Highlight>a page of its own</Highlight>, then
+          moved it into the traveller details step.
         </p>
       </Copy>
-      {ITERATIONS.map(({ label, title, worked, didntWork }) => (
+      {ITERATIONS.map(({ label, title, shipped, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
             <OptionCard
               label={label}
               title={title}
-              shipped={didntWork.length === 0}
+              shipped={shipped}
               stamp="Selected"
-              image={`${label} — design preview`}
+              image={`${label}: ${title}`}
             >
               <ProsCons pros={worked} cons={didntWork} />
             </OptionCard>
