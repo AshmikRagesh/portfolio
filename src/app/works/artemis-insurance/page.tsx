@@ -44,9 +44,13 @@ function Overview() {
     <Chapter id="overview" num={0} title="Overview">
       <Copy>
         <p>
-          Designed an in-flow travel insurance option for the Artemis platform —
-          <Highlight>achieving 52% adoption</Highlight>, reducing booking drop-offs by 15%, and
-          generating $125K in Q1 revenue.
+          Guests booking a trip with Enchanting Travels had no way to add
+          travel insurance, so they had to ask their travel consultant, who
+          arranged it through an outside provider. I designed a travel
+          protection section inside the traveller details step, with <Highlight>two
+          plans side by side that guests can add without leaving the
+          booking</Highlight>. Muzamil built it and set it up in Artemis, and since its
+          December 2024 launch, adoption has gone from 7% to 52%.
         </p>
         <Meta
           role="End-to-end Design & Developer Handoff"
@@ -211,25 +215,19 @@ function Insights() {
 // ─────────────────────────────────────────────────────────────────────────────
 function TheProblem() {
   return (
-    <Chapter id="the-problem" num={1} title="Insurance was available — just nowhere to be found">
+    <Chapter id="the-problem" num={1} title="No way to add travel insurance while booking">
       <Copy>
         <p>
-          Enchanting Travels offered insurance. Guests wanted it. The
-          problem was structural: there was no path between the two inside
-          Artemis. Guests who wanted coverage <Highlight>had to exit the booking flow</Highlight>,
-          contact a consultant separately, and re-enter. Most didn&apos;t.
-        </p>
-        <p>
-          The result was a gap that hurt in both directions — <Highlight>guests lost
-          confidence and abandoned; the business lost revenue</Highlight> and burdened
-          its TC team with avoidable queries. A single design decision had
-          been quietly creating both problems for years.
+          Enchanting Travels didn&apos;t sell travel insurance. When guests asked
+          for it, travel consultants <Highlight>arranged cover through outside
+          providers, by hand and one guest at a time</Highlight>. The booking flow in
+          Artemis had no way to offer it.
         </p>
       </Copy>
       <Visual>
         <ProblemStatement
-          situation="Guests booking through Artemis had no in-flow option to add travel insurance."
-          consequence="This forced them off-platform at the moment of highest commitment — the checkout step — causing abandonment, reducing guest confidence, and costing the business an estimated $250K in unrealised revenue each quarter."
+          situation="Artemis had no way for guests to add travel insurance while booking."
+          consequence="Guests had to leave the booking to ask for it, and consultants spent time arranging cover from outside providers."
         />
       </Visual>
     </Chapter>
