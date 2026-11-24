@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowCounterClockwise, Scales, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
+import { ShieldCheck, UsersThree } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -78,22 +78,18 @@ const CONVERSATION = [
   { text: "Guests keep coming back to us to add insurance, and we’re arranging it one booking at a time.", from: "Travel consultant, to the project team" },
 ];
 
-// What the design had to do, one priority per finding; each matches the final Figma design
+// What the design had to do, one priority per Discovery finding. Needs, not the solution:
+// how the design meets them is in Exploration and Solution
 const PRIORITIES = [
   {
     icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
-    title: "Add cover without leaving the booking",
-    description: "Guests choose insurance in the traveller details step, so no one has to ask a consultant.",
+    title: "Add cover while booking the trip",
+    description: "Guests can add travel insurance themselves while they book their trip in Artemis, without asking anyone.",
   },
   {
-    icon: <Scales size={28} weight="fill" className="text-grape" />,
-    title: "Compare plans at a glance",
-    description: "Two plans side by side, each with what it covers and its price, so guests can decide on their own.",
-  },
-  {
-    icon: <ArrowCounterClockwise size={28} weight="fill" className="text-grape" />,
-    title: "Easy to change or remove",
-    description: "The recommended plan is added by default, and one tap removes it, so guests stay in control.",
+    icon: <UsersThree size={28} weight="fill" className="text-grape" />,
+    title: "No manual work for consultants",
+    description: "Every policy is added in Artemis, so consultants no longer arrange cover through outside providers one booking at a time.",
   },
 ];
 
@@ -141,7 +137,7 @@ function Discovery() {
             How might we let guests add travel insurance on their own, right in
             the booking flow?
           </DesignQuestion>
-          <p>The findings gave the design three priorities:</p>
+          <p>The findings gave the design two priorities:</p>
         </Copy>
         <Visual>
           <CardGrid items={PRIORITIES} />
