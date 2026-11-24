@@ -138,8 +138,8 @@ function Discovery() {
             question:
           </p>
           <DesignQuestion>
-            How might we let guests add travel insurance <Highlight>on their own, right in
-            the booking flow</Highlight>?
+            How might we let guests add travel insurance on their own, right in
+            the booking flow?
           </DesignQuestion>
           <p>The findings gave the design three priorities:</p>
         </Copy>

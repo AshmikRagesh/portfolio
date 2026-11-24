@@ -250,8 +250,8 @@ function Context() {
             question:
           </p>
           <DesignQuestion>
-            How might we make it easier for travellers to find <Highlight>relevant
-            itineraries through TCS search</Highlight>?
+            How might we make it easier for travellers to find relevant
+            itineraries through TCS search?
           </DesignQuestion>
           <p>The interviews and product audit shaped five priorities for the redesign:</p>
         </Copy>
