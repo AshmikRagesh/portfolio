@@ -50,8 +50,7 @@ function Overview() {
         </p>
         <Meta
           role="End-to-end Design & Developer Handoff"
-          // TODO: add Muzamil's and Anish's roles once known
-          team="Ashmik Ragesh, Muzamil, Anish"
+          team="Ashmik Ragesh (Design), Anish (Project Manager), Muzamil (Engineering)"
           timeline={<>November – December 2024<br />4 weeks of design · Launched in December 2024</>}
         />
       </Copy>
