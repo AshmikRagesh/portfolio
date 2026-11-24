@@ -184,7 +184,7 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
       </div>
 
       {/* Same look as CardFooter's caption; keyed by slide so it settles in each time it changes */}
-      <figcaption key={i} aria-live="polite" className="cs-caption-in flex flex-col pt-[16px] text-left [text-wrap:pretty]">
+      <figcaption key={i} aria-live="polite" className="cs-caption-in flex flex-col items-center pt-[16px] text-center [text-wrap:balance]">
         <span className="font-body text-body-md text-subtle">{slides[i].caption}</span>
       </figcaption>
 

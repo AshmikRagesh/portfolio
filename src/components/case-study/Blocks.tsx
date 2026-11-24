@@ -130,8 +130,8 @@ export function CardFooter({
 }) {
   if (!label && !caption && !impact) return null;
   return (
-    <figcaption className="flex flex-col gap-[4px] pt-[16px] text-left [text-wrap:pretty]">
-      {/* Plain support text under the media, left-aligned with it, lighter than the body copy */}
+    <figcaption className="flex flex-col items-center gap-[4px] pt-[16px] text-center [text-wrap:balance]">
+      {/* Plain support text centred under the media, lighter than the body copy */}
       {label && <span className="font-body text-body-md text-subtle">{label}</span>}
       {caption && <span className="font-body text-body-md text-subtle">{caption}</span>}
       {impact && <span className="mt-[4px] font-body text-body uppercase text-success">{impact}</span>}
@@ -436,7 +436,7 @@ const NOTE_HEAD = "font-brand text-[12px] uppercase leading-[16px] tracking-[1px
 // One column of notes under the option card's media, headed in the body face
 function NotePanel({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-[16px] py-[20px] md:pb-0">
+    <div className="flex flex-col gap-[16px] px-[12px] pb-[12px] pt-[20px] md:px-[16px] md:pb-[16px]">
       <p className="font-body text-[16px] font-semibold leading-[24px] text-heading">{heading}</p>
       {children}
     </div>
@@ -459,7 +459,7 @@ export function ProsCons({ pros = [], cons = [] }: { pros?: string[]; cons?: str
     </ul>
   );
   return (
-    <div className={`grid grid-cols-1 divide-y divide-line-soft ${pros.length && cons.length ? "md:grid-cols-2 md:divide-x md:divide-y-0 md:[&>*:first-child]:pr-[24px] md:[&>*+*]:pl-[24px]" : ""}`}>
+    <div className={`grid grid-cols-1 divide-y divide-line-soft ${pros.length && cons.length ? "md:grid-cols-2 md:divide-x md:divide-y-0" : ""}`}>
       {pros.length > 0 && <NotePanel heading="What worked">{list(pros, "pro")}</NotePanel>}
       {cons.length > 0 && <NotePanel heading="What didn’t">{list(cons, "con")}</NotePanel>}
     </div>
@@ -505,14 +505,17 @@ export function CardHeader({
   title,
   note,
   className = "",
+  inset,
 }: {
   kicker?: React.ReactNode;
   title?: React.ReactNode;
   note?: string;
   className?: string;
+  /** Inside a white card (OptionCard): padded in from the card edge */
+  inset?: boolean;
 }) {
   return (
-    <div className={`flex flex-col gap-[8px] pb-[16px] md:pb-[20px] ${className}`}>
+    <div className={`flex flex-col gap-[8px] pb-[16px] md:pb-[20px] ${inset ? "px-[12px] pt-[12px] md:px-[16px] md:pt-[16px]" : ""} ${className}`}>
       {kicker && <CardKicker>{kicker}</CardKicker>}
       {title && <p className="m-0 font-heading text-h3 text-heading md:text-h3-md lg:text-h3-lg">{title}</p>}
       {note && <p className={NOTE_HEAD}>{note}</p>}
@@ -557,12 +560,12 @@ export function OptionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="group relative">
-      <CardHeader kicker={label} title={title} note={note} className={shipped ? "pb-[28px] md:pr-[248px]" : ""} />
+    <div className={`cs-pair-card group relative rounded-md p-[8px] ${shipped ? "cs-pair-card--chosen" : ""}`}>
+      <CardHeader inset kicker={label} title={title} note={note} className={`min-h-[64px] ${shipped ? "pb-[28px] md:pr-[248px]" : ""}`} />
       {/* The stamp is pressed onto the media's top-right corner, half on the work and half
           above it, and the frame takes a small thud as it lands */}
       <div className="relative">
-        <div className={`cs-pair-media relative overflow-hidden rounded-lg ${shipped ? "stamp-thud" : ""}`}>
+        <div className={`cs-pair-media relative overflow-hidden rounded-sm ${shipped ? "stamp-thud" : ""}`}>
           {video ? (
             <Media video={video} poster={poster} label={image} />
           ) : src ? (
