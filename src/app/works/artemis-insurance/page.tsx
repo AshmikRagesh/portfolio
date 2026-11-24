@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ShieldCheck, UsersThree, Warning } from "@phosphor-icons/react/dist/ssr";
+import { ArrowCounterClockwise, Scales, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -10,6 +10,7 @@ import {
   Visual,
   Figure,
   ChatQuotes,
+  PullQuote,
   CardGrid,
   ProblemStatement,
   ProsCons,
@@ -77,21 +78,22 @@ const CONVERSATION = [
   { text: "Guests keep coming back to us to add insurance, and we’re arranging it one booking at a time.", from: "Travel consultant, to the project team" },
 ];
 
-const FINDINGS = [
-  {
-    icon: <Warning size={28} weight="fill" className="text-grape" />,
-    title: "Guests had to leave the booking to ask",
-    description: "Artemis had no insurance option, so adding cover meant contacting a consultant in the middle of booking.",
-  },
-  {
-    icon: <UsersThree size={28} weight="fill" className="text-grape" />,
-    title: "Consultants handled every request by hand",
-    description: "Each guest who wanted cover meant a consultant arranging it with an outside provider, one booking at a time.",
-  },
+// What the design had to do, one priority per finding; each matches the final Figma design
+const PRIORITIES = [
   {
     icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
-    title: "Every guest we interviewed wanted it",
-    description: "All the frequent guests we spoke to raised insurance, and wanted to add it inside the booking flow.",
+    title: "Add cover without leaving the booking",
+    description: "Guests choose insurance in the traveller details step, so no one has to ask a consultant.",
+  },
+  {
+    icon: <Scales size={28} weight="fill" className="text-grape" />,
+    title: "Compare plans at a glance",
+    description: "Two plans side by side, each with what it covers and its price, so guests can decide on their own.",
+  },
+  {
+    icon: <ArrowCounterClockwise size={28} weight="fill" className="text-grape" />,
+    title: "Easy to change or remove",
+    description: "The recommended plan is added by default, and one tap removes it, so guests stay in control.",
   },
 ];
 
@@ -103,7 +105,8 @@ function Discovery() {
           The problem came from the front line. Travel consultants told Anish,
           our project manager, that <Highlight>guests kept asking them to add travel
           insurance</Highlight> to their trips. The team picked it up and brought me
-          in to find out how big the problem was and where it sat in the booking.
+          in. We checked drop-off rates in the Artemis booking flow and talked
+          to guests directly.
         </p>
       </Copy>
       <Visual>
@@ -111,36 +114,17 @@ function Discovery() {
       </Visual>
       <div className="cs-sub">
         <Copy>
-          <h3>What guests and consultants were saying</h3>
-          <p>
-            Guests found no way to add cover while booking, so they went back to
-            their consultant, who had to <Highlight>arrange it through an outside
-            provider</Highlight>. A typical exchange went like this:
-          </p>
-          <ChatQuotes label="A typical exchange between a guest and a travel consultant, paraphrased" items={CONVERSATION} />
-        </Copy>
-      </div>
-      <div className="cs-sub">
-        <Copy>
-          <h3>Checking the booking data</h3>
-          {/* TODO: add what the drop-off check showed, once Ashmik confirms the figures */}
-          <p>
-            We checked drop-off rates in the Artemis booking flow to see
-            whether <Highlight>guests were leaving the booking</Highlight> when they
-            couldn&apos;t add insurance.
-          </p>
-        </Copy>
-      </div>
-      <div className="cs-sub">
-        <Copy>
-          <h3>What guests told us</h3>
+          <h3>What we heard</h3>
           {/* TODO: confirm the exact number interviewed (Ashmik: "around 8 to 9") */}
           <p>
             We interviewed eight frequent guests about what bothered them in the
             booking flow. Some raised other issues, but <Highlight>every one of them
             mentioned insurance</Highlight>, and all of them wanted to add it while
-            they booked.
+            they booked. With no way to do that, they went back to their
+            consultant, who arranged cover through an outside provider. A typical
+            exchange went like this:
           </p>
+          <ChatQuotes label="A typical exchange between a guest and a travel consultant, paraphrased" items={CONVERSATION} />
         </Copy>
       </div>
       <div className="cs-sub">
@@ -148,15 +132,20 @@ function Discovery() {
           <h3>From a request to a design question</h3>
           <p>
             The request was &ldquo;guests keep asking consultants for
-            insurance&rdquo;. The research showed something more specific: guests
-            didn&apos;t want to ask anyone. They wanted to add cover themselves,
-            while they booked. That turned the request into one
-            question: <Highlight>how might we let guests add travel insurance themselves
-            while they book?</Highlight>
+            insurance&rdquo;. The research showed something more specific: <Highlight>guests
+            didn&apos;t want to ask anyone</Highlight>. They wanted to add cover
+            themselves, while they booked. That turned the request into one
+            question:
           </p>
+          <PullQuote
+            label="Design question"
+            text="How might we let guests add travel insurance"
+            emphasis="themselves, while they book?"
+          />
+          <p>The findings gave the design three priorities:</p>
         </Copy>
         <Visual>
-          <CardGrid items={FINDINGS} />
+          <CardGrid items={PRIORITIES} />
         </Visual>
       </div>
     </Chapter>

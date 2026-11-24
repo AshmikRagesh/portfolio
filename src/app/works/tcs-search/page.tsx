@@ -30,6 +30,7 @@ import {
   OptionCard,
   Pointers,
   BeforeAfterSlider,
+  PullQuote,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1151 (site search filters). Built from
@@ -246,9 +247,13 @@ function Context() {
             The brief asked for filters, but the interviews and audit showed
             travellers also needed to see where a trip goes and how their
             choices changed the results. That turned the brief into one
-            question: <Highlight>how might we make it easier for travellers to find
-            relevant itineraries through TCS search?</Highlight>
+            question:
           </p>
+          <PullQuote
+            label="Design question"
+            text="How might we make it easier for travellers to find"
+            emphasis="relevant itineraries through TCS search?"
+          />
           <p>The interviews and product audit shaped five priorities for the redesign:</p>
         </Copy>
         <Visual>
