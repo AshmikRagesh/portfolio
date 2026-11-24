@@ -197,6 +197,10 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
   const board = useRef<HTMLDivElement>(null);
   // Each leaf's two faces [front, back], shown by angle (Safari doesn't honour backface-visibility here)
   const faceEls = useRef<(HTMLDivElement | null)[]>([]);
+  // Every page has settled: the page corners only show then, so they never appear before
+  // a page has landed or linger after it's started to move
+  const [atRest, setAtRest] = useState(true);
+  const restSent = useRef(true);
   const tableShadow = useRef<HTMLDivElement>(null);
   const sim = useRef<Sim>({ a: Array(LEAVES).fill(0), v: Array(LEAVES).fill(0), target: Array(LEAVES).fill(0), startAt: Array(LEAVES).fill(0), p: 0, pv: 0, pt: 0 });
   const dragging = useRef<{ leaf: number; r: number; lastA: number; lastT: number; w: number; a0: number; scale: number } | null>(null);
@@ -325,6 +329,13 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
         }
       }
       draw();
+      // The corners come back as soon as every page is visibly flat, not after the spring's
+      // last invisible fraction of a degree
+      const flat = s.a.every((a, i) => Math.abs(a - s.target[i]) < 1 && Math.abs(s.v[i]) < 20) && !s.startAt.some((t) => now < t) && !dragging.current;
+      if (flat && !restSent.current) {
+        restSent.current = true;
+        setAtRest(true);
+      }
       // Closing: fly home as soon as every page is visibly flat, without waiting out the
       // last invisible fraction of the bounce
       if (waiters.current.length && s.a.every((a, i) => Math.abs(a - s.target[i]) < 1.5 && Math.abs(s.v[i]) < 30) && Math.abs(s.p - s.pt) < 2 && !s.startAt.some((t) => now < t)) {
@@ -332,6 +343,7 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
       }
       if (moving) raf.current = requestAnimationFrame(step);
       else {
+        setAtRest(true);
         closing.current = false;
         waiters.current.splice(0).forEach((f) => f());
       }
@@ -346,6 +358,10 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
     const now = performance.now();
     const from = prevTurned.current;
     prevTurned.current = turned;
+    if (from !== turned) {
+      setAtRest(false);
+      restSent.current = false;
+    }
     let order = 0;
     const leaves = turned > from ? [...Array(LEAVES).keys()] : [...Array(LEAVES).keys()].reverse();
     for (const i of leaves) {
@@ -363,6 +379,7 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
       s.p = s.pt;
       s.pv = 0;
       draw();
+      setAtRest(true);
       return;
     }
     run();
@@ -658,23 +675,33 @@ function Book({ phase, turned, side, compact, nav, uid, api }: { phase: FocusPha
       {turned === 0 && phase === "open" && (
         <button type="button" onClick={nav.next} className="absolute top-0 z-[70] cursor-pointer rounded-[3px_10px_10px_3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape" style={{ left: PW, width: PW, height: PH }} aria-label="Open the book" />
       )}
-      {/* The page corners lift under the pointer: a hint that they turn. Bottom right goes
-          forward, bottom left goes back */}
-      {turned > 0 && phase === "open" && !viewing && (
+      {/* The bottom-right page corner lifts under the pointer: a hint that it turns forward.
+          Going back is the arrows below, or dragging a page */}
+      {phase === "open" && !viewing && (
         <>
-          {/* On a phone only the corners of the page in view */}
-          {turned < MAX_TURN && (!compact || side === "r") && <PageCorner corner="r" label="Turn the page" onClick={nav.next} left={PW * 2 - 48} />}
-          {(!compact || side === "l") && <PageCorner corner="l" label="Turn back" onClick={nav.prev} left={0} />}
+          {/* On a phone only on the page in view. It fades in once the pages have settled and
+              out as soon as a turn starts */}
+          {(!compact || side === "r") && (
+            <PageCorner corner="r" label="Turn the page" onClick={nav.next} left={PW * 2 - 48} shown={atRest && turned > 0 && turned < MAX_TURN} />
+          )}
         </>
       )}
     </div>
   );
 }
 
-function PageCorner({ corner, label, onClick, left }: { corner: Side; label: string; onClick: () => void; left: number }) {
+function PageCorner({ corner, label, onClick, left, shown }: { corner: Side; label: string; onClick: () => void; left: number; shown: boolean }) {
   const r = corner === "r";
   return (
-    <button type="button" onClick={onClick} aria-label={label} className="group absolute bottom-0 z-[70] h-12 w-12" style={{ left }}>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      tabIndex={shown ? undefined : -1}
+      aria-hidden={shown ? undefined : true}
+      className={`group absolute bottom-0 z-[70] h-12 w-12 transition-opacity ${shown ? "opacity-100 duration-300 ease-out" : "pointer-events-none opacity-0 duration-100 ease-in"}`}
+      style={{ left }}
+    >
       <span
         className={`absolute bottom-0 block h-5 w-5 transition-all duration-300 ease-out group-hover:h-10 group-hover:w-10 group-active:h-10 group-active:w-10 ${r ? "right-0 rounded-tl-[3px]" : "left-0 rounded-tr-[3px]"}`}
         style={{
