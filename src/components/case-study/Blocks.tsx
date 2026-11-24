@@ -349,6 +349,19 @@ export function PullQuote({
   );
 }
 
+/**
+ * The design question ("How might we…") a Discovery section ends on: centred between two
+ * hairlines, with no box, label or quote mark, so it reads as the turning point of the
+ * story. Pass the key phrase wrapped in <Highlight> so it gets the marker.
+ */
+export function DesignQuestion({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-[40px] border-y border-line px-[8px] py-[32px] text-center md:my-[48px] md:py-[40px]">
+      <p className="m-0 font-heading text-h2 text-heading md:text-h2-md">{children}</p>
+    </div>
+  );
+}
+
 // Stat tile looks: a plain fact, the key fact (light grape, number in grape), and an
 // estimate (dashed border, so a guess never passes for data)
 const TILE = {

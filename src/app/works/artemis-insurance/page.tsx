@@ -10,7 +10,7 @@ import {
   Visual,
   Figure,
   ChatQuotes,
-  PullQuote,
+  DesignQuestion,
   CardGrid,
   ProblemStatement,
   ProsCons,
@@ -24,7 +24,7 @@ import {
 export const metadata: Metadata = {
   title: "Travel Insurance Integration · Ashmik Ragesh",
   description:
-    "Designed an in-flow travel insurance option for the Artemis platform — achieving 52% adoption, reducing booking drop-offs by 15%, and generating $125K in Q1 revenue.",
+    "Designed a travel protection section inside the Artemis traveller details step, so Enchanting Travels guests can add insurance without leaving the booking.",
 };
 
 const SECTIONS: CaseStudySection[] = [
@@ -60,7 +60,7 @@ function Overview() {
         />
       </Copy>
       <Visual>
-        <Figure name="Artemis — insurance selection final design" />
+        <Figure name="The travel protection section in the traveller details step" />
       </Visual>
     </Chapter>
   );
@@ -110,7 +110,7 @@ function Discovery() {
         </p>
       </Copy>
       <Visual>
-        <Figure label="Artemis booking flow — before state" />
+        <Figure label="The Artemis booking flow before insurance" />
       </Visual>
       <div className="cs-sub">
         <Copy>
@@ -137,11 +137,10 @@ function Discovery() {
             themselves, while they booked. That turned the request into one
             question:
           </p>
-          <PullQuote
-            label="Design question"
-            text="How might we let guests add travel insurance"
-            emphasis="themselves, while they book?"
-          />
+          <DesignQuestion>
+            How might we let guests add travel insurance <Highlight>on their own, right in
+            the booking flow</Highlight>?
+          </DesignQuestion>
           <p>The findings gave the design three priorities:</p>
         </Copy>
         <Visual>
