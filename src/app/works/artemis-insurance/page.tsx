@@ -176,9 +176,9 @@ function TheProblem() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Exploration  (the two places insurance sat: a page of its own, then the guest
-// details step). Confirmed by Ashmik 24 Nov 2026: the first iteration was a separate page,
-// the final one sat in the guest details step. CHECK: the pros and cons are drafted from
+// Section: Exploration  (three iterations, confirmed by Ashmik 24 Nov 2026: a separate page,
+// a section in the traveller details step, then that section redesigned with its card and
+// banner so it stands out). CHECK: the pros and cons are drafted from
 // the designs; Ashmik to confirm the real reasons the separate page lost.
 // ─────────────────────────────────────────────────────────────────────────────
 type IterationItem = {
@@ -192,27 +192,39 @@ type IterationItem = {
 const ITERATIONS: IterationItem[] = [
   {
     label: "Iteration 1",
-    title: "A separate insurance page in the booking",
+    title: "Insurance on a page of its own in the trip booking",
     worked: [
       "Room to explain both plans in full",
       "Insurance had the guest’s full attention for one step",
     ],
     didntWork: [
-      "Added one more page to the booking, right before payment",
+      "Added one more page to the trip booking, right before payment",
       "Guests who didn’t want cover still had to pass through it",
     ],
   },
   {
     label: "Iteration 2",
-    title: "Insurance inside the traveller details step",
-    shipped: true,
+    title: "Insurance as a section in the traveller details step",
     worked: [
-      "No extra page: guests see it while they’re already filling in trip details",
-      "Both plans side by side, each with its price",
-      "The recommended plan is added by default and removed with one tap",
+      "No extra page: guests see it while they fill in details for their trip",
+      "Both plans side by side, each with its price for the trip",
     ],
     didntWork: [
-      "Among the form fields it could be missed, so it needed its own card and banner to stand out",
+      "It looked like part of the form, so guests could scroll straight past it",
+    ],
+  },
+  {
+    label: "Iteration 3",
+    title: "The same section, redesigned so guests notice it",
+    shipped: true,
+    worked: [
+      "A banner with a shield sets it apart from the form fields around it",
+      "Plan cards show the price for the trip, with a Popular tag on the recommended plan",
+      "The recommended plan is added by default, and one tap removes it",
+    ],
+    // DRAFT: the trade-off accepted, to confirm once Ashmik shares the iteration images
+    didntWork: [
+      "The section takes more space, so the traveller details step gets longer",
     ],
   },
 ];
@@ -222,9 +234,11 @@ function Process() {
     <Chapter id="exploration" num={3} title="Finding the right place for insurance in the booking">
       <Copy>
         <p>
-          With the priorities set, the main decision was where insurance should
-          sit in the booking. I started with <Highlight>a page of its own</Highlight>, then
-          moved it into the traveller details step.
+          With the priorities set, two questions remained: where guests should
+          see the insurance offer while booking their trip in Artemis, and how
+          much it should stand out. It took three iterations: a page of its own,
+          then a section in the traveller details step, then <Highlight>a redesign of
+          that section so guests wouldn&apos;t miss it</Highlight>.
         </p>
       </Copy>
       {ITERATIONS.map(({ label, title, shipped, worked, didntWork }) => (
