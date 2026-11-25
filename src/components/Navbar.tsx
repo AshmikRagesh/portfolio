@@ -111,10 +111,6 @@ function useReading() {
   return reading;
 }
 
-// Shown once per visit on touch screens, right after the bell's first line, so people
-// who can't hover still find out the board is there
-const BOARD_SHOWN_KEY = "ash.curiosity.boardShown"; // sessionStorage
-
 // The logo: the front-desk bell. It dozes while the clock is paused, turns gold once
 // this is the longest visit this month, and rings before it says anything.
 //
@@ -124,8 +120,9 @@ const BOARD_SHOWN_KEY = "ash.curiosity.boardShown"; // sessionStorage
 //             when the pointer leaves.
 //   touch     there's no hover, so nothing happens until a tap. A tap on the bell rings
 //             it and brings the board down; it stays until another tap on the bell or
-//             the board. Off the home page, a tap on the bell goes home. The board
-//             also comes down once by itself, after the first line of the visit.
+//             the board, or a tap anywhere else. Off the home page, a tap on the bell
+//             goes home — unless the board is down, then the tap only puts it away. The
+//             board never comes down by itself.
 //
 // The board is out of the layout and above everything on the page, so nothing around
 // it ever moves.
@@ -247,18 +244,15 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
     setShift(Math.max(0, overflowLeft));
   }, [holding, gripMid, boardWidth]);
 
-  // Touch: once the bell's first line of the visit has been said, bring the board down
-  const wasSpeaking = useRef(false);
+  // Touch: a tap anywhere outside the bell and its board puts the board away
   useEffect(() => {
-    const finished = wasSpeaking.current && !speaking;
-    wasSpeaking.current = speaking;
-    if (!touch || !finished) return;
-    try {
-      if (sessionStorage.getItem(BOARD_SHOWN_KEY)) return;
-      sessionStorage.setItem(BOARD_SHOWN_KEY, "1");
-    } catch {}
-    setOpen(true);
-  }, [speaking, touch]);
+    if (!touch || !open) return;
+    const away = (e: PointerEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", away, true);
+    return () => document.removeEventListener("pointerdown", away, true);
+  }, [touch, open]);
 
   useEffect(primeBell, []);
 
@@ -269,11 +263,17 @@ function NavHost({ bubble, record, moment }: { bubble: Bubble; record: boolean; 
   useEffect(() => setOpen(false), [pathname]);
   const toggle = (e: React.MouseEvent) => {
     if (!touch || ducked) return;
-    // Off the home page a tap goes home — unless the board is down, then it just puts it away
-    if (!home && !open && e.currentTarget.tagName === "A") return;
+    // Off the home page a tap goes home — unless the board is down (for whatever reason),
+    // then it only puts it away
+    if (!home && !holding && e.currentTarget.tagName === "A") return;
     e.preventDefault();
-    if (!open) ringBell();
-    setOpen((o) => !o);
+    if (holding) {
+      setOpen(false);
+      setHovered(false);
+      return;
+    }
+    ringBell();
+    setOpen(true);
   };
 
   return (
