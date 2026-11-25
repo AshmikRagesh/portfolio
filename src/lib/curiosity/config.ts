@@ -70,12 +70,7 @@ export const BELLA_EVENTS = {
   goal_all: "Celebrated: every case study",
   goal_email: "Celebrated: first email copied",
   goal_video: "Celebrated: watched the walkthroughs",
-  here_recruiter: "Here as: recruiter",
-  here_designer: "Here as: designer",
-  here_engineer: "Here as: engineer",
-  here_curious: "Here as: just curious",
-  desk_open: "Opened their Curiosity Pass",
-  pass_share: "Shared their Curiosity Pass",
+  // "Here as" and the Curiosity Pass aren't on the site yet; add their events back when they ship
 } as const;
 export type BellaEvent = keyof typeof BELLA_EVENTS;
 
