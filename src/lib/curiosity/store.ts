@@ -81,7 +81,9 @@ const FIRST_REPORT_SLACK = 60;
  * Store one report. Returns "rejected" when the visit belongs to another visitor or a new
  * visit isn't allowed (opts.canStartVisit, the per-IP limit on new visits).
  */
-export async function recordVisit(p: CuriosityPayload, opts: { canStartVisit?: () => Promise<boolean> } = {}) {
+/** opts.network: the caller's hashed IP (guard.ts ipHash), kept on the visit so visits
+ *  from one network can be grouped later, e.g. to find Ashmik's own phone. Never the raw IP. */
+export async function recordVisit(p: CuriosityPayload, opts: { canStartVisit?: () => Promise<boolean>; network?: string } = {}) {
   if (!storeConfigured) {
     if (process.env.NODE_ENV !== "production") {
       console.log(
@@ -118,6 +120,7 @@ export async function recordVisit(p: CuriosityPayload, opts: { canStartVisit?: (
     // HSETNX first-seen fields so later reports don't overwrite where the visit began
     ["HSETNX", visitKey, "startedAt", Date.now()],
     ["HSETNX", visitKey, "entryPath", p.path],
+    ...(opts.network ? [["HSETNX", visitKey, "network", opts.network] as Command] : []),
     ["HSET", visitKey,
       "visitorId", p.visitorId,
       "activeSeconds", p.activeSeconds,
