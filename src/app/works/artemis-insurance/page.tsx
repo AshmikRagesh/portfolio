@@ -139,10 +139,11 @@ function Discovery() {
             they booked.
           </p>
           <p>
-            Most Enchanting Travels guests are 45 to 60-plus, well off and short on
-            time. <Highlight>None of them went looking for cover on their own</Highlight>; they
-            waited for their consultant to arrange it through an outside
-            provider. A typical exchange went like this:
+            Most Enchanting Travels guests are 45 to 60-plus and well off. They
+            expect everything for their trip to come from one place, their travel
+            consultant, so <Highlight>none of them went looking for cover on their
+            own</Highlight>. They waited for their consultant to arrange it. A typical
+            exchange went like this:
           </p>
           <ChatQuotes label="A typical exchange between a guest and a travel consultant, paraphrased" items={CONVERSATION} />
         </Copy>
