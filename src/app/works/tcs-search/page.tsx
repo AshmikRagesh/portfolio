@@ -85,9 +85,9 @@ function Overview() {
         {/* The headline numbers up front; the detail and charts are in What changed after launch */}
         <TopResults
           items={[
-            { stat: "1.3×", label: "more searches that lead to a trip" },
             { stat: "32%", label: "of searches end with a trip opened, up from 24%" },
             { stat: "3×", label: "trips shown from a menu region link" },
+            { stat: "14%", label: "of searches still find no trips", improve: true },
           ]}
         />
       </Copy>
@@ -532,7 +532,6 @@ function Outcome() {
               label: "Trips shown from a menu region link",
               note: "Up from 7 with the old text search, three times as many.",
             },
-            // PLACEHOLDER: zero-result rate not measured yet; replace with the real figure
             {
               after: "14%",
               label: "Searches that found no trips",

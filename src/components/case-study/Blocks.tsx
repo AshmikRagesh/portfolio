@@ -750,7 +750,14 @@ export function Stats({ items, className = "mt-[32px]" }: { items: { stat: strin
  * numbers alone, each in a white card (number, short label), labelled like the Meta rows. Only numbers the
  * Outcome section proves; the detail, charts and method stay there.
  */
-export function TopResults({ title = "Results", items }: { title?: string; items: { stat: string; label: string }[] }) {
+export function TopResults({
+  title = "Results",
+  items,
+}: {
+  title?: string;
+  /** `improve`: a number not yet in our favour, in the warning colour on a warm card (as in ResultsCard) */
+  items: { stat: string; label: string; improve?: boolean }[];
+}) {
   return (
     <div className="mb-[28px]">
       <p className="font-body text-[18px] font-medium leading-[28px] text-heading">{title}</p>
@@ -760,10 +767,15 @@ export function TopResults({ title = "Results", items }: { title?: string; items
         role="list"
         className={`mt-[16px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${items.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
       >
-        {items.map(({ stat, label }) => (
-          <div key={label} role="listitem" className="flex flex-col gap-[8px] rounded-xl border border-line-soft bg-white p-[20px] md:p-[24px]">
-            <span className="font-heading text-h2 font-medium text-heading md:text-h2-md">{stat}</span>
-            <p className="m-0 font-body text-[14px] leading-[20px] text-muted [text-wrap:pretty] md:text-[16px] md:leading-[22px]">{label}</p>
+        {items.map(({ stat, label, improve }) => (
+          <div
+            key={label}
+            role="listitem"
+            className={`relative flex flex-col gap-[8px] overflow-hidden rounded-xl border bg-white p-[20px] md:p-[24px] ${improve ? "border-warning/40" : "border-line-soft"}`}
+          >
+            {improve && <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-warning/[0.06]" />}
+            <span className={`relative font-heading text-h2 font-medium md:text-h2-md ${improve ? "text-warning" : "text-heading"}`}>{stat}</span>
+            <p className="relative m-0 font-body text-[14px] leading-[20px] text-muted [text-wrap:pretty] md:text-[16px] md:leading-[22px]">{label}</p>
           </div>
         ))}
       </div>
