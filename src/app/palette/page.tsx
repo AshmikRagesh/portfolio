@@ -109,15 +109,12 @@ const PAPERS: Loose[] = [
 const HARDCODED: Loose[] = [
   { hex: C.warning, name: "NDA stamp ink", use: "The NDA stamp on work cards", where: "NdaStamp.tsx", closest: "Is warning, written as a hex" },
   { hex: C.secondary, name: "Envelope print", use: "Print and creases on the mailers", where: "Mailer.tsx", closest: "Is secondary, written as a hex" },
-  { hex: C.grape, name: "Grape in SVG", use: "The key fob and the grape mailer", where: "KeyTag.tsx, Mailer.tsx", closest: "Is grape, written as a hex" },
+  { hex: C.grape, name: "Grape in SVG", use: "The grape mailer", where: "Mailer.tsx", closest: "Is grape, written as a hex" },
   { hex: C.primary, name: "Punch hole", use: "The holes punched in guestbook cards", where: "Testimonials.tsx", closest: "Is primary, written as a hex" },
 ];
 
 // Drawn colours: these belong to an object, not to the interface
 const ILLUSTRATION: { title: string; where: string; hexes: string[] }[] = [
-  { title: "Brass key and hook", where: "KeyTag.tsx", hexes: ["#FBE7B0", "#F8E2A0", "#D2A44A", "#C99A3C", "#A37A2C", "#7A5718", "#6B4B14", "#4D3409"] },
-  { title: "Steel ring", where: "KeyTag.tsx", hexes: ["#FFFFFF", "#D9DCE1", "#C4C8CE", "#686D76"] },
-  { title: "Room fob", where: "KeyTag.tsx", hexes: ["#FBE9F6", "#C0378D", "#9D136A", "#5E0B40"] },
   { title: "Signature ink", where: "Signature.tsx", hexes: ["#3557B7", "#1C2F7D"] },
   { title: "Social circles", where: "Footer.tsx", hexes: ["#67C23A", "#1F88F9", "#091624"] },
 ];

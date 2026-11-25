@@ -8,7 +8,6 @@ import { LOCKED } from "@/lib/caseLock";
 import { EMAIL } from "@/lib/contact";
 import { LockKeyhole, Mail } from "lucide-react";
 import { CtaPill } from "@/components/Cta";
-import KeyTag from "@/components/KeyTag";
 import NdaStamp from "@/components/NdaStamp";
 import PixelClouds from "@/components/PixelClouds";
 import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
@@ -19,10 +18,10 @@ import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 // pinned to the foot. Flagships sit side by side from lg (words 0.82fr, image 1.18fr) and
 // the image fills its half's full height there; below lg they stack with the image at its
 // own aspect; the smaller pair always stack.
-// Hovering the card rolls pink pixel clouds (grey for NDA works) in round the image, drops
-// the room key onto its hook, and turns the pill grape as it makes room for an arrow
+// Hovering the card rolls pink pixel clouds (grey for NDA works) in round the image, and
+// turns the pill grape as it makes room for an arrow
 // circle (see .work-cta). NDA works show a stamp on a greyed image and a greyed-out pill.
-export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string }) {
+export function FeaturedCard({ work }: { work: FeaturedWork }) {
   // Password-protected works (lib/caseLock): until the password's been entered, the card
   // opens the password field instead of following its link. Locked until this browser is
   // known to have the password, so it never flashes as open; a "coming soon" card stays locked.
@@ -108,8 +107,6 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
           fills the half's full height, stacked it keeps its own aspect */}
       <div className={`flex min-w-0 items-center ${isFlagship ? "lg:items-stretch" : ""} ${pad}`}>
         <div className={`relative w-full ${isFlagship ? "lg:h-full" : ""}`}>
-          {/* Open works: the room key drops onto its hook on hover. (NDA works: the stamp.) */}
-          {!work.nda && <KeyTag room={room} className="absolute -top-[2px] right-[12px] z-[3]" />}
           <div
             className={`work-media relative aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder ${
               isFlagship ? "lg:aspect-auto lg:h-full lg:min-h-[320px]" : ""
@@ -125,7 +122,7 @@ export function FeaturedCard({ work, room }: { work: FeaturedWork; room: string 
             />
 
             {/* Pixel clouds roll in round the image's edges on hover: pink, or grey for NDA */}
-            <PixelClouds seed={Number(room)} palette={work.nda ? "grey" : "brand"} className="z-[1]" />
+            <PixelClouds seed={Number(roomFor(work))} palette={work.nda ? "grey" : "brand"} className="z-[1]" />
 
             {/* NDA: the image stays greyed out; the stamp presses down in the centre the first
                 time the card is hovered or focused (on scroll-in for touch), then stays. */}
@@ -176,11 +173,11 @@ export default function Works() {
         <div className="works-list flex flex-col gap-8 lg:gap-10">
           {toRows(featuredWorks).map((row) =>
             row[0].layout === "flagship" ? (
-              <FeaturedCard key={row[0].title} work={row[0]} room={roomFor(row[0])} />
+              <FeaturedCard key={row[0].title} work={row[0]} />
             ) : (
               <div key={row[0].title} className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-10">
                 {row.map((work) => (
-                  <FeaturedCard key={work.title} work={work} room={roomFor(work)} />
+                  <FeaturedCard key={work.title} work={work} />
                 ))}
               </div>
             )

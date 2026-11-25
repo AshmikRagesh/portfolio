@@ -170,75 +170,9 @@ html[data-leaving] .page-enter {
 }
 
 /* ── Work card reveals ───────────────────────────────────────────────────────────
-   Open works: the first hover/focus drops the key onto the brass hook, where it then
-   stays; later hovers just swing it on the hook. NDA works: the rubber stamp presses down the first time the card is hovered
-   or focused — on scroll-in for touch screens — and then stays (NdaStamp sets
-   data-stamped on the card).
-   Touch screens can't hover, so there the key drops and the stamp presses once the card
-   scrolls into view. Reduced motion shows the end states with no animation. */
-
-/* Key — pivots where the ring's inner top edge rests on the wire (35.5px, 27.9px) */
-.key-hang {
-  transform-box: view-box;
-  transform-origin: 35.5px 27.9px;
-  opacity: 0;
-  transform: translate(10px, -18px) rotate(10deg);
-  transition: opacity 0.22s ease, transform 0.26s cubic-bezier(0.4, 0, 1, 1);
-}
-@keyframes key-drop {
-  0%   { opacity: 0; transform: translate(20px, -42px) rotate(26deg); animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.5); }
-  16%  { opacity: 1; }
-  30%  { transform: translate(7px, -12px) rotate(14deg); animation-timing-function: cubic-bezier(0.4, 0, 0.8, 0.6); } /* ring over the hook's tip */
-  38%  { transform: translate(1px, -3px) rotate(4deg); animation-timing-function: cubic-bezier(0.5, 0, 1, 1); }       /* slides down the wire */
-  44%  { transform: translate(0, 1.5px) rotate(-11deg); animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }   /* drops into the cup */
-  50%  { transform: translate(0, -0.5px) rotate(-13deg); animation-timing-function: ease-in-out; }
-  60%  { transform: translate(0, 0) rotate(8deg); animation-timing-function: ease-in-out; }
-  70%  { transform: rotate(-4.5deg); animation-timing-function: ease-in-out; }
-  80%  { transform: rotate(2.5deg); animation-timing-function: ease-in-out; }
-  90%  { transform: rotate(-1deg); animation-timing-function: ease-in-out; }
-  100% { opacity: 1; transform: translate(0, 0) rotate(0deg); }
-}
-/* KeyTag sets data-key on the card:
-     dropping — first hover/focus: the key drops onto the hook (plays through even if the
-                cursor leaves), then becomes…
-     hung     — stays on the hook for good
-     swinging — every later hover/focus: a gentle swing on the hook, then back to hung */
-.group[data-key="dropping"] .key-hang,
-.group[data-key="hung"] .key-hang,
-.group[data-key="swinging"] .key-hang {
-  opacity: 1;
-  transform: none;
-}
-.group[data-key="dropping"] .key-hang {
-  animation: key-drop 1.6s linear both;
-}
-@keyframes key-swing {
-  0%   { transform: rotate(0deg); }
-  18%  { transform: rotate(8deg); }
-  40%  { transform: rotate(-6deg); }
-  60%  { transform: rotate(3.5deg); }
-  80%  { transform: rotate(-1.5deg); }
-  100% { transform: rotate(0deg); }
-}
-.group[data-key="swinging"] .key-hang {
-  animation: key-swing 1.2s ease-in-out;
-}
-
-/* Hook takes the key's weight at the moment it lands */
-.hook-jolt {
-  transform-box: view-box;
-  transform-origin: 30px 9px;
-}
-@keyframes hook-jolt {
-  0%, 43% { transform: rotate(0deg); }
-  47%     { transform: rotate(3deg); }
-  55%     { transform: rotate(-1.5deg); }
-  65%     { transform: rotate(0.6deg); }
-  75%, 100% { transform: rotate(0deg); }
-}
-.group[data-key="dropping"] .hook-jolt {
-  animation: hook-jolt 1.6s ease-out;
-}
+   NDA works: the rubber stamp presses down the first time the card is hovered or
+   focused — on scroll-in for touch screens — and then stays (NdaStamp sets
+   data-stamped on the card). Reduced motion shows the end states with no animation. */
 
 /* NDA stamp (and the case studies' Shipped stamp) — presses down once (first hover/focus), then stays */
 .nda-stamp,
@@ -440,9 +374,7 @@ html[data-leaving] .page-enter {
 .host-tip.is-leaving { animation: host-tip-out 160ms ease-in both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .key-hang, .nda-stamp, .shipped-stamp, .stamp-thud { transition: none; }
-  .group[data-key] .key-hang { animation: none !important; opacity: 1; transform: none; }
-  .group[data-key] .hook-jolt { animation: none; }
+  .nda-stamp, .shipped-stamp, .stamp-thud { transition: none; }
   .group[data-stamped="true"] .nda-stamp,
   .group[data-stamped="true"] .shipped-stamp { animation: none; opacity: 1; transform: rotate(-12deg); }
   .group[data-stamped="true"] .stamp-thud { animation: none; }

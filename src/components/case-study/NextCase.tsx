@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import KeyTag from "@/components/KeyTag";
 import PaperTooth from "@/components/PaperTooth";
 import PixelClouds from "@/components/PixelClouds";
 import { nextWorks, roomFor } from "@/content/works";
@@ -12,9 +11,8 @@ import { nextWorks, roomFor } from "@/content/works";
  * footer and the guestbook, holds a mono eyebrow, the heading and the light button the
  * reel player uses on dark, back to all the work. Then one wide row per case study: its
  * cover, its room number, its title and a line about it, with a round arrow button.
- * Hovering a row zooms its cover a touch under a light fringe of pixel clouds, drops
- * (then swings) the room's key, at three-quarter size, onto its hook, lights the row and
- * slides the arrow. From md the cover sits beside the text; on phones it sits on top.
+ * Hovering a row zooms its cover a touch under a light fringe of pixel clouds, lights the
+ * row and slides the arrow. From md the cover sits beside the text; on phones it sits on top.
  */
 export default function NextCase({ current }: { current: string }) {
   const works = nextWorks(current);
@@ -43,12 +41,7 @@ export default function NextCase({ current }: { current: string }) {
                 href={work.href}
                 className="group grid grid-cols-1 gap-[16px] rounded-lg py-[24px] transition-colors duration-[260ms] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape-light md:-mx-[16px] md:grid-cols-[240px_1fr_auto] md:items-center md:gap-[32px] md:px-[16px] md:hover:bg-white/5"
               >
-                {/* The key hangs past the cover's edge, so it sits outside the clipped image */}
                 <span className="relative block">
-                  <KeyTag
-                    room={roomFor(work)}
-                    className="absolute -top-[2px] right-[8px] z-[2] origin-top-right scale-75"
-                  />
                   <span className="relative block h-[168px] overflow-hidden rounded-md bg-white/10 md:h-[144px]">
                     <Image
                       src={work.image}
