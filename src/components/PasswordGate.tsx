@@ -9,7 +9,8 @@
 //   wrong    the field shakes and clears.
 //   right    the lock springs open, then the case study loads — or, for a card with nothing
 //            behind it yet (comingSoon), the pill reads "Case study coming soon".
-// Phones and tablets have no hover, so the pill rests at the foot of the image instead,
+// Phones and tablets have no hover, so the card shows no pill (its "Unlock to read case
+// study" button says it; the locked page keeps a resting pill at the foot of the image),
 // and a tap opens the field right where the finger landed (kept inside the card); when the
 // keyboard comes up, the field is scrolled to stay in sight above it. Escape, or a click
 // away, folds the field back into the pill.
@@ -194,7 +195,10 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
   const showForm = state !== "pill";
   const pillAt = resting || !pos ? restPos() : pos;
   const pillPos = clamp(pillAt, PILL_W);
-  const visible = showForm || resting || inside;
+  // Phones and tablets: no resting pill on the card, as its "Unlock to read case study"
+  // button already says it; a tap anywhere on the card opens the field there. The locked
+  // page (pinned) keeps its pill.
+  const visible = showForm || pinned || (!touch && inside);
 
   return (
     <div
