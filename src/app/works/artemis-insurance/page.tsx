@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ListChecks, ShieldCheck, UsersThree } from "@phosphor-icons/react/dist/ssr";
+import { ListChecks, ShieldCheck, SuitcaseRolling, UsersThree } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -83,18 +83,23 @@ const CONVERSATION = [
 const PRIORITIES = [
   {
     icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
-    title: "Cover while booking",
-    description: "Guests should be able to add travel insurance to their trip in Artemis themselves, without asking anyone.",
+    title: "Cover in the same booking",
+    description: "Guests had to stop and message their consultant to get insurance. Adding it has to be part of booking the trip in Artemis.",
   },
   {
     icon: <ListChecks size={28} weight="fill" className="text-grape" />,
-    title: "Cover before payment",
-    description: "Guests looked for insurance on the checklist and payment pages, and left when it wasn’t there. They should see it before reaching those pages.",
+    title: "In view before payment",
+    description: "Guests went looking for insurance on the checklist and payment pages, and left when it wasn’t there. It has to appear before they get that far.",
+  },
+  {
+    icon: <SuitcaseRolling size={28} weight="fill" className="text-grape" />,
+    title: "Everything from one place",
+    description: "Guests expect their whole trip from Enchanting Travels, so insurance has to come with it, not as a separate errand.",
   },
   {
     icon: <UsersThree size={28} weight="fill" className="text-grape" />,
-    title: "Free up consultants",
-    description: "Every policy should be added in Artemis, so consultants no longer arrange cover through outside providers by hand.",
+    title: "No cover arranged by hand",
+    description: "Consultants sourced every policy from outside providers, one booking at a time. Cover added in Artemis takes that work off their desks.",
   },
 ];
 
@@ -142,8 +147,7 @@ function Discovery() {
             Most Enchanting Travels guests are 45 to 60-plus and well off. They
             expect everything for their trip to come from one place, their travel
             consultant, so <Highlight>none of them went looking for cover on their
-            own</Highlight>. They waited for their consultant to arrange it. A typical
-            exchange went like this:
+            own</Highlight>. A typical exchange went like this:
           </p>
           <ChatQuotes label="A typical exchange between a guest and a travel consultant, paraphrased" items={CONVERSATION} />
         </Copy>
@@ -162,7 +166,7 @@ function Discovery() {
             How might we let guests add travel insurance on their own, right in
             the booking flow?
           </DesignQuestion>
-          <p>The findings gave the design three priorities:</p>
+          <p>The findings gave the design four priorities:</p>
         </Copy>
         <Visual>
           <CardGrid items={PRIORITIES} />
