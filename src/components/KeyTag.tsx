@@ -101,6 +101,23 @@ export default function KeyTag({ room, className = "" }: { room: string; classNa
           <stop offset="0.5" stopColor="#bfc3c9" />
           <stop offset="1" stopColor="#80858e" />
         </linearGradient>
+        {/* Brass, matte: a turned rod lit from the left, and a domed bow */}
+        <linearGradient id={`rod-${id}`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#9a7430" />
+          <stop offset="0.35" stopColor="#ecd291" />
+          <stop offset="0.6" stopColor="#c99a45" />
+          <stop offset="1" stopColor="#87631f" />
+        </linearGradient>
+        <radialGradient id={`bow-${id}`} cx="0.36" cy="0.32" r="0.75">
+          <stop offset="0" stopColor="#f0d79a" />
+          <stop offset="0.55" stopColor="#c99a45" />
+          <stop offset="1" stopColor="#8a6626" />
+        </radialGradient>
+        <linearGradient id={`rim-${id}`} x1="0" y1="0" x2="0.6" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.32" />
+          <stop offset="0.6" stopColor="#fff" stopOpacity="0.08" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
         {/* The fob shares the footer badges' matte finish: one flat colour, a soft lift of light
             top left and a shade low right (the same two radial washes), a grain, an edge bevel */}
         <radialGradient id={`lift-${id}`} cx="0.28" cy="0.18" r="1.2">
@@ -118,7 +135,7 @@ export default function KeyTag({ room, className = "" }: { room: string; classNa
           <feColorMatrix in="noise" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0" result="white" />
           <feComposite in="white" in2="SourceAlpha" operator="in" result="grainIn" />
           <feComponentTransfer in="grainIn" result="grain">
-            <feFuncA type="linear" slope="0.07" />
+            <feFuncA type="linear" slope="0.05" />
           </feComponentTransfer>
           <feBlend in="grain" in2="SourceGraphic" mode="soft-light" result="grained" />
           <feComponentTransfer in="SourceAlpha" result="outside">
@@ -154,9 +171,9 @@ export default function KeyTag({ room, className = "" }: { room: string; classNa
           <feGaussianBlur stdDeviation="1.2" />
         </filter>
         <filter id={`drop-${id}`} x="-40%" y="-20%" width="180%" height="150%">
-          {/* As the footer badges: a tight contact shadow and a long soft one under it */}
-          <feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="rgb(10,0,14)" floodOpacity="0.35" result="far" />
-          <feDropShadow in="far" dx="0" dy="1" stdDeviation="1" floodColor="rgb(10,0,14)" floodOpacity="0.45" />
+          {/* A tight contact shadow and a soft one under it, light enough for a pale card */}
+          <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="rgb(30,5,37)" floodOpacity="0.2" result="far" />
+          <feDropShadow in="far" dx="0" dy="1" stdDeviation="0.8" floodColor="rgb(30,5,37)" floodOpacity="0.28" />
         </filter>
         {/* Punched holes: the fob eyelet and the key's bow (local coordinates) */}
         <mask id={`fobhole-${id}`} maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="136">
@@ -171,16 +188,23 @@ export default function KeyTag({ room, className = "" }: { room: string; classNa
 
       {/* ── Key, back layer (animated) ─────────────────────────────────── */}
       <g className="key-hang" filter={u("drop")}>
-        {/* Brass key on the ring, angled out from behind the fob */}
-        <g transform="translate(26.5 46.3) rotate(28)">
-          <g mask={u("bowhole")} filter={u("matte")}>
-            <circle r="6" fill={u("brass")} />
-            <rect x="-3" y="5" width="6" height="3" rx="1" fill={u("brass")} />
-            <rect x="-1.7" y="7.5" width="3.4" height="30" rx="1" fill={u("brass")} />
-            {/* Bits */}
-            <path d="M1.7 27h3v3h-2v2h2v3.5h-3Z" fill={u("brass")} />
+        {/* Brass room key on the ring, hanging out to the left of the fob so its whole shape
+            reads: round bow, collar, a round shank and a toothed bit facing outwards. The
+            shank and bit are shaded across their width like a turned brass rod. */}
+        <g transform="translate(26.5 46.3) rotate(24)">
+          <g mask={u("bowhole")}>
+            {/* Bow: a ring with a raised rim */}
+            <circle r="6.4" fill={u("bow")} />
+            <circle r="5.2" fill="none" stroke="rgba(255,240,200,0.35)" strokeWidth="0.6" />
+            <circle r="6.4" fill="none" stroke="#7d5b1f" strokeOpacity="0.55" strokeWidth="0.5" />
+            {/* Collar */}
+            <rect x="-3.4" y="5.6" width="6.8" height="2.6" rx="1" fill={u("rod")} stroke="#7d5b1f" strokeOpacity="0.5" strokeWidth="0.4" />
+            {/* Shank, rounded at the tip */}
+            <path d="M-1.7 8.2h3.4V41a1.7 1.7 0 0 1-3.4 0Z" fill={u("rod")} stroke="#7d5b1f" strokeOpacity="0.5" strokeWidth="0.4" />
+            {/* Bit, on the outer side: two teeth and a notch */}
+            <path d="M-1.6 31h-5v2.6h-1.6v2.2h1.6v2.4h-1.6v1.6h6.6Z" fill={u("rod")} stroke="#7d5b1f" strokeOpacity="0.5" strokeWidth="0.4" strokeLinejoin="round" />
           </g>
-          <circle r="2.4" fill="none" stroke="#6b4b14" strokeOpacity="0.6" strokeWidth="0.6" />
+          <circle r="2.4" fill="none" stroke="#7d5b1f" strokeOpacity="0.6" strokeWidth="0.5" />
         </g>
 
         {/* Fob + room number, hung from the ring's bottom */}
@@ -191,18 +215,11 @@ export default function KeyTag({ room, className = "" }: { room: string; classNa
               <path d="M34 44c6 0 9 4 10 10l6 46c1.5 11-6 18-16 18S16.5 111 18 100l6-46c1-6 4-10 10-10Z" fill={u("shade")} />
               <path d="M34 44c6 0 9 4 10 10l6 46c1.5 11-6 18-16 18S16.5 111 18 100l6-46c1-6 4-10 10-10Z" fill={u("lift")} />
             </g>
-            {/* A 1px ring round the edge, and a fine bevel a few px in, like a pressed coin edge */}
-            <path d="M34 44c6 0 9 4 10 10l6 46c1.5 11-6 18-16 18S16.5 111 18 100l6-46c1-6 4-10 10-10Z" fill="none" stroke="rgba(30,5,37,0.6)" strokeWidth="1" />
+            {/* A soft light rim just inside the edge, brighter top left where the light falls */}
             <path
-              d="M34 47c4.5 0 7 3 7.8 7.8l5.8 45.4c1.2 9-5 15.3-13.6 15.3s-14.8-6.3-13.6-15.3l5.8-45.4C27 50 29.5 47 34 47Z"
+              d="M34 46.6c4.8 0 7.4 3.2 8.2 8.2l5.9 45.6c1.3 9.6-5.2 16-14.1 16s-15.4-6.4-14.1-16l5.9-45.6c.8-5 3.4-8.2 8.2-8.2Z"
               fill="none"
-              stroke="rgba(12,0,16,0.16)"
-              strokeWidth="1"
-            />
-            <path
-              d="M34 48c4.5 0 7 3 7.8 7.8l5.8 45.4c1.2 9-5 15.3-13.6 15.3s-14.8-6.3-13.6-15.3l5.8-45.4C27 51 29.5 48 34 48Z"
-              fill="none"
-              stroke="rgba(255,255,255,0.08)"
+              stroke={u("rim")}
               strokeWidth="1"
             />
             <circle cx="34" cy="54" r="5.5" fill={u("brass")} filter={u("matte")} />
