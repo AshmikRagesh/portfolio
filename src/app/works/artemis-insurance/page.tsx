@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ShieldCheck, UsersThree } from "@phosphor-icons/react/dist/ssr";
+import { ListChecks, ShieldCheck, Timer, UsersThree } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -87,6 +87,16 @@ const PRIORITIES = [
     description: "Guests can add travel insurance themselves while they book their trip in Artemis, without asking anyone.",
   },
   {
+    icon: <ListChecks size={28} weight="fill" className="text-grape" />,
+    title: "Offer cover before the checklist and payment",
+    description: "Guests see insurance before they reach Your Travel Checklist and the payment page, where they used to stop and leave.",
+  },
+  {
+    icon: <Timer size={28} weight="fill" className="text-grape" />,
+    title: "Make the choice quick",
+    description: "Busy guests understand each plan and its price for the trip at a glance, without calling their consultant.",
+  },
+  {
     icon: <UsersThree size={28} weight="fill" className="text-grape" />,
     title: "No manual work for consultants",
     description: "Every policy is added in Artemis, so consultants no longer arrange cover through outside providers one booking at a time.",
@@ -156,7 +166,7 @@ function Discovery() {
             How might we let guests add travel insurance on their own, right in
             the booking flow?
           </DesignQuestion>
-          <p>The findings gave the design two priorities:</p>
+          <p>The findings gave the design four priorities:</p>
         </Copy>
         <Visual>
           <CardGrid items={PRIORITIES} />
@@ -222,6 +232,7 @@ const ITERATIONS: IterationItem[] = [
     title: "Insurance as a section in the traveller details step",
     worked: [
       "No extra page: guests see it while they fill in details for their trip",
+      "Guests meet the offer before the checklist and payment pages, where they used to stop",
       "Both plans side by side, each with its price for the trip",
     ],
     didntWork: [
