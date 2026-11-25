@@ -18,6 +18,9 @@ import {
   ResultsCard,
   Pointers,
   NextCase,
+  PanelCards,
+  MediaRail,
+  PrototypeCard,
   Highlight,
 } from "@/components/case-study";
 
@@ -80,6 +83,20 @@ const CONVERSATION = [
 
 // What the design had to do, one priority per Discovery finding. Needs, not the solution:
 // how the design meets them is in Exploration and Solution
+// The two pages where guests stopped to look for insurance (screenshots to come)
+const STOP_PAGES = [
+  {
+    alt: "Your Travel Checklist before insurance",
+    title: "Your Travel Checklist",
+    text: "Guests reviewed their trip here and looked for insurance before paying.",
+  },
+  {
+    alt: "The payment page before insurance",
+    title: "Payment",
+    text: "The last place guests looked. With no cover on offer, many stopped to ask.",
+  },
+];
+
 const PRIORITIES = [
   {
     icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
@@ -115,9 +132,6 @@ function Discovery() {
           guests directly.
         </p>
       </Copy>
-      <Visual>
-        <Figure label="The Artemis booking flow before insurance" />
-      </Visual>
       <div className="cs-sub">
         <Copy>
           <h3>Where guests stopped</h3>
@@ -132,6 +146,10 @@ function Discovery() {
             asked after.
           </p>
         </Copy>
+        <Visual>
+          {/* TODO: screenshots of the two pages before insurance, from Ashmik */}
+          <PanelCards items={STOP_PAGES} />
+        </Visual>
       </div>
       <div className="cs-sub">
         <Copy>
@@ -312,6 +330,16 @@ const SOLUTION_ITEMS = [
   },
 ];
 
+// Smaller details for the rail, each captured from the working prototype
+const DETAILS = [
+  { src: "/images/artemis-insurance/plan-added.webp", alt: "The travel protection section with Trip Cancellation (CFAR) added", title: "Recommended plan", text: "Trip Cancellation (CFAR) starts added and marked Popular, with its price for the trip." },
+  { src: "/images/artemis-insurance/plan-switched.webp", alt: "The Travel Protection Plan added in place of CFAR", title: "Switch in one tap", text: "Adding the other plan swaps it in, and the trip total updates straight away." },
+  { src: "/images/artemis-insurance/whats-covered.webp", alt: "The What's covered panel for Trip Cancellation (CFAR)", title: "What’s covered", text: "View More Benefits lists everything a plan covers without leaving the page." },
+  { src: "/images/artemis-insurance/missing-details.webp", alt: "Empty traveller fields marked in red with a message to fill them in", title: "Missing details", text: "Your Travel Checklist flags every empty field and jumps to the first one." },
+  { src: "/images/artemis-insurance/phone.webp", alt: "The travel protection section on a phone", title: "On a phone", text: "The banner and the plans stack to fit a phone screen." },
+  { src: "/images/artemis-insurance/phone-price.webp", alt: "The price details sheet open on a phone", title: "Price on a phone", text: "The total sits in a bar at the bottom, and Price details opens the breakdown." },
+];
+
 function Solution() {
   return (
     <Chapter id="solution" num={4} title="Embedded, trustworthy, and easy to skip">
@@ -323,6 +351,15 @@ function Solution() {
           into a barrier.
         </p>
       </Copy>
+      <Visual>
+        <PrototypeCard
+          src="/prototypes/artemis-insurance.html"
+          poster="/images/artemis-insurance/poster.webp"
+          title="Travel protection in the Artemis traveller details step"
+          label="The traveller details step with travel protection, rebuilt as a working prototype"
+          hint="Try it: add or switch a plan, open View More Benefits, or press Your Travel Checklist with fields left empty."
+        />
+      </Visual>
       {SOLUTION_ITEMS.map(({ num, title, body }) => (
         <div key={num} className="cs-sub">
           <Copy>
@@ -334,6 +371,15 @@ function Solution() {
           </Visual>
         </div>
       ))}
+      <div className="cs-sub">
+        <Copy>
+          <h3>The smaller details</h3>
+          <p>Each of these works in the prototype above.</p>
+        </Copy>
+        <Visual>
+          <MediaRail label="Smaller details of the travel protection section" items={DETAILS} />
+        </Visual>
+      </div>
     </Chapter>
   );
 }

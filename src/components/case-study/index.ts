@@ -40,6 +40,7 @@ export {
   OptionCard,
   Metrics,
   Stats,
+  TopResults,
   ImpactList,
   Footnote,
 } from "./Blocks";
@@ -57,3 +58,5 @@ export { default as PanelCards } from "./PanelCards";
 export { default as RhythmChart } from "./RhythmChart";
 export { default as AttemptCards } from "./AttemptCards";
 export { default as BellaShowcase } from "./BellaShowcase";
+export { default as MediaRail } from "./MediaRail";
+export { default as PrototypeCard } from "./PrototypeCard";

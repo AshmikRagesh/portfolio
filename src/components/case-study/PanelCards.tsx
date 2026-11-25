@@ -1,4 +1,5 @@
 import { ZoomImage } from "./Media";
+import ImagePlaceholder from "./ImagePlaceholder";
 
 /**
  * Picture cards for the parts of one screen: each card shows a crop of that part on a soft
@@ -7,7 +8,8 @@ import { ZoomImage } from "./Media";
  * Tap or click a crop to see it large.
  * Five cards sit as two (the wide crops) over three from tablet up; one column on phones.
  */
-type Panel = { src: string; alt: string; title: string; text: string };
+// A card without `src` shows a placeholder until its picture is ready
+type Panel = { src?: string; alt: string; title: string; text: string };
 
 const LAYOUT: Record<number, string> = {
   // Wide crops first: two across on top, then three
@@ -22,12 +24,18 @@ export default function PanelCards({ items }: { items: Panel[] }) {
       {items.map(({ src, alt, title, text }) => (
         <li key={title} className="flex flex-col rounded-lg border border-line-soft bg-white p-[12px]">
           <div className="flex h-[224px] items-center justify-center overflow-hidden rounded-md bg-grape-light/30 p-[16px]">
-            <ZoomImage
-              src={src}
-              alt={alt}
-              className="flex h-full max-w-full items-center justify-center"
-              imgClassName="max-h-full max-w-full rounded-sm object-contain shadow-[0_1px_2px_rgba(30,5,37,0.08)]"
-            />
+            {src ? (
+              <ZoomImage
+                src={src}
+                alt={alt}
+                className="flex h-full max-w-full items-center justify-center"
+                imgClassName="max-h-full max-w-full rounded-sm object-contain shadow-[0_1px_2px_rgba(30,5,37,0.08)]"
+              />
+            ) : (
+              <div className="w-full">
+                <ImagePlaceholder label={alt} />
+              </div>
+            )}
           </div>
           <div className="flex flex-col gap-[4px] px-[8px] pb-[8px] pt-[16px]">
             <h4 className="font-heading text-[24px] leading-[30px] tracking-[0px] text-heading">{title}</h4>
