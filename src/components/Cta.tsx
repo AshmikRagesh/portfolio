@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 /**
  * The site's one call-to-action: a blackcurrant pill that turns grape on hover while a
@@ -10,6 +10,10 @@ import { ArrowUpRight } from "lucide-react";
  *   parent needs the `group` class, as the hover is driven from it).
  * - `Cta` is the pill as its own link (`href`, opening in a new tab when `external`) or
  *   button (`onClick` / `type="submit"`).
+ *
+ * The icon in the circle says what the click does: → goes somewhere on this site (or
+ * submits), ↗ opens another site in a new tab (`external`), and `icon` sets any other —
+ * a lock for locked work, mail for NDA work, ↓ to carry on reading the page.
  *
  * `size="sm"` for CTAs inside cards and dialogs. `dark` for midnight surfaces: a white
  * pill with midnight text, still turning grape on hover. `off` greys it out (NDA work).
@@ -25,7 +29,9 @@ export function CtaPill({
   off,
   muted,
   icon,
-}: Look & { children: React.ReactNode; icon?: React.ReactNode }) {
+  external,
+}: Look & { children: React.ReactNode; icon?: React.ReactNode; external?: boolean }) {
+  const iconSize = size === "sm" ? 16 : 18;
   const cls = [
     "work-cta font-geist font-medium",
     size === "sm" ? "work-cta--sm text-[14px] leading-[20px]" : "text-[16px] leading-[24px]",
@@ -41,7 +47,7 @@ export function CtaPill({
       {!off && (
         <span aria-hidden="true" className="work-cta__circle">
           <span>
-            {icon ?? <ArrowUpRight size={size === "sm" ? 16 : 18} strokeWidth={2} />}
+            {icon ?? (external ? <ArrowUpRight size={iconSize} strokeWidth={2} /> : <ArrowRight size={iconSize} strokeWidth={2} />)}
           </span>
         </span>
       )}
@@ -51,6 +57,7 @@ export function CtaPill({
 
 type CtaProps = Look & {
   children: React.ReactNode;
+  icon?: React.ReactNode;
   className?: string;
 } & (
     | { href: string; external?: boolean; onClick?: never; type?: never }
@@ -60,8 +67,12 @@ type CtaProps = Look & {
 const FOCUS =
   "group inline-flex self-start rounded-full outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2";
 
-export default function Cta({ children, className = "", href, external, onClick, type = "button", ...look }: CtaProps) {
-  const pill = <CtaPill {...look}>{children}</CtaPill>;
+export default function Cta({ children, className = "", href, external, onClick, type = "button", icon, ...look }: CtaProps) {
+  const pill = (
+    <CtaPill {...look} icon={icon} external={Boolean(href && external)}>
+      {children}
+    </CtaPill>
+  );
   const cls = `${FOCUS} ${className}`;
   if (href && external)
     return (

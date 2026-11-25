@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Cta from "@/components/Cta";
-import { X, ChevronUp, ChevronDown } from "lucide-react";
+import { X, ChevronUp, ChevronDown, ArrowDown } from "lucide-react";
 import type { Reel } from "@/content/reels";
 import { useReportWatching } from "@/lib/curiosity/watching";
 
@@ -501,7 +501,7 @@ export default function ReelPlayer({
                       Read case study
                     </Cta>
                   ) : (
-                    <Cta onClick={close} dark className="cta-full">
+                    <Cta onClick={close} dark className="cta-full" icon={<ArrowDown size={18} strokeWidth={2} />}>
                       Continue reading
                     </Cta>
                   )}
