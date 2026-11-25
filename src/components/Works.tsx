@@ -49,7 +49,12 @@ export function FeaturedCard({ work }: { work: FeaturedWork }) {
   // Locked works: unlock to read. NDA works can't be shown, so the card asks for access by email.
   // Both greyed, as they can't simply be opened.
   const cta = locked ? (
-    <CtaPill muted icon={<LockKeyhole size={18} strokeWidth={2} />}>Unlock to read case study</CtaPill>
+    // Short, so it fits a phone-width card: the lock in the label says it needs a password
+    <CtaPill muted>
+      <LockKeyhole size={16} strokeWidth={2} aria-hidden="true" className="mr-[8px] shrink-0" />
+      <span className="sr-only">Locked: </span>
+      Read case study
+    </CtaPill>
   ) : work.nda ? (
     <CtaPill muted icon={<Mail size={18} strokeWidth={2} />}>Request access</CtaPill>
   ) : isLink ? (

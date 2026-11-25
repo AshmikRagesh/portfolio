@@ -9,7 +9,7 @@
 //   wrong    the field shakes and clears.
 //   right    the lock springs open, then the case study loads — or, for a card with nothing
 //            behind it yet (comingSoon), the pill reads "Case study coming soon".
-// Phones and tablets have no hover, so the card shows no pill (its "Unlock to read case
+// Phones and tablets have no hover, so the card shows no pill (its locked "Read case
 // study" button says it; the locked page keeps a resting pill at the foot of the image),
 // and a tap opens the field right where the finger landed (kept inside the card); when the
 // keyboard comes up, the field is scrolled to stay in sight above it. Escape, or a click
@@ -18,7 +18,7 @@
 // The check happens on the server (/api/unlock); this is only the way in.
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
-// The same lucide icons, at the same 2px stroke, as the card's "Unlock to read case study" button
+// The same lucide icons, at the same 2px stroke, as the card's locked "Read case study" button
 import { ArrowRight, LockKeyhole, LockKeyholeOpen } from "lucide-react";
 import { flagName } from "@/lib/caseLock";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
@@ -195,7 +195,7 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
   const showForm = state !== "pill";
   const pillAt = resting || !pos ? restPos() : pos;
   const pillPos = clamp(pillAt, PILL_W);
-  // Phones and tablets: no resting pill on the card, as its "Unlock to read case study"
+  // Phones and tablets: no resting pill on the card, as its locked "Read case study"
   // button already says it; a tap anywhere on the card opens the field there. The locked
   // page (pinned) keeps its pill.
   const visible = showForm || pinned || (!touch && inside);
