@@ -86,7 +86,7 @@ function Overview() {
         <TopResults
           items={[
             { stat: "1.3×", label: "more searches that lead to a trip" },
-            { stat: "+8 pts", label: "searches ending with a trip opened, 24% to 32%" },
+            { stat: "32%", label: "of searches end with a trip opened, up from 24%" },
             { stat: "3×", label: "trips shown from a menu region link" },
           ]}
         />

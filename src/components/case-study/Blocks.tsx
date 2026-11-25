@@ -763,7 +763,7 @@ export function TopResults({ title = "Results", items }: { title?: string; items
         {items.map(({ stat, label }) => (
           <div key={label} role="listitem" className="flex flex-col gap-[8px] rounded-xl border border-line-soft bg-white p-[20px] md:p-[24px]">
             <span className="font-heading text-h2 font-medium text-heading md:text-h2-md">{stat}</span>
-            <p className="m-0 font-body text-body text-muted md:text-body-md">{label}</p>
+            <p className="m-0 font-body text-[14px] leading-[20px] text-muted [text-wrap:pretty] md:text-[16px] md:leading-[22px]">{label}</p>
           </div>
         ))}
       </div>
