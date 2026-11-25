@@ -729,9 +729,10 @@ export function Metrics({ items }: { items: { stat: string; label: string }[] })
 }
 
 /** Plain numbers with no card — matter-of-fact counts, not results */
-export function Stats({ items }: { items: { stat: string; label: string }[] }) {
+export function Stats({ items, className = "mt-[32px]" }: { items: { stat: string; label: string }[]; className?: string }) {
+  const cols = items.length === 3 ? "grid-cols-1 sm:grid-cols-3" : items.length === 2 ? "grid-cols-2" : "grid-cols-2 md:grid-cols-4";
   return (
-    <div className={`mt-[32px] grid grid-cols-2 gap-[24px] md:gap-[32px] ${items.length === 2 ? "" : "md:grid-cols-4"}`}>
+    <div className={`${className} grid gap-[24px] md:gap-[32px] ${cols}`}>
       {items.map(({ stat, label }) => (
         <div key={label} className="flex flex-col gap-[8px]">
           <span className="font-heading text-stat font-medium leading-none text-heading md:text-stat-md lg:text-stat-lg">
@@ -740,6 +741,44 @@ export function Stats({ items }: { items: { stat: string; label: string }[] }) {
           <p className="font-body text-[18px] leading-[30px] text-muted">{label}</p>
         </div>
       ))}
+    </div>
+  );
+}
+
+/**
+ * The results up front: right under Role / Team / Timeline in the Overview, the headline
+ * numbers alone, each in a white card (number, short label), labelled like the Meta rows. Only numbers the
+ * Outcome section proves; the detail, charts and method stay there.
+ */
+export function TopResults({
+  title = "Results",
+  items,
+}: {
+  title?: string;
+  /** `improve`: a number not yet in our favour, in the warning colour on a warm card (as in ResultsCard) */
+  items: { stat: string; label: string; improve?: boolean }[];
+}) {
+  return (
+    <div className="mb-[28px]">
+      <p className="font-body text-[18px] font-medium leading-[28px] text-heading">{title}</p>
+      {/* Each number in its own card: white with a hairline, the number in the heading serif
+          at h2 (smaller than the stat size, so it reads as a summary), the label muted under it */}
+      <div
+        role="list"
+        className={`mt-[16px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${items.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
+      >
+        {items.map(({ stat, label, improve }) => (
+          <div
+            key={label}
+            role="listitem"
+            className={`relative flex flex-col gap-[8px] overflow-hidden rounded-xl border bg-white p-[20px] md:p-[24px] ${improve ? "border-warning/40" : "border-line-soft"}`}
+          >
+            {improve && <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-warning/[0.06]" />}
+            <span className={`relative font-heading text-h2 font-medium md:text-h2-md ${improve ? "text-warning" : "text-heading"}`}>{stat}</span>
+            <p className="relative m-0 font-body text-[14px] leading-[20px] text-muted [text-wrap:pretty] md:text-[16px] md:leading-[22px]">{label}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

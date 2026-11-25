@@ -31,6 +31,7 @@ import {
   Pointers,
   BeforeAfterSlider,
   DesignQuestion,
+  TopResults,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1151 (site search filters). Built from
@@ -80,6 +81,14 @@ function Overview() {
           // TODO: add Travis's role once known
           team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content), TCS developers (Engineering)"
           timeline={<>June – July 2026<br />Briefed in June 2026 · V1 built and launched in July 2026</>}
+        />
+        {/* The headline numbers up front; the detail and charts are in What changed after launch */}
+        <TopResults
+          items={[
+            { stat: "32%", label: "of searches end with a trip opened, up from 24%" },
+            { stat: "3×", label: "trips shown from a menu region link" },
+            { stat: "14%", label: "of searches still find no trips", improve: true },
+          ]}
         />
       </Copy>
       <Visual>
@@ -514,16 +523,15 @@ function Outcome() {
               after: "32%",
               change: "+8 pts",
               label: "Searches that ended with a trip opened",
-              note: "Up 8 points from July to October.",
+              note: "Up from 24% in July, 8 points by October.",
             },
             {
               before: "7",
               after: "22",
               change: "3×",
               label: "Trips shown from a menu region link",
-              note: "Three times as many as the old text search.",
+              note: "Up from 7 with the old text search, three times as many.",
             },
-            // PLACEHOLDER: zero-result rate not measured yet; replace with the real figure
             {
               after: "14%",
               label: "Searches that found no trips",

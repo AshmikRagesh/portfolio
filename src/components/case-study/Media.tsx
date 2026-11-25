@@ -458,6 +458,7 @@ export function Expanded({
   onClose,
   children,
   caption,
+  nav,
 }: {
   label: string;
   ratio: number;
@@ -465,9 +466,14 @@ export function Expanded({
   children: React.ReactNode;
   /** Replaces the line under the media (the label) when given */
   caption?: React.ReactNode;
+  /** A gallery: previous and next arrows beside the media (and the ← → keys), with a count */
+  nav?: { index: number; total: number; onPrev: () => void; onNext: () => void };
 }) {
   const box = useRef<HTMLDivElement>(null);
   const close = useRef<HTMLButtonElement>(null);
+  // Read through a ref, so stepping through a gallery doesn't re-run the open effect (focus stays put)
+  const navRef = useRef(nav);
+  navRef.current = nav;
 
   useEffect(() => {
     const before = document.activeElement as HTMLElement | null;
@@ -476,6 +482,8 @@ export function Expanded({
     close.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      if (navRef.current && e.key === "ArrowLeft") navRef.current.onPrev();
+      if (navRef.current && e.key === "ArrowRight") navRef.current.onNext();
       if (e.key !== "Tab" || !box.current) return;
       // Keep Tab inside the dialog
       const items = [...box.current.querySelectorAll<HTMLElement>("button, input, [tabindex='0']")].filter((el) => el.offsetParent);
@@ -521,7 +529,22 @@ export function Expanded({
       >
         {children}
       </div>
-      {caption ?? <p className="pointer-events-none max-w-[640px] text-center font-geist text-[14px] leading-[20px] text-white/70">{label}</p>}
+      {nav && (
+        <>
+          <button type="button" onClick={nav.onPrev} aria-label="Previous" className={`absolute left-[8px] top-1/2 flex h-[44px] w-[44px] -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white/90 ring-1 ring-white/15 backdrop-blur-md transition-colors duration-150 hover:bg-white/20 hover:text-white md:left-[24px] ${FOCUS}`}>
+            <Svg size={20}><path d="M15 6l-6 6 6 6" /></Svg>
+          </button>
+          <button type="button" onClick={nav.onNext} aria-label="Next" className={`absolute right-[8px] top-1/2 flex h-[44px] w-[44px] -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white/90 ring-1 ring-white/15 backdrop-blur-md transition-colors duration-150 hover:bg-white/20 hover:text-white md:right-[24px] ${FOCUS}`}>
+            <Svg size={20}><path d="M9 6l6 6-6 6" /></Svg>
+          </button>
+        </>
+      )}
+      {caption ?? (
+        <p className="pointer-events-none max-w-[640px] text-center font-geist text-[14px] leading-[20px] text-white/70">
+          {nav && <span className="text-white/50">{nav.index + 1} of {nav.total} · </span>}
+          {label}
+        </p>
+      )}
     </div>,
     document.body,
   );
