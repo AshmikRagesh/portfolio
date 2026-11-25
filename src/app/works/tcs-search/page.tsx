@@ -30,7 +30,7 @@ import {
   OptionCard,
   Pointers,
   BeforeAfterSlider,
-  PullQuote,
+  DesignQuestion,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1151 (site search filters). Built from
@@ -249,11 +249,10 @@ function Context() {
             choices changed the results. That turned the brief into one
             question:
           </p>
-          <PullQuote
-            label="Design question"
-            text="How might we make it easier for travellers to find"
-            emphasis="relevant itineraries through TCS search?"
-          />
+          <DesignQuestion>
+            How might we make it easier for travellers to find relevant
+            itineraries through TCS search?
+          </DesignQuestion>
           <p>The interviews and product audit shaped five priorities for the redesign:</p>
         </Copy>
         <Visual>

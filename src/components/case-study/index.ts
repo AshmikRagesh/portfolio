@@ -30,6 +30,7 @@ export {
   CardGrid,
   ProblemStatement,
   PullQuote,
+  DesignQuestion,
   StatTiles,
   ProsCons,
   Reasons,

@@ -9,13 +9,16 @@
 //   wrong    the field shakes and clears.
 //   right    the lock springs open, then the case study loads — or, for a card with nothing
 //            behind it yet (comingSoon), the pill reads "Case study coming soon".
-// Phones and tablets have no hover, so the pill rests at the foot of the image instead
-// and a tap opens it. Escape, or a click away, folds the field back into the pill.
+// Phones and tablets have no hover, so the card shows no pill (its locked "Read case
+// study" button says it; the locked page keeps a resting pill at the foot of the image),
+// and a tap opens the field right where the finger landed (kept inside the card); when the
+// keyboard comes up, the field is scrolled to stay in sight above it. Escape, or a click
+// away, folds the field back into the pill.
 //
 // The check happens on the server (/api/unlock); this is only the way in.
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
-// The same lucide icons, at the same 2px stroke, as the card's "Unlock to read case study" button
+// The same lucide icons, at the same 2px stroke, as the card's locked "Read case study" button
 import { ArrowRight, LockKeyhole, LockKeyholeOpen } from "lucide-react";
 import { flagName } from "@/lib/caseLock";
 import { useTouchScreen } from "@/components/host/useTouchScreen";
@@ -97,7 +100,8 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
       const inImage =
         r && clientX !== undefined && clientY !== undefined &&
         clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom;
-      const from = inImage && !resting ? toLocal(clientX!, clientY!) : (pos ?? restPos());
+      // Open where the click or tap landed; from the keyboard (no point), where the pill is
+      const from = inImage ? toLocal(clientX!, clientY!) : (pos ?? restPos());
       setPos(clamp(from, FORM_W));
       setMessage("");
       setState("form");
@@ -110,6 +114,26 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
   useEffect(() => {
     if (state === "form") inputRef.current?.focus({ preventScroll: true });
   }, [state]);
+
+  // Phones: once the keyboard is up, bring the field into the visible part of the screen
+  // if the keyboard covers it
+  useEffect(() => {
+    if (state !== "form" || !touch) return;
+    const vv = window.visualViewport;
+    const keepInSight = () => {
+      const form = areaRef.current?.querySelector<HTMLElement>(".pw-form");
+      if (!form) return;
+      const r = form.getBoundingClientRect();
+      const bottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
+      if (r.bottom > bottom - 16 || r.top < 80) form.scrollIntoView({ block: "center", behavior: "smooth" });
+    };
+    vv?.addEventListener("resize", keepInSight);
+    const t = window.setTimeout(keepInSight, 360);
+    return () => {
+      vv?.removeEventListener("resize", keepInSight);
+      window.clearTimeout(t);
+    };
+  }, [state, touch]);
 
   const close = useCallback(() => {
     setState((s) => (s === "form" || s === "soon" ? "pill" : s));
@@ -171,7 +195,10 @@ const PasswordGate = forwardRef<PasswordGateHandle, Props>(function PasswordGate
   const showForm = state !== "pill";
   const pillAt = resting || !pos ? restPos() : pos;
   const pillPos = clamp(pillAt, PILL_W);
-  const visible = showForm || resting || inside;
+  // Phones and tablets: no resting pill on the card, as its locked "Read case study"
+  // button already says it; a tap anywhere on the card opens the field there. The locked
+  // page (pinned) keeps its pill.
+  const visible = showForm || pinned || (!touch && inside);
 
   return (
     <div

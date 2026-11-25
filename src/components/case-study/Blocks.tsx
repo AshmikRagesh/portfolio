@@ -1,5 +1,5 @@
 import { ArrowRight, Check, X } from "lucide-react";
-import { Quotes as QuoteMark } from "@phosphor-icons/react/dist/ssr";
+import { Question, Quotes as QuoteMark } from "@phosphor-icons/react/dist/ssr";
 import PunchHole from "@/components/PunchHole";
 import { Tag } from "@/components/Tag";
 import ImagePlaceholder from "./ImagePlaceholder";
@@ -345,6 +345,20 @@ export function PullQuote({
       <p className="mt-[8px] font-heading text-[22px] leading-[32px] text-heading md:text-[26px] md:leading-[38px]">
         {text} <span className="text-grape">{emphasis}</span>
       </p>
+    </div>
+  );
+}
+
+/**
+ * The design question ("How might we…") a Discovery section ends on. Set like the rest of
+ * the reading column: left-aligned body type, one step up in size and weight, with a grape
+ * question icon on the first line as its marker. No label, lines, quote mark or highlight.
+ */
+export function DesignQuestion({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-[32px] grid grid-cols-[24px_1fr] gap-[12px] md:my-[40px] md:gap-[16px]">
+      <Question size={24} weight="fill" aria-hidden="true" className="mt-[1px] text-grape md:mt-[2px]" />
+      <p className="m-0 font-body text-lead font-medium text-heading md:text-lead-md">{children}</p>
     </div>
   );
 }

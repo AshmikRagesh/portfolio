@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowCounterClockwise, Scales, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
+import { ListChecks, ShieldCheck, SuitcaseRolling, UsersThree } from "@phosphor-icons/react/dist/ssr";
 import CaseStudyLayout, { CaseStudySection } from "@/components/CaseStudyLayout";
 import { reels } from "@/content/reels";
 import {
@@ -10,7 +10,7 @@ import {
   Visual,
   Figure,
   ChatQuotes,
-  PullQuote,
+  DesignQuestion,
   CardGrid,
   ProblemStatement,
   ProsCons,
@@ -24,7 +24,7 @@ import {
 export const metadata: Metadata = {
   title: "Travel Insurance Integration · Ashmik Ragesh",
   description:
-    "Designed an in-flow travel insurance option for the Artemis platform — achieving 52% adoption, reducing booking drop-offs by 15%, and generating $125K in Q1 revenue.",
+    "Designed a travel protection section inside the Artemis traveller details step, so Enchanting Travels guests can add insurance without leaving the booking.",
 };
 
 const SECTIONS: CaseStudySection[] = [
@@ -56,11 +56,11 @@ function Overview() {
         <Meta
           role="End-to-end Design & Developer Handoff"
           team="Ashmik Ragesh (Design), Anish (Project Manager), Muzamil (Engineering)"
-          timeline={<>November – December 2024<br />4 weeks of design · Launched in December 2024</>}
+          timeline={<>November – December 2024<br />1.5 weeks of design · Launched in December 2024</>}
         />
       </Copy>
       <Visual>
-        <Figure name="Artemis — insurance selection final design" />
+        <Figure name="The travel protection section in the traveller details step" />
       </Visual>
     </Chapter>
   );
@@ -78,22 +78,28 @@ const CONVERSATION = [
   { text: "Guests keep coming back to us to add insurance, and we’re arranging it one booking at a time.", from: "Travel consultant, to the project team" },
 ];
 
-// What the design had to do, one priority per finding; each matches the final Figma design
+// What the design had to do, one priority per Discovery finding. Needs, not the solution:
+// how the design meets them is in Exploration and Solution
 const PRIORITIES = [
   {
     icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
-    title: "Add cover without leaving the booking",
-    description: "Guests choose insurance in the traveller details step, so no one has to ask a consultant.",
+    title: "Cover in the same booking",
+    description: "Guests had to stop and message their consultant to get insurance. Adding it has to be part of booking the trip in Artemis.",
   },
   {
-    icon: <Scales size={28} weight="fill" className="text-grape" />,
-    title: "Compare plans at a glance",
-    description: "Two plans side by side, each with what it covers and its price, so guests can decide on their own.",
+    icon: <ListChecks size={28} weight="fill" className="text-grape" />,
+    title: "In view before payment",
+    description: "Guests went looking for insurance on the checklist and payment pages, and left when it wasn’t there. It has to appear before they get that far.",
   },
   {
-    icon: <ArrowCounterClockwise size={28} weight="fill" className="text-grape" />,
-    title: "Easy to change or remove",
-    description: "The recommended plan is added by default, and one tap removes it, so guests stay in control.",
+    icon: <SuitcaseRolling size={28} weight="fill" className="text-grape" />,
+    title: "Everything from one place",
+    description: "Guests expect their whole trip from Enchanting Travels, so insurance has to come with it, not as a separate errand.",
+  },
+  {
+    icon: <UsersThree size={28} weight="fill" className="text-grape" />,
+    title: "No cover arranged by hand",
+    description: "Consultants sourced every policy from outside providers, one booking at a time. Cover added in Artemis takes that work off their desks.",
   },
 ];
 
@@ -105,13 +111,28 @@ function Discovery() {
           The problem came from the front line. Travel consultants told Anish,
           our project manager, that <Highlight>guests kept asking them to add travel
           insurance</Highlight> to their trips. The team picked it up and brought me
-          in. We checked drop-off rates in the Artemis booking flow and talked
-          to guests directly.
+          in. We checked where guests were leaving the booking and talked to
+          guests directly.
         </p>
       </Copy>
       <Visual>
-        <Figure label="Artemis booking flow — before state" />
+        <Figure label="The Artemis booking flow before insurance" />
       </Visual>
+      <div className="cs-sub">
+        <Copy>
+          <h3>Where guests stopped</h3>
+          {/* TODO: add the drop-off figures for both pages once Ashmik has them */}
+          <p>
+            Drop-offs clustered on two pages near the end of the booking: Your
+            Travel Checklist, where guests review their trip before paying, and
+            the payment page. That&apos;s where guests looked for insurance once
+            their details were in. When they couldn&apos;t find it, they <Highlight>left
+            to ask their consultant, then came back to finish the booking</Highlight> once
+            cover was arranged. Most asked before paying; a few booked first and
+            asked after.
+          </p>
+        </Copy>
+      </div>
       <div className="cs-sub">
         <Copy>
           <h3>What we heard</h3>
@@ -120,9 +141,13 @@ function Discovery() {
             We interviewed eight frequent guests about what bothered them in the
             booking flow. Some raised other issues, but <Highlight>every one of them
             mentioned insurance</Highlight>, and all of them wanted to add it while
-            they booked. With no way to do that, they went back to their
-            consultant, who arranged cover through an outside provider. A typical
-            exchange went like this:
+            they booked.
+          </p>
+          <p>
+            Most Enchanting Travels guests are 45 to 60-plus and well off. They
+            expect everything for their trip to come from one place, their travel
+            consultant, so <Highlight>none of them went looking for cover on their
+            own</Highlight>. A typical exchange went like this:
           </p>
           <ChatQuotes label="A typical exchange between a guest and a travel consultant, paraphrased" items={CONVERSATION} />
         </Copy>
@@ -137,12 +162,11 @@ function Discovery() {
             themselves, while they booked. That turned the request into one
             question:
           </p>
-          <PullQuote
-            label="Design question"
-            text="How might we let guests add travel insurance"
-            emphasis="themselves, while they book?"
-          />
-          <p>The findings gave the design three priorities:</p>
+          <DesignQuestion>
+            How might we let guests add travel insurance on their own, right in
+            the booking flow?
+          </DesignQuestion>
+          <p>The findings gave the design four priorities:</p>
         </Copy>
         <Visual>
           <CardGrid items={PRIORITIES} />
@@ -177,11 +201,15 @@ function TheProblem() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section: Process  (3 iterations)
+// Section: Exploration  (three iterations, confirmed by Ashmik 24 Nov 2026: a separate page,
+// a section in the traveller details step, then that section redesigned with its card and
+// banner so it stands out). CHECK: the pros and cons are drafted from
+// the designs; Ashmik to confirm the real reasons the separate page lost.
 // ─────────────────────────────────────────────────────────────────────────────
 type IterationItem = {
   label: string;
   title: string;
+  shipped?: boolean;
   worked: string[];
   didntWork: string[];
 };
@@ -189,67 +217,65 @@ type IterationItem = {
 const ITERATIONS: IterationItem[] = [
   {
     label: "Iteration 1",
-    title: "Insurance as a dedicated booking step",
+    title: "Insurance on a page of its own in the trip booking",
     worked: [
-      "Clear plan differentiation between Basic and CFAR",
-      "Right-side pricing context kept total trip cost visible",
-      '"Recommended" tag created a subtle nudge toward the higher-value plan',
+      "Room to explain both plans in full",
+      "Insurance had the guest’s full attention for one step",
     ],
     didntWork: [
-      "Felt like a flow interruption — a separate page added friction guests didn't expect",
-      "Drop-off at this step increased; guests felt the process had been derailed",
-      "Value communication was unclear — 'What does it cover?' wasn't prominent enough",
+      "Added one more page to the trip booking, right before payment",
+      "Guests who didn’t want cover still had to pass through it",
     ],
   },
   {
     label: "Iteration 2",
-    title: "Insurance embedded in the traveller details step",
+    title: "Insurance as a section in the traveller details step",
     worked: [
-      "No page break reduced cognitive load — insurance felt less intimidating",
-      "Improved microcopy helped demystify what guests were paying for",
-      "One-screen flow aligned with the 'setting up my trip' mental model",
+      "No extra page: guests see it while they fill in details for their trip",
+      "Guests meet the offer before the checklist and payment pages, where they used to stop",
+      "Both plans side by side, each with its price for the trip",
     ],
     didntWork: [
-      "Buried visual hierarchy — the module read as a continuation of the form, not a decision",
-      "No visual affordance drew the eye to insurance; easily missed on large screens",
-      "Microcopy still too technical — built information, not emotional confidence",
+      "It looked like part of the form, so guests could scroll straight past it",
     ],
   },
   {
     label: "Iteration 3",
-    title: "Visually-elevated, embedded insurance selection",
+    title: "The same section, redesigned so guests notice it",
+    shipped: true,
     worked: [
-      "Clear side-by-side plan comparison — Basic vs CFAR with benefit callouts",
-      '"POPULAR" badge and placement nudged guests without overwhelming them',
-      "Value-first copy — 'Cancel for any reason' prioritised over technical terms",
-      "Shield icons and checkmarks reinforced trust and safety",
-      '"View more benefits" link supported detail-oriented users without cluttering the default view',
-      "Scalable layout — easy to add future plans without redesign",
+      "A banner with a shield sets it apart from the form fields around it",
+      "Plan cards show the price for the trip, with a Popular tag on the recommended plan",
+      "The recommended plan is added by default, and one tap removes it",
     ],
-    didntWork: [],
+    // DRAFT: the trade-off accepted, to confirm once Ashmik shares the iteration images
+    didntWork: [
+      "The section takes more space, so the traveller details step gets longer",
+    ],
   },
 ];
 
 function Process() {
   return (
-    <Chapter id="exploration" num={3} title="Three iterations to find the right integration point">
+    <Chapter id="exploration" num={3} title="Finding the right place for insurance in the booking">
       <Copy>
         <p>
-          With the problem defined, the design question became: <Highlight>where in the
-          booking flow should insurance live</Highlight> — and how much visual weight
-          should it carry? Three iterations tested different answers, each
-          building on what the previous one revealed.
+          With the priorities set, two questions remained: where guests should
+          see the insurance offer while booking their trip in Artemis, and how
+          much it should stand out. It took three iterations: a page of its own,
+          then a section in the traveller details step, then <Highlight>a redesign of
+          that section so guests wouldn&apos;t miss it</Highlight>.
         </p>
       </Copy>
-      {ITERATIONS.map(({ label, title, worked, didntWork }) => (
+      {ITERATIONS.map(({ label, title, shipped, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
             <OptionCard
               label={label}
               title={title}
-              shipped={didntWork.length === 0}
+              shipped={shipped}
               stamp="Selected"
-              image={`${label} — design preview`}
+              image={`${label}: ${title}`}
             >
               <ProsCons pros={worked} cons={didntWork} />
             </OptionCard>

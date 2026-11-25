@@ -9,13 +9,16 @@ const PORTRAIT_SRC = "/images/portrait-sketch-glasses-cutout.webp";
 
 export default function Hero() {
   return (
-    <section className="page-container bg-background flex flex-col items-center gap-[60px] pt-[140px] lg:pt-[144px]">
+    <section className="page-container bg-background flex flex-col items-center gap-[48px] pt-[120px] md:gap-[60px] md:pt-[140px] lg:pt-[144px]">
       {/* Text */}
-      <div className="flex flex-col items-center gap-6 text-center w-full">
-        <h1 className="font-heading font-normal text-[36px] leading-[40px] tracking-[-0.36px] text-heading whitespace-normal md:whitespace-pre-wrap md:text-[44px] md:leading-[48px] md:tracking-[-0.44px] lg:text-[48px] lg:leading-[56px] lg:tracking-[-0.48px] lg:whitespace-pre-wrap">
-          {`I'm Ashmik, a product designer\nturned design engineer.`}
+      <div className="flex flex-col items-center gap-[16px] text-center w-full md:gap-6">
+        {/* Phones: three even lines (breaks after "product" and "turned") at a size that fits
+            them, with tighter leading and tracking for a large serif; tablet up breaks after "designer" */}
+        <h1 className="font-heading font-normal text-[30px] leading-[34px] tracking-[-0.6px] text-heading min-[376px]:text-[32px] min-[376px]:leading-[36px] min-[376px]:tracking-[-0.64px] md:text-[44px] md:leading-[48px] md:tracking-[-0.44px] lg:text-[48px] lg:leading-[56px] lg:tracking-[-0.48px]">
+          I&apos;m Ashmik, a product<br className="md:hidden" /> designer<br className="hidden md:block" /> turned
+          <br className="md:hidden" /> design engineer.
         </h1>
-        <p className="font-body font-normal text-[16px] leading-[24px] text-secondary w-full md:text-[20px] md:leading-[32px] md:max-w-[652px] lg:text-[20px] lg:leading-[32px] lg:max-w-[652px]">
+        <p className="font-body font-normal text-[16px] leading-[26px] text-secondary w-full max-w-[320px] [text-wrap:balance] md:text-[20px] md:leading-[32px] md:max-w-[652px] lg:text-[20px] lg:leading-[32px] lg:max-w-[652px]">
           I design it, then build it in code, so teams can click through an idea
           before they commit to it. Off the clock, I host on Airbnb.
         </p>
