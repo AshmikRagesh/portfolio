@@ -17,13 +17,11 @@ const geistMono = localFont({
   display: "swap",
 });
 
-// The secondary font: body text everywhere, and plain UI. Trying DM Sans (25 Nov 2026) in
-// place of Geist; it keeps the --font-geist variable so every font-geist / font-body class
-// follows. To go back, point src at ./fonts/Geist-Variable.woff2 and weight at "100 900".
+// Geist — the secondary font: body text everywhere, and plain UI
 const geist = localFont({
-  src: "./fonts/DMSans-Variable.woff2",
+  src: "./fonts/Geist-Variable.woff2",
   variable: "--font-geist",
-  weight: "100 1000",
+  weight: "100 900",
   display: "swap",
 });
 
