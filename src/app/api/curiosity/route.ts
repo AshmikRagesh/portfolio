@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   if (await skipCounting(req.headers, payload.visitorId)) return new Response(null, { status: 204 });
 
   try {
-    const outcome = await recordVisit(payload, { canStartVisit: () => allow("newvisit", ip, NEW_VISITS_PER_HOUR, 3600) });
+    const outcome = await recordVisit(payload, { canStartVisit: () => allow("newvisit", ip, NEW_VISITS_PER_HOUR, 3600), network: ip });
     if (outcome === "rejected") return new Response(null, { status: 403 });
   } catch (err) {
     console.error("[curiosity] store failed", err);
