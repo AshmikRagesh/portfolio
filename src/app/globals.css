@@ -1051,14 +1051,23 @@ html[data-leaving] .page-enter {
 }
 /* Work cards' "Read case study" pill: on card hover it turns grape and an arrow circle
    grows in beside it (4px apart), the arrow sliding in after it; the pill keeps its padding */
-.work-cta { --cta-h: 48px; display: inline-flex; align-self: flex-start; align-items: center; height: var(--cta-h); color: #fff; }
+/* Never wider than its card: on a narrow card the label gives way rather than the circle
+   pushing the pill past the edge */
+.work-cta { --cta-h: 48px; display: inline-flex; align-self: flex-start; align-items: center; max-width: 100%; height: var(--cta-h); color: #fff; }
 .work-cta__inner, .work-cta__circle { display: flex; align-items: center; justify-content: center; height: var(--cta-h); border-radius: 999px; background-color: #32073e; white-space: nowrap; transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
-.work-cta__inner { padding-inline: 28px; }
+.work-cta__inner { min-width: 0; padding-inline: 28px; }
 .work-cta__circle { width: 0; margin-left: 0; overflow: hidden; scale: 0; transform-origin: 0 center; }
 .work-cta__circle > span { display: grid; place-items: center; width: var(--cta-h); height: 100%; flex-shrink: 0; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) 0.1s; }
-.group:hover .work-cta__inner, .group:focus-visible .work-cta__inner { background-color: #9d136a; }
-.group:hover .work-cta__circle, .group:focus-visible .work-cta__circle { width: var(--cta-h); margin-left: 4px; scale: 1; background-color: #9d136a; }
-.group:hover .work-cta__circle > span, .group:focus-visible .work-cta__circle > span { transform: none; }
+/* The arrow circle slides out on hover — only on screens that can hover, since a tap on a
+   phone leaves :hover stuck and the wider pill ran past the card. Keyboard focus anywhere. */
+.group:focus-visible .work-cta__inner { background-color: #9d136a; }
+.group:focus-visible .work-cta__circle { width: var(--cta-h); margin-left: 4px; scale: 1; background-color: #9d136a; }
+.group:focus-visible .work-cta__circle > span { transform: none; }
+@media (hover: hover) {
+  .group:hover .work-cta__inner { background-color: #9d136a; }
+  .group:hover .work-cta__circle { width: var(--cta-h); margin-left: 4px; scale: 1; background-color: #9d136a; }
+  .group:hover .work-cta__circle > span { transform: none; }
+}
 /* Filled: the pill stretches to its container's width (the expanded reel) */
 .cta-full { display: flex; width: 100%; align-self: stretch; }
 .cta-full .work-cta { width: 100%; }
@@ -1069,16 +1078,21 @@ html[data-leaving] .page-enter {
    it darkens a shade on hover and its icon circle slides out, in grey rather than grape */
 .work-cta--muted { color: #524555; /* secondary */ }
 .work-cta--muted .work-cta__inner, .work-cta--muted .work-cta__circle { background-color: #e5e7eb; }
-.group:hover .work-cta--muted .work-cta__inner, .group:focus-visible .work-cta--muted .work-cta__inner,
-.group:hover .work-cta--muted .work-cta__circle, .group:focus-visible .work-cta--muted .work-cta__circle { background-color: #dcdde2; }
+.group:focus-visible .work-cta--muted .work-cta__inner,
+.group:focus-visible .work-cta--muted .work-cta__circle { background-color: #dcdde2; }
+@media (hover: hover) {
+  .group:hover .work-cta--muted .work-cta__inner,
+  .group:hover .work-cta--muted .work-cta__circle { background-color: #dcdde2; }
+}
 /* The same pill, smaller, for CTAs inside cards and dialogs */
 .work-cta--sm { --cta-h: 40px; }
 .work-cta--sm .work-cta__inner { padding-inline: 20px; }
-.work-cta--off .work-cta__inner, .group:hover .work-cta--off .work-cta__inner { background-color: #e5e7eb; }
+.work-cta--off .work-cta__inner, .group:hover .work-cta--off .work-cta__inner, .group:focus-visible .work-cta--off .work-cta__inner { background-color: #e5e7eb; }
 /* On midnight surfaces: a white pill with midnight text, turning grape (white text) on hover */
 .work-cta--dark { color: #1e0525; }
 .work-cta--dark .work-cta__inner, .work-cta--dark .work-cta__circle { background-color: #fff; }
-.group:hover .work-cta--dark, .group:focus-visible .work-cta--dark { color: #fff; }
+.group:focus-visible .work-cta--dark { color: #fff; }
+@media (hover: hover) { .group:hover .work-cta--dark { color: #fff; } }
 @media (prefers-reduced-motion: reduce) {
   .work-cta__inner, .work-cta__circle, .work-cta__circle > span { transition: none; }
 }
