@@ -31,6 +31,7 @@ import {
   Pointers,
   BeforeAfterSlider,
   DesignQuestion,
+  TopResults,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1151 (site search filters). Built from
@@ -80,6 +81,14 @@ function Overview() {
           // TODO: add Travis's role once known
           team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content), TCS developers (Engineering)"
           timeline={<>June – July 2026<br />Briefed in June 2026 · V1 built and launched in July 2026</>}
+        />
+        {/* The headline numbers up front; the detail and charts are in What changed after launch */}
+        <TopResults
+          items={[
+            { stat: "1.3×", label: "more searches that lead to a trip" },
+            { stat: "+8 pts", label: "searches ending with a trip opened, 24% to 32%" },
+            { stat: "3×", label: "trips shown from a menu region link" },
+          ]}
         />
       </Copy>
       <Visual>

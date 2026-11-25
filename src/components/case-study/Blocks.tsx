@@ -729,9 +729,10 @@ export function Metrics({ items }: { items: { stat: string; label: string }[] })
 }
 
 /** Plain numbers with no card — matter-of-fact counts, not results */
-export function Stats({ items }: { items: { stat: string; label: string }[] }) {
+export function Stats({ items, className = "mt-[32px]" }: { items: { stat: string; label: string }[]; className?: string }) {
+  const cols = items.length === 3 ? "grid-cols-1 sm:grid-cols-3" : items.length === 2 ? "grid-cols-2" : "grid-cols-2 md:grid-cols-4";
   return (
-    <div className={`mt-[32px] grid grid-cols-2 gap-[24px] md:gap-[32px] ${items.length === 2 ? "" : "md:grid-cols-4"}`}>
+    <div className={`${className} grid gap-[24px] md:gap-[32px] ${cols}`}>
       {items.map(({ stat, label }) => (
         <div key={label} className="flex flex-col gap-[8px]">
           <span className="font-heading text-stat font-medium leading-none text-heading md:text-stat-md lg:text-stat-lg">
@@ -740,6 +741,20 @@ export function Stats({ items }: { items: { stat: string; label: string }[] }) {
           <p className="font-body text-[18px] leading-[30px] text-muted">{label}</p>
         </div>
       ))}
+    </div>
+  );
+}
+
+/**
+ * The results up front: right under Role / Team / Timeline in the Overview, the headline
+ * numbers alone (big number, short label), labelled like the Meta rows. Only numbers the
+ * Outcome section proves; the detail, charts and method stay there.
+ */
+export function TopResults({ title = "Results", items }: { title?: string; items: { stat: string; label: string }[] }) {
+  return (
+    <div className="mb-[28px]">
+      <p className="font-body text-[18px] font-medium leading-[28px] text-heading">{title}</p>
+      <Stats items={items} className="mt-[16px]" />
     </div>
   );
 }

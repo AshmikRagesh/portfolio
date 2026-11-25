@@ -25,6 +25,7 @@ import {
   Highlight,
   BeforeAfterSlider,
   ImageCarousel,
+  TopResults,
 } from "@/components/case-study";
 
 // DRAFT — angle chosen 29 Oct 2026: "build once, not twice", with Ashmik's own path
@@ -69,6 +70,14 @@ function Overview() {
           role="Product Design, Design Systems & AI-assisted Development"
           team="Ashmik Ragesh, Hriday Gami, Arunava (Design), Travelopia developers (Engineering)"
           timeline={<>June 2026 – present<br />Pilot in June · Rollout from July · In daily use since August</>}
+        />
+        {/* The headline numbers up front; the detail is in What changed */}
+        <TopResults
+          items={[
+            { stat: "Half", label: "the time to deliver designs, by my own estimate" },
+            { stat: "110+", label: "components in Helix across three brands" },
+            { stat: "1 month", label: "to move Quark and TCS components into Helix" },
+          ]}
         />
       </Copy>
       <Visual>
