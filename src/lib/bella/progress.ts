@@ -209,7 +209,7 @@ export function setHereAs(v: HereAs) {
   const p = readProgress();
   if (p.hereAs === v) return;
   save({ ...p, hereAs: v });
-  track(`here_${v === "Just curious" ? "curious" : v.toLowerCase()}` as BellaEvent);
+  // Not counted on /stats until "Here as" ships on the site (see BELLA_EVENTS)
 }
 
 export function saveReading(r: Reading) {
