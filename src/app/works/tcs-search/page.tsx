@@ -523,14 +523,14 @@ function Outcome() {
               after: "32%",
               change: "+8 pts",
               label: "Searches that ended with a trip opened",
-              note: "Up 8 points from July to October.",
+              note: "Up from 24% in July, 8 points by October.",
             },
             {
               before: "7",
               after: "22",
               change: "3×",
               label: "Trips shown from a menu region link",
-              note: "Three times as many as the old text search.",
+              note: "Up from 7 with the old text search, three times as many.",
             },
             // PLACEHOLDER: zero-result rate not measured yet; replace with the real figure
             {

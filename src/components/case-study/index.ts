@@ -41,6 +41,7 @@ export {
   Metrics,
   Stats,
   TopResults,
+  SplitCards,
   ImpactList,
   Footnote,
 } from "./Blocks";

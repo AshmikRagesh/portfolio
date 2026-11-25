@@ -380,6 +380,37 @@ const TILE_COLS = { 2: "md:grid-cols-2", 3: "md:grid-cols-3" } as const;
  * the tiles share their row's lines (a subgrid), so tags, numbers and lines start level
  * across tiles even when one number or line runs longer; a tile without a tag keeps the slot.
  */
+/**
+ * How a test splits its visitors, one card per arm, in the same design as the result cards
+ * in ResultsCard: white with a hairline, no tags; the share on top in the heading serif
+ * (grape for the variants, muted for the control), the arm's name in the heading serif,
+ * then which arm it is, muted. Sits in the text column (inside Copy).
+ */
+export function SplitCards({
+  items,
+}: {
+  items: { title: string; note: string; share: string; control?: boolean }[];
+}) {
+  return (
+    <div role="list" className="mt-[32px] grid grid-cols-1 gap-[12px] md:grid-cols-3 md:gap-[16px]">
+      {items.map((a) => (
+        <div
+          key={a.title}
+          role="listitem"
+          className="flex flex-col rounded-xl border border-line-soft bg-white p-[20px] md:row-span-3 md:grid md:grid-rows-subgrid md:gap-y-0 md:p-[24px]"
+        >
+          <p className="m-0 flex items-baseline gap-[8px]">
+            <span className={`font-heading text-h1 font-medium md:text-h1-md ${a.control ? "text-muted" : "text-grape"}`}>{a.share}</span>
+            <span className="font-body text-body text-muted md:text-body-md">of visitors</span>
+          </p>
+          <p className="m-0 mt-[16px] font-heading text-h4 text-heading md:text-h4-md">{a.title}</p>
+          <p className="m-0 mt-[8px] font-body text-body text-muted md:text-body-md">{a.note}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function StatTiles({
   items,
 }: {

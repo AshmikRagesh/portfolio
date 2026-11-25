@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState, type KeyboardEvent } from "react";
-import { ArrowDown, ArrowUp, TrendUp, WarningCircle } from "@phosphor-icons/react/dist/ssr";
-import { Tag } from "@/components/Tag";
+import { ArrowDown, ArrowUp } from "@phosphor-icons/react/dist/ssr";
 import useInView from "./useInView";
 import { pitchFor } from "@/lib/sound/ui";
 
 /**
  * A results card, sized to sit in the text column: the headline number with what it
  * means and a short paragraph, two or three supporting stats in tagged boxes side by
- * side (wins as before → after, and any number still to improve in the warning colour), then a line chart of one metric by month. All type comes from the
+ * side (each win's number in grape with its starting value in the note, and any number still to improve in the warning colour), then a line chart of one metric by month. All type comes from the
  * DS scale.
  * When it scrolls into view the card rises in, the headline and the new stat values count
  * up, the line and the fill under it draw left to right, each point popping in as the line
@@ -24,6 +23,7 @@ type Metric = { name: string; points: Point[]; caption: string; max?: number };
 // A stat is a win (grape) unless it's marked `improve`: a number not yet in our favour,
 // set in the warning colour with a note on what's behind it
 type Stat = {
+  /** The starting value; shown in the note's words, not beside the number */
   before?: string;
   after: string;
   change?: string;
@@ -294,59 +294,36 @@ export default function ResultsCard({
         <p className="mt-[12px] max-w-[520px] font-body text-body text-secondary md:text-body-md">{body}</p>
       </div>
 
-      {/* Supporting stats: cards side by side. Top to bottom: a tag, what the number counts
-          with a short note tucked under it (one text block, the label in the heading colour,
-          the note muted), then the number along the bottom above a hairline, so the numbers
-          line up. From tablet up the cards share their rows (a subgrid), so every tag, label,
-          note and number starts level across cards. A win has a grape tag, the old value
-          muted and the new one in grape; a number still to improve has a warning tag, edge
-          and a warm tint */}
-      <dl
-        className={`m-0 mt-[32px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${
+      {/* Supporting stats: cards side by side, no tags. Top to bottom: the number (grape for
+          a win, the warning colour for one still to improve, which also warms the card), what
+          it counts in the heading serif, then a muted note carrying the starting value ("Up
+          from 24% in July"). From tablet up the cards share their rows (a subgrid), so every
+          number, title and note starts level across cards. */}
+      <div
+        role="list"
+        className={`mt-[32px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${
           stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"
         }`}
       >
         {stats.map((s, i) => (
           <div
             key={s.label}
+            role="listitem"
             {...rise(200 + i * 150)}
-            className={`${rise(200 + i * 150).className} relative flex flex-col overflow-hidden rounded-xl p-[20px] md:row-span-4 md:grid md:grid-rows-subgrid md:gap-y-0 md:p-[24px] ${
+            className={`${rise(200 + i * 150).className} relative flex flex-col overflow-hidden rounded-xl p-[20px] md:row-span-3 md:grid md:grid-rows-subgrid md:gap-y-0 md:p-[24px] ${
               s.improve ? "border border-warning/40 bg-white" : "border border-line-soft bg-white"
             }`}
           >
-            {/* A number still to improve tints the whole card warm, over the white */}
             {s.improve && <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-warning/[0.06]" />}
-            <span className="relative mb-[16px] self-start">
-              {s.improve ? (
-                <Tag face="geist" tone="warning">
-                  <WarningCircle size={14} weight="bold" aria-hidden="true" />
-                  Still to improve
-                </Tag>
-              ) : (
-                <Tag face="geist" tone="grape">
-                  <TrendUp size={14} weight="bold" aria-hidden="true" />
-                  Improved
-                </Tag>
-              )}
-            </span>
-            <dt className="relative font-body text-body font-medium text-heading">{s.label}</dt>
-            {s.note ? <dd className="relative m-0 mt-[4px] font-body text-body text-muted">{s.note}</dd> : <span />}
-            {/* The number along the bottom: old value small and muted, the new one large */}
-            <dd className="relative m-0 mt-[20px] flex items-baseline gap-[8px] border-t border-line-soft pt-[16px]">
-              {s.before && (
-                <>
-                  <span className="font-heading text-h3 text-muted md:text-h3-md">{s.before}</span>
-                  <span aria-hidden="true" className="font-body text-body text-muted md:text-body-md">→</span>
-                </>
-              )}
-              <span className={`font-heading text-h1 font-medium md:text-h1-md ${s.improve ? "text-warning" : "text-grape"}`}>
-                <CountUp value={s.after} run={shown} />
-              </span>
+            <p className={`relative m-0 font-heading text-h1 font-medium md:text-h1-md ${s.improve ? "text-warning" : "text-grape"}`}>
+              <CountUp value={s.after} run={shown} />
               {s.change && <span className="sr-only">, {s.change}</span>}
-            </dd>
+            </p>
+            <p className="relative m-0 mt-[16px] font-heading text-h4 text-heading md:text-h4-md">{s.label}</p>
+            {s.note ? <p className="relative m-0 mt-[8px] font-body text-body text-muted md:text-body-md">{s.note}</p> : <span />}
           </div>
         ))}
-      </dl>
+      </div>
 
       {metrics.length > 0 && (
       <div {...rise(500)}>
