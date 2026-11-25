@@ -26,7 +26,6 @@ import {
   VariantPair,
   BeforeAfterSlider,
   Highlight,
-  TopResults,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1270. Copy is a starting point to edit section by section;
@@ -69,8 +68,14 @@ function Overview() {
           team="Rohit Rayala (CRO), Sharayu Jadhav (Product Manager), Hriday Gami (Design), Sandy Tang (Content)"
           timeline={<>June – July 2026<br />Briefed in June · Designs approved 15 Jul · Built for an A/B/C test</>}
         />
-        {/* No test results yet: what the work has already changed, as in Where it stands */}
-        <TopResults title="Impact so far" items={IMPACT_SO_FAR} />
+        {/* No test results yet, so no numbers up front: just where it stands, in the words of
+            Where it stands, labelled like the Meta rows */}
+        <div className="mb-[28px]">
+          <p className="font-body text-[18px] font-medium leading-[28px] text-heading">Status</p>
+          <p className="mt-[8px] font-body text-[18px] leading-[28px] text-secondary">
+            Both variants are built and reviewed, so the test is ready to run. There are no results to share yet.
+          </p>
+        </div>
       </Copy>
       <Visual>
         {/* Both frames are the live site at 1470 wide: the before as it is (Africa hovered), the
