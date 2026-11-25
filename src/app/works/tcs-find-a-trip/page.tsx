@@ -27,7 +27,6 @@ import {
   BeforeAfterSlider,
   Highlight,
   TopResults,
-  SplitCards,
 } from "@/components/case-study";
 
 // DRAFT — first pass at TCSWT-1270. Copy is a starting point to edit section by section;
@@ -463,10 +462,10 @@ function Solution() {
 // Section: Build  (output — the two variants, built in code and ready to test)
 // ─────────────────────────────────────────────────────────────────────────────
 // The three arms of the test; the two variants are the point, the control is today's menu
-const TEST_ARMS = [
-  { title: "Today's menu", note: "The control", share: "34%", control: true },
-  { title: "Text links", note: "Variant 2", share: "33%" },
-  { title: "Image cards", note: "Variant 3", share: "33%" },
+const TEST_ARMS: Parameters<typeof StatTiles>[0]["items"] = [
+  { stat: "34%", label: "of visitors keep today's menu, the control" },
+  { stat: "33%", label: "of visitors get Variant 2, the text links", tone: "key" },
+  { stat: "33%", label: "of visitors get Variant 3, the image cards", tone: "key" },
 ];
 
 // The path the code took, in order
@@ -497,8 +496,10 @@ function Output() {
           as two variants of the menu. <Highlight>The test splits visitors three ways
           against the current menu.</Highlight>
         </p>
-        <SplitCards items={TEST_ARMS} />
       </Copy>
+      <Visual>
+        <StatTiles items={TEST_ARMS} />
+      </Visual>
       <div className="cs-sub">
         <Copy>
           <h3>How it was built</h3>
