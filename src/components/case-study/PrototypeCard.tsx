@@ -176,7 +176,7 @@ export default function PrototypeCard({
       </div>
 
       <div
-        className="cs-pair-media relative z-[1] overflow-hidden rounded-lg border border-line-soft bg-white transition-[transform,box-shadow,border-color] duration-300 ease-out motion-reduce:transition-none group-hover/proto:-translate-y-[4px] group-hover/proto:border-grape/45 group-hover/proto:shadow-[0_24px_56px_-16px_rgba(0,0,0,0.45)] group-has-[:focus-visible]/proto:border-grape/45"
+        className="cs-pair-media relative z-[1] overflow-hidden rounded-lg border border-line-soft bg-white transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none group-hover/proto:-translate-y-[4px] group-hover/proto:shadow-[0_24px_56px_-16px_rgba(0,0,0,0.45)]"
         style={{ aspectRatio: `${DESIGN_W} / ${DESIGN_H}` }}
       >
         <Frame src={src} title={title} live={false} />
