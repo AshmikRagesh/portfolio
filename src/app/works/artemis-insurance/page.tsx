@@ -307,33 +307,50 @@ function Process() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Solution
 // ─────────────────────────────────────────────────────────────────────────────
+// The four decisions in the final design, after the reference's "piece by piece" format: the
+// problem each answers, then what I did. Images are captured from the working prototype.
+// CHECK (Ashmik, asked 26 Nov): did CFAR ship added by default, and do policies added in
+// Artemis go through without a consultant? Point 4 assumes both.
 const SOLUTION_ITEMS = [
   {
     num: 1,
-    title: "Placed just before payment — not as a separate step",
-    body: <>Insurance appears at the highest-intent moment in the booking journey: <Highlight>right before payment, as part of the existing flow</Highlight>. This placement was deliberate — guests are already in a commitment mindset. Introducing insurance here feels like a natural extension of protecting their investment, not an interruption of it.</>,
+    title: "Placed before the checklist and payment",
+    problem: "Guests looked for insurance on Your Travel Checklist and the payment page, and left the booking to ask when it wasn’t there.",
+    did: <>Put travel protection in the traveller details step, after the guests&apos; details and before the terms. <Highlight>Guests now see cover before they reach the pages where they used to stop.</Highlight></>,
+    src: "/images/artemis-insurance/in-place.webp",
+    alt: "The travel protection section in the traveller details step, between the guests' details and the terms, with the trip total beside it",
   },
   {
     num: 2,
-    title: "Side-by-side plan comparison with value-first copy",
-    body: <>The final design presents Basic and CFAR plans in a clear two-column layout, with benefits written in plain language. <Highlight>&quot;Cancel for any reason&quot; leads over technical terms</Highlight>. A &quot;POPULAR&quot; badge creates a gentle nudge without overriding guest autonomy. The structure makes the comparison effortless — guests don&apos;t need to remember what one plan said before reading the next.</>,
+    title: "A banner that stands apart from the form",
+    problem: "In the second iteration, insurance looked like another part of the form, and guests could scroll straight past it.",
+    did: <>Opened the section with a dark green banner, a shield and four short lines on what cover includes, <Highlight>so it reads as trip protection, not another field</Highlight>.</>,
+    src: "/images/artemis-insurance/banner.webp",
+    alt: "The Travel Protection Plan banner: dark green, a shield, and four lines on what cover includes",
   },
   {
     num: 3,
-    title: "Trust-first visual language",
-    body: <>Shield icons, checkmarks, and a clear colour system were chosen specifically because insurance is an anxiety-laden category. Guests aren&apos;t uncertain about what insurance is — <Highlight>they&apos;re uncertain whether they can trust it</Highlight>. Every visual decision reinforced safety and transparency rather than trying to persuade.</>,
+    title: "Two plans, side by side",
+    problem: "Artemis gave guests no way to see what cover was available without asking their consultant.",
+    did: <>Showed both plans next to each other, with ticks and crosses for what each covers and the price for the trip, <Highlight>so guests can compare cover on their own</Highlight>.</>,
+    src: "/images/artemis-insurance/plans.webp",
+    alt: "Trip Cancellation (CFAR), marked Popular, beside the Travel Protection Plan, each with ticks and crosses and a price per trip",
   },
   {
     num: 4,
-    title: "Recommended plan auto-selected to reduce decision fatigue",
-    body: <>The CFAR plan is pre-selected as the recommended option. This reduces the cognitive load of a cold decision mid-checkout — guests can accept the default, switch, or skip entirely. <Highlight>The skip option is always visible and never hidden</Highlight>, which preserved trust while improving adoption.</>,
+    title: "Recommended plan added, one tap to change",
+    problem: "Each policy meant a consultant arranging it with an outside provider.",
+    did: <>Added Trip Cancellation (CFAR) by default, marked Popular, with its cost in the trip total. <Highlight>One tap removes it or swaps in the other plan.</Highlight></>,
+    src: "/images/artemis-insurance/swapped.webp",
+    alt: "The Travel Protection Plan added in place of CFAR, with the trip total updated to USD 31,122",
+    label: "Swapping plans updates the trip total straight away",
   },
 ];
 
 // Smaller details for the rail, each captured from the working prototype
+// Smaller details for the rail, each captured from the working prototype.
+// CHECK: did the empty-field check and the phone price sheet ship, or are they prototype only?
 const DETAILS = [
-  { src: "/images/artemis-insurance/plan-added.webp", alt: "The travel protection section with Trip Cancellation (CFAR) added", title: "Recommended plan", text: "Trip Cancellation (CFAR) starts added and marked Popular, with its price for the trip." },
-  { src: "/images/artemis-insurance/plan-switched.webp", alt: "The Travel Protection Plan added in place of CFAR", title: "Switch in one tap", text: "Adding the other plan swaps it in, and the trip total updates straight away." },
   { src: "/images/artemis-insurance/whats-covered.webp", alt: "The What's covered panel for Trip Cancellation (CFAR)", title: "What’s covered", text: "View More Benefits lists everything a plan covers without leaving the page." },
   { src: "/images/artemis-insurance/missing-details.webp", alt: "Empty traveller fields marked in red with a message to fill them in", title: "Missing details", text: "Your Travel Checklist flags every empty field and jumps to the first one." },
   { src: "/images/artemis-insurance/phone.webp", alt: "The travel protection section on a phone", title: "On a phone", text: "The banner and the plans stack to fit a phone screen." },
@@ -342,13 +359,13 @@ const DETAILS = [
 
 function Solution() {
   return (
-    <Chapter id="solution" num={4} title="Embedded, trustworthy, and easy to skip">
+    <Chapter id="solution" num={4} title="Travel protection, built into the traveller details step">
       <Copy>
         <p>
-          The final solution wasn&apos;t about designing a better insurance
-          screen — it was about <Highlight>finding the right integration point</Highlight> and giving
-          the choice enough visual weight to be noticed, without turning it
-          into a barrier.
+          The final design adds travel protection to the traveller details
+          step, so <Highlight>guests choose cover while they enter details for their
+          trip</Highlight>. Four decisions shaped it, each answering one of the
+          priorities.
         </p>
       </Copy>
       <Visual>
@@ -359,14 +376,19 @@ function Solution() {
           hint="Try it: add or switch a plan, open View More Benefits, or press Your Travel Checklist with fields left empty."
         />
       </Visual>
-      {SOLUTION_ITEMS.map(({ num, title, body }) => (
+      {SOLUTION_ITEMS.map(({ num, title, problem, did, src, alt, label }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>{num}. {title}</h3>
-            <p>{body}</p>
+            <p>
+              <span className="font-medium text-heading">Problem.</span> {problem}
+            </p>
+            <p>
+              <span className="font-medium text-heading">What I did.</span> {did}
+            </p>
           </Copy>
           <Visual>
-            <Figure name={`Solution ${num} — ${title}`} />
+            <Figure src={src} alt={alt} label={label} />
           </Visual>
         </div>
       ))}
