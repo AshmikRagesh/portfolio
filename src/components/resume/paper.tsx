@@ -231,7 +231,7 @@ export function SheetWide() {
           </div>
           <div className="flex flex-col gap-[16px]">
             {section.entries.map((entry) => (
-              <div key={entry.org} className="grid grid-cols-[144px_minmax(0,1fr)] gap-x-4">
+              <div key={`${entry.org}-${entry.role ?? ""}`} className="grid grid-cols-[144px_minmax(0,1fr)] gap-x-4">
                 <EntryHead entry={entry} />
                 <Details entry={entry} />
               </div>
@@ -265,7 +265,7 @@ export function SheetNarrow() {
             {section.label}
           </div>
           {section.entries.map((entry) => (
-            <div key={entry.org} className="flex flex-col gap-2">
+            <div key={`${entry.org}-${entry.role ?? ""}`} className="flex flex-col gap-2">
               <EntryHead entry={entry} />
               <Details entry={entry} />
             </div>
