@@ -158,37 +158,90 @@ export default function PrototypeCard({
   const close = useCallback(() => setOpen(false), []);
   const show = () => setOpen(true);
 
+  // The spotlight: the label appears and the rest of the page blurs and dims once the card
+  // has scrolled well into view (most of it on screen), and while it's hovered or
+  // keyboard-focused. At rest the card shows only the prototype.
+  const ref = useRef<HTMLElement>(null);
+  const [seen, setSeen] = useState(false);
+  const [hover, setHover] = useState(false);
+  const [focus, setFocus] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setSeen(e.intersectionRatio >= 0.7), { threshold: [0, 0.7, 1] });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const on = (seen || hover || focus) && !open;
+
+  // The site's floating chrome (navbar, section pill) fades out while the spotlight is on, so
+  // nothing bright sits over the dimmed page. Animated directly, so their own transitions are
+  // left alone; once back to full opacity the animation is dropped and their CSS takes over.
+  useEffect(() => {
+    const els = [...document.querySelectorAll<HTMLElement>(".floating-header, .cs-pill")];
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const anims = els.map((el) => {
+      el.getAnimations().filter((x) => x.id === "proto-spot").forEach((x) => x.cancel());
+      const from = getComputedStyle(el).opacity;
+      const anim = el.animate([{ opacity: from }, { opacity: on ? 0 : 1 }], { duration: reduce ? 0 : 400, easing: "ease-out", fill: "forwards", id: "proto-spot" });
+      if (!on) anim.onfinish = () => anim.cancel();
+      el.style.pointerEvents = on ? "none" : "";
+      return anim;
+    });
+    return () => {
+      if (!on) anims.forEach((x) => x.cancel());
+    };
+  }, [on]);
+
+  // Leaving the page mid-spotlight must not leave the chrome hidden
+  useEffect(
+    () => () => {
+      document.querySelectorAll<HTMLElement>(".floating-header, .cs-pill").forEach((el) => {
+        el.getAnimations().filter((x) => x.id === "proto-spot").forEach((x) => x.cancel());
+        el.style.pointerEvents = "";
+      });
+    },
+    [],
+  );
+
   return (
-    <figure className="group/proto relative m-0 flex min-w-0 flex-col has-[:focus-visible]:z-[60] hover:z-[60]">
+    <figure ref={ref} data-on={on} className="group/proto relative m-0 flex min-w-0 flex-col data-[on=true]:z-[60]">
       <span
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-0 bg-[#12020f] opacity-0 transition-opacity duration-300 ease-out motion-reduce:transition-none group-hover/proto:opacity-90 group-has-[:focus-visible]/proto:opacity-90"
+        className="pointer-events-none fixed inset-0 z-0 bg-[#12020f]/80 opacity-0 backdrop-blur-[6px] transition-opacity duration-500 ease-out motion-reduce:transition-none group-data-[on=true]/proto:opacity-100"
       />
 
-      <div className="relative z-[1] mb-[20px] flex flex-col items-center gap-[6px] text-center">
-        <p className="m-0 font-heading text-h4-md text-heading transition-colors duration-300 md:text-h3-md group-hover/proto:text-white group-has-[:focus-visible]/proto:text-white">
-          This is a working prototype
-        </p>
-        <p className="m-0 flex items-center gap-[6px] font-geist text-caption text-muted transition-colors duration-300 md:text-caption-lg group-hover/proto:text-white/70 group-has-[:focus-visible]/proto:text-white/70">
+      <div
+        aria-hidden={!on}
+        className="relative z-[1] mb-[20px] flex translate-y-[6px] flex-col items-center gap-[6px] text-center opacity-0 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none group-data-[on=true]/proto:translate-y-0 group-data-[on=true]/proto:opacity-100"
+      >
+        <p className="m-0 font-heading text-h4-md text-white md:text-h3-md">This is a working prototype</p>
+        <p className="m-0 flex items-center gap-[6px] font-geist text-caption text-white/70 md:text-caption-lg">
           Built with <ClaudeMark />
-          <span className="text-heading transition-colors duration-300 group-hover/proto:text-white group-has-[:focus-visible]/proto:text-white">{builtWith}</span>
+          <span className="text-white">{builtWith}</span>
         </p>
       </div>
 
       <div
-        className="cs-pair-media relative z-[1] overflow-hidden rounded-lg border border-line-soft bg-white transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none group-hover/proto:-translate-y-[4px] group-hover/proto:shadow-[0_24px_56px_-16px_rgba(0,0,0,0.45)]"
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        className="cs-pair-media relative z-[1] overflow-hidden rounded-lg border border-line-soft bg-white transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none group-data-[on=true]/proto:shadow-[0_24px_56px_-16px_rgba(0,0,0,0.45)] hover:-translate-y-[4px]"
         style={{ aspectRatio: `${DESIGN_W} / ${DESIGN_H}` }}
       >
         <Frame src={src} title={title} live={false} />
         <button
           type="button"
           onClick={show}
+          onFocus={(e) => setFocus(e.currentTarget.matches(":focus-visible"))}
+          onBlur={() => setFocus(false)}
           aria-label={`Open the working prototype: ${title}`}
           data-sound="whisper"
           data-sound-click="pop"
           className="absolute inset-0 cursor-zoom-in outline-none"
         >
-          <span className="absolute right-[12px] top-[12px] flex h-[36px] w-[36px] scale-90 items-center justify-center rounded-full bg-primary/80 text-white opacity-0 transition-[opacity,transform] duration-200 group-hover/proto:scale-100 group-hover/proto:opacity-100 [@media(hover:none)]:scale-100 [@media(hover:none)]:opacity-100">
+          <span className="absolute right-[12px] top-[12px] flex h-[36px] w-[36px] scale-90 items-center justify-center rounded-full bg-primary/80 text-white opacity-0 transition-[opacity,transform] duration-200 group-data-[on=true]/proto:scale-100 group-data-[on=true]/proto:opacity-100">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M15 4h5v5M9 20H4v-5M20 4l-6 6M4 20l6-6" />
             </svg>
@@ -196,7 +249,7 @@ export default function PrototypeCard({
         </button>
       </div>
 
-      <div className="relative z-[1]">
+      <div className="relative z-[1] [&_span]:transition-colors [&_span]:duration-500 group-data-[on=true]/proto:[&_span]:text-white/60">
         <CardFooter label={label} />
       </div>
 
