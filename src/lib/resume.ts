@@ -5,7 +5,8 @@
 
 import { EMAIL, LINKEDIN } from "@/lib/contact";
 
-export const RESUME_PDF = "/Ashmik-Ragesh-Resume.pdf";
+// The version query makes browsers and the CDN fetch the new file whenever the résumé changes
+export const RESUME_PDF = "/Ashmik-Ragesh-Resume.pdf?v=2026-11-26";
 export const RESUME_FILENAME = "Ashmik-Ragesh-Resume.pdf";
 
 // Opens the sheet from anywhere (the navbar tab, the mobile menu)
