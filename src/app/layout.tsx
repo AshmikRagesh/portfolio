@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import GlobalLayout from "@/components/GlobalLayout";
+import SiteAnalytics from "@/components/SiteAnalytics";
 import "./globals.css";
 
 // All fonts are self-hosted from src/app/fonts (OFL, licences alongside). They used to come
@@ -85,6 +86,7 @@ export default function RootLayout({
         className={`${geist.variable} ${geistMono.variable} ${sourceSerif.variable} ${nanumPen.variable} bg-background font-body text-text-base antialiased`}
       >
         <GlobalLayout>{children}</GlobalLayout>
+        <SiteAnalytics />
       </body>
     </html>
   );
