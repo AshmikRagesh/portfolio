@@ -354,7 +354,6 @@ function Solution() {
       <Visual>
         <PrototypeCard
           src="/prototypes/artemis-insurance.html"
-          poster="/images/artemis-insurance/poster.webp"
           title="Travel protection in the Artemis traveller details step"
           label="The traveller details step with travel protection, rebuilt as a working prototype"
           hint="Try it: add or switch a plan, open View More Benefits, or press Your Travel Checklist with fields left empty."
