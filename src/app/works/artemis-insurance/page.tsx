@@ -307,54 +307,46 @@ function Process() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Solution
 // ─────────────────────────────────────────────────────────────────────────────
-// The four decisions in the final design, after the reference's "piece by piece" format: the
-// problem each answers, then what I did. Images are captured from the working prototype.
+// The three decisions in the final design, after the reference's "piece by piece" format: the
+// problem each answers, then what I did. Clips are recorded from the working prototype.
 // CHECK (Ashmik, asked 26 Nov): did CFAR ship added by default, and do policies added in
-// Artemis go through without a consultant? Point 4 assumes both.
+// Artemis go through without a consultant? Point 3 assumes both.
 const SOLUTION_ITEMS = [
   {
     num: 1,
     title: "Placed before the checklist and payment",
     problem: "Guests looked for insurance on Your Travel Checklist and the payment page, and left the booking to ask when it wasn’t there.",
     did: <>Put travel protection in the traveller details step, after the guests&apos; details and before the terms. <Highlight>Guests now see cover before they reach the pages where they used to stop.</Highlight></>,
-    src: "/images/artemis-insurance/in-place.webp",
+    video: "/videos/artemis-insurance/main-1-placement.mp4",
     alt: "The travel protection section in the traveller details step, between the guests' details and the terms, with the trip total beside it",
   },
   {
     num: 2,
-    title: "A banner that stands apart from the form",
+    title: "Hard to miss, easy to compare",
     problem: "In the second iteration, insurance looked like another part of the form, and guests could scroll straight past it.",
-    did: <>Opened the section with a dark green banner, a shield and four short lines on what cover includes, <Highlight>so it reads as trip protection, not another field</Highlight>.</>,
-    src: "/images/artemis-insurance/banner.webp",
-    alt: "The Travel Protection Plan banner: dark green, a shield, and four lines on what cover includes",
+    did: <>Opened the section with a dark green banner and a shield, then set both plans side by side with ticks and crosses and the price for the trip, <Highlight>so guests notice it and can compare cover on their own</Highlight>.</>,
+    video: "/videos/artemis-insurance/main-2-compare.mp4",
+    alt: "The Travel Protection Plan banner above Trip Cancellation (CFAR), marked Popular, and the Travel Protection Plan side by side",
   },
   {
     num: 3,
-    title: "Two plans, side by side",
-    problem: "Artemis gave guests no way to see what cover was available without asking their consultant.",
-    did: <>Showed both plans next to each other, with ticks and crosses for what each covers and the price for the trip, <Highlight>so guests can compare cover on their own</Highlight>.</>,
-    src: "/images/artemis-insurance/plans.webp",
-    alt: "Trip Cancellation (CFAR), marked Popular, beside the Travel Protection Plan, each with ticks and crosses and a price per trip",
-  },
-  {
-    num: 4,
     title: "Recommended plan added, one tap to change",
     problem: "Each policy meant a consultant arranging it with an outside provider.",
     did: <>Added Trip Cancellation (CFAR) by default, marked Popular, with its cost in the trip total. <Highlight>One tap removes it or swaps in the other plan.</Highlight></>,
-    src: "/images/artemis-insurance/swapped.webp",
+    video: "/videos/artemis-insurance/main-3-change.mp4",
     alt: "The Travel Protection Plan added in place of CFAR, with the trip total updated to USD 31,122",
     label: "Swapping plans updates the trip total straight away",
   },
 ];
 
 // Smaller details for the rail, each captured from the working prototype
-// Smaller details for the rail, each captured from the working prototype.
+// Smaller details for the rail, each a short clip recorded from the working prototype.
 // CHECK: did the empty-field check and the phone price sheet ship, or are they prototype only?
 const DETAILS = [
-  { src: "/images/artemis-insurance/whats-covered.webp", alt: "The What's covered panel for Trip Cancellation (CFAR)", title: "What’s covered", text: "View More Benefits lists everything a plan covers without leaving the page." },
-  { src: "/images/artemis-insurance/missing-details.webp", alt: "Empty traveller fields marked in red with a message to fill them in", title: "Missing details", text: "Your Travel Checklist flags every empty field and jumps to the first one." },
-  { src: "/images/artemis-insurance/phone.webp", alt: "The travel protection section on a phone", title: "On a phone", text: "The banner and the plans stack to fit a phone screen." },
-  { src: "/images/artemis-insurance/phone-price.webp", alt: "The price details sheet open on a phone", title: "Price on a phone", text: "The total sits in a bar at the bottom, and Price details opens the breakdown." },
+  { video: "/videos/artemis-insurance/detail-whats-covered.mp4", alt: "The What's covered panel for Trip Cancellation (CFAR)", title: "What’s covered", text: "View More Benefits lists everything a plan covers without leaving the page." },
+  { video: "/videos/artemis-insurance/detail-missing.mp4", alt: "Empty traveller fields marked in red with a message to fill them in", title: "Missing details", text: "Your Travel Checklist flags every empty field and jumps to the first one." },
+  { video: "/videos/artemis-insurance/detail-phone.mp4", alt: "The travel protection section on a phone", title: "On a phone", text: "The banner and the plans stack to fit a phone screen." },
+  { video: "/videos/artemis-insurance/detail-phone-price.mp4", alt: "The price details sheet open on a phone", title: "Price on a phone", text: "The total sits in a bar at the bottom, and Price details opens the breakdown." },
 ];
 
 function Solution() {
@@ -364,7 +356,7 @@ function Solution() {
         <p>
           The final design adds travel protection to the traveller details
           step, so <Highlight>guests choose cover while they enter details for their
-          trip</Highlight>. Four decisions shaped it, each answering one of the
+          trip</Highlight>. Three decisions shaped it, each answering one of the
           priorities.
         </p>
       </Copy>
@@ -376,7 +368,7 @@ function Solution() {
           hint="Try it: add or switch a plan, open View More Benefits, or press Your Travel Checklist with fields left empty."
         />
       </Visual>
-      {SOLUTION_ITEMS.map(({ num, title, problem, did, src, alt, label }) => (
+      {SOLUTION_ITEMS.map(({ num, title, problem, did, video, alt, label }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>{num}. {title}</h3>
@@ -388,7 +380,7 @@ function Solution() {
             </p>
           </Copy>
           <Visual>
-            <Figure src={src} alt={alt} label={label} />
+            <Figure video={video} alt={alt} label={label} />
           </Visual>
         </div>
       ))}

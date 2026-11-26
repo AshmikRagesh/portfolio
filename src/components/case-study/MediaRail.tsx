@@ -10,9 +10,11 @@ import ImagePlaceholder from "./ImagePlaceholder";
  * fixed-height stage with a short title and one plain line under it. Arrows and a
  * "1–2 of 5" count sit below; the rail also scrolls and swipes, snapping card by card.
  * Clicking a picture opens it large, with arrows (and ← →) to step through the rest.
- * A card without `src` shows a placeholder until its picture is ready.
+ * A card can hold a short clip (`video`) instead of a picture: it plays silently on loop in the
+ * card (not with reduced motion) and opens large like a picture. A card with neither shows a
+ * placeholder until its media is ready.
  */
-type Item = { src?: string; alt: string; title: string; text: string };
+type Item = { src?: string; video?: string; alt: string; title: string; text: string };
 
 const ARROW =
   "flex h-[40px] w-[40px] items-center justify-center rounded-full border border-line bg-white text-heading transition-colors duration-150 hover:border-heading disabled:cursor-default disabled:opacity-30 disabled:hover:border-line focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape";
@@ -23,6 +25,9 @@ export default function MediaRail({ items, label }: { items: Item[]; label: stri
   const [shown, setShown] = useState(2);
   const [open, setOpen] = useState<number | null>(null);
   const [ratio, setRatio] = useState(16 / 9);
+  // Clips in the cards only play themselves when motion is welcome
+  const [reduce, setReduce] = useState(false);
+  useEffect(() => setReduce(window.matchMedia("(prefers-reduced-motion: reduce)").matches), []);
 
   // The width of one card plus the gap, so arrows and the count move card by card
   const step = useCallback(() => {
@@ -78,7 +83,7 @@ export default function MediaRail({ items, label }: { items: Item[]; label: stri
   };
 
   // The gallery steps through the cards that have a picture
-  const pictures = items.map((it, i) => (it.src ? i : -1)).filter((i) => i >= 0);
+  const pictures = items.map((it, i) => (it.src || it.video ? i : -1)).filter((i) => i >= 0);
   const close = useCallback(() => setOpen(null), []);
   const move = (dir: 1 | -1) =>
     setOpen((o) => {
@@ -103,7 +108,27 @@ export default function MediaRail({ items, label }: { items: Item[]; label: stri
             className="flex w-[85%] shrink-0 snap-start flex-col rounded-lg border border-line-soft bg-white p-[12px] md:w-[calc(50%-12px)]"
           >
             <div className="flex h-[220px] items-center justify-center overflow-hidden rounded-md bg-surface p-[16px] md:h-[280px]">
-              {it.src ? (
+              {it.video ? (
+                <button
+                  type="button"
+                  onClick={() => setOpen(i)}
+                  aria-label={`Expand: ${it.alt}`}
+                  data-sound="whisper"
+                  data-sound-click="pop"
+                  className="flex h-full max-w-full cursor-zoom-in items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-grape"
+                >
+                  <video
+                    src={it.video}
+                    aria-label={it.alt}
+                    muted
+                    loop
+                    playsInline
+                    autoPlay={!reduce}
+                    preload="metadata"
+                    className="max-h-full max-w-full rounded-sm object-contain shadow-[0_1px_2px_rgba(30,5,37,0.08)]"
+                  />
+                </button>
+              ) : it.src ? (
                 <button
                   type="button"
                   onClick={() => setOpen(i)}
@@ -141,15 +166,30 @@ export default function MediaRail({ items, label }: { items: Item[]; label: stri
           </button>
         </div>
       </div>
-      {current && current.src && (
+      {current && (current.src || current.video) && (
         <Expanded
           label={`${current.title}: ${current.text}`}
           ratio={ratio}
           onClose={close}
           nav={pictures.length > 1 ? { index: pictures.indexOf(open!), total: pictures.length, onPrev: () => move(-1), onNext: () => move(1) } : undefined}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img key={current.src} src={current.src} alt={current.alt} onLoad={(e) => setRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight)} className="block h-full w-full bg-white object-contain" />
+          {current.video ? (
+            <video
+              key={current.video}
+              src={current.video}
+              aria-label={current.alt}
+              muted
+              loop
+              playsInline
+              autoPlay
+              controls
+              onLoadedMetadata={(e) => setRatio(e.currentTarget.videoWidth / e.currentTarget.videoHeight)}
+              className="block h-full w-full bg-white object-contain"
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={current.src} src={current.src} alt={current.alt} onLoad={(e) => setRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight)} className="block h-full w-full bg-white object-contain" />
+          )}
         </Expanded>
       )}
     </div>
