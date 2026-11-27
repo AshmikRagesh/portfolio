@@ -246,23 +246,24 @@ const ITERATIONS: IterationItem[] = [
   },
   {
     label: "Iteration 2",
-    title: "Insurance as a section in the traveller details step",
+    title: "The same question inside the traveller details step",
     worked: [
       "No extra page: guests see it while they fill in details for their trip",
       "Guests meet the offer before the checklist and payment pages, where they used to stop",
-      "Two plans side by side, each with its price for the trip, so guests compare cover instead of answering yes or no",
     ],
     didntWork: [
       "It looked like part of the form, so guests could scroll straight past it",
+      "Still a plain yes or no, so guests had nothing to compare",
     ],
   },
   {
     label: "Iteration 3",
-    title: "The same section, redesigned so guests notice it",
+    title: "Two plans in a section guests notice",
     shipped: true,
     worked: [
       "A banner with a shield sets it apart from the form fields around it",
-      "Plan cards show the price for the trip, with a Popular tag on the recommended plan",
+      "Two plans side by side, each with its price for the trip, so guests compare cover instead of answering yes or no",
+      "A Popular tag marks the recommended plan",
       "The recommended plan is added by default, and one tap removes it",
     ],
     // DRAFT: the trade-off accepted, to confirm once Ashmik shares the iteration images
@@ -280,9 +281,9 @@ function Process() {
           With the priorities set, three questions remained: where guests
           should see the insurance offer while booking their trip in Artemis,
           how to present the choice, and how much it should stand out. It took
-          three iterations: a yes-or-no question on a page of its own, then two
-          plans in a section of the traveller details step, then <Highlight>a redesign
-          of that section so guests wouldn&apos;t miss it</Highlight>.
+          three iterations: a yes-or-no question on a page of its own, then the
+          same question inside the traveller details step, then <Highlight>a section
+          guests notice, with two plans to compare</Highlight>.
         </p>
       </Copy>
       {ITERATIONS.map(({ label, title, shipped, video, worked, didntWork }) => (
@@ -447,7 +448,7 @@ const WORKED = [
   },
   {
     lead: "Placement first, then visibility.",
-    text: <>A yes-or-no question on a page of its own added a step and gave guests nothing to compare. Two plans in the traveller details step fixed both, but the section blended into the form. <Highlight>Where the offer sits decides whether guests reach it, and how it looks decides whether they notice it.</Highlight> The final design needed both.</>,
+    text: <>A yes-or-no question on a page of its own added a step. Moving it into the traveller details step fixed that, but it blended into the form and still gave guests nothing to compare. <Highlight>Where the offer sits decides whether guests reach it, and how it looks decides whether they notice it.</Highlight> The final design needed both, and two plans gave guests a real choice.</>,
   },
 ];
 
