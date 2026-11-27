@@ -90,8 +90,8 @@ function Overview() {
         {/* The headline numbers up front; the detail and charts are in What changed after launch */}
         <TopResults
           items={[
-            { from: "24%", stat: "32%", label: "of searches end with a trip opened" },
-            { from: "7", stat: "22", label: "trips shown from a menu region link" },
+            { stat: "32%", label: "of searches end with a trip opened, up from 24%" },
+            { stat: "22", label: "trips shown from a menu region link, up from 7" },
             { stat: "14%", label: "of searches still find no trips", improve: true },
           ]}
         />

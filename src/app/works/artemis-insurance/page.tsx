@@ -66,7 +66,7 @@ function Overview() {
         {/* The headline numbers up front; the detail is in Results. CHECK: unconfirmed */}
         <TopResults
           items={[
-            { from: "7%", stat: "52%", label: "of guests add travel insurance while booking" },
+            { stat: "52%", label: "of guests add travel insurance while booking, up from 7%" },
             { stat: "$125K", label: "insurance revenue in the first quarter" },
             { stat: "15%", label: "fewer drop-offs before payment" },
           ]}
