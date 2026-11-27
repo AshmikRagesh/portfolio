@@ -48,9 +48,9 @@ export const reels = {
   },
   "artemis-insurance": {
     youtubeId: PLACEHOLDER,
-    title: "Adding travel insurance to Artemis checkout: 7% to 52% adoption",
+    title: "Adding travel insurance to the Artemis booking flow: 7% to 52% adoption",
     description:
-      "Designed and shipped in 4 weeks — drove insurance adoption from 7% to 52% and generated $125K in Q1 revenue by embedding coverage directly into checkout.",
+      "A travel protection section in the Artemis traveller details step, designed in 1.5 weeks. Guests now add cover while they book, and adoption went from 7% to 52%.",
     href: "/works/artemis-insurance",
   },
   "artemis-design-system": {

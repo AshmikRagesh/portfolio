@@ -422,21 +422,28 @@ function Impact() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Reflection  (pointers, as on the live case studies)
 // ─────────────────────────────────────────────────────────────────────────────
+// Lessons from the confirmed facts (artemis-insurance-notes.md): the reframe in Discovery and
+// the three iterations. CHECK (Ashmik): were the iterations tested with guests? The second
+// "differently" point assumes they were reviewed within the team only.
 const WORKED = [
   {
-    lead: "Placement over polish.",
-    text: <>The first iteration was visually reasonable — clear plans, good copy, clean layout. But it was wrong because of where it sat in the flow, not how it looked. Iteration 1 failed because it interrupted. Iteration 3 succeeded because it extended. That distinction — <Highlight>between a step that interrupts and a choice that extends</Highlight> — became the design principle that guided everything.</>,
+    lead: "Asking guests, not only consultants.",
+    text: <>The request came from consultants: guests kept asking them for insurance. The guests we interviewed wanted something more specific, <Highlight>to add cover themselves while they booked</Highlight>. That answer became the design question and put insurance inside the booking flow.</>,
   },
   {
-    lead: "Research paid off.",
-    text: <>The research phase paid off disproportionately here. Without the Mixpanel data confirming the exact drop-off point, I might have placed the insurance module earlier in the flow — which would have reduced adoption, not increased it. <Highlight>Guests are most receptive to protecting a trip immediately before they pay for it</Highlight>. That&apos;s not an intuition; it&apos;s in the data.</>,
+    lead: "Placement first, then visibility.",
+    text: <>A page of its own added a step to the booking. A section in the traveller details step fixed that, but it blended into the form. <Highlight>Where the offer sits decides whether guests reach it, and how it looks decides whether they notice it.</Highlight> The final design needed both.</>,
   },
 ];
 
 const NEXT_TIME = [
   {
-    lead: "Track what happens after purchase.",
-    text: <>If I had more time, I&apos;d invest in post-purchase satisfaction tracking — specifically whether guests who purchased insurance felt more confident about their trip overall, and whether that translated to higher rebooking rates. The adoption and revenue numbers are strong, but the longer-term signal — <Highlight>does insurance increase guest lifetime value?</Highlight> — is the metric I&apos;d want to follow.</>,
+    lead: "Agree the measures before launch.",
+    text: <>I&apos;d settle with Anish which numbers to track before the section went live: bookings with cover, where guests leave, and policies consultants still arrange by hand. <Highlight>Every result would then have a clear before and after.</Highlight></>,
+  },
+  {
+    lead: "Test the section with guests.",
+    text: <>We spoke to guests to find the problem, but the iterations were judged within the team. <Highlight>A short test with a few frequent guests</Highlight> would have shown sooner that the second iteration was easy to scroll past.</>,
   },
 ];
 
@@ -464,7 +471,7 @@ export default function ArtemisInsurancePage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels["artemis-insurance"]}>
       <Hero
-        title="Adding travel insurance to Artemis checkout: 7% to 52% adoption"
+        title="Adding travel insurance to the Artemis booking flow: 7% to 52% adoption"
         date="November 2024"
       />
       <Overview />
