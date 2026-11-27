@@ -17,6 +17,8 @@ export interface FeaturedWork {
   image: string;
   imageAlt: string;
   imagePosition?: string;
+  /** A short muted loop shown in place of the image (the image stays as its first frame) */
+  video?: string;
   href: string;
   layout: FeaturedLayout;
 }
@@ -74,10 +76,11 @@ export const featuredWorks: FeaturedWork[] = [
   {
     type: "Case study",
     discipline: "Product design",
-    title: "From every trip at once to the few that fit: filters for TCS search",
+    title: "From every trip at once to just the few that fit: search filters for TCS",
     description:
       "Filters, a result count and each trip's route on its card, so travellers can narrow thousands of trips to the few that fit.",
-    image: "/images/tcs-search/cover.webp",
+    image: "/images/tcs-search/card-poster.webp",
+    video: "/videos/tcs-search/card.mp4",
     imageAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
     href: "/works/tcs-search", // password-locked (lib/caseLock)
     layout: "standard",

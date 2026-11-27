@@ -637,7 +637,7 @@ export default function TcsSearchPage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels["tcs-search"]}>
       <Hero
-        title="From every trip at once to the few that fit: filters for TCS search"
+        title="From every trip at once to just the few that fit: search filters for TCS"
         date="July 2026"
         image="/images/tcs-search/cover.webp"
       />

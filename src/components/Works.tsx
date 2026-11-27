@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import PasswordGate, { useUnlocked, type PasswordGateHandle } from "@/components/PasswordGate";
@@ -11,6 +11,27 @@ import { CtaPill } from "@/components/Cta";
 import NdaStamp from "@/components/NdaStamp";
 import PixelClouds from "@/components/PixelClouds";
 import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
+
+// ── Card video ────────────────────────────────────────────────────────────────
+// A short muted loop over the card's image (its first frame), so nothing shifts while it
+// loads. It loads and plays only while the card is on screen, and stays still for anyone who
+// prefers reduced motion.
+function CardVideo({ src, className }: { src: string; className: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const v = ref.current;
+    if (!v || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        if (v.preload !== "auto") v.preload = "auto";
+        v.play().catch(() => {});
+      } else v.pause();
+    }, { threshold: 0.25 });
+    io.observe(v);
+    return () => io.disconnect();
+  }, []);
+  return <video ref={ref} src={src} muted loop playsInline preload="none" aria-hidden="true" className={className} />;
+}
 
 // ── Featured card ─────────────────────────────────────────────────────────────
 // A soft grey card in two parts with the same padding all round: the words and the work.
@@ -123,6 +144,7 @@ export function FeaturedCard({ work }: { work: FeaturedWork }) {
               style={{ objectPosition: work.imagePosition ?? "center" }}
               className={`work-media__img object-cover ${work.nda ? "grayscale" : ""}`}
             />
+            {work.video && <CardVideo src={work.video} className={`work-media__img absolute inset-0 h-full w-full object-cover ${work.nda ? "grayscale" : ""}`} />}
 
             {/* Pixel clouds roll in round the image's edges on hover: pink, or grey for NDA */}
             <PixelClouds seed={Number(roomFor(work))} palette={work.nda ? "grey" : "brand"} className="z-[1]" />
