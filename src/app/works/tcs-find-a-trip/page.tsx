@@ -68,7 +68,7 @@ function Overview() {
           team={[
             { name: "Rohit Rayala", role: "CRO" },
             { name: "Sharayu Jadhav", role: "Product Manager" },
-            { name: "Hriday Gami", role: "Design", href: "https://www.linkedin.com/in/hridaygami/" },
+            { name: "Hriday Gami", role: "Design", href: "https://www.linkedin.com/in/hridaygami/", photo: "/images/team/hriday.webp" },
             { name: "Sandy Tang", role: "Content" },
           ]}
           timeline="June – July 2026"

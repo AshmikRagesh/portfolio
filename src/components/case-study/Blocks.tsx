@@ -40,7 +40,7 @@ function TeamList({ people }: { people: TeamMember[] }) {
           <li key={p.name} className="flex items-start gap-[10px]">
             <span
               aria-hidden="true"
-              className="mt-[2px] flex h-[24px] w-[24px] shrink-0 items-center justify-center overflow-hidden rounded-[6px] bg-surface font-geist text-[10px] font-medium leading-none text-secondary ring-1 ring-line-soft"
+              className="mt-[2px] flex h-[24px] w-[24px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface font-geist text-[10px] font-medium leading-none text-secondary ring-1 ring-line-soft"
             >
               {p.photo ? (
                 // eslint-disable-next-line @next/next/no-img-element

@@ -58,8 +58,8 @@ function Overview() {
         <Meta
           role="I owned the design end to end, from research with guests to the handoff to engineering."
           team={[
-            { name: "Anish Thimanna", role: "Project Manager", href: "https://www.linkedin.com/in/anishthimanna/" },
-            { name: "Muzammil Osman", role: "Engineering", href: "https://www.linkedin.com/in/muzammilosman/" },
+            { name: "Anish Thimanna", role: "Project Manager", href: "https://www.linkedin.com/in/anishthimanna/", photo: "/images/team/anish.webp" },
+            { name: "Muzammil Osman", role: "Engineering", href: "https://www.linkedin.com/in/muzammilosman/", photo: "/images/team/muzammil.webp" },
           ]}
           timeline={<>November – December 2024<br />1.5 weeks of design</>}
         />
