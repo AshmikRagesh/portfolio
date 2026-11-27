@@ -13,10 +13,10 @@ import PixelClouds from "@/components/PixelClouds";
 import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 
 // ── Card video ────────────────────────────────────────────────────────────────
-// A short muted loop over the card's image (its first frame), so nothing shifts while it
-// loads. It loads and plays only while the card is on screen, and stays still for anyone who
+// A 10s muted loop over the card's image, showing its first frame (the poster) until it
+// plays, so nothing shifts while it loads. It loads and plays only while the card is on screen, and stays still for anyone who
 // prefers reduced motion.
-function CardVideo({ src, className }: { src: string; className: string }) {
+function CardVideo({ src, poster, className }: { src: string; poster?: string; className: string }) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const v = ref.current;
@@ -30,7 +30,7 @@ function CardVideo({ src, className }: { src: string; className: string }) {
     io.observe(v);
     return () => io.disconnect();
   }, []);
-  return <video ref={ref} src={src} muted loop playsInline preload="none" aria-hidden="true" className={className} />;
+  return <video ref={ref} src={src} poster={poster} muted loop playsInline preload="none" aria-hidden="true" className={className} />;
 }
 
 // ── Featured card ─────────────────────────────────────────────────────────────
@@ -144,7 +144,7 @@ export function FeaturedCard({ work }: { work: FeaturedWork }) {
               style={{ objectPosition: work.imagePosition ?? "center" }}
               className={`work-media__img object-cover ${work.nda ? "grayscale" : ""}`}
             />
-            {work.video && <CardVideo src={work.video} className={`work-media__img absolute inset-0 h-full w-full object-cover ${work.nda ? "grayscale" : ""}`} />}
+            {work.video && <CardVideo src={work.video} poster={work.poster} className={`work-media__img absolute inset-0 h-full w-full object-cover ${work.nda ? "grayscale" : ""}`} />}
 
             {/* Pixel clouds roll in round the image's edges on hover: pink, or grey for NDA */}
             <PixelClouds seed={Number(roomFor(work))} palette={work.nda ? "grey" : "brand"} className="z-[1]" />
