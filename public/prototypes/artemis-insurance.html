@@ -298,11 +298,11 @@ button.step:active { transform: scale(.97); }
    POLISHED (Ashmik, 26 Nov): text centred in the band, lighter tracking, the band centred on the
    plan name's line, a crisper fold and a softer shadow. */
 .ribbon { position: absolute; right: -8px; top: 12px; height: 30px; display: flex; align-items: center; padding: 1px 16px 0 10px; white-space: nowrap; border-radius: 0 3px 0 0;
-  background: linear-gradient(180deg, #4c8517 0%, var(--green) 55%, #376310 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 2px 4px -1px rgba(12, 45, 5, 0.28);
+  background: linear-gradient(180deg, #305b0b 0%, #264a08 55%, #1e3c06 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 2px 4px -1px rgba(8, 30, 3, 0.32);
   font: 700 11px/1 var(--nunito); letter-spacing: 1.4px; text-transform: uppercase; color: #fff; text-shadow: 0 1px 0 rgba(12, 45, 5, 0.25); }
 /* The fold: the band wraps round the card's edge, so a darker triangle sits under its overhang */
-.ribbon::after { content: ""; position: absolute; right: 0; top: 100%; border-top: 8px solid #1c3607; border-right: 8px solid transparent; }
+.ribbon::after { content: ""; position: absolute; right: 0; top: 100%; border-top: 8px solid #0f2003; border-right: 8px solid transparent; }
 .ribbon svg { position: absolute; left: -10px; top: 0; width: 11px; height: 30px; }
 
 /* Plans stack when the card is narrower than two 327px footers side by side */
@@ -705,7 +705,7 @@ button.step:active { transform: scale(.97); }
                 <button class="pbtn" type="button"></button>
               </div>
               <div class="ribbon"><svg width="11" height="30" viewBox="0 0 11 30" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-<defs><linearGradient id="ribTail" x1="0" y1="0" x2="0" y2="30" gradientUnits="userSpaceOnUse"><stop stop-color="#4c8517"/><stop offset=".55" stop-color="#3E6F0E"/><stop offset="1" stop-color="#376310"/></linearGradient></defs>
+<defs><linearGradient id="ribTail" x1="0" y1="0" x2="0" y2="30" gradientUnits="userSpaceOnUse"><stop stop-color="#305b0b"/><stop offset=".55" stop-color="#264a08"/><stop offset="1" stop-color="#1e3c06"/></linearGradient></defs>
 <path d="M0 0H11V30H0L7 15L0 0Z" fill="url(#ribTail)"/>
 </svg>popular</div>
             </article>

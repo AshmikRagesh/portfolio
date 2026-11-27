@@ -18,7 +18,6 @@ import {
   ResultsCard,
   Pointers,
   NextCase,
-  PanelCards,
   MediaRail,
   PrototypeCard,
   Highlight,
@@ -83,20 +82,6 @@ const CONVERSATION = [
 
 // What the design had to do, one priority per Discovery finding. Needs, not the solution:
 // how the design meets them is in Exploration and Solution
-// The two pages where guests stopped to look for insurance (screenshots to come)
-const STOP_PAGES = [
-  {
-    alt: "Your Travel Checklist before insurance",
-    title: "Your Travel Checklist",
-    text: "Guests reviewed their trip here and looked for insurance before paying.",
-  },
-  {
-    alt: "The payment page before insurance",
-    title: "Payment",
-    text: "The last place guests looked. With no cover on offer, many stopped to ask.",
-  },
-];
-
 const PRIORITIES = [
   {
     icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
@@ -145,11 +130,10 @@ function Discovery() {
             cover was arranged. Most asked before paying; a few booked first and
             asked after.
           </p>
+          {/* TODO: when Ashmik shares screenshots of the two pages before insurance, show them
+              here as a plain pair labelled only with the page names: the paragraph already says
+              what happened on them, so the pictures shouldn't repeat it */}
         </Copy>
-        <Visual>
-          {/* TODO: screenshots of the two pages before insurance, from Ashmik */}
-          <PanelCards items={STOP_PAGES} />
-        </Visual>
       </div>
       <div className="cs-sub">
         <Copy>
@@ -307,39 +291,33 @@ function Process() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Solution
 // ─────────────────────────────────────────────────────────────────────────────
-// The three decisions in the final design, after the reference's "piece by piece" format: the
-// problem each answers, then what I did. Clips are recorded from the working prototype.
-// CHECK (Ashmik, asked 26 Nov): did CFAR ship added by default, and do policies added in
-// Artemis go through without a consultant? Point 3 assumes both.
+// The three decisions in the final design, one sentence each. Clips are rendered from the
+// working prototype (orange stage, the camera zooms to what each point is about).
+// CHECK (Ashmik, asked 26 Nov): did CFAR ship added by default? Point 3 assumes it.
 const SOLUTION_ITEMS = [
   {
     num: 1,
-    title: "Placed before the checklist and payment",
-    problem: "Guests looked for insurance on Your Travel Checklist and the payment page, and left the booking to ask when it wasn’t there.",
-    did: <>Put travel protection in the traveller details step, after the guests&apos; details and before the terms. <Highlight>Guests now see cover before they reach the pages where they used to stop.</Highlight></>,
+    title: "Same page, same flow",
+    text: <>Travel protection sits on the same page where guests fill in their details, so they add cover and carry on in one place, <Highlight>before they reach Your Travel Checklist and the payment page</Highlight> where they used to stop and look for it.</>,
     video: "/videos/artemis-insurance/main-1-placement.mp4",
-    alt: "The travel protection section in the traveller details step, between the guests' details and the terms, with the trip total beside it",
+    alt: "Scrolling the traveller details step from the guests' details down to the travel protection section",
   },
   {
     num: 2,
     title: "Hard to miss, easy to compare",
-    problem: "In the second iteration, insurance looked like another part of the form, and guests could scroll straight past it.",
-    did: <>Opened the section with a dark green banner and a shield, then set both plans side by side with ticks and crosses and the price for the trip, <Highlight>so guests notice it and can compare cover on their own</Highlight>.</>,
+    text: <>A dark green banner with a shield sets the section apart from the form, and <Highlight>both plans sit side by side</Highlight> with ticks, crosses and the price for the trip, so guests can compare cover without asking anyone.</>,
     video: "/videos/artemis-insurance/main-2-compare.mp4",
-    alt: "The Travel Protection Plan banner above Trip Cancellation (CFAR), marked Popular, and the Travel Protection Plan side by side",
+    alt: "The Travel Protection Plan banner, then Trip Cancellation (CFAR), marked Popular, beside the Travel Protection Plan",
   },
   {
     num: 3,
     title: "Recommended plan added, one tap to change",
-    problem: "Each policy meant a consultant arranging it with an outside provider.",
-    did: <>Added Trip Cancellation (CFAR) by default, marked Popular, with its cost in the trip total. <Highlight>One tap removes it or swaps in the other plan.</Highlight></>,
+    text: <>Trip Cancellation (CFAR) comes added and marked Popular, with its cost already in the trip total, and <Highlight>one tap removes it or swaps in the other plan</Highlight>.</>,
     video: "/videos/artemis-insurance/main-3-change.mp4",
-    alt: "The Travel Protection Plan added in place of CFAR, with the trip total updated to USD 31,122",
-    label: "Swapping plans updates the trip total straight away",
+    alt: "Adding the Travel Protection Plan in place of CFAR and back, with the trip total updating each time",
   },
 ];
 
-// Smaller details for the rail, each captured from the working prototype
 // Smaller details for the rail, each a short clip recorded from the working prototype.
 // CHECK: did the empty-field check and the phone price sheet ship, or are they prototype only?
 const DETAILS = [
@@ -354,9 +332,8 @@ function Solution() {
     <Chapter id="solution" num={4} title="Travel protection, built into the traveller details step">
       <Copy>
         <p>
-          The final design adds travel protection to the traveller details
-          step, so <Highlight>guests choose cover while they enter details for their
-          trip</Highlight>. Three decisions shaped it, each answering one of the
+          The final design adds a travel protection section to the traveller
+          details step. Three decisions shaped it, each answering one of the
           priorities.
         </p>
       </Copy>
@@ -368,19 +345,14 @@ function Solution() {
           hint="Try it: add or switch a plan, open View More Benefits, or press Your Travel Checklist with fields left empty."
         />
       </Visual>
-      {SOLUTION_ITEMS.map(({ num, title, problem, did, video, alt, label }) => (
+      {SOLUTION_ITEMS.map(({ num, title, text, video, alt }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>{num}. {title}</h3>
-            <p>
-              <span className="font-medium text-heading">Problem.</span> {problem}
-            </p>
-            <p>
-              <span className="font-medium text-heading">What I did.</span> {did}
-            </p>
+            <p>{text}</p>
           </Copy>
           <Visual>
-            <Figure video={video} alt={alt} label={label} />
+            <Figure video={video} alt={alt} />
           </Visual>
         </div>
       ))}
