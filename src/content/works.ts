@@ -17,6 +17,9 @@ export interface FeaturedWork {
   image: string;
   imageAlt: string;
   imagePosition?: string;
+  /** A 10s muted loop over the image (cards on the home page); `poster` is its first frame */
+  video?: string;
+  poster?: string;
   href: string;
   layout: FeaturedLayout;
 }
@@ -31,6 +34,8 @@ export const artemisInsurance: FeaturedWork = {
   description:
     "Travel protection built into the booking flow, so guests can cover their trip themselves instead of asking a consultant.",
   image: "/images/artemis-insurance/hero.webp",
+  video: "/videos/artemis-insurance/card.mp4",
+  poster: "/images/artemis-insurance/card-poster.webp",
   imageAlt: "The Enchanting Travels traveller details step with the travel protection section: a dark green banner above two plans, Trip Cancellation (CFAR) and the Travel Protection Plan",
   href: "/works/artemis-insurance",
   layout: "flagship",
@@ -44,6 +49,8 @@ export const featuredWorks: FeaturedWork[] = [
     description:
       "Our design systems inside Claude Code, so designers build with real components and what they design is what ships.",
     image: "/images/helix/cover.webp",
+    video: "/videos/helix/card.mp4",
+    poster: "/images/helix/card-poster.webp",
     imageAlt: "An expedition card built from Helix components, with the component list beside it",
     href: "/works/helix",
     layout: "flagship",
@@ -56,6 +63,8 @@ export const featuredWorks: FeaturedWork[] = [
     description:
       "A choice in the Find a Trip menu, so travellers still deciding where to go can explore a destination before they look at trips.",
     image: "/images/tcs-find-a-trip/cover-lime.webp",
+    video: "/videos/tcs-find-a-trip/card.mp4",
+    poster: "/images/tcs-find-a-trip/card-poster.webp",
     imageAlt: "The TCS World Travel Find a Trip menu, with Africa open to Explore Trips and Explore Destination",
     href: "/works/tcs-find-a-trip",
     layout: "flagship",
@@ -67,6 +76,8 @@ export const featuredWorks: FeaturedWork[] = [
     description:
       "A desk bell in the navbar that greets visitors and counts how long they actually spend here.",
     image: "/images/bella/cover.webp",
+    video: "/videos/bella/card.mp4",
+    poster: "/images/bella/card-poster.webp",
     imageAlt: "Bella the desk bell in eight moods: idle, ringing, reading, watching, dozing, celebrating, surprised and champion",
     href: "/works/bella",
     layout: "standard",
@@ -74,10 +85,12 @@ export const featuredWorks: FeaturedWork[] = [
   {
     type: "Case study",
     discipline: "Product design",
-    title: "From every trip at once to the few that fit: filters for TCS search",
+    title: "From every trip at once to just the few that fit: search filters for TCS",
     description:
       "Filters, a result count and each trip's route on its card, so travellers can narrow thousands of trips to the few that fit.",
     image: "/images/tcs-search/cover.webp",
+    video: "/videos/tcs-search/card.mp4",
+    poster: "/images/tcs-search/card-poster.webp",
     imageAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
     href: "/works/tcs-search", // password-locked (lib/caseLock)
     layout: "standard",

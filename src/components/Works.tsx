@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import PasswordGate, { useUnlocked, type PasswordGateHandle } from "@/components/PasswordGate";
@@ -11,6 +11,27 @@ import { CtaPill } from "@/components/Cta";
 import NdaStamp from "@/components/NdaStamp";
 import PixelClouds from "@/components/PixelClouds";
 import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
+
+// ── Card video ────────────────────────────────────────────────────────────────
+// A short muted loop over the card's image, which is the loop's first frame, so nothing
+// shifts while it loads. It loads and plays only while the card is on screen, and stays still for anyone who
+// prefers reduced motion.
+function CardVideo({ src, className }: { src: string; className: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const v = ref.current;
+    if (!v || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        if (v.preload !== "auto") v.preload = "auto";
+        v.play().catch(() => {});
+      } else v.pause();
+    }, { rootMargin: "240px 0px" });   // starts loading just before it scrolls in
+    io.observe(v);
+    return () => io.disconnect();
+  }, []);
+  return <video ref={ref} src={src} muted loop playsInline preload="none" aria-hidden="true" className={className} />;
+}
 
 // ── Featured card ─────────────────────────────────────────────────────────────
 // A soft grey card in two parts with the same padding all round: the words and the work.
@@ -115,14 +136,17 @@ export function FeaturedCard({ work }: { work: FeaturedWork }) {
           <div
             className={`work-media relative aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder ${work.nda ? "stamp-thud" : ""}`}
           >
+            {/* With a loop, the image is its first frame (lazy and resized like any card image), so
+                the video takes over without a jump and no separate poster has to load */}
             <Image
-              src={work.image}
+              src={work.video && work.poster ? work.poster : work.image}
               alt={work.imageAlt}
               fill
               sizes={isFlagship ? "(min-width: 1024px) 60vw, 100vw" : "(min-width: 1024px) 50vw, 100vw"}
               style={{ objectPosition: work.imagePosition ?? "center" }}
               className={`work-media__img object-cover ${work.nda ? "grayscale" : ""}`}
             />
+            {work.video && <CardVideo src={work.video} className={`work-media__img absolute inset-0 h-full w-full object-cover ${work.nda ? "grayscale" : ""}`} />}
 
             {/* Pixel clouds roll in round the image's edges on hover: pink, or grey for NDA */}
             <PixelClouds seed={Number(roomFor(work))} palette={work.nda ? "grey" : "brand"} className="z-[1]" />

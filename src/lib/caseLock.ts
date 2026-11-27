@@ -24,7 +24,7 @@ export type LockedCase = {
 
 export const LOCKED: Record<string, LockedCase> = {
   "tcs-search": {
-    title: "From every trip at once to the few that fit: filters for TCS search",
+    title: "From every trip at once to just the few that fit: search filters for TCS",
     cover: "/images/tcs-search/cover.webp",
     coverAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
     // Set TCS_SEARCH_PASSWORD in Vercel to keep it private: the repo is public, so the
@@ -32,7 +32,8 @@ export const LOCKED: Record<string, LockedCase> = {
     env: "TCS_SEARCH_PASSWORD",
     fallback: "TCS search",
     assets: ["/images/tcs-search/", "/videos/tcs-search/"],
-    open: ["/images/tcs-search/cover.webp"],
+    // the home page card: its cover, and the 10s filter loop with its first frame
+    open: ["/images/tcs-search/cover.webp", "/images/tcs-search/card-poster.webp", "/videos/tcs-search/card.mp4"],
   },
 
 };

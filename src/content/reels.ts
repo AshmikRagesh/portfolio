@@ -22,7 +22,7 @@ export const reels = {
   },
   "tcs-search": {
     youtubeId: PLACEHOLDER,
-    title: "From every trip at once to the few that fit: filters for TCS search",
+    title: "From every trip at once to just the few that fit: search filters for TCS",
     description: "Filters, a result count and a no-results page that always leads somewhere. Live since July 2026.",
     href: "/works/tcs-search",
   },
