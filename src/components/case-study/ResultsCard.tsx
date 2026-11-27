@@ -4,6 +4,7 @@ import { useEffect, useState, type KeyboardEvent } from "react";
 import { ArrowDown, ArrowUp } from "@phosphor-icons/react/dist/ssr";
 import useInView from "./useInView";
 import { pitchFor } from "@/lib/sound/ui";
+import { FromTo } from "./Blocks";
 
 /**
  * A results card, sized to sit in the text column: the headline number with what it
@@ -23,7 +24,7 @@ type Metric = { name: string; points: Point[]; caption: string; max?: number };
 // A stat is a win (grape) unless it's marked `improve`: a number not yet in our favour,
 // set in the warning colour with a note on what's behind it
 type Stat = {
-  /** The starting value; shown in the note's words, not beside the number */
+  /** The starting value, shown before the number as "24% → 32%" */
   before?: string;
   after: string;
   change?: string;
@@ -266,7 +267,8 @@ export default function ResultsCard({
   stats,
   metrics = [],
 }: {
-  headline: { value: number; decimals?: number; suffix?: string };
+  /** `from`: the starting value, shown as "7% → 52%" */
+  headline: { value: number; decimals?: number; suffix?: string; prefix?: string; from?: string };
   title: string;
   body: string;
   stats: Stat[];
@@ -287,8 +289,11 @@ export default function ResultsCard({
     <div ref={ref} className="mt-[32px] rounded-lg bg-grape-light/45 p-[20px] md:p-[32px]">
       <div {...rise(0)}>
         <p className="m-0 font-heading text-stat font-normal text-grape tabular-nums md:text-stat-md">
-          {count}
-          {headline.suffix}
+          <FromTo from={headline.from}>
+            {headline.prefix}
+            {count}
+            {headline.suffix}
+          </FromTo>
         </p>
         <p className="mt-[12px] font-heading text-h3 font-medium text-heading md:text-h3-lg">{title}</p>
         <p className="mt-[12px] max-w-[520px] font-body text-body text-secondary md:text-body-md">{body}</p>
@@ -316,7 +321,7 @@ export default function ResultsCard({
           >
             {s.improve && <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-warning/[0.06]" />}
             <p className={`relative m-0 font-heading text-h1 font-medium md:text-h1-md ${s.improve ? "text-warning" : "text-grape"}`}>
-              <CountUp value={s.after} run={shown} />
+              <FromTo from={s.before}><CountUp value={s.after} run={shown} /></FromTo>
               {s.change && <span className="sr-only">, {s.change}</span>}
             </p>
             <p className="relative m-0 mt-[16px] font-heading text-h4 text-heading md:text-h4-md">{s.label}</p>

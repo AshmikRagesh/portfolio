@@ -6,10 +6,11 @@ import ImagePlaceholder from "./ImagePlaceholder";
 
 /**
  * A sliding rail of smaller clips or pictures, for supporting details that don't each need a
- * full screen, after the reference (sudhanva.space): two items
- * are in view from tablet up (one and a peek on phones). Each item is the media itself (no card
- * around it, per the media template), then a short title and one plain line. A muted count sits
- * under the rail on the left and the two arrows on the right.
+ * full screen, after the reference (sudhanva.space): two items and a sliver of the next
+ * are in view from tablet up (one and a peek on phones), so it is clear there is more. Each item is the media itself (no card
+ * around it, per the media template), then a short title and one plain line, both in the body
+ * font so they read as captions, a step below the serif sub-heads. The arrows sit under the rail
+ * on the right; the count is for screen readers only.
  * Arrows glide one view at a time with an eased scroll; trackpads and swipes scroll freely and
  * settle on the nearest item. Clips play silently on loop only while they're on screen (never
  * with reduced motion). Clicking opens the item large, with arrows (and ← →) to step through.
@@ -126,7 +127,7 @@ export default function MediaRail({ items, label }: { items: Item[]; label: stri
         className="m-0 flex list-none snap-x snap-proximity gap-[16px] overflow-x-auto overscroll-x-contain p-0 [scrollbar-width:none] md:gap-[24px] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((it, i) => (
-          <li key={it.title} className="group/item flex w-[85%] shrink-0 snap-start flex-col gap-[16px] md:w-[calc(50%-12px)]">
+          <li key={it.title} className="group/item flex w-[85%] shrink-0 snap-start flex-col gap-[16px] md:w-[calc(46%-12px)]">
             <div className="relative aspect-video overflow-hidden rounded-lg border border-line-soft bg-surface">
               {it.video || it.src ? (
                 <button
@@ -162,15 +163,16 @@ export default function MediaRail({ items, label }: { items: Item[]; label: stri
               )}
             </div>
             <div className="flex flex-col gap-[4px] pr-[8px]">
-              <h4 className="m-0 font-heading text-h4 text-heading md:text-h4-md">{it.title}</h4>
+              <h4 className="m-0 font-body text-lead font-medium text-heading md:text-lead-md">{it.title}</h4>
               <p className="m-0 font-body text-body text-secondary md:text-body-md">{it.text}</p>
             </div>
           </li>
         ))}
       </ul>
 
-      <div className="flex items-center justify-between gap-[16px]">
-        <p aria-live="polite" className="m-0 font-geist text-caption tabular-nums text-muted md:text-caption-lg">
+      <div className="flex items-center justify-end gap-[16px]">
+        {/* Where the rail is, for screen readers; on screen the peeking item and the arrows say it */}
+        <p aria-live="polite" className="sr-only">
           {count}
         </p>
         <div className="flex shrink-0 gap-[8px]">

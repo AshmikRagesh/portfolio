@@ -750,13 +750,33 @@ export function Stats({ items, className = "mt-[32px]" }: { items: { stat: strin
  * numbers alone, each in a white card (number, short label), labelled like the Meta rows. Only numbers the
  * Outcome section proves; the detail, charts and method stay there.
  */
+/**
+ * A number that moved: "24% → 32%", the one format for every before-and-after figure in the
+ * case studies (after the reference's "7.5 → 8.2"). Both numbers share the size; the starting
+ * value and the arrow are muted so the new number is the one the eye lands on. In a narrow card
+ * the new number wraps under as a whole. Screen readers hear "from 24% to 32%".
+ */
+export function FromTo({ from, children }: { from?: string; children: React.ReactNode }) {
+  if (!from) return <>{children}</>;
+  return (
+    <span className="inline-flex flex-wrap items-baseline gap-x-[0.28em]">
+      <span className="sr-only">from {from} to </span>
+      <span aria-hidden="true" className="whitespace-nowrap text-muted">
+        {from}
+      </span>
+      <span aria-hidden="true" className="text-muted">→</span>
+      <span className="whitespace-nowrap">{children}</span>
+    </span>
+  );
+}
+
 export function TopResults({
   title = "Results",
   items,
 }: {
   title?: string;
   /** `improve`: a number not yet in our favour, in the warning colour on a warm card (as in ResultsCard) */
-  items: { stat: string; label: string; improve?: boolean }[];
+  items: { stat: string; from?: string; label: string; improve?: boolean }[];
 }) {
   return (
     <div className="mb-[28px]">
@@ -767,14 +787,14 @@ export function TopResults({
         role="list"
         className={`mt-[16px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${items.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
       >
-        {items.map(({ stat, label, improve }) => (
+        {items.map(({ stat, from, label, improve }) => (
           <div
             key={label}
             role="listitem"
             className={`relative flex flex-col gap-[8px] overflow-hidden rounded-xl border bg-white p-[20px] md:p-[24px] ${improve ? "border-warning/40" : "border-line-soft"}`}
           >
             {improve && <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-warning/[0.06]" />}
-            <span className={`relative font-heading text-h2 font-medium md:text-h2-md ${improve ? "text-warning" : "text-heading"}`}>{stat}</span>
+            <span className={`relative font-heading text-h2 font-medium md:text-h2-md ${improve ? "text-warning" : "text-heading"}`}><FromTo from={from}>{stat}</FromTo></span>
             <p className="relative m-0 font-body text-[14px] leading-[20px] text-muted [text-wrap:pretty] md:text-[16px] md:leading-[22px]">{label}</p>
           </div>
         ))}

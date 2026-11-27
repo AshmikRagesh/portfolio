@@ -85,8 +85,8 @@ function Overview() {
         {/* The headline numbers up front; the detail and charts are in What changed after launch */}
         <TopResults
           items={[
-            { stat: "32%", label: "of searches end with a trip opened, up from 24%" },
-            { stat: "3×", label: "trips shown from a menu region link" },
+            { from: "24%", stat: "32%", label: "of searches end with a trip opened" },
+            { from: "7", stat: "22", label: "trips shown from a menu region link" },
             { stat: "14%", label: "of searches still find no trips", improve: true },
           ]}
         />
@@ -523,14 +523,14 @@ function Outcome() {
               after: "32%",
               change: "+8 pts",
               label: "Searches that ended with a trip opened",
-              note: "Up from 24% in July, 8 points by October.",
+              note: "From July, when V1 went live, to October.",
             },
             {
               before: "7",
               after: "22",
               change: "3×",
               label: "Trips shown from a menu region link",
-              note: "Up from 7 with the old text search, three times as many.",
+              note: "Compared with the old text search: three times as many trips.",
             },
             {
               after: "14%",

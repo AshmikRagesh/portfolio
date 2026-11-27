@@ -16,6 +16,7 @@ import {
   ProsCons,
   OptionCard,
   ResultsCard,
+  TopResults,
   Pointers,
   NextCase,
   MediaRail,
@@ -52,17 +53,29 @@ function Overview() {
           arranged it through an outside provider. I designed a travel
           protection section inside the traveller details step, with <Highlight>two
           plans side by side that guests can add without leaving the
-          booking</Highlight>. It launched in December 2024, and adoption has since
-          gone from 7% to 52%.
+          booking</Highlight>. It launched in December 2024.
         </p>
         <Meta
           role="End-to-end Design & Developer Handoff"
           team="Ashmik Ragesh (Design), Anish (Project Manager), Muzamil (Engineering)"
           timeline={<>November – December 2024<br />1.5 weeks of design · Launched in December 2024</>}
         />
+        {/* The headline numbers up front; the detail is in Results. CHECK: unconfirmed */}
+        <TopResults
+          items={[
+            { from: "7%", stat: "52%", label: "of guests add travel insurance while booking" },
+            { stat: "$125K", label: "insurance revenue in the first quarter" },
+            { stat: "15%", label: "fewer drop-offs before payment" },
+          ]}
+        />
       </Copy>
       <Visual>
-        <Figure name="The travel protection section in the traveller details step" />
+        {/* The cover: the travel protection section, cut from the traveller details step of the
+            working prototype, on the case study's orange (rendered by cover.cjs) */}
+        <Figure
+          src="/images/artemis-insurance/cover.webp"
+          alt="The travel protection section: a dark green Travel Protection Plan banner above two plans side by side, Trip Cancellation (CFAR) marked Popular and the Travel Protection Plan, each with its price per trip"
+        />
       </Visual>
     </Chapter>
   );
@@ -389,9 +402,9 @@ function Impact() {
             Enchanting Travels sold no insurance before? Was CFAR added by default? If it
             was, say so here, since part of the 52% would come from the default. */}
         <ResultsCard
-          headline={{ value: 52, suffix: "%" }}
+          headline={{ value: 52, suffix: "%", from: "7%" }}
           title="Guests who added travel insurance"
-          body="Up from 7% before launch, when a consultant had to arrange every policy. Guests now add cover themselves while they enter their details."
+          body="Before launch, a consultant had to arrange every policy. Guests now add cover themselves while they enter their details."
           stats={[
             {
               after: "$125K",
