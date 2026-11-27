@@ -369,7 +369,18 @@ function Solution() {
           </Visual>
         </div>
       ))}
+      {/* A short lead-in for the rail, after the reference: why these details matter, tied to the
+          design question ("on their own"). No new facts: it names what the clips show. */}
       <div className="cs-sub">
+        <Copy>
+          <h3>Helping guests finish on their own</h3>
+          <p>
+            The three decisions got guests to the plans. These smaller details
+            help them finish the step without asking their consultant: <Highlight>checking
+            what a plan covers, fixing missing details and seeing the price on
+            a phone</Highlight>.
+          </p>
+        </Copy>
         <Visual>
           <MediaRail label="Smaller details of the travel protection section" items={DETAILS} />
         </Visual>
