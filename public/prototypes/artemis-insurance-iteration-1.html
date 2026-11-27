@@ -423,11 +423,16 @@ button.step:active { transform: scale(.97); }
 .m-price b { font: 600 16px/22px var(--geist); color: var(--cyprus); font-variant-numeric: tabular-nums; }
 .m-sub { margin: 4px 0 2px; font: 500 14px/20px var(--geist); color: var(--shuttle-grey); }
 .m-list { list-style: none; margin: 0; padding: 0; }
-.m-list li { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(9, 22, 36, 0.05); }
+/* CHANGED (Ashmik, 27 Nov): a detailed What's covered. Each row names the item and says in one
+   line what it means for the trip; the icon sits level with the name. Not covered: muted. */
+.m-list li { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(9, 22, 36, 0.06); }
 .m-list li:last-child { border-bottom: 0; padding-bottom: 0; }
-.m-list .ic { width: 24px; flex: none; padding: 0; }
-.m-list .ic svg { width: 24px; height: 24px; }
-.m-list li > span:last-child { font: 500 15px/24px var(--geist); color: var(--inverse-surface); }
+.m-list .ic { width: 20px; height: 24px; flex: none; padding: 0; display: flex; align-items: center; }
+.m-list .ic svg { width: 20px; height: 20px; }
+.m-list .tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.m-list .tx b { font: 500 15px/24px var(--geist); color: var(--inverse-surface); }
+.m-list .tx span { font: 400 14px/21px var(--geist); color: var(--shuttle-grey); }
+.m-list li.no .tx b { color: var(--shuttle-grey); }
 .m-grab { display: none; }
 @media (max-width: 640px) {
   .modal { align-items: flex-end; padding: 0; transition: visibility 0s .45s; }
@@ -534,11 +539,6 @@ button.step:active { transform: scale(.97); }
 .ask-msg { display: none; margin-top: -8px; font: 400 12px/18px var(--public); color: var(--crusta); }
 .ask.err .ask-msg { display: block; }
 .ask.err .opt { box-shadow: inset 0 0 0 1px var(--crusta); }
-/* "What is included?" modal: these lines run to two or three rows, so each tick sits at the top,
-   level with the first line, and a size down from the final's 24px */
-.m-list li { align-items: flex-start; gap: 10px; }
-.m-list .ic { width: 18px; height: 24px; display: flex; align-items: center; }
-.m-list .ic svg { width: 18px; height: 18px; }
 @media (max-width: 640px) { .offer { flex-direction: column; align-items: flex-start; } .offer .art { display: none; } }
 </style>
 </head>
@@ -753,16 +753,16 @@ ask.addEventListener('keydown', e => {
 });
 /* "What is included?" opens the final design's read-only modal with the cover in full */
 const INCLUDED = [
-  'Cancellation fees if you cancel for illness, family emergencies or other reasons beyond your control',
-  'Emergency medical costs while you travel',
-  '24/7 emergency assistance',
-  'Air travel insurance',
+  ['Cancellation fees', 'Get up to 100% refund if you need to cancel your trip due to unexpected circumstances like medical emergencies or family issues.'],
+  ['Emergency medical costs', 'Get up to $100,000 for emergency medical expenses if you get sick or injured while traveling.'],
+  ['24/7 Emergency assistance', 'Reach our assistance team any time, day or night, for help with an emergency while you travel.'],
+  ['Air travel insurance', 'Get compensation if your trip is delayed by more than 6 hours, and up to $2,000 for lost, stolen, or delayed baggage.'],
 ];
 const TICK24 = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z" fill="#4B90E2"/><path d="M4.8 7.85 6.82 9.89a.37.37 0 0 0 .53 0L11.2 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const modal = $('.modal'), dlg = $('.dlg', modal), incl = $('.incl');
 function openModal() {
   $('#mt').textContent = 'Travel Protection Plan';
-  $('.m-list', modal).innerHTML = INCLUDED.map(t => '<li><span class="ic">' + TICK24 + '</span><span>' + t + '</span></li>').join('');
+  $('.m-list', modal).innerHTML = INCLUDED.map(([t, line]) => '<li><span class="ic">' + TICK24 + '</span><span class="tx"><b>' + t + '</b><span>' + line + '</span></span></li>').join('');
   $('.m-body', modal).scrollTop = 0; $('.m-head', modal).classList.remove('scrolled');
   modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
   document.documentElement.style.overflow = 'hidden';

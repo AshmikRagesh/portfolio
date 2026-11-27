@@ -423,11 +423,16 @@ button.step:active { transform: scale(.97); }
 .m-price b { font: 600 16px/22px var(--geist); color: var(--cyprus); font-variant-numeric: tabular-nums; }
 .m-sub { margin: 4px 0 2px; font: 500 14px/20px var(--geist); color: var(--shuttle-grey); }
 .m-list { list-style: none; margin: 0; padding: 0; }
-.m-list li { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(9, 22, 36, 0.05); }
+/* CHANGED (Ashmik, 27 Nov): a detailed What's covered. Each row names the item and says in one
+   line what it means for the trip; the icon sits level with the name. Not covered: muted. */
+.m-list li { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(9, 22, 36, 0.06); }
 .m-list li:last-child { border-bottom: 0; padding-bottom: 0; }
-.m-list .ic { width: 24px; flex: none; padding: 0; }
-.m-list .ic svg { width: 24px; height: 24px; }
-.m-list li > span:last-child { font: 500 15px/24px var(--geist); color: var(--inverse-surface); }
+.m-list .ic { width: 20px; height: 24px; flex: none; padding: 0; display: flex; align-items: center; }
+.m-list .ic svg { width: 20px; height: 20px; }
+.m-list .tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.m-list .tx b { font: 500 15px/24px var(--geist); color: var(--inverse-surface); }
+.m-list .tx span { font: 400 14px/21px var(--geist); color: var(--shuttle-grey); }
+.m-list li.no .tx b { color: var(--shuttle-grey); }
 .m-grab { display: none; }
 @media (max-width: 640px) {
   .modal { align-items: flex-end; padding: 0; transition: visibility 0s .45s; }

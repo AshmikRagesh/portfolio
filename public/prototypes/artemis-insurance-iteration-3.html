@@ -423,11 +423,16 @@ button.step:active { transform: scale(.97); }
 .m-price b { font: 600 16px/22px var(--geist); color: var(--cyprus); font-variant-numeric: tabular-nums; }
 .m-sub { margin: 4px 0 2px; font: 500 14px/20px var(--geist); color: var(--shuttle-grey); }
 .m-list { list-style: none; margin: 0; padding: 0; }
-.m-list li { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(9, 22, 36, 0.05); }
+/* CHANGED (Ashmik, 27 Nov): a detailed What's covered. Each row names the item and says in one
+   line what it means for the trip; the icon sits level with the name. Not covered: muted. */
+.m-list li { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(9, 22, 36, 0.06); }
 .m-list li:last-child { border-bottom: 0; padding-bottom: 0; }
-.m-list .ic { width: 24px; flex: none; padding: 0; }
-.m-list .ic svg { width: 24px; height: 24px; }
-.m-list li > span:last-child { font: 500 15px/24px var(--geist); color: var(--inverse-surface); }
+.m-list .ic { width: 20px; height: 24px; flex: none; padding: 0; display: flex; align-items: center; }
+.m-list .ic svg { width: 20px; height: 20px; }
+.m-list .tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.m-list .tx b { font: 500 15px/24px var(--geist); color: var(--inverse-surface); }
+.m-list .tx span { font: 400 14px/21px var(--geist); color: var(--shuttle-grey); }
+.m-list li.no .tx b { color: var(--shuttle-grey); }
 .m-grab { display: none; }
 @media (max-width: 640px) {
   .modal { align-items: flex-end; padding: 0; transition: visibility 0s .45s; }
@@ -501,24 +506,25 @@ button.step:active { transform: scale(.97); }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } .reveal { opacity: 1; transform: none; } }
 
 /* ── Iteration 3 banner (Figma 35:5971): gradient card, green hairline, ticks, paper art ────── */
-.banner3 { display: flex; gap: 40px; align-items: center; padding: 20px; border-radius: 4px; background: linear-gradient(90deg, #f4f0e6, #e3f0e6); box-shadow: inset 0 0 0 1px #3a735d; }
-.banner3 .o-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
-.banner3 .o-text { display: flex; flex-direction: column; gap: 4px; }
+.banner3 { position: relative; display: flex; gap: 32px; align-items: center; padding: 24px; border-radius: 8px;
+  background: radial-gradient(120% 140% at 0% 0%, #fbf8f1 0%, rgba(251, 248, 241, 0) 55%), linear-gradient(110deg, #f5efe3 0%, #e3f0e6 100%);
+  box-shadow: inset 0 0 0 1px rgba(58, 115, 93, 0.45), 0 1px 2px rgba(35, 41, 51, 0.04), 0 8px 24px -16px rgba(58, 115, 93, 0.35); }
+.banner3 .o-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.banner3 .o-text { display: flex; flex-direction: column; gap: 6px; }
 .banner3 h2 { margin: 0; font: 600 20px/28px var(--public); color: var(--state-black); }
-.banner3 p { margin: 0; font: 400 15px/23px var(--public); color: #4e4a43; }
-.bens3 { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 24px; }
-.bens3 li { display: flex; align-items: center; gap: 8px; font: 500 15px/28px var(--public); color: var(--state-black); }
-.bens3 svg { width: 18px; height: 18px; flex: none; }
+.banner3 p { margin: 0; max-width: 520px; font: 400 15px/23px var(--public); color: #4e4a43; }
+/* six points in a tidy grid: three across, two rows */
+.bens3 { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, max-content)); gap: 10px 28px; }
+.bens3 li { display: flex; align-items: center; gap: 10px; font: 500 15px/22px var(--public); color: var(--state-black); white-space: nowrap; }
+.bens3 svg { width: 20px; height: 20px; flex: none; border-radius: 50%; box-shadow: 0 0 0 3px rgba(58, 115, 93, 0.12); }
 .banner3 .art3 { flex: none; width: 159px; height: 141px; }
-/* the plans' View More Benefits modal, styled like iteration 2's (Ashmik, 27 Nov): rows top-aligned,
-   18px icons, the banner's blue tick for what a plan covers and the cross for what it doesn't */
-.m-list li { align-items: flex-start; gap: 10px; }
-.m-list .ic { width: 18px; height: 24px; display: flex; align-items: center; padding: 0; }
-.m-list .ic svg { width: 18px; height: 18px; }
+/* the plans' View More Benefits modal: the final's detailed rows, with the blue tick */
 /* the added plan takes the gold selected state used in every iteration (Figma 67:8767) */
 .plan.on { background: rgba(173, 146, 110, 0.04); box-shadow: inset 0 0 0 2px #ad926e; }
-@container (max-width: 640px) { .banner3 { flex-direction: column; align-items: flex-start; gap: 16px; } .banner3 .art3 { display: none; } }
-@media (max-width: 640px) { .banner3 { flex-direction: column; align-items: flex-start; gap: 16px; } .banner3 .art3 { display: none; } }
+@container (max-width: 720px) { .banner3 .art3 { display: none; } }
+@container (max-width: 640px) { .banner3 { padding: 20px; } .bens3 { grid-template-columns: repeat(2, minmax(0, max-content)); } }
+@media (max-width: 640px) { .banner3 { padding: 20px; } .banner3 .art3 { display: none; } .bens3 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; } }
+@media (max-width: 360px) { .bens3 { grid-template-columns: minmax(0, 1fr); } }
 </style>
 </head>
 <body>
@@ -672,9 +678,12 @@ button.step:active { transform: scale(.97); }
               <p>Our insurance plan offers extensive coverage for every aspect of your journey, including your belongings, medical expenses, and the peace of mind you deserve while traveling.</p>
             </div>
             <ul class="bens3">
-              <li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="9" fill="#3A735D"/><path d="M13.555 6.697 8.252 12 5.07 8.818l1.06-1.06 2.122 2.12 4.242-4.242 1.061 1.06Z" fill="#fff"/></svg>Cancellation</li>
-              <li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="9" fill="#3A735D"/><path d="M13.555 6.697 8.252 12 5.07 8.818l1.06-1.06 2.122 2.12 4.242-4.242 1.061 1.06Z" fill="#fff"/></svg>Interruption</li>
-              <li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="9" fill="#3A735D"/><path d="M13.555 6.697 8.252 12 5.07 8.818l1.06-1.06 2.122 2.12 4.242-4.242 1.061 1.06Z" fill="#fff"/></svg>Delay</li>
+              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Cancellation</li>
+              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Interruption</li>
+              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Delay</li>
+              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Medical expenses</li>
+              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Lost baggage</li>
+              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>24/7 assistance</li>
             </ul>
           </div>
           <svg class="art3" width="159" height="141" viewBox="0 0 132 117" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -908,6 +917,17 @@ function render() {
 function toggle(plan) { chosen = chosen === plan ? null : plan; justAdded = chosen; render(); }
 $$('.plan .pbtn').forEach(b => b.addEventListener('click', () => toggle(b.closest('.plan').dataset.plan)));
 /* View More Benefits → modal with that plan's full list; its footer adds or removes the plan */
+/* What each cover item means, shown under its name in the What's covered modal */
+const DETAIL = {
+  'Cancel anytime, no questions asked': 'Cancel the trip for any reason, without having to explain why, and get a refund under the plan’s terms.',
+  'Stay prepared for trip delays': 'Get compensation if your trip is delayed by more than 6 hours, covering additional expenses like meals and accommodations.',
+  'Trip cancellations policies and refunds': 'Get up to 100% refund if you need to cancel your trip due to unexpected circumstances like medical emergencies or family issues.',
+  '24/7 Emergency assistance': 'Reach our assistance team any time, day or night, for help with an emergency while you travel.',
+  'Medical expenses abroad': 'Get up to $100,000 for emergency medical expenses if you get sick or injured while traveling.',
+  'Emergency evacuation': 'Covers getting you to the nearest suitable hospital if you need emergency care during the trip.',
+  'Baggage loss and delay': 'Receive up to $2,000 in coverage for lost, stolen, or delayed baggage to help you replace essential items.',
+  'Trip interruption cover': 'Get back the unused part of your trip if you have to cut it short for a covered reason.',
+};
 const modal = $('.modal'), dlg = $('.dlg', modal);
 let mPlan = null, mReturn = null;
 function syncModal() {}             // the modal is read-only: adding / removing stays on the card
@@ -915,7 +935,12 @@ function openModal(plan, from) {
   mPlan = plan; mReturn = from;
   const card = $('.plan[data-plan="' + plan + '"]');
   $('#mt').textContent = PLAN_NAME[plan];
-  $('.m-list', modal).innerHTML = $$('li:not(.more)', card).map(li => '<li>' + li.innerHTML + '</li>').join('');
+  $('.m-list', modal).innerHTML = $$('li:not(.more)', card).map(li => {
+    const name = li.querySelector('span:last-child').textContent.trim();
+    const no = /#FF5B31/i.test(li.querySelector('.ic').innerHTML);
+    const line = no ? 'Not included in this plan.' : (DETAIL[name] || '');
+    return '<li' + (no ? ' class="no"' : '') + '><span class="ic">' + li.querySelector('.ic').innerHTML + '</span><span class="tx"><b>' + name + '</b><span>' + line + '</span></span></li>';
+  }).join('');
   $('.m-body', modal).scrollTop = 0; $('.m-head', modal).classList.remove('scrolled');
   syncModal();
   modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');

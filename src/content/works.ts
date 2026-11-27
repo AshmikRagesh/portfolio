@@ -21,37 +21,40 @@ export interface FeaturedWork {
   layout: FeaturedLayout;
 }
 
-// Helix, search and Find a Trip as flagships, then Bella and the NDA project as the
-// smaller pair. The Artemis case studies stay live at their URLs but are off the list.
+// Order (Ashmik, 27 Nov): Helix, insurance and Find a Trip as flagships, then Bella and the
+// locked TCS search as the smaller pair. Each description is one line: what changed for whom,
+// and why it matters; no build details.
+export const artemisInsurance: FeaturedWork = {
+  type: "Case study",
+  discipline: "Product design",
+  title: "Letting Enchanting Travels guests add travel insurance while they book",
+  description:
+    "Travel protection built into the booking flow, so guests can cover their trip themselves instead of asking a consultant.",
+  image: "/images/artemis-insurance/hero.webp",
+  imageAlt: "The Enchanting Travels traveller details step with the travel protection section: a dark green banner above two plans, Trip Cancellation (CFAR) and the Travel Protection Plan",
+  href: "/works/artemis-insurance",
+  layout: "flagship",
+};
+
 export const featuredWorks: FeaturedWork[] = [
   {
     type: "Case study",
     discipline: "Design systems",
     title: "Shipping designs in half the time with Helix on Claude Code",
     description:
-      "A design-system skill for Claude Code, so designers build from our real components and what we design is what ships.",
+      "Our design systems inside Claude Code, so designers build with real components and what they design is what ships.",
     image: "/images/helix/cover.webp",
     imageAlt: "An expedition card built from Helix components, with the component list beside it",
     href: "/works/helix",
     layout: "flagship",
   },
-  {
-    type: "Case study",
-    discipline: "Product design",
-    title: "From every trip at once to the few that fit: filters for TCS search",
-    description:
-      "Filters, a result count and each trip's route on its card, so travellers can find the trips that fit. Live since July 2026.",
-    image: "/images/tcs-search/cover.webp",
-    imageAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
-    href: "/works/tcs-search",
-    layout: "flagship",
-  },
+  artemisInsurance,
   {
     type: "Case study",
     discipline: "Product design",
     title: "Letting TCS travellers explore a destination before they book",
     description:
-      "A two-path choice in the Find a Trip menu, so travellers still exploring can learn about a place first. Built in code, ready for an A/B/C test.",
+      "A choice in the Find a Trip menu, so travellers still deciding where to go can explore a destination before they look at trips.",
     image: "/images/tcs-find-a-trip/cover-lime.webp",
     imageAlt: "The TCS World Travel Find a Trip menu, with Africa open to Explore Trips and Explore Destination",
     href: "/works/tcs-find-a-trip",
@@ -62,22 +65,21 @@ export const featuredWorks: FeaturedWork[] = [
     discipline: "Interaction design",
     title: "Designing Bella, the desk bell that hosts this portfolio, in Claude Code",
     description:
-      "A front-desk bell in the navbar that counts how long you actually spend here.",
+      "A desk bell in the navbar that greets visitors and counts how long they actually spend here.",
     image: "/images/bella/cover.webp",
     imageAlt: "Bella the desk bell in eight moods: idle, ringing, reading, watching, dozing, celebrating, surprised and champion",
     href: "/works/bella",
     layout: "standard",
   },
   {
-    type: "Side project",
-    nda: true, // TODO: confirm which works are under NDA
-    discipline: "AI",
-    title: "Designing an AI-powered itinerary builder for modern travellers",
+    type: "Case study",
+    discipline: "Product design",
+    title: "From every trip at once to the few that fit: filters for TCS search",
     description:
-      "Personalised trips in under 2 minutes, with real-time availability and smart suggestions.",
-    image: "/images/works-cover.png",
-    imageAlt: "AI Trip Planning preview",
-    href: "/works/ai-itinerary", // password-locked, nothing behind it yet (lib/caseLock)
+      "Filters, a result count and each trip's route on its card, so travellers can narrow thousands of trips to the few that fit.",
+    image: "/images/tcs-search/cover.webp",
+    imageAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
+    href: "/works/tcs-search", // password-locked (lib/caseLock)
     layout: "standard",
   },
 ];
@@ -95,17 +97,6 @@ export const artemisReservations: FeaturedWork = {
   layout: "flagship",
 };
 
-export const artemisInsurance: FeaturedWork = {
-  type: "Case study",
-  discipline: "Product design",
-  title: "Adding travel insurance to the Artemis booking flow: 7% to 52% adoption",
-  description:
-    "A travel protection section in the Artemis traveller details step, designed in 1.5 weeks. Guests now add cover while they book, and adoption went from 7% to 52%.",
-  image: "/images/works-cover.png",
-  imageAlt: "Artemis insurance integration preview",
-  href: "/works/artemis-insurance",
-  layout: "standard",
-};
 
 export const artemisDesignSystem: FeaturedWork = {
   type: "Case study",

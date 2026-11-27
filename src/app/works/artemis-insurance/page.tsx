@@ -493,8 +493,10 @@ export default function ArtemisInsurancePage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels["artemis-insurance"]}>
       <Hero
-        title="Adding travel insurance to the Artemis booking flow: 7% to 52% adoption"
+        title="Letting Enchanting Travels guests add travel insurance while they book"
         date="November 2024"
+        image="/images/artemis-insurance/hero.webp"
+        imagePosition="center 30%"
       />
       <Overview />
       <TheProblem />

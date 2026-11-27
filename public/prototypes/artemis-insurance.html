@@ -423,11 +423,16 @@ button.step:active { transform: scale(.97); }
 .m-price b { font: 600 16px/22px var(--geist); color: var(--cyprus); font-variant-numeric: tabular-nums; }
 .m-sub { margin: 4px 0 2px; font: 500 14px/20px var(--geist); color: var(--shuttle-grey); }
 .m-list { list-style: none; margin: 0; padding: 0; }
-.m-list li { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(9, 22, 36, 0.05); }
+/* CHANGED (Ashmik, 27 Nov): a detailed What's covered. Each row names the item and says in one
+   line what it means for the trip; the icon sits level with the name. Not covered: muted. */
+.m-list li { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(9, 22, 36, 0.06); }
 .m-list li:last-child { border-bottom: 0; padding-bottom: 0; }
-.m-list .ic { width: 24px; flex: none; padding: 0; }
-.m-list .ic svg { width: 24px; height: 24px; }
-.m-list li > span:last-child { font: 500 15px/24px var(--geist); color: var(--inverse-surface); }
+.m-list .ic { width: 20px; height: 24px; flex: none; padding: 0; display: flex; align-items: center; }
+.m-list .ic svg { width: 20px; height: 20px; }
+.m-list .tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.m-list .tx b { font: 500 15px/24px var(--geist); color: var(--inverse-surface); }
+.m-list .tx span { font: 400 14px/21px var(--geist); color: var(--shuttle-grey); }
+.m-list li.no .tx b { color: var(--shuttle-grey); }
 .m-grab { display: none; }
 @media (max-width: 640px) {
   .modal { align-items: flex-end; padding: 0; transition: visibility 0s .45s; }
@@ -885,6 +890,17 @@ function render() {
 function toggle(plan) { chosen = chosen === plan ? null : plan; justAdded = chosen; render(); }
 $$('.plan .pbtn').forEach(b => b.addEventListener('click', () => toggle(b.closest('.plan').dataset.plan)));
 /* View More Benefits → modal with that plan's full list; its footer adds or removes the plan */
+/* What each cover item means, shown under its name in the What's covered modal */
+const DETAIL = {
+  'Cancel anytime, no questions asked': 'Cancel the trip for any reason, without having to explain why, and get a refund under the plan’s terms.',
+  'Stay prepared for trip delays': 'Get compensation if your trip is delayed by more than 6 hours, covering additional expenses like meals and accommodations.',
+  'Trip cancellations policies and refunds': 'Get up to 100% refund if you need to cancel your trip due to unexpected circumstances like medical emergencies or family issues.',
+  '24/7 Emergency assistance': 'Reach our assistance team any time, day or night, for help with an emergency while you travel.',
+  'Medical expenses abroad': 'Get up to $100,000 for emergency medical expenses if you get sick or injured while traveling.',
+  'Emergency evacuation': 'Covers getting you to the nearest suitable hospital if you need emergency care during the trip.',
+  'Baggage loss and delay': 'Receive up to $2,000 in coverage for lost, stolen, or delayed baggage to help you replace essential items.',
+  'Trip interruption cover': 'Get back the unused part of your trip if you have to cut it short for a covered reason.',
+};
 const modal = $('.modal'), dlg = $('.dlg', modal);
 let mPlan = null, mReturn = null;
 function syncModal() {}             // the modal is read-only: adding / removing stays on the card
@@ -892,7 +908,12 @@ function openModal(plan, from) {
   mPlan = plan; mReturn = from;
   const card = $('.plan[data-plan="' + plan + '"]');
   $('#mt').textContent = PLAN_NAME[plan];
-  $('.m-list', modal).innerHTML = $$('li:not(.more)', card).map(li => '<li>' + li.innerHTML + '</li>').join('');
+  $('.m-list', modal).innerHTML = $$('li:not(.more)', card).map(li => {
+    const name = li.querySelector('span:last-child').textContent.trim();
+    const no = /#FF5B31/i.test(li.querySelector('.ic').innerHTML);
+    const line = no ? 'Not included in this plan.' : (DETAIL[name] || '');
+    return '<li' + (no ? ' class="no"' : '') + '><span class="ic">' + li.querySelector('.ic').innerHTML + '</span><span class="tx"><b>' + name + '</b><span>' + line + '</span></span></li>';
+  }).join('');
   $('.m-body', modal).scrollTop = 0; $('.m-head', modal).classList.remove('scrolled');
   syncModal();
   modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');

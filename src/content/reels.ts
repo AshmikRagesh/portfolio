@@ -48,7 +48,7 @@ export const reels = {
   },
   "artemis-insurance": {
     youtubeId: PLACEHOLDER,
-    title: "Adding travel insurance to the Artemis booking flow: 7% to 52% adoption",
+    title: "Letting Enchanting Travels guests add travel insurance while they book",
     description:
       "A travel protection section in the Artemis traveller details step, designed in 1.5 weeks. Guests now add cover while they book, and adoption went from 7% to 52%.",
     href: "/works/artemis-insurance",
