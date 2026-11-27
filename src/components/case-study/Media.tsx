@@ -464,7 +464,7 @@ export function Expanded({
   ratio: number;
   onClose: () => void;
   children: React.ReactNode;
-  /** Replaces the line under the media (the label) when given */
+  /** The line shown under the media; without it nothing shows (the label is never printed) */
   caption?: React.ReactNode;
   /** A gallery: previous and next arrows beside the media (and the ← → keys), with a count */
   nav?: { index: number; total: number; onPrev: () => void; onNext: () => void };
@@ -539,10 +539,12 @@ export function Expanded({
           </button>
         </>
       )}
-      {caption ?? (
+      {/* Only a real caption shows under the media; `label` (often the alt text) is for screen
+          readers alone and names the dialog */}
+      {(caption || nav) && (
         <p className="pointer-events-none max-w-[640px] text-center font-geist text-[14px] leading-[20px] text-white/70">
-          {nav && <span className="text-white/50">{nav.index + 1} of {nav.total} · </span>}
-          {label}
+          {nav && <span className="text-white/50">{nav.index + 1} of {nav.total}{caption ? " · " : ""}</span>}
+          {caption}
         </p>
       )}
     </div>,

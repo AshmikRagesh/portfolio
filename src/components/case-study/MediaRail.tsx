@@ -188,6 +188,7 @@ export default function MediaRail({ items, label }: { items: Item[]; label: stri
       {current && (current.src || current.video) && (
         <Expanded
           label={`${current.title}: ${current.text}`}
+          caption={`${current.title}: ${current.text}`}
           ratio={ratio}
           onClose={close}
           nav={pictures.length > 1 ? { index: pictures.indexOf(open!), total: pictures.length, onPrev: () => move(-1), onNext: () => move(1) } : undefined}
