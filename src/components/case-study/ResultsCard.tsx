@@ -4,12 +4,12 @@ import { useEffect, useState, type KeyboardEvent } from "react";
 import { ArrowDown, ArrowUp } from "@phosphor-icons/react/dist/ssr";
 import useInView from "./useInView";
 import { pitchFor } from "@/lib/sound/ui";
-import { FromTo } from "./Blocks";
 
 /**
  * A results card, sized to sit in the text column: the headline number with what it
- * means and a short paragraph, two or three supporting stats in tagged boxes side by
- * side (each win's number in grape with its starting value in the note, and any number still to improve in the warning colour), then a line chart of one metric by month. All type comes from the
+ * means and a short paragraph, two or three supporting stats as rows in one card (each win's
+ * number in grape with its starting value in the note, and any number still to improve in the
+ * warning colour), then a line chart of one metric by month. All type comes from the
  * DS scale.
  * When it scrolls into view the card rises in, the headline and the new stat values count
  * up, the line and the fill under it draw left to right, each point popping in as the line
@@ -24,7 +24,8 @@ type Metric = { name: string; points: Point[]; caption: string; max?: number };
 // A stat is a win (grape) unless it's marked `improve`: a number not yet in our favour,
 // set in the warning colour with a note on what's behind it
 type Stat = {
-  /** The starting value, shown before the number as "24% → 32%" */
+  /** The starting value. Not drawn: "24% → 32%" belongs in the Overview's TopResults; here the
+   *  note says it in words ("Up from 24% in July") */
   before?: string;
   after: string;
   change?: string;
@@ -267,8 +268,7 @@ export default function ResultsCard({
   stats,
   metrics = [],
 }: {
-  /** `from`: the starting value, shown as "7% → 52%" */
-  headline: { value: number; decimals?: number; suffix?: string; prefix?: string; from?: string };
+  headline: { value: number; decimals?: number; suffix?: string; prefix?: string };
   title: string;
   body: string;
   stats: Stat[];
@@ -289,43 +289,38 @@ export default function ResultsCard({
     <div ref={ref} className="mt-[32px] rounded-lg bg-grape-light/45 p-[20px] md:p-[32px]">
       <div {...rise(0)}>
         <p className="m-0 font-heading text-stat font-normal text-grape tabular-nums md:text-stat-md">
-          <FromTo from={headline.from}>
-            {headline.prefix}
-            {count}
-            {headline.suffix}
-          </FromTo>
+          {headline.prefix}
+          {count}
+          {headline.suffix}
         </p>
         <p className="mt-[12px] font-heading text-h3 font-medium text-heading md:text-h3-lg">{title}</p>
         <p className="mt-[12px] max-w-[520px] font-body text-body text-secondary md:text-body-md">{body}</p>
       </div>
 
-      {/* Supporting stats: cards side by side, no tags. Top to bottom: the number (grape for
-          a win, the warning colour for one still to improve, which also warms the card), what
-          it counts in the heading serif, then a muted note carrying the starting value ("Up
-          from 24% in July"). From tablet up the cards share their rows (a subgrid), so every
-          number, title and note starts level across cards. */}
-      <div
-        role="list"
-        className={`mt-[32px] grid grid-cols-1 gap-[12px] md:gap-[16px] ${
-          stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"
-        }`}
-      >
+      {/* Supporting stats as rows in one white card, divided by hairlines: the number on the
+          left (grape for a win, the warning colour for one still to improve), what it counts and
+          a muted note on the right. Rows rather than cards side by side, so two or three stats
+          read the same and nothing gets squeezed in the text column. On phones the number sits
+          above its words. */}
+      <div role="list" className="mt-[32px] overflow-hidden rounded-xl border border-line-soft bg-white">
         {stats.map((s, i) => (
           <div
             key={s.label}
             role="listitem"
             {...rise(200 + i * 150)}
-            className={`${rise(200 + i * 150).className} relative flex flex-col overflow-hidden rounded-xl p-[20px] md:row-span-3 md:grid md:grid-rows-subgrid md:gap-y-0 md:p-[24px] ${
-              s.improve ? "border border-warning/40 bg-white" : "border border-line-soft bg-white"
+            className={`${rise(200 + i * 150).className} relative grid grid-cols-1 gap-[8px] p-[20px] md:grid-cols-[160px_1fr] md:gap-[24px] md:p-[24px] ${
+              i > 0 ? "border-t border-line-soft" : ""
             }`}
           >
             {s.improve && <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-warning/[0.06]" />}
-            <p className={`relative m-0 font-heading text-h1 font-medium md:text-h1-md ${s.improve ? "text-warning" : "text-grape"}`}>
-              <FromTo from={s.before}><CountUp value={s.after} run={shown} /></FromTo>
+            <p className={`relative m-0 font-heading text-h2 font-medium leading-none md:text-h2-md ${s.improve ? "text-warning" : "text-grape"}`}>
+              <CountUp value={s.after} run={shown} />
               {s.change && <span className="sr-only">, {s.change}</span>}
             </p>
-            <p className="relative m-0 mt-[16px] font-heading text-h4 text-heading md:text-h4-md">{s.label}</p>
-            {s.note ? <p className="relative m-0 mt-[8px] font-body text-body text-muted md:text-body-md">{s.note}</p> : <span />}
+            <div className="relative flex flex-col gap-[4px]">
+              <p className="m-0 font-body text-lead font-medium text-heading md:text-lead-md">{s.label}</p>
+              {s.note && <p className="m-0 font-body text-body text-secondary md:text-body-md">{s.note}</p>}
+            </div>
           </div>
         ))}
       </div>

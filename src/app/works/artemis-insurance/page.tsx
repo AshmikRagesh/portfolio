@@ -370,9 +370,6 @@ function Solution() {
         </div>
       ))}
       <div className="cs-sub">
-        <Copy>
-          <h3>The smaller details</h3>
-        </Copy>
         <Visual>
           <MediaRail label="Smaller details of the travel protection section" items={DETAILS} />
         </Visual>
@@ -402,9 +399,9 @@ function Impact() {
             Enchanting Travels sold no insurance before? Was CFAR added by default? If it
             was, say so here, since part of the 52% would come from the default. */}
         <ResultsCard
-          headline={{ value: 52, suffix: "%", from: "7%" }}
+          headline={{ value: 52, suffix: "%" }}
           title="Guests who added travel insurance"
-          body="Before launch, a consultant had to arrange every policy. Guests now add cover themselves while they enter their details."
+          body="Up from 7% before launch, when a consultant had to arrange every policy. Guests now add cover themselves while they enter their details."
           stats={[
             {
               after: "$125K",

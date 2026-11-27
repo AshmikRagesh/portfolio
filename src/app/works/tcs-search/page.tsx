@@ -523,14 +523,14 @@ function Outcome() {
               after: "32%",
               change: "+8 pts",
               label: "Searches that ended with a trip opened",
-              note: "From July, when V1 went live, to October.",
+              note: "Up from 24% in July, 8 points by October.",
             },
             {
               before: "7",
               after: "22",
               change: "3×",
               label: "Trips shown from a menu region link",
-              note: "Compared with the old text search: three times as many trips.",
+              note: "Up from 7 with the old text search, three times as many.",
             },
             {
               after: "14%",
