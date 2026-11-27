@@ -29,8 +29,24 @@ function ClaudeMark() {
 
 /** The prototype drawn at 1440px wide and scaled to its box; below 768px wide (phones) the
  *  open prototype fills the box at its own size so its phone layout shows */
-function Frame({ src, title, live }: { src: string; title: string; live: boolean }) {
+function Frame({ src, title, live, previewAt }: { src: string; title: string; live: boolean; previewAt?: string }) {
   const box = useRef<HTMLDivElement>(null);
+  // The card's preview opens on the part of the page the case study is about (e.g. the travel
+  // protection section), under the prototype's sticky bars; the open prototype starts at the top
+  const onLoad = (e: React.SyntheticEvent<HTMLIFrameElement>) => {
+    if (live || !previewAt) return;
+    try {
+      const doc = e.currentTarget.contentDocument;
+      const target = doc?.querySelector<HTMLElement>(previewAt);
+      if (!doc || !target) return;
+      const bars = [...doc.querySelectorAll<HTMLElement>(".stepper, .topnav")].filter((b) => getComputedStyle(b).position === "sticky").reduce((h, b) => h + b.offsetHeight, 0);
+      doc.documentElement.style.scrollBehavior = "auto";
+      const top = target.getBoundingClientRect().top + (doc.defaultView?.scrollY ?? 0) - bars - 24;
+      doc.defaultView?.scrollTo(0, Math.max(0, top));
+    } catch {
+      /* another origin: the preview stays at the top */
+    }
+  };
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
 
   useEffect(() => {
@@ -53,6 +69,7 @@ function Frame({ src, title, live }: { src: string; title: string; live: boolean
           src={src}
           title={title}
           loading="lazy"
+          onLoad={onLoad}
           tabIndex={live ? 0 : -1}
           aria-hidden={live ? undefined : true}
           className={`absolute left-0 top-0 border-0 bg-white ${live ? "" : "pointer-events-none"}`}
@@ -144,6 +161,7 @@ export default function PrototypeCard({
   hint,
   label,
   builtWith = "Claude Code",
+  previewAt,
 }: {
   /** The prototype page, e.g. /prototypes/artemis-insurance.html */
   src: string;
@@ -154,6 +172,8 @@ export default function PrototypeCard({
   /** Grey support line under the card */
   label?: string;
   builtWith?: string;
+  /** A selector inside the prototype that the card's preview scrolls to (the open view starts at the top) */
+  previewAt?: string;
 }) {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
@@ -231,7 +251,7 @@ export default function PrototypeCard({
         className="cs-pair-media relative z-[1] overflow-hidden rounded-lg border border-line-soft bg-white transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none group-data-[on=true]/proto:shadow-[0_24px_56px_-16px_rgba(0,0,0,0.45)] hover:-translate-y-[4px]"
         style={{ aspectRatio: `${DESIGN_W} / ${DESIGN_H}` }}
       >
-        <Frame src={src} title={title} live={false} />
+        <Frame src={src} title={title} live={false} previewAt={previewAt} />
         <button
           type="button"
           onClick={show}

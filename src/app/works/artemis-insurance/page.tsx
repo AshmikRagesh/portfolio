@@ -230,45 +230,49 @@ type IterationItem = {
   didntWork: string[];
 };
 
+// Pros and cons from Ashmik (27 Nov): iterations 1 and 2 are mostly what didn't work; iteration 3
+// is mostly what did, with one trade-off we accepted. The final design then made the banner stand
+// out (Solution). Clips are rendered from each iteration's working prototype.
 const ITERATIONS: IterationItem[] = [
   {
     label: "Iteration 1",
     title: "A yes-or-no question on a page of its own",
     video: "/videos/artemis-insurance/iteration-1.mp4",
     worked: [
-      "One clear question: add travel insurance to the trip or not",
-      "Insurance had the guest’s full attention for one step",
+      "A page of its own gave insurance the guest’s full attention",
     ],
     didntWork: [
-      "Added one more page to the trip booking",
-      "A plain yes or no gave guests nothing to compare, so it did little to encourage cover",
+      "Added a whole extra step to the trip booking",
+      "A plain yes or no told guests nothing about what either answer meant for their trip",
+      "One cover and no plans to choose from, so there was little reason to say yes",
     ],
   },
   {
     label: "Iteration 2",
     title: "The same question inside the traveller details step",
+    video: "/videos/artemis-insurance/iteration-2.mp4",
     worked: [
-      "No extra page: guests see it while they fill in details for their trip",
-      "Guests meet the offer before the checklist and payment pages, where they used to stop",
+      "No extra step: the offer sits where guests already fill in details for their trip",
+      "The yes answer spells out what the cover includes",
     ],
     didntWork: [
-      "It looked like part of the form, so guests could scroll straight past it",
       "Still a plain yes or no, so guests had nothing to compare",
+      "One cover at one price, with no way to pick protection that suits the trip",
     ],
   },
   {
     label: "Iteration 3",
-    title: "Two plans in a section guests notice",
+    title: "Two plans to compare",
     shipped: true,
+    video: "/videos/artemis-insurance/iteration-3.mp4",
     worked: [
-      "A banner with a shield sets it apart from the form fields around it",
-      "Two plans side by side, each with its price for the trip, so guests compare cover instead of answering yes or no",
-      "A Popular tag marks the recommended plan",
-      "The recommended plan is added by default, and one tap removes it",
+      "Trip Cancellation (CFAR) and the Travel Protection Plan side by side, each with its price for the trip",
+      "Ticks and crosses show what each plan covers, so guests compare at a glance",
+      "A Popular tag points guests to the recommended plan",
+      "One tap adds a plan or swaps it for the other",
     ],
-    // DRAFT: the trade-off accepted, to confirm once Ashmik shares the iteration images
     didntWork: [
-      "The section takes more space, so the traveller details step gets longer",
+      "Two full plan cards make the traveller details step longer, a trade-off we accepted for a clear choice",
     ],
   },
 ];
@@ -282,8 +286,9 @@ function Process() {
           should see the insurance offer while booking their trip in Artemis,
           how to present the choice, and how much it should stand out. It took
           three iterations: a yes-or-no question on a page of its own, then the
-          same question inside the traveller details step, then <Highlight>a section
-          guests notice, with two plans to compare</Highlight>.
+          same question inside the traveller details step, then <Highlight>two plans
+          to compare</Highlight>. The final design gave that section a banner guests
+          can&apos;t miss.
         </p>
       </Copy>
       {ITERATIONS.map(({ label, title, shipped, video, worked, didntWork }) => (
@@ -358,6 +363,7 @@ function Solution() {
       <Visual>
         <PrototypeCard
           src="/prototypes/artemis-insurance.html"
+          previewAt="section.card.tp"
           title="Travel protection in the Artemis traveller details step"
           label="The traveller details step with travel protection, rebuilt as a working prototype"
           hint="Try it: add or switch a plan, open View More Benefits, or press Your Travel Checklist with fields left empty."
@@ -447,8 +453,8 @@ const WORKED = [
     text: <>The request came from consultants: guests kept asking them for insurance. The guests we interviewed wanted something more specific, <Highlight>to add cover themselves while they booked</Highlight>. That answer became the design question and put insurance inside the booking flow.</>,
   },
   {
-    lead: "Placement first, then visibility.",
-    text: <>A yes-or-no question on a page of its own added a step. Moving it into the traveller details step fixed that, but it blended into the form and still gave guests nothing to compare. <Highlight>Where the offer sits decides whether guests reach it, and how it looks decides whether they notice it.</Highlight> The final design needed both, and two plans gave guests a real choice.</>,
+    lead: "Placement first, then a real choice.",
+    text: <>A yes-or-no question on a page of its own added a step. Moving it into the traveller details step removed that step, but one cover with a yes or no still gave guests nothing to compare. <Highlight>Where the offer sits decides whether guests reach it, and a real choice decides whether they take it.</Highlight> Two plans gave them that choice, and a stronger banner made sure they saw it.</>,
   },
 ];
 

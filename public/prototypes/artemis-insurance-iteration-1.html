@@ -521,10 +521,11 @@ button.step:active { transform: scale(.97); }
 .opt { display: flex; align-items: flex-start; gap: 16px; padding: 12px; text-align: left; border-radius: 4px; background: #fff; box-shadow: inset 0 0 0 1px var(--solitude); transition: background-color .2s var(--ease), box-shadow .2s var(--ease); -webkit-tap-highlight-color: transparent; }
 .opt:hover { background: #fafafa; }
 .opt:focus-visible { outline: none; box-shadow: inset 0 0 0 1.5px var(--black); }
-/* ADDED: the chosen answer keeps the white card and darkens its hairline to the radio's colour,
-   so the filled radio carries the choice without pulling the eye (Ashmik: the orange was too strong) */
-.opt[aria-checked="true"] { background: #fff; box-shadow: inset 0 0 0 1px var(--acadia); }
-.opt[aria-checked="true"]:hover { background: #fafafa; }
+/* the chosen answer, from Figma 67:8767 (iteration 2's clicked "No"), used for both iterations
+   (Ashmik, 27 Nov): gold outline, faint gold fill, gold radio */
+.opt[aria-checked="true"] { background: rgba(173, 146, 110, 0.04); box-shadow: inset 0 0 0 2px #ad926e; }
+.opt[aria-checked="true"]:hover { background: rgba(173, 146, 110, 0.08); }
+.opt[aria-checked="true"] .r .on path { fill: #ad926e; }
 .opt .r { flex: none; width: 20px; height: 22px; display: flex; align-items: center; }
 .opt .r svg { width: 20px; height: 20px; }
 .opt .r .on, .opt[aria-checked="true"] .r .off { display: none; }
