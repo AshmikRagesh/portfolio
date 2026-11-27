@@ -264,7 +264,7 @@ button.step:active { transform: scale(.97); }
 .plan.on { background: #fffdf9; box-shadow: inset 0 0 0 1.5px var(--step-orange); }
 .plan .top { display: flex; flex-direction: column; gap: 20px; }
 .plan .name { display: flex; align-items: center; gap: 8px; font: 600 18px/24px var(--geist); color: var(--cyprus); }
-.plan[data-plan="cfar"] .name { padding-right: 92px; }   /* clears the ribbon */
+.plan[data-plan="cfar"] .name { padding-right: 96px; }   /* clears the ribbon */
 .plan .extra { display: none; }
 
 .plan ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
@@ -297,10 +297,13 @@ button.step:active { transform: scale(.97); }
    wrapping past the card's right edge with a darker fold.
    POLISHED (Ashmik, 26 Nov): text centred in the band, lighter tracking, the band centred on the
    plan name's line, a crisper fold and a softer shadow. */
-.ribbon { position: absolute; right: -6px; top: 14px; height: 28px; display: flex; align-items: center; padding: 0 14px 0 10px; white-space: nowrap; background: var(--green); border-radius: 0 2px 0 0; font: 700 11px/1 var(--nunito); letter-spacing: 1.4px; text-transform: uppercase; color: #fff;
-  filter: drop-shadow(0 1px 1px rgba(12, 45, 5, 0.18)); }
-.ribbon::after { content: ""; position: absolute; right: 0; top: 100%; border-top: 5px solid #1f3b09; border-right: 6px solid transparent; }
-.ribbon svg { position: absolute; left: -8px; top: 0; width: 8px; height: 28px; }
+.ribbon { position: absolute; right: -8px; top: 12px; height: 30px; display: flex; align-items: center; padding: 1px 16px 0 10px; white-space: nowrap; border-radius: 0 3px 0 0;
+  background: linear-gradient(180deg, #4c8517 0%, var(--green) 55%, #376310 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 2px 4px -1px rgba(12, 45, 5, 0.28);
+  font: 700 11px/1 var(--nunito); letter-spacing: 1.4px; text-transform: uppercase; color: #fff; text-shadow: 0 1px 0 rgba(12, 45, 5, 0.25); }
+/* The fold: the band wraps round the card's edge, so a darker triangle sits under its overhang */
+.ribbon::after { content: ""; position: absolute; right: 0; top: 100%; border-top: 8px solid #1c3607; border-right: 8px solid transparent; }
+.ribbon svg { position: absolute; left: -10px; top: 0; width: 11px; height: 30px; }
 
 /* Plans stack when the card is narrower than two 327px footers side by side */
 @container (max-width: 720px) {
@@ -701,8 +704,9 @@ button.step:active { transform: scale(.97); }
                 <div class="price"><span class="k">Price per trip</span><span class="v" style="color:var(--cyprus)">$1,300.00 USD</span></div>
                 <button class="pbtn" type="button"></button>
               </div>
-              <div class="ribbon"><svg width="8" height="28" viewBox="0 0 8 30" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M0 0H7.99955V30H0L7.99955 15L0 0Z" fill="#3E6F0E"/>
+              <div class="ribbon"><svg width="11" height="30" viewBox="0 0 11 30" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="ribTail" x1="0" y1="0" x2="0" y2="30" gradientUnits="userSpaceOnUse"><stop stop-color="#4c8517"/><stop offset=".55" stop-color="#3E6F0E"/><stop offset="1" stop-color="#376310"/></linearGradient></defs>
+<path d="M0 0H11V30H0L7 15L0 0Z" fill="url(#ribTail)"/>
 </svg>popular</div>
             </article>
             <article class="plan" data-plan="basic">
