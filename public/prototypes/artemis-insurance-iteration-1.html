@@ -597,8 +597,8 @@ body[data-step="done"] > .page, body[data-step="done"] .mbar { display: none !im
 .m-foot > * { white-space: nowrap; }
 @media (max-width: 520px) { .pm .orow { flex-wrap: wrap; row-gap: 2px; } .pm-ic { display: none; } .pm-fee { flex-basis: 100%; padding-left: 30px; } .pm { padding: 12px 14px; } }
 
-/* Errors: the field tints and rings in red and shakes once; the message has an alert icon */
-.fld.err .box, .fld.err .box:hover { background: #fffafa; box-shadow: inset 0 0 0 1.5px var(--crusta), 0 0 0 4px rgba(223, 87, 72, 0.1); animation: fShake .36s cubic-bezier(.36, .07, .19, .97); }
+/* Errors: the field tints with a red border (no glow) and shakes once; the message has an alert icon */
+.fld.err .box, .fld.err .box:hover { background: #fffafa; box-shadow: inset 0 0 0 1px var(--crusta); animation: fShake .36s cubic-bezier(.36, .07, .19, .97); }
 @keyframes fShake { 20%, 60% { transform: translateX(-3px); } 40%, 80% { transform: translateX(3px); } }
 .fld .msg, .terms-msg, .pm-msg { gap: 6px; margin-top: 2px; font: 500 13px/18px var(--public); color: #c2412f; }
 .fld.err .msg { animation: errIn .28s var(--out); }
