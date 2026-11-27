@@ -224,6 +224,8 @@ type IterationItem = {
   label: string;
   title: string;
   shipped?: boolean;
+  /** A clip of the iteration, rendered from its working prototype */
+  video?: string;
   worked: string[];
   didntWork: string[];
 };
@@ -232,6 +234,7 @@ const ITERATIONS: IterationItem[] = [
   {
     label: "Iteration 1",
     title: "A yes-or-no question on a page of its own",
+    video: "/videos/artemis-insurance/iteration-1.mp4",
     worked: [
       "One clear question: add travel insurance to the trip or not",
       "Insurance had the guest’s full attention for one step",
@@ -282,7 +285,7 @@ function Process() {
           of that section so guests wouldn&apos;t miss it</Highlight>.
         </p>
       </Copy>
-      {ITERATIONS.map(({ label, title, shipped, worked, didntWork }) => (
+      {ITERATIONS.map(({ label, title, shipped, video, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
             <OptionCard
@@ -290,6 +293,7 @@ function Process() {
               title={title}
               shipped={shipped}
               stamp="Selected"
+              video={video}
               image={`${label}: ${title}`}
             >
               <ProsCons pros={worked} cons={didntWork} />

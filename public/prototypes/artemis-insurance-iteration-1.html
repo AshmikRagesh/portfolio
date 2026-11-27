@@ -634,8 +634,8 @@ button.step:active { transform: scale(.97); }
         <div class="ask" data-ask>
           <h2 id="askq">Would you like to add travel insurance?</h2>
           <div class="opts" role="radiogroup" aria-labelledby="askq">
-            <button class="opt" type="button" role="radio" aria-checked="false" data-v="yes"><span class="r" aria-hidden="true"><svg class="off" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.335a6.667 6.667 0 1 0 0 13.333 6.667 6.667 0 0 0 0-13.333ZM1.667 10a8.333 8.333 0 1 1 16.666 0 8.333 8.333 0 0 1-16.666 0Z" fill="#808080" fill-opacity=".55"/></svg><svg class="on" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#36312A"/></svg></span><span class="t">Yes, Add Travel Protection for only USD 400</span></button>
-            <button class="opt" type="button" role="radio" aria-checked="false" data-v="no"><span class="r" aria-hidden="true"><svg class="off" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.335a6.667 6.667 0 1 0 0 13.333 6.667 6.667 0 0 0 0-13.333ZM1.667 10a8.333 8.333 0 1 1 16.666 0 8.333 8.333 0 0 1-16.666 0Z" fill="#808080" fill-opacity=".55"/></svg><svg class="on" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#36312A"/></svg></span><span class="t">No, I'm willing to risk my USD 10,000 trip. I understand that by declining coverage, I may be responsible for certain cancellation fees and delay expenses.</span></button>
+            <button class="opt" type="button" role="radio" aria-checked="false" data-v="yes"><span class="r" aria-hidden="true"><svg class="off" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.335a6.667 6.667 0 1 0 0 13.333 6.667 6.667 0 0 0 0-13.333ZM1.667 10a8.333 8.333 0 1 1 16.666 0 8.333 8.333 0 0 1-16.666 0Z" fill="#808080" fill-opacity=".55"/></svg><svg class="on" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#36312A"/></svg></span><span class="t">Yes, Add Travel Protection for only USD 1,062</span></button>
+            <button class="opt" type="button" role="radio" aria-checked="false" data-v="no"><span class="r" aria-hidden="true"><svg class="off" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.335a6.667 6.667 0 1 0 0 13.333 6.667 6.667 0 0 0 0-13.333ZM1.667 10a8.333 8.333 0 1 1 16.666 0 8.333 8.333 0 0 1-16.666 0Z" fill="#808080" fill-opacity=".55"/></svg><svg class="on" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#36312A"/></svg></span><span class="t">No, I'm willing to risk my USD 30,000 trip. I understand that by declining coverage, I may be responsible for certain cancellation fees and delay expenses.</span></button>
           </div>
           <div class="ask-msg">Choose yes or no to continue.</div>
         </div>
@@ -672,7 +672,7 @@ button.step:active { transform: scale(.97); }
           <div class="ln"><div class="kv"><span>Trip Price</span><span>USD 30,000</span></div></div>
           <div class="ln"><div class="kv"><span>2% Service Fee</span><span>USD 60</span></div></div>
           <!-- Figma "Traveler details (Confirmation)" 242:12335 adds this line when a plan is added -->
-          <div class="ln ins" hidden><div class="kv"><span>Travel Protection Plan</span><span>USD 400</span></div></div>
+          <div class="ln ins" hidden><div class="kv"><span>Travel Protection Plan</span><span>USD 1,062</span></div></div>
         </div>
         <div class="tot"><span>Total Amount</span><span data-total>USD 30,060</span></div>
       </div>
@@ -720,7 +720,7 @@ button.step:active { transform: scale(.97); }
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 const usd = n => 'USD ' + n.toLocaleString('en-US');
-const TRIP = 30000, FEE = 60, BASE = TRIP + FEE, COVER = 400;
+const TRIP = 30000, FEE = 60, BASE = TRIP + FEE, COVER = 1062;
 let shownTotal = null, answer = null;
 const setTotals = n => $$('[data-total]').forEach(e => e.textContent = usd(n));
 function tickTo(to) {                                   // total counts to its new value
