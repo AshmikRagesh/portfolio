@@ -359,7 +359,6 @@ function Solution() {
       <div className="cs-sub">
         <Copy>
           <h3>The smaller details</h3>
-          <p>Each of these works in the prototype above.</p>
         </Copy>
         <Visual>
           <MediaRail label="Smaller details of the travel protection section" items={DETAILS} />
@@ -378,36 +377,31 @@ function Solution() {
 // each one before the page is promoted.
 function Impact() {
   return (
-    <Chapter id="outcome" num={5} title="Numbers from the first quarter post-launch">
+    <Chapter id="outcome" num={5} title="The first quarter after launch">
       <Copy>
         <p>
-          Three metrics — each mapping directly to one of the gaps research
-          identified. <Highlight>The adoption jump from 7% to 52%</Highlight> was the clearest signal
-          that the integration point and design approach were right.
+          Travel protection went live in December 2024. These numbers cover
+          the first full quarter after it, January to March 2025.
         </p>
       </Copy>
       <Copy>
+        {/* CHECK (Ashmik): all three numbers are unconfirmed. What did 7% measure, if
+            Enchanting Travels sold no insurance before? Was CFAR added by default? If it
+            was, say so here, since part of the 52% would come from the default. */}
         <ResultsCard
           headline={{ value: 52, suffix: "%" }}
-          title="Insurance adoption rate"
-          body="Clear hierarchy, value-first copy, and seamless flow placement drove the shift."
+          title="Guests who added travel insurance"
+          body="Up from 7% before launch, when a consultant had to arrange every policy. Guests now add cover themselves while they enter their details."
           stats={[
             {
-              before: "7%",
-              after: "52%",
-              change: "+45 pts",
-              label: "Insurance adoption rate",
-              note: "Up from 7% before the integration.",
-            },
-            {
               after: "$125K",
-              label: "Additional revenue generated in Q1 2025",
-              note: "The first full quarter post-launch. A new revenue stream with minimal tech overhead.",
+              label: "Insurance revenue in Q1 2025",
+              note: "A new line of revenue: Enchanting Travels didn’t sell insurance before.",
             },
             {
               after: "15%",
-              label: "Reduction in booking drop-off at checkout",
-              note: "Removing the off-platform detour gave guests a complete, confident path to confirmation.",
+              label: "Fewer drop-offs before payment",
+              note: "Guests no longer leave the booking to ask a consultant for cover.",
             },
           ]}
         />

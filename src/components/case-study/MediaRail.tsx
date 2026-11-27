@@ -6,9 +6,10 @@ import ImagePlaceholder from "./ImagePlaceholder";
 
 /**
  * A sliding rail of smaller clips or pictures, for supporting details that don't each need a
- * full screen. The count and arrows sit above the rail, where the eye lands first; two items
+ * full screen, after the reference (sudhanva.space): two items
  * are in view from tablet up (one and a peek on phones). Each item is the media itself (no card
- * around it, per the media template), then a short title and one plain line.
+ * around it, per the media template), then a short title and one plain line. A muted count sits
+ * under the rail on the left and the two arrows on the right.
  * Arrows glide one view at a time with an eased scroll; trackpads and swipes scroll freely and
  * settle on the nearest item. Clips play silently on loop only while they're on screen (never
  * with reduced motion). Clicking opens the item large, with arrows (and ← →) to step through.
@@ -117,33 +118,9 @@ export default function MediaRail({ items, label }: { items: Item[]; label: stri
   const last = Math.min(first + shown, items.length);
   const count = shown > 1 ? `${first + 1}–${last} of ${items.length}` : `${first + 1} of ${items.length}`;
   const current = open !== null ? items[open] : null;
-  // How much of the rail has been seen: the first view counts as shown / total
-  const seen = Math.min(1, last / items.length);
 
   return (
-    <div role="region" aria-label={label} className="flex flex-col gap-[16px] md:gap-[20px]">
-      <div className="flex items-center justify-between gap-[16px]">
-        <div className="flex min-w-0 flex-1 items-center gap-[12px]">
-          <p aria-live="polite" className="m-0 shrink-0 font-geist text-caption tabular-nums text-muted md:text-caption-lg">
-            {count}
-          </p>
-          <span aria-hidden="true" className="relative h-[2px] w-full max-w-[120px] overflow-hidden rounded-full bg-line-soft">
-            <span
-              className="absolute inset-y-0 left-0 rounded-full bg-heading transition-[width] duration-500 ease-out motion-reduce:transition-none"
-              style={{ width: `${seen * 100}%` }}
-            />
-          </span>
-        </div>
-        <div className="flex shrink-0 gap-[8px]">
-          <button type="button" onClick={() => go(-1)} disabled={first === 0} aria-label="Previous" className={ARROW}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
-          </button>
-          <button type="button" onClick={() => go(1)} disabled={last >= items.length} aria-label="Next" className={ARROW}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
-          </button>
-        </div>
-      </div>
-
+    <div role="region" aria-label={label} className="flex flex-col gap-[24px] md:gap-[32px]">
       <ul
         ref={track}
         className="m-0 flex list-none snap-x snap-proximity gap-[16px] overflow-x-auto overscroll-x-contain p-0 [scrollbar-width:none] md:gap-[24px] [&::-webkit-scrollbar]:hidden"
@@ -191,6 +168,20 @@ export default function MediaRail({ items, label }: { items: Item[]; label: stri
           </li>
         ))}
       </ul>
+
+      <div className="flex items-center justify-between gap-[16px]">
+        <p aria-live="polite" className="m-0 font-geist text-caption tabular-nums text-muted md:text-caption-lg">
+          {count}
+        </p>
+        <div className="flex shrink-0 gap-[8px]">
+          <button type="button" onClick={() => go(-1)} disabled={first === 0} aria-label="Previous" className={ARROW}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+          </button>
+          <button type="button" onClick={() => go(1)} disabled={last >= items.length} aria-label="Next" className={ARROW}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+          </button>
+        </div>
+      </div>
 
       {current && (current.src || current.video) && (
         <Expanded
