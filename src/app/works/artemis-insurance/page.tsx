@@ -181,10 +181,9 @@ function Discovery() {
             How might we let guests add travel insurance on their own, right in
             the booking flow?
           </DesignQuestion>
-          <p>The findings gave the design four priorities:</p>
         </Copy>
         <Visual>
-          <CardGrid items={PRIORITIES} />
+          <CardGrid items={PRIORITIES} label="The four priorities the findings gave the design" />
         </Visual>
       </div>
     </Chapter>

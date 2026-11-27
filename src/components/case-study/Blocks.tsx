@@ -189,10 +189,13 @@ export function Quotes({ items }: { items: { text: React.ReactNode; attribution:
 export function CardGrid({
   items,
   plain,
+  label,
 }: {
   items: { icon: React.ReactNode; title: string; description: string }[];
   /** No box — icon, title and line sit open on the page, for lists that aren't cards */
   plain?: boolean;
+  /** Grey support line centred under the cards, as under media (replaces a lead-in line above) */
+  label?: React.ReactNode;
 }) {
   const layout =
     items.length === 5
@@ -201,27 +204,30 @@ export function CardGrid({
         ? "md:grid-cols-3"
         : "md:grid-cols-2";
   return (
-    <div className={`cs-stagger grid grid-cols-1 ${plain ? "gap-[32px] md:gap-[40px]" : "gap-[16px] md:gap-[24px]"} ${layout}`}>
-      {items.map(({ icon, title, description }) => (
-        <div
-          key={title}
-          className={`flex flex-col md:row-span-3 md:grid md:grid-rows-subgrid ${
-            plain ? "gap-[12px] md:gap-y-[12px]" : "gap-[16px] rounded-xl border border-line-soft bg-white p-[20px] md:gap-y-[16px]"
-          }`}
-        >
-          <div className="shrink-0">{icon}</div>
-          <h4
-            className={`font-heading tracking-[0px] text-heading ${
-              plain ? "text-h4 md:text-h4-md" : "text-h3-md md:text-h3-lg"
+    <figure className="m-0">
+      <div className={`cs-stagger grid grid-cols-1 ${plain ? "gap-[32px] md:gap-[40px]" : "gap-[16px] md:gap-[24px]"} ${layout}`}>
+        {items.map(({ icon, title, description }) => (
+          <div
+            key={title}
+            className={`flex flex-col md:row-span-3 md:grid md:grid-rows-subgrid ${
+              plain ? "gap-[12px] md:gap-y-[12px]" : "gap-[16px] rounded-xl border border-line-soft bg-white p-[20px] md:gap-y-[16px]"
             }`}
           >
-            {title}
-          </h4>
-          {/* Sits a touch closer to its title than the title does to the icon */}
-          <p className="-mt-[4px] font-body text-body-md text-secondary md:text-lead-md">{description}</p>
-        </div>
-      ))}
-    </div>
+            <div className="shrink-0">{icon}</div>
+            <h4
+              className={`font-heading tracking-[0px] text-heading ${
+                plain ? "text-h4 md:text-h4-md" : "text-h3-md md:text-h3-lg"
+              }`}
+            >
+              {title}
+            </h4>
+            {/* Sits a touch closer to its title than the title does to the icon */}
+            <p className="-mt-[4px] font-body text-body-md text-secondary md:text-lead-md">{description}</p>
+          </div>
+        ))}
+      </div>
+      <CardFooter label={label} />
+    </figure>
   );
 }
 
