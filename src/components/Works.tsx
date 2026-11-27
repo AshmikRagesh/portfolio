@@ -13,10 +13,10 @@ import PixelClouds from "@/components/PixelClouds";
 import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 
 // ── Card video ────────────────────────────────────────────────────────────────
-// A 10s muted loop over the card's image, showing its first frame (the poster) until it
-// plays, so nothing shifts while it loads. It loads and plays only while the card is on screen, and stays still for anyone who
+// A short muted loop over the card's image, which is the loop's first frame, so nothing
+// shifts while it loads. It loads and plays only while the card is on screen, and stays still for anyone who
 // prefers reduced motion.
-function CardVideo({ src, poster, className }: { src: string; poster?: string; className: string }) {
+function CardVideo({ src, className }: { src: string; className: string }) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const v = ref.current;
@@ -26,11 +26,11 @@ function CardVideo({ src, poster, className }: { src: string; poster?: string; c
         if (v.preload !== "auto") v.preload = "auto";
         v.play().catch(() => {});
       } else v.pause();
-    }, { threshold: 0.25 });
+    }, { rootMargin: "240px 0px" });   // starts loading just before it scrolls in
     io.observe(v);
     return () => io.disconnect();
   }, []);
-  return <video ref={ref} src={src} poster={poster} muted loop playsInline preload="none" aria-hidden="true" className={className} />;
+  return <video ref={ref} src={src} muted loop playsInline preload="none" aria-hidden="true" className={className} />;
 }
 
 // ── Featured card ─────────────────────────────────────────────────────────────
@@ -136,15 +136,17 @@ export function FeaturedCard({ work }: { work: FeaturedWork }) {
           <div
             className={`work-media relative aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder ${work.nda ? "stamp-thud" : ""}`}
           >
+            {/* With a loop, the image is its first frame (lazy and resized like any card image), so
+                the video takes over without a jump and no separate poster has to load */}
             <Image
-              src={work.image}
+              src={work.video && work.poster ? work.poster : work.image}
               alt={work.imageAlt}
               fill
               sizes={isFlagship ? "(min-width: 1024px) 60vw, 100vw" : "(min-width: 1024px) 50vw, 100vw"}
               style={{ objectPosition: work.imagePosition ?? "center" }}
               className={`work-media__img object-cover ${work.nda ? "grayscale" : ""}`}
             />
-            {work.video && <CardVideo src={work.video} poster={work.poster} className={`work-media__img absolute inset-0 h-full w-full object-cover ${work.nda ? "grayscale" : ""}`} />}
+            {work.video && <CardVideo src={work.video} className={`work-media__img absolute inset-0 h-full w-full object-cover ${work.nda ? "grayscale" : ""}`} />}
 
             {/* Pixel clouds roll in round the image's edges on hover: pink, or grey for NDA */}
             <PixelClouds seed={Number(roomFor(work))} palette={work.nda ? "grey" : "brand"} className="z-[1]" />
