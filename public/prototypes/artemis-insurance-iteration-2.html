@@ -501,7 +501,7 @@ button.step:active { transform: scale(.97); }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } .reveal { opacity: 1; transform: none; } }
 
 /* ── Iteration 2 (Figma 67:8643): the offer and the yes / no question inside traveller details ── */
-.i2 { padding: 20px; gap: 24px; }
+.i2 { padding: 20px 16px; gap: 24px; }  /* as iteration 1's card, so the banner keeps its three points on one line */
 .offer { display: flex; gap: 16px; align-items: center; padding: 20px; background: #f5f9fc; border-radius: 4px; box-shadow: inset 0 0 0 1.5px #4b90e2; }
 .offer .o-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
 .offer .o-text { display: flex; flex-direction: column; gap: 8px; }
@@ -532,7 +532,7 @@ button.step:active { transform: scale(.97); }
 .opt2 .t { font: 600 14px/22px var(--public); color: #000; }
 .opt2 .dets { list-style: none; margin: 0; padding: 0 0 0 36px; display: flex; flex-direction: column; gap: 16px; }
 .opt2 .dets li { display: flex; align-items: flex-start; gap: 12px; font: 400 13px/18px var(--public); color: var(--acadia); }
-.opt2 .dets svg { width: 13px; height: 13px; flex: none; margin-top: 2.5px; }
+.opt2 .dets svg { width: 14px; height: 14px; flex: none; margin-top: 2px; }
 .note2[hidden] { display: none; }
 .note2 { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 4px; font: 500 15px/23px var(--public); animation: rowIn .3s var(--out); }
 .note2 svg { width: 18px; height: 18px; flex: none; }
@@ -706,7 +706,7 @@ button.step:active { transform: scale(.97); }
           <div class="o-copy">
             <div class="o-text">
               <h2>Add travel insurance</h2>
-              <p>We recommend purchasing travel insurance to protect yourself from any cancellation fees, should you need to cancel the trip due to medical illness, family emergencies, or other factors beyond your control. <button class="incl" type="button" aria-haspopup="dialog">What is included?</button></p>
+              <p>We recommend purchasing travel insurance to protect yourself from any cancellation fees, should you need to cancel the trip due to medical illness, family emergencies, or other factors beyond your control.</p>
             </div>
             <ul class="bens">
               <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z" fill="#4B90E2"/><path d="M4.8 7.85 6.82 9.89a.37.37 0 0 0 .53 0L11.2 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>24/7 Emergency assistance</li>
@@ -735,7 +735,7 @@ button.step:active { transform: scale(.97); }
           <div class="opts2" role="radiogroup" aria-labelledby="askq">
             <div class="opt2" role="radio" tabindex="0" aria-checked="false" data-v="yes">
               <div class="orow"><span class="r" aria-hidden="true"><svg class="off" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.335a6.667 6.667 0 1 0 0 13.333 6.667 6.667 0 0 0 0-13.333ZM1.667 10a8.333 8.333 0 1 1 16.666 0 8.333 8.333 0 0 1-16.666 0Z" fill="#808080" fill-opacity=".55"/></svg><svg class="on" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#36312A"/></svg></span><span class="t">Yes, Add Travel Protection for only USD 1,062</span></div>
-              <ul class="dets"><li><svg viewBox="0 0 13 13" fill="none" aria-hidden="true"><rect width="13" height="13" rx="6.5" fill="#3A735D"/><path d="M4 6.505 5.639 8.16a.3.3 0 0 0 .432 0L9.2 5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg><span>Get up to 100% refund if you need to cancel your trip due to unexpected circumstances like medical emergencies or family issues.</span></li><li><svg viewBox="0 0 13 13" fill="none" aria-hidden="true"><rect width="13" height="13" rx="6.5" fill="#3A735D"/><path d="M4 6.505 5.639 8.16a.3.3 0 0 0 .432 0L9.2 5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg><span>Get up to $100,000 for emergency medical expenses if you get sick or injured while traveling.</span></li><li><svg viewBox="0 0 13 13" fill="none" aria-hidden="true"><rect width="13" height="13" rx="6.5" fill="#3A735D"/><path d="M4 6.505 5.639 8.16a.3.3 0 0 0 .432 0L9.2 5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg><span>Get compensation if your trip is delayed by more than 6 hours, covering additional expenses like meals and accommodations.</span></li><li><svg viewBox="0 0 13 13" fill="none" aria-hidden="true"><rect width="13" height="13" rx="6.5" fill="#3A735D"/><path d="M4 6.505 5.639 8.16a.3.3 0 0 0 .432 0L9.2 5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg><span>Receive up to $2,000 in coverage for lost, stolen, or delayed baggage to help you replace essential items.</span></li></ul>
+              <ul class="dets"><li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z" fill="#4B90E2"/><path d="M4.8 7.85 6.82 9.89a.37.37 0 0 0 .53 0L11.2 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Get up to 100% refund if you need to cancel your trip due to unexpected circumstances like medical emergencies or family issues.</span></li><li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z" fill="#4B90E2"/><path d="M4.8 7.85 6.82 9.89a.37.37 0 0 0 .53 0L11.2 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Get up to $100,000 for emergency medical expenses if you get sick or injured while traveling.</span></li><li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z" fill="#4B90E2"/><path d="M4.8 7.85 6.82 9.89a.37.37 0 0 0 .53 0L11.2 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Get compensation if your trip is delayed by more than 6 hours, covering additional expenses like meals and accommodations.</span></li><li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z" fill="#4B90E2"/><path d="M4.8 7.85 6.82 9.89a.37.37 0 0 0 .53 0L11.2 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Receive up to $2,000 in coverage for lost, stolen, or delayed baggage to help you replace essential items.</span></li></ul>
             </div>
             <div class="opt2" role="radio" tabindex="-1" aria-checked="false" data-v="no">
               <div class="orow"><span class="r" aria-hidden="true"><svg class="off" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.335a6.667 6.667 0 1 0 0 13.333 6.667 6.667 0 0 0 0-13.333ZM1.667 10a8.333 8.333 0 1 1 16.666 0 8.333 8.333 0 0 1-16.666 0Z" fill="#808080" fill-opacity=".55"/></svg><svg class="on" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="#36312A"/></svg></span><span class="t">No, I'm willing to risk my USD 30,000 trip. I understand that by declining coverage, I may be responsible for certain cancellation fees and delay expenses.</span></div>
@@ -880,34 +880,6 @@ opts.forEach(o => {
 });
 $('.chg', ok).addEventListener('click', () => { render(false); $('.opt2[data-v="yes"]', ask).focus({ preventScroll: true }); });
 
-/* "What is included?" opens the final design's read-only modal with the cover in full */
-const COVERED = ['Cancellation fees if you cancel for illness, family emergencies or other reasons beyond your control', 'Emergency medical costs while you travel', '24/7 emergency assistance', 'Air travel insurance'];
-const TICK = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z" fill="#4B90E2"/><path d="M4.8 7.85 6.82 9.89a.37.37 0 0 0 .53 0L11.2 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const modal = $('.modal'), dlg = $('.dlg', modal), more = $('.incl');
-function openModal() {
-  $('#mt').textContent = INS;
-  $('.m-list', modal).innerHTML = COVERED.map(t => '<li><span class="ic">' + TICK + '</span><span>' + t + '</span></li>').join('');
-  $('.m-body', modal).scrollTop = 0; $('.m-head', modal).classList.remove('scrolled');
-  modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
-  document.documentElement.style.overflow = 'hidden';
-  setTimeout(() => $('.x', modal).focus({ preventScroll: true }), 60);
-}
-function closeModal() {
-  if (!modal.classList.contains('open')) return;
-  modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true');
-  document.documentElement.style.overflow = '';
-  more.focus({ preventScroll: true });
-}
-more.addEventListener('click', openModal);
-$$('[data-mclose]', modal).forEach(b => b.addEventListener('click', closeModal));
-$('.m-body', modal).addEventListener('scroll', e => $('.m-head', modal).classList.toggle('scrolled', e.target.scrollTop > 0));
-modal.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeModal(); return; }
-  if (e.key !== 'Tab') return;
-  const f = $$('button', dlg), first = f[0], last = f[f.length - 1];
-  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-});
 render(true);
 
 /* ── Data ──────────────────────────────────────────────────────────────────────────────── */

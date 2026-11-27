@@ -507,16 +507,16 @@ button.step:active { transform: scale(.97); }
 .banner3 h2 { margin: 0; font: 600 20px/28px var(--public); color: var(--state-black); }
 .banner3 p { margin: 0; font: 400 15px/23px var(--public); color: #4e4a43; }
 .bens3 { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 24px; }
-.bens3 li, .more3 { display: flex; align-items: center; gap: 8px; font: 500 15px/28px var(--public); color: var(--state-black); }
-.more3 { font-weight: 400; cursor: pointer; text-underline-offset: 3px; }
-.more3:hover { text-decoration: underline; }
-.more3:focus { outline: none; } .more3:focus-visible { outline: 2px solid #3a735d; outline-offset: 2px; border-radius: 2px; }
+.bens3 li { display: flex; align-items: center; gap: 8px; font: 500 15px/28px var(--public); color: var(--state-black); }
 .bens3 svg { width: 18px; height: 18px; flex: none; }
 .banner3 .art3 { flex: none; width: 159px; height: 141px; }
-/* the banner's More Benefits modal: multi-line rows, ticks top-aligned and a size down */
-.m-list.b3 li { align-items: flex-start; gap: 10px; }
-.m-list.b3 .ic { width: 18px; height: 24px; display: flex; align-items: center; }
-.m-list.b3 .ic svg { width: 18px; height: 18px; }
+/* the plans' View More Benefits modal, styled like iteration 2's (Ashmik, 27 Nov): rows top-aligned,
+   18px icons, the banner's blue tick for what a plan covers and the cross for what it doesn't */
+.m-list li { align-items: flex-start; gap: 10px; }
+.m-list .ic { width: 18px; height: 24px; display: flex; align-items: center; padding: 0; }
+.m-list .ic svg { width: 18px; height: 18px; }
+/* the added plan takes the gold selected state used in every iteration (Figma 67:8767) */
+.plan.on { background: rgba(173, 146, 110, 0.04); box-shadow: inset 0 0 0 2px #ad926e; }
 @container (max-width: 640px) { .banner3 { flex-direction: column; align-items: flex-start; gap: 16px; } .banner3 .art3 { display: none; } }
 @media (max-width: 640px) { .banner3 { flex-direction: column; align-items: flex-start; gap: 16px; } .banner3 .art3 { display: none; } }
 </style>
@@ -675,7 +675,6 @@ button.step:active { transform: scale(.97); }
               <li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="9" fill="#3A735D"/><path d="M13.555 6.697 8.252 12 5.07 8.818l1.06-1.06 2.122 2.12 4.242-4.242 1.061 1.06Z" fill="#fff"/></svg>Cancellation</li>
               <li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="9" fill="#3A735D"/><path d="M13.555 6.697 8.252 12 5.07 8.818l1.06-1.06 2.122 2.12 4.242-4.242 1.061 1.06Z" fill="#fff"/></svg>Interruption</li>
               <li><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="9" fill="#3A735D"/><path d="M13.555 6.697 8.252 12 5.07 8.818l1.06-1.06 2.122 2.12 4.242-4.242 1.061 1.06Z" fill="#fff"/></svg>Delay</li>
-              <li><button class="more3" type="button" aria-haspopup="dialog"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="9" fill="#79747E"/><path d="M8.6 9.8H5V8.6h3.6V5h1.2v3.6h3.6v1.2H9.8v3.6H8.6V9.8Z" fill="#fff"/></svg>More Benefits</button></li>
             </ul>
           </div>
           <svg class="art3" width="159" height="141" viewBox="0 0 132 117" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1257,19 +1256,15 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObse
   items.forEach(el => io.observe(el));
 }
 
-/* ── Iteration 3: the banner's More Benefits ─────────────────────────────────────────────── */
+/* ── Iteration 3: the plans' modal rows in iteration 2's style ─────────────────────────────── */
 (() => {
-  const COVERED = ['Get up to 100% refund if you need to cancel your trip due to unexpected circumstances like medical emergencies or family issues.', 'Get up to $100,000 for emergency medical expenses if you get sick or injured while traveling.', 'Get compensation if your trip is delayed by more than 6 hours, covering additional expenses like meals and accommodations.', 'Receive up to $2,000 in coverage for lost, stolen, or delayed baggage to help you replace essential items.'];
-  const TICK = '<svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#3A735D"/><path d="M13.555 6.697 8.252 12 5.07 8.818l1.06-1.06 2.122 2.12 4.242-4.242 1.061 1.06Z" fill="#fff"/></svg>';
-  const btn = $('.more3'), list = $('.m-list', modal);
-  btn.addEventListener('click', () => {
-    openModal('cfar', btn);
-    $('#mt').textContent = 'Travel Protection Plan';
-    list.classList.add('b3');
-    list.innerHTML = COVERED.map(t => '<li><span class="ic">' + TICK + '</span><span>' + t + '</span></li>').join('');
+  const BLUE = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z" fill="#4B90E2"/><path d="M4.8 7.85 6.82 9.89a.37.37 0 0 0 .53 0L11.2 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const restyle = () => $$('.m-list li', modal).forEach(li => {
+    const ic = $('.ic', li);
+    if (ic && !/#FF5B31/i.test(ic.innerHTML)) ic.innerHTML = BLUE;   // covered: the blue tick; not covered keeps its cross
   });
-  // a plan card's own modal goes back to the final's rows
-  $$('.more a').forEach(a => a.addEventListener('click', () => list.classList.remove('b3'), true));
+  // runs after the final's own handler, which fills the list
+  $$('.more a').forEach(a => a.addEventListener('click', restyle));
 })();
 </script>
 </body>
