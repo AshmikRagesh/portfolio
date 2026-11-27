@@ -491,6 +491,13 @@ button.step:active { transform: scale(.97); }
   .mbar .v { font-size: 16px; line-height: 24px; }
   .mbar .cta { padding: 11px 14px 10px; font-size: 14px; }
 }
+@media (max-width: 340px) {
+  /* ADDED (27 Nov): the smallest phones (320 wide) kept clipping the button label */
+  .mbar { gap: 8px; }
+  .mbar .k { font-size: 12px; }
+  .mbar .v { font-size: 15px; }
+  .mbar .cta { padding: 10px 10px 9px; font-size: 13px; }
+}
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } .reveal { opacity: 1; transform: none; } }
 
 /* ── Iteration 1 (Figma 75:8196): the offer card and the yes / no question ─────────────── */
@@ -502,8 +509,8 @@ button.step:active { transform: scale(.97); }
 .offer p { margin: 0; font: 400 14px/22px var(--public); color: var(--acadia); }
 .incl { font: 600 14px/22px var(--public); color: #4b90e2; cursor: pointer; text-underline-offset: 2px; }
 .incl:hover { text-decoration: underline; }
-.incl-list[hidden] { display: none; }
-.incl-list { margin: 4px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font: 400 14px/22px var(--public); color: var(--acadia); animation: rowIn .3s var(--out); }
+.incl:focus { outline: none; }
+.incl:focus-visible { outline: 2px solid #4b90e2; outline-offset: 2px; border-radius: 2px; }
 .bens { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; }
 .bens li { display: flex; align-items: center; gap: 8px; font: 400 14px/22px var(--public); color: var(--acadia); }
 .bens svg { width: 16px; height: 16px; flex: none; }
@@ -514,8 +521,10 @@ button.step:active { transform: scale(.97); }
 .opt { display: flex; align-items: flex-start; gap: 16px; padding: 12px; text-align: left; border-radius: 4px; background: #fff; box-shadow: inset 0 0 0 1px var(--solitude); transition: background-color .2s var(--ease), box-shadow .2s var(--ease); -webkit-tap-highlight-color: transparent; }
 .opt:hover { background: #fafafa; }
 .opt:focus-visible { outline: none; box-shadow: inset 0 0 0 1.5px var(--black); }
-/* ADDED: the chosen answer takes the final design's added state (cream fill, orange outline) */
-.opt[aria-checked="true"] { background: #fffdf9; box-shadow: inset 0 0 0 1.5px var(--step-orange); }
+/* ADDED: the chosen answer keeps the white card and darkens its hairline to the radio's colour,
+   so the filled radio carries the choice without pulling the eye (Ashmik: the orange was too strong) */
+.opt[aria-checked="true"] { background: #fff; box-shadow: inset 0 0 0 1px var(--acadia); }
+.opt[aria-checked="true"]:hover { background: #fafafa; }
 .opt .r { flex: none; width: 20px; height: 22px; display: flex; align-items: center; }
 .opt .r svg { width: 20px; height: 20px; }
 .opt .r .on, .opt[aria-checked="true"] .r .off { display: none; }
@@ -527,15 +536,11 @@ button.step:active { transform: scale(.97); }
 .i1-break [hidden] { display: none; }
 .i1-break .ln.tp .kv { font: 600 18px/24px var(--public); }
 .confirm { display: flex; flex-direction: column; gap: 16px; }
-.confirm .agree p { font: 400 16px/24px var(--public); color: var(--black); }
+.confirm .agree p { font: 400 14px/22px var(--public); color: var(--state-black); padding-top: 1px; }
 .confirm .more { color: var(--orange); text-decoration: none; }
 .confirm .more:hover { text-decoration: underline; }
-.confirm .terms-msg { margin-top: -8px; }
 .confirm.err .terms-msg { display: block; }
 .confirm.err .cb .no path { fill: var(--crusta); }
-/* the in-page confirmation shows only where the checkout card is hidden */
-.mconfirm { display: none; }
-@media (max-width: 1080px) { .mconfirm { display: flex; } }
 @media (max-width: 640px) { .offer { flex-direction: column; align-items: flex-start; } .offer .art { display: none; } }
 </style>
 </head>
@@ -580,12 +585,14 @@ button.step:active { transform: scale(.97); }
     <span class="sep done" aria-hidden="true"></span>
     <div class="step now" aria-current="step"><span class="dot">3</span><span class="lbl">Travel Protection</span></div>
     <span class="sep" aria-hidden="true"></span>
-    <div class="step todo"><span class="dot">4</span><span class="lbl">Payment</span></div>
+    <div class="step todo"><span class="dot">4</span><span class="lbl">Your Travel Checklist</span></div>
+    <span class="sep" aria-hidden="true"></span>
+    <div class="step todo"><span class="dot">5</span><span class="lbl">Payment</span></div>
   </div>
   <div class="mstep">
     <button class="mback" type="button" data-back aria-label="Back to Travel Details"><svg viewBox="0 0 20 20" fill="none"><path d="M16 10H4m0 0 5-5m-5 5 5 5" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <span class="mt">Travel Protection</span><span class="mc">Step 3 of 4</span>
-    <div class="segs" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+    <span class="mt">Travel Protection</span><span class="mc">Step 3 of 5</span>
+    <div class="segs" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
   </div>
 </nav>
 
@@ -603,14 +610,7 @@ button.step:active { transform: scale(.97); }
           <div class="o-copy">
             <div class="o-text">
               <h2>Add travel insurance</h2>
-              <p>We recommend purchasing travel insurance to protect yourself from any cancellation fees, should you need to cancel the trip due to medical illness, family emergencies, or other factors beyond your control. <button class="incl" type="button" aria-expanded="false" aria-controls="incl">What is included?</button></p>
-              <!-- ADDED: "What is included?" opens the list in place (the frame has no target for it) -->
-              <ul class="incl-list" id="incl" hidden>
-                <li>Cancellation fees if you cancel for illness, family emergencies or other reasons beyond your control</li>
-                <li>Emergency medical costs while you travel</li>
-                <li>24/7 emergency assistance</li>
-                <li>Air travel insurance</li>
-              </ul>
+              <p>We recommend purchasing travel insurance to protect yourself from any cancellation fees, should you need to cancel the trip due to medical illness, family emergencies, or other factors beyond your control. <button class="incl" type="button" aria-haspopup="dialog">What is included?</button></p>
             </div>
             <ul class="bens">
               <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z" fill="#4B90E2"/><path d="M4.8 7.85 6.82 9.89a.37.37 0 0 0 .53 0L11.2 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>24/7 Emergency assistance</li>
@@ -643,8 +643,10 @@ button.step:active { transform: scale(.97); }
           <div class="ask-msg">Choose yes or no to continue.</div>
         </div>
       </section>
-      <!-- ADDED: phones hide the checkout card, so the itinerary confirmation moves here -->
-      <section class="card mconfirm confirm" data-confirm>
+      <!-- The itinerary confirmation sits at the bottom of the left column, like the final design's
+           Terms & Conditions card (moved out of the checkout card, Ashmik 27 Nov) -->
+      <section class="terms confirm" data-confirm>
+        <h2>Your itinerary</h2>
         <div class="agree">
           <button class="cb" type="button" role="checkbox" aria-checked="false" aria-label="Confirm the itinerary"><svg class="no" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M16.5039 3C18.9868 3 21 5.0128 21 7.49609V16.5039C21 18.9868 18.9872 21 16.5039 21H7.49609C5.01317 21 3 18.9872 3 16.5039V7.49609C3 5.01317 5.0128 3 7.49609 3H16.5039ZM7.49609 5.25C6.31198 5.25 5.34157 6.16599 5.25586 7.32812L5.25 7.49609V16.5039C5.25 17.688 6.16599 18.6584 7.32812 18.7441L7.49609 18.75H16.5039C17.688 18.75 18.6584 17.834 18.7441 16.6719L18.75 16.5039V7.49609C18.75 6.31198 17.834 5.34157 16.6719 5.25586L16.5039 5.25H7.49609Z" fill="#C8CCD4"/>
@@ -676,21 +678,6 @@ button.step:active { transform: scale(.97); }
         </div>
         <div class="tot" hidden><span>Total Amount</span><span data-total>USD 30,000</span></div>
       </div>
-      <div class="confirm" data-confirm>
-        <div class="agree">
-          <button class="cb" type="button" role="checkbox" aria-checked="false" aria-label="Confirm the itinerary"><svg class="no" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M16.5039 3C18.9868 3 21 5.0128 21 7.49609V16.5039C21 18.9868 18.9872 21 16.5039 21H7.49609C5.01317 21 3 18.9872 3 16.5039V7.49609C3 5.01317 5.0128 3 7.49609 3H16.5039ZM7.49609 5.25C6.31198 5.25 5.34157 6.16599 5.25586 7.32812L5.25 7.49609V16.5039C5.25 17.688 6.16599 18.6584 7.32812 18.7441L7.49609 18.75H16.5039C17.688 18.75 18.6584 17.834 18.7441 16.6719L18.75 16.5039V7.49609C18.75 6.31198 17.834 5.34157 16.6719 5.25586L16.5039 5.25H7.49609Z" fill="#C8CCD4"/>
-</svg><svg class="hov" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="24" height="24" rx="10" fill="#F2F2F2"/>
-<path d="M16.5039 3C18.9868 3 21 5.0128 21 7.49609V16.5039C21 18.9868 18.9872 21 16.5039 21H7.49609C5.01317 21 3 18.9872 3 16.5039V7.49609C3 5.01317 5.0128 3 7.49609 3H16.5039ZM7.49609 5.25C6.31198 5.25 5.34157 6.16599 5.25586 7.32812L5.25 7.49609V16.5039C5.25 17.688 6.16599 18.6584 7.32812 18.7441L7.49609 18.75H16.5039C17.688 18.75 18.6584 17.834 18.7441 16.6719L18.75 16.5039V7.49609C18.75 6.31198 17.834 5.34157 16.6719 5.25586L16.5039 5.25H7.49609Z" fill="#C8CCD4"/>
-</svg><svg class="yes" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M5 6H19V19H5V6Z" fill="white"/>
-<path d="M16.5043 3C18.9872 3 21 5.01243 21 7.49573V16.5043C21 18.9872 18.9876 21 16.5043 21H7.49573C5.01281 21 3 18.9876 3 16.5043V7.49573C3 5.01281 5.01243 3 7.49573 3H16.5043ZM16.7071 8.29289C16.3166 7.90237 15.6834 7.90237 15.2929 8.29289L10.44 13.145L8.70711 11.4123L8.6129 11.3291C8.22061 11.0241 7.65338 11.0518 7.29289 11.4123C6.90237 11.8028 6.90237 12.436 7.29289 12.8265L9.73319 15.2668L9.82739 15.35C10.2197 15.655 10.7869 15.6273 11.1474 15.2668L16.7071 9.70711L16.7903 9.6129C17.0953 9.22061 17.0676 8.65338 16.7071 8.29289Z" fill-rule="evenodd" clip-rule="evenodd" fill="#AD926E"/>
-</svg></button>
-          <p>I confirm that I have checked my itinerary carefully and all details are as per my wishes. <a class="more" href="#" onclick="return false">Read more</a></p>
-        </div>
-        <div class="terms-msg">Please confirm your itinerary to continue.</div>
-      </div>
       <button class="cta" type="button">Your Travel Checklist</button>
     </div>
   </aside>
@@ -716,6 +703,20 @@ button.step:active { transform: scale(.97); }
   </div>
 </div>
 
+<div class="modal" aria-hidden="true">
+  <div class="scrim" data-mclose></div>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <div class="m-grab" aria-hidden="true"></div>
+    <div class="m-head">
+      <div class="m-title"><h3 id="mt"></h3></div>
+      <button class="x" type="button" data-mclose aria-label="Close"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5 5 15" stroke="#000" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="m-body">
+      <div class="m-sub">What’s covered</div>
+      <ul class="m-list"></ul>
+    </div>
+  </div>
+</div>
 
 <script>
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -752,11 +753,41 @@ ask.addEventListener('keydown', e => {
   const next = opts[(i + (e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : opts.length - 1)) % opts.length];
   next.focus(); next.click();
 });
-const incl = $('.incl'), list = $('#incl');
-incl.addEventListener('click', () => { const open = list.hidden; list.hidden = !open; incl.setAttribute('aria-expanded', String(open)); incl.textContent = open ? 'Hide what is included' : 'What is included?'; });
+/* "What is included?" opens the final design's read-only modal with the cover in full */
+const INCLUDED = [
+  'Cancellation fees if you cancel for illness, family emergencies or other reasons beyond your control',
+  'Emergency medical costs while you travel',
+  '24/7 emergency assistance',
+  'Air travel insurance',
+];
+const TICK24 = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z" fill="#4B90E2"/><path d="M4.8 7.85 6.82 9.89a.37.37 0 0 0 .53 0L11.2 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const modal = $('.modal'), dlg = $('.dlg', modal), incl = $('.incl');
+function openModal() {
+  $('#mt').textContent = 'Travel Protection Plan';
+  $('.m-list', modal).innerHTML = INCLUDED.map(t => '<li><span class="ic">' + TICK24 + '</span><span>' + t + '</span></li>').join('');
+  $('.m-body', modal).scrollTop = 0; $('.m-head', modal).classList.remove('scrolled');
+  modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
+  document.documentElement.style.overflow = 'hidden';
+  setTimeout(() => $('.x', modal).focus({ preventScroll: true }), 60);
+}
+function closeModal() {
+  if (!modal.classList.contains('open')) return;
+  modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true');
+  document.documentElement.style.overflow = '';
+  incl.focus({ preventScroll: true });
+}
+incl.addEventListener('click', openModal);
+$$('[data-mclose]', modal).forEach(b => b.addEventListener('click', closeModal));
+$('.m-body', modal).addEventListener('scroll', e => $('.m-head', modal).classList.toggle('scrolled', e.target.scrollTop > 0));
+modal.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); return; }
+  if (e.key !== 'Tab') return;
+  const f = $$('button', dlg), first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
 
 /* ── Itinerary confirmation ────────────────────────────────────────────────────────────── */
-/* one answer, two places (checkout card on desktop, under the question on phones) */
 const confirmBoxes = $$('[data-confirm]'), cbs = confirmBoxes.map(c => $('.cb', c));
 let confirmed = false;
 const setConfirmed = v => { confirmed = v; cbs.forEach(c => { c.classList.toggle('on', v); c.setAttribute('aria-checked', String(v)); }); if (v) confirmBoxes.forEach(c => c.classList.remove('err')); };
@@ -772,8 +803,8 @@ $$('.cta:not([data-close])').forEach(btn => btn.addEventListener('click', () => 
   ask.classList.toggle('err', !answered);
   confirmBoxes.forEach(c => c.classList.toggle('err', !confirmed));
   if (!answered) { ask.scrollIntoView({ behavior: 'smooth', block: 'center' }); say('<i>!</i>Choose whether to add travel insurance'); return; }
-  if (!confirmed) { say('<i>!</i>Confirm your itinerary to continue'); return; }
-  say(answer === 'yes' ? '<i>✓</i>Travel Protection added. Next: Payment' : '<i>✓</i>Continuing without travel insurance. Next: Payment');
+  if (!confirmed) { confirmBoxes[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); say('<i>!</i>Confirm your itinerary to continue'); return; }
+  say(answer === 'yes' ? '<i>✓</i>Travel Protection added. Next: Your Travel Checklist' : '<i>✓</i>Continuing without travel insurance. Next: Your Travel Checklist');
 }));
 
 /* ── Price details sheet (tablet / mobile) ─────────────────────────────────────────────── */

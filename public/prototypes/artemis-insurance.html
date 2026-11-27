@@ -491,6 +491,13 @@ button.step:active { transform: scale(.97); }
   .mbar .v { font-size: 16px; line-height: 24px; }
   .mbar .cta { padding: 11px 14px 10px; font-size: 14px; }
 }
+@media (max-width: 340px) {
+  /* ADDED (27 Nov): the smallest phones (320 wide) kept clipping the button label */
+  .mbar { gap: 8px; }
+  .mbar .k { font-size: 12px; }
+  .mbar .v { font-size: 15px; }
+  .mbar .cta { padding: 10px 10px 9px; font-size: 13px; }
+}
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } .reveal { opacity: 1; transform: none; } }
 </style>
 </head>
