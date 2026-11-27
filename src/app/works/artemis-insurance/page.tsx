@@ -367,6 +367,7 @@ function Solution() {
         <PrototypeCard
           src="/prototypes/artemis-insurance.html"
           previewAt="section.card.tp"
+          previewHash="details"
           title="Travel protection in the Artemis traveller details step"
           label="The traveller details step with travel protection, rebuilt as a working prototype"
           hint="Try it: add or switch a plan, open View More Benefits, or press Your Travel Checklist with fields left empty."

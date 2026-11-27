@@ -29,7 +29,7 @@ function ClaudeMark() {
 
 /** The prototype drawn at 1440px wide and scaled to its box; below 768px wide (phones) the
  *  open prototype fills the box at its own size so its phone layout shows */
-function Frame({ src, title, live, previewAt }: { src: string; title: string; live: boolean; previewAt?: string }) {
+function Frame({ src, title, live, previewAt, previewHash }: { src: string; title: string; live: boolean; previewAt?: string; previewHash?: string }) {
   const box = useRef<HTMLDivElement>(null);
   // The card's preview opens on the part of the page the case study is about (e.g. the travel
   // protection section), under the prototype's sticky bars; the open prototype starts at the top
@@ -66,7 +66,7 @@ function Frame({ src, title, live, previewAt }: { src: string; title: string; li
       {/* Wait for a real size: a box still at 0 wide would give a NaN height */}
       {size && size.w > 0 && size.h > 0 && (
         <iframe
-          src={src}
+          src={!live && previewHash ? `${src}#${previewHash}` : src}
           title={title}
           loading="lazy"
           onLoad={onLoad}
@@ -162,6 +162,7 @@ export default function PrototypeCard({
   label,
   builtWith = "Claude Code",
   previewAt,
+  previewHash,
 }: {
   /** The prototype page, e.g. /prototypes/artemis-insurance.html */
   src: string;
@@ -174,6 +175,8 @@ export default function PrototypeCard({
   builtWith?: string;
   /** A selector inside the prototype that the card's preview scrolls to (the open view starts at the top) */
   previewAt?: string;
+  /** Opens the card preview at this step of the prototype (e.g. "details"); the open view starts at the beginning */
+  previewHash?: string;
 }) {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
@@ -251,7 +254,7 @@ export default function PrototypeCard({
         className="cs-pair-media relative z-[1] overflow-hidden rounded-lg border border-line-soft bg-white transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none group-data-[on=true]/proto:shadow-[0_24px_56px_-16px_rgba(0,0,0,0.45)] hover:-translate-y-[4px]"
         style={{ aspectRatio: `${DESIGN_W} / ${DESIGN_H}` }}
       >
-        <Frame src={src} title={title} live={false} previewAt={previewAt} />
+        <Frame src={src} title={title} live={false} previewAt={previewAt} previewHash={previewHash} />
         <button
           type="button"
           onClick={show}

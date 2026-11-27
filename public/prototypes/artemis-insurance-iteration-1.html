@@ -506,6 +506,92 @@ button.step:active { transform: scale(.97); }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } .reveal { opacity: 1; transform: none; } }
 
+/* ── The booking flow (Figma 242:11891): views, Create Account, checklist, payment, all set ─────── */
+.view { display: none; } .view.on { display: contents; }
+body[data-step="signin"] > .topnav, body[data-step="signin"] > .stepper, body[data-step="signin"] > .page, body[data-step="signin"] .mbar,
+body[data-step="done"] > .page, body[data-step="done"] > .stepper, body[data-step="done"] .mbar { display: none !important; }
+[data-screen][hidden] { display: none !important; }
+/* the page's own checks only look at the step in view */
+/* Create Account: the trip photo on the left with the logo, the form on the right */
+.signin { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; background: #fff; }
+.si-art { position: relative; background: linear-gradient(rgba(0,0,0,.3), rgba(0,0,0,.3)), var(--trip-img) center / cover no-repeat; padding: 40px; }
+.si-logo { display: block; width: 116px; height: 32px; } .si-logo svg { filter: brightness(0) invert(1); width: 116px; height: 32px; }
+.si-side { display: flex; align-items: center; justify-content: center; padding: 120px; }
+.si-form { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 32px; }
+.si-head { display: flex; flex-direction: column; gap: 8px; }
+.si-head h1 { margin: 0; font: 700 24px/32px var(--public); color: var(--black); }
+.si-head p { margin: 0; font: 400 16px/24px var(--public); color: var(--black); }
+.si-fields { display: flex; flex-direction: column; gap: 24px; }
+.eye { flex: none; width: 28px; height: 28px; margin-right: -6px; display: flex; align-items: center; justify-content: center; border-radius: 4px; cursor: pointer; }
+.eye:hover { background: var(--white-smoke); } .eye[aria-pressed="true"] svg path { stroke: var(--black); }
+.si-actions { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.back-link { display: inline-flex; align-items: center; gap: 4px; padding-right: 8px; font: 500 16px/24px var(--public); color: var(--hacienda); cursor: pointer; }
+.back-link svg { width: 22px; height: 22px; } .back-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 900px) { .signin { grid-template-columns: 1fr; grid-template-rows: 220px 1fr; } .si-side { padding: 32px 20px 48px; align-items: flex-start; } .si-art { padding: 20px; } }
+/* Your Travel Checklist: one card per guest, a separator above Download Invoice */
+.inv { padding: 0; gap: 0; }
+.inv-body { padding: 16px; display: flex; flex-direction: column; gap: 32px; }
+.inv-head { display: flex; flex-direction: column; gap: 8px; }
+.inv-head h2 { margin: 0; font: 600 20px/28px var(--public); color: var(--black); }
+.inv-head p { margin: 0; font: 400 16px/24px var(--public); color: var(--black); }
+.inv-rows { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.inv-rows > div { display: grid; grid-template-columns: 120px 1fr; gap: 36px; font: 400 16px/24px var(--public); color: var(--black); }
+.inv-rows dt { font-weight: 600; } .inv-rows dd { margin: 0; }
+.inv-foot { display: flex; justify-content: flex-end; padding: 16px; border-top: 1px solid var(--solitude); }
+.dl { display: inline-flex; align-items: center; gap: 8px; font: 500 16px/24px var(--public); color: var(--hacienda); cursor: pointer; }
+.dl svg { width: 16px; height: 16px; } .dl:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 640px) { .inv-rows > div { grid-template-columns: 1fr; gap: 2px; } }
+[data-confirm].err .terms-msg, [data-payterms].err .terms-msg { display: block; }
+[data-confirm].err .cb:not(.on) .no path, [data-payterms].err .cb:not(.on) .no path { fill: var(--crusta); }
+/* Payment: the same radio cards as the iterations; the chosen one opens in gold (Figma 242:12928) */
+.pay { padding: 20px 16px; gap: 20px; }
+.pay-t { margin: 0; font: 600 18px/28px var(--public); color: var(--black); }
+.pms { display: flex; flex-direction: column; gap: 20px; }
+.pm { display: flex; flex-direction: column; gap: 24px; padding: 12px 16px; border-radius: 4px; background: #fff; box-shadow: inset 0 0 0 1px var(--solitude); cursor: pointer; transition: background-color .2s var(--ease), box-shadow .2s var(--ease); -webkit-tap-highlight-color: transparent; }
+.pm:hover { background: #fafafa; }
+.pm:focus { outline: none; } .pm:focus-visible { box-shadow: inset 0 0 0 1.5px var(--black); }
+.pm[aria-checked="true"] { background: rgba(173, 146, 110, 0.10); box-shadow: inset 0 0 0 1px #ad926e; cursor: default; padding-bottom: 16px; }
+.pm .orow { display: flex; align-items: center; gap: 16px; }
+.pm .r { flex: none; width: 16px; height: 24px; display: flex; align-items: center; }
+.pm .r svg { width: 16px; height: 16px; }
+.pm .r .on, .pm[aria-checked="true"] .r .off { display: none; } .pm[aria-checked="true"] .r .on { display: block; }
+.pm .t { flex: 1; font: 400 16px/24px var(--public); color: #000; } .pm[aria-checked="true"] .t { font-weight: 500; }
+.pm-fee { font: italic 400 14px/18px var(--public); color: var(--hacienda); }
+.pm-body { display: none; } .pm[aria-checked="true"] .pm-body { display: block; cursor: auto; }
+.pm-note { margin: 0; font: 400 14px/22px var(--public); color: var(--acadia); }
+.bill { display: flex; flex-direction: column; gap: 16px; } .bill[hidden] { display: none; }
+.bill .row { display: flex; gap: 16px; } .bill .row > .fld { flex: 1; } .bill .row > .fld.grow { flex: 2.2; }
+.bill-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.bill-top .agree p { margin: 0; font: 400 14px/22px var(--public); color: var(--state-black); padding-top: 1px; }
+.clr { font: 500 14px/22px var(--public); color: var(--hacienda); cursor: pointer; } .clr:hover { text-decoration: underline; }
+.pm-msg { display: none; margin-top: -8px; font: 400 12px/18px var(--public); color: var(--crusta); }
+.pay.err .pm-msg { display: block; } .pay.err .pm:not([aria-checked="true"]) { box-shadow: inset 0 0 0 1px var(--crusta); }
+@media (max-width: 640px) { .bill .row { flex-direction: column; } .pay { padding: 19px; } }
+[data-payterms] .agree + .agree { margin-top: -8px; }
+/* Check your itinerary: the benefits modal, wider, with its two buttons */
+.itin .dlg { max-width: 642px; }
+.itin-p { margin: 0 0 4px; font: 400 16px/26px var(--public); color: var(--acadia); }
+.m-foot { flex: none; display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px 24px; }
+.m-foot .cta { width: auto; min-width: 180px; }
+.ghost { height: 48px; padding: 0 24px; border-radius: 4px; font: 500 18px/27px var(--public); color: var(--black); box-shadow: inset 0 0 0 1px var(--solitude); cursor: pointer; transition: background-color .2s ease; }
+.ghost:hover { background: #fafafa; }
+@media (max-width: 640px) { .m-foot { padding: 12px 20px calc(20px + env(safe-area-inset-bottom)); } .m-foot .ghost { flex: none; padding-inline: 20px; } .m-foot .cta { flex: 1; min-width: 0; } }
+.m-foot > * { white-space: nowrap; }
+@media (max-width: 400px) { .pm .orow { flex-wrap: wrap; row-gap: 2px; } .pm-fee { flex-basis: 100%; padding-left: 32px; } }
+/* You're all set */
+.alldone { min-height: calc(100vh - 80px); display: flex; align-items: flex-start; justify-content: center; padding: 56px 20px 80px; background: #f2f2f2; }
+.done-card { width: 100%; max-width: 708px; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 32px; border-radius: 12px; background: #fff; box-shadow: inset 0 0 0 1px var(--solitude); text-align: center; }
+.done-badge { width: 86px; height: 86px; border-radius: 50%; background: #3a735d; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 7px rgba(58, 115, 93, 0.14); margin-bottom: 8px; }
+.done-badge svg { width: 52px; height: 52px; }
+.done-card h1 { margin: 0; font: 500 36px/44px var(--public); color: var(--state-black); }
+.done-card p { margin: 0; font: 400 18px/28px var(--public); color: var(--acadia); }
+.done-card hr { width: 100%; margin: 16px 0; border: 0; border-top: 1px solid #dadee5; }
+.paid { width: 100%; display: flex; flex-direction: column; gap: 12px; text-align: left; font: 400 16px/28px var(--public); color: #383d49; }
+.paid .bar { display: block; height: 8px; border-radius: 999px; background: #eceef2; overflow: hidden; }
+.paid .bar i { display: block; height: 100%; width: 0; background: #3a735d; border-radius: 999px; transition: width 1s var(--out) .2s; }
+.done-card .cta { width: auto; min-width: 220px; margin-top: 16px; }
+@media (max-width: 640px) { .done-card { padding: 24px 20px; } .done-card h1 { font-size: 28px; line-height: 36px; } .done-card p { font-size: 16px; line-height: 26px; } }
+
 /* ── Iteration 1 (Figma 75:8196): the offer card and the yes / no question ─────────────── */
 .i1 { padding: 20px 16px; gap: 20px; }
 .offer { display: flex; gap: 16px; align-items: center; padding: 20px; background: #f5f9fc; border-radius: 4px; box-shadow: inset 0 0 0 1.5px #4b90e2; }
@@ -597,6 +683,7 @@ button.step:active { transform: scale(.97); }
 
 <div class="page">
   <main class="main">
+    <div class="view on" data-view="details">
     <div class="intro">
       <h1>Add Travel Protection Plan</h1>
       <p>As you venture to some of the most remote regions of the world we are pleased to offer the protection and peace of mind provided through Trip Mate's Travel Protection Plan.</p>
@@ -672,7 +759,7 @@ button.step:active { transform: scale(.97); }
         <div class="ttl">Total trip price breakup</div>
         <div class="lines">
           <div class="ln"><div class="kv"><span>Trip Price</span><span>USD 30,000</span></div></div>
-          <div class="ln"><div class="kv"><span>2% Service Fee</span><span>USD 60</span></div></div>
+          <div class="ln"><div class="kv"><span>Service Fee</span><span>USD 60</span></div></div>
           <!-- Figma "Traveler details (Confirmation)" 242:12335 adds this line when a plan is added -->
           <div class="ln ins" hidden><div class="kv"><span>Travel Protection Plan</span><span>USD 1,062</span></div></div>
         </div>
@@ -682,6 +769,13 @@ button.step:active { transform: scale(.97); }
     </div>
   </aside>
 </div>
+
+
+<!-- Create Account (Figma 242:11938): the first step of the flow -->
+
+<!-- You're all set (Figma 242:13026) -->
+
+<!-- Check your itinerary (Figma 242:12586): before the checklist; the same modal as the benefits -->
 
 <div class="mbar">
   <button class="mtot pd" type="button" aria-haspopup="dialog" aria-label="Show the price breakup"><span class="k">Total amount</span><span class="v"><span data-total>USD 30,060</span><svg viewBox="0 0 16 16" fill="none"><path d="m4 10 4-4 4 4" stroke="#717379" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -739,7 +833,7 @@ function render() {
   opts.forEach(o => o.setAttribute('aria-checked', String(o.dataset.v === answer)));
   const yes = answer === 'yes';
   $('.breakup .ln.ins').hidden = !yes;
-  const lines = [['Trip Price', TRIP], ['2% Service Fee', FEE]].concat(yes ? [['Travel Protection Plan', COVER]] : []);
+  const lines = [['Trip Price', TRIP], ['Service Fee', FEE]].concat(yes ? [['Travel Protection Plan', COVER]] : []);
   $('[data-lines]').innerHTML = lines.map(([k, v], i) => '<div class="kv' + (i > 1 ? ' ins' : '') + '"><span>' + k + '</span><span>' + usd(v) + '</span></div>').join('');
   tickTo(BASE + (yes ? COVER : 0));
 }
