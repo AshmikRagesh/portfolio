@@ -1,6 +1,6 @@
 // ── Résumé ────────────────────────────────────────────────────────────────────
 // What the "Fancy paper" sheet shows and the file "Take a copy" downloads.
-// Content from Ashmik's 2026 résumé, trimmed to what the sheet needs. Wrap a phrase in **double stars** to set it in the darker ink, or
+// Content from Ashmik's 2026 résumé (the Nov 2026 PDF in public/), trimmed to what the sheet needs. Wrap a phrase in **double stars** to set it in the darker ink, or
 // in ((double brackets)) to circle it in pen; `note` adds a handwritten margin note.
 
 import { EMAIL, LINKEDIN } from "@/lib/contact";
@@ -15,7 +15,7 @@ export const openResume = () => window.dispatchEvent(new Event(RESUME_OPEN_EVENT
 
 export const resume = {
   name: "Ashmik Ragesh",
-  title: "Product Designer",
+  title: "Product Design Engineer",
   site: "ashmikragesh.com",
   email: EMAIL,
   linkedin: { label: "in/ashmik-ragesh", href: LINKEDIN },
@@ -30,14 +30,21 @@ export const resumeSections: ResumeSection[] = [
     entries: [
       {
         org: "Travelopia",
-        role: "Product Designer",
-        when: "Aug 2023 – Now",
+        role: "Product Design Engineer",
+        when: "Apr – Nov 2026",
         detail: [
-          "Led design for six brands: TCS World Travel, Quark Expeditions, Kalos, Enchanting Travels, Hayes & Jarvis and My Planet.",
-          "Integrated travel insurance into the Artemis booking flow in 4 weeks, ((lifting adoption from 7% to 52%)) and adding $125K in Q1 revenue.",
-          "Spearheaded the **Artemis design system** across three brands, raising task completion by 35% and reducing errors by 60%.",
-          "Helped start **Helix**, a Claude Code skill that holds every brand's design system in code, cutting design delivery time roughly in half.",
-          "Redesigned the travel proposal UX, leading to **a 40% increase in bookings**.",
+          "Helped start **Helix**, a Claude Code skill that holds every brand's design system in code, cutting design delivery time ((roughly in half)).",
+          "Redesigned TCS World Travel's trip search with filters, result counts and trip routes, leading to **1.3× more searches that end in a trip**.",
+        ],
+      },
+      {
+        org: "Travelopia",
+        role: "Product Designer",
+        when: "Aug 2023 – Mar 2026",
+        detail: [
+          "Integrated travel insurance into the Artemis booking flow in 1.5 weeks of design, ((lifting adoption from 7% to 52%)) and adding $125K in Q1 revenue.",
+          "Spearheaded the **Artemis design system** across 3 brands, raising task completion by 35% and reducing errors by 60%.",
+          "Designed a travel planning tool that cut lead prospecting time by 75%.",
         ],
       },
       {
@@ -45,41 +52,35 @@ export const resumeSections: ResumeSection[] = [
         role: "Product Designer",
         when: "Jan – Aug 2023",
         detail: [
-          "Developed the **Pegasus design system**, ((reducing system errors by 65%)).",
-          "Led the MVP design for the Pegasus application, with high-fidelity prototypes that sped up development and stakeholder alignment.",
+          "Led the MVP design of the Pegasus app.",
+          "Built the **Pegasus design system**, ((reducing system errors by 65%)).",
         ],
       },
       {
         org: "Synctric",
         role: "Product Designer",
         when: "Aug 2022 – Jan 2023",
-        detail: [
-          "Created Synctric's brand identity and led its design system and website redesign.",
-          "Designed high-fidelity financial dashboards.",
-        ],
+        detail: ["Created Synctric's brand identity and led its design system."],
       },
       {
         org: "AMMACHI Labs",
         role: "UX Designer",
-        when: "Jan 2022 – Jul 2022",
-        detail: [
-          "Led UI/UX design for **NCERT government-funded educational simulations**, shaped by user research with the team.",
-        ],
+        when: "Jan – Jul 2022",
+        detail: ["Led UI/UX design for **NCERT government-funded educational simulations**."],
       },
     ],
   },
   {
     label: "Education",
     entries: [
-      { org: "Amrita Vishwa Vidyapeetham", detail: ["Bachelor of Business Administration", "2019 – 2022"] },
+      { org: "Amrita Vishwa Vidyapeetham", detail: ["Bachelor of Business Administration (BBA)", "2019 – 2022"] },
     ],
   },
   {
     label: "Skills",
     entries: [
-      { org: "Design & Animation", detail: ["Interaction design, prototyping, user flows, information architecture, design systems, design-to-code, motion design, branding, responsive design."] },
-      { org: "Research", detail: ["User interviews, usability tests, heuristic evaluation, survey design, comparative analysis, A/B testing."] },
-      { org: "Tools", detail: ["Figma, Framer, ProtoPie, Spline, Claude Code, Cursor, Codex, Figma MCP, GitHub, Vercel."] },
+      { org: "Design", detail: ["Product design, interaction design, design systems, design tokens, information architecture, prototyping, design-to-code, accessibility."] },
+      { org: "Tools and AI", detail: ["Figma, Framer, ProtoPie, Spline, Claude Code, Cursor, Codex, Figma MCP, GitHub, Vercel, Supabase."] },
     ],
   },
 ];

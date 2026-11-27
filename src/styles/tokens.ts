@@ -9,20 +9,23 @@ export const tokens = {
     // ── Text ──────────────────────────────────────────────────────────
     text:           "#1e0525",  // Primary body text
     heading:        "#32073e",  // Headings H1–H6 — same as primary
-    secondary:      "#524555",  // Secondary body text
-    muted:          "#8e8292",  // Labels, captions, eyebrows
-    subtle:         "#766a79",  // Text under case study media — lighter than body, still AA on white
+    // The greys are one warm ink (#171310) at set strengths, after the reference
+    // (sudhanva.space), so every grey shares a hue instead of being picked one by one. Each
+    // passes AA for small text on white, surface and the grape-light result card.
+    secondary:      "#565351",  // Body text: ink at 73% (7.6:1 on white)
+    muted:          "#6f6d6b",  // Labels, captions, eyebrows: ink at 62% (5.2:1; was #8e8292 at 3.7:1)
+    subtle:         "#615e5c",  // Text under case study media: ink at 68%
 
     // ── Surfaces ──────────────────────────────────────────────────────
     background:     "#FFFFFF",  // Page background
-    surface:        "#f8f9fa",  // Light cards, sidebar bg
+    surface:        "#f8f7f5",  // Light cards, sidebar bg — warm, to sit with the warm greys
     card:           "#f3f3f2",  // Work cards on the home page — a warm grey that shows on white
     placeholder:    "#f0f0f0",  // Image placeholder bg
     vanilla:        "#ece5d8",  // Warm alternative surface
 
     // ── Lines / borders ───────────────────────────────────────────────
-    "line-soft":    "#edf0f3",  // Subtle dividers
-    line:           "#c8ccd4",  // Image borders, stronger dividers
+    "line-soft":    "#eeece8",  // Subtle dividers — warm, after the reference's #e6e3dd
+    line:           "#dcd8d1",  // Image borders, stronger dividers
 
     // ── Soft accents ──────────────────────────────────────────────────
     pink:           "#f8c2f7",  // Soft pink tints

@@ -7,8 +7,9 @@ import { pitchFor } from "@/lib/sound/ui";
 
 /**
  * A results card, sized to sit in the text column: the headline number with what it
- * means and a short paragraph, two or three supporting stats in tagged boxes side by
- * side (each win's number in grape with its starting value in the note, and any number still to improve in the warning colour), then a line chart of one metric by month. All type comes from the
+ * means and a short paragraph, two or three supporting stats in cards side by side (each win's
+ * number in grape with its starting value in the note, and any number still to improve in the
+ * warning colour), then a line chart of one metric by month. All type comes from the
  * DS scale.
  * When it scrolls into view the card rises in, the headline and the new stat values count
  * up, the line and the fill under it draw left to right, each point popping in as the line
@@ -23,7 +24,8 @@ type Metric = { name: string; points: Point[]; caption: string; max?: number };
 // A stat is a win (grape) unless it's marked `improve`: a number not yet in our favour,
 // set in the warning colour with a note on what's behind it
 type Stat = {
-  /** The starting value; shown in the note's words, not beside the number */
+  /** The starting value. Not drawn: "24% → 32%" belongs in the Overview's TopResults; here the
+   *  note says it in words ("Up from 24% in July") */
   before?: string;
   after: string;
   change?: string;
@@ -266,7 +268,7 @@ export default function ResultsCard({
   stats,
   metrics = [],
 }: {
-  headline: { value: number; decimals?: number; suffix?: string };
+  headline: { value: number; decimals?: number; suffix?: string; prefix?: string };
   title: string;
   body: string;
   stats: Stat[];
@@ -287,6 +289,7 @@ export default function ResultsCard({
     <div ref={ref} className="mt-[32px] rounded-lg bg-grape-light/45 p-[20px] md:p-[32px]">
       <div {...rise(0)}>
         <p className="m-0 font-heading text-stat font-normal text-grape tabular-nums md:text-stat-md">
+          {headline.prefix}
           {count}
           {headline.suffix}
         </p>

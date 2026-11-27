@@ -23,16 +23,18 @@ export type LockedCase = {
 };
 
 export const LOCKED: Record<string, LockedCase> = {
-  "ai-itinerary": {
-    title: "Designing an AI-powered itinerary builder for modern travellers",
-    cover: "/images/works-cover.png",
-    coverAlt: "AI Trip Planning preview",
-    env: "AI_ITINERARY_PASSWORD",
+  "tcs-search": {
+    title: "From every trip at once to the few that fit: filters for TCS search",
+    cover: "/images/tcs-search/cover.webp",
+    coverAlt: "TCS World Travel search results for Japan, with a result count and tabs for expeditions, destinations and guides",
+    // Set TCS_SEARCH_PASSWORD in Vercel to keep it private: the repo is public, so the
+    // fallback (the agreed password) is readable by anyone
+    env: "TCS_SEARCH_PASSWORD",
     fallback: "TCS search",
-    comingSoon: true,
-    assets: [],
-    open: [],
+    assets: ["/images/tcs-search/", "/videos/tcs-search/"],
+    open: ["/images/tcs-search/cover.webp"],
   },
+
 };
 
 export const MAX_AGE = 60 * 60 * 24 * 30; // a month

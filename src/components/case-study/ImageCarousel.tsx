@@ -189,7 +189,7 @@ export default function ImageCarousel({ slides, width, height }: { slides: Slide
       </figcaption>
 
       {zoom && (
-        <Expanded label={slides[i].caption} ratio={width / height} onClose={shut}>
+        <Expanded label={slides[i].caption} caption={slides[i].caption} ratio={width / height} onClose={shut}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img loading="lazy" decoding="async" src={slides[i].src} alt={slides[i].alt} className="block h-full w-full bg-white object-contain" />
         </Expanded>

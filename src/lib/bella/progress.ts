@@ -19,7 +19,7 @@
 // time, and only while the tab is visible.
 
 import { useSyncExternalStore } from "react";
-import { artemisDesignSystem, artemisInsurance, artemisReservations, featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
+import { artemisDesignSystem, artemisReservations, featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 import type { StampKey } from "./stampArt";
 import { track } from "@/lib/curiosity/report";
 import type { BellaEvent } from "@/lib/curiosity/config";
@@ -37,7 +37,7 @@ const SHORT: Record<string, string> = {
 const room = (w: FeaturedWork, i: number) => (featuredWorks.includes(w) ? roomFor(w) : String(101 + i));
 // The homepage works, then the Artemis case studies that stay live off the list. Only the
 // listed ones count towards reading every case study
-export const CASE_STUDIES = [...featuredWorks, artemisDesignSystem, artemisReservations, artemisInsurance]
+export const CASE_STUDIES = [...featuredWorks, artemisDesignSystem, artemisReservations]
   .filter((w) => w.href.startsWith("/works/"))
   .map((w, i) => {
     const slug = w.href.slice("/works/".length);

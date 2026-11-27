@@ -64,9 +64,14 @@ function Overview() {
           current menu.
         </p>
         <Meta
-          role="End-to-end Design & Front-end Build"
-          team="Rohit Rayala (CRO), Sharayu Jadhav (Product Manager), Hriday Gami (Design), Sandy Tang (Content)"
-          timeline={<>June – July 2026<br />Briefed in June · Designs approved 15 Jul · Built for an A/B/C test</>}
+          role="I owned the design end to end and built the front end for the test."
+          team={[
+            { name: "Rohit Rayala", role: "CRO" },
+            { name: "Sharayu Jadhav", role: "Product Manager" },
+            { name: "Hriday Gami", role: "Design", href: "https://www.linkedin.com/in/hridaygami/", photo: "/images/team/hriday.webp" },
+            { name: "Sandy Tang", role: "Content" },
+          ]}
+          timeline="June – July 2026"
         />
         {/* No test results yet, so no numbers up front: just where it stands, in the words of
             Where it stands, labelled like the Meta rows */}

@@ -16,9 +16,9 @@ import {
   ProsCons,
   OptionCard,
   ResultsCard,
+  TopResults,
   Pointers,
   NextCase,
-  PanelCards,
   MediaRail,
   PrototypeCard,
   Highlight,
@@ -53,17 +53,32 @@ function Overview() {
           arranged it through an outside provider. I designed a travel
           protection section inside the traveller details step, with <Highlight>two
           plans side by side that guests can add without leaving the
-          booking</Highlight>. It launched in December 2024, and adoption has since
-          gone from 7% to 52%.
+          booking</Highlight>. It launched in December 2024.
         </p>
         <Meta
-          role="End-to-end Design & Developer Handoff"
-          team="Ashmik Ragesh (Design), Anish (Project Manager), Muzamil (Engineering)"
-          timeline={<>November – December 2024<br />1.5 weeks of design · Launched in December 2024</>}
+          role="I owned the design end to end, from research with guests to the handoff to engineering."
+          team={[
+            { name: "Anish Thimanna", role: "Project Manager", href: "https://www.linkedin.com/in/anishthimanna/", photo: "/images/team/anish.webp" },
+            { name: "Muzammil Osman", role: "Engineering", href: "https://www.linkedin.com/in/muzammilosman/", photo: "/images/team/muzammil.webp" },
+          ]}
+          timeline={<>November – December 2024<br />1.5 weeks of design</>}
+        />
+        {/* The headline numbers up front; the detail is in Results. CHECK: unconfirmed */}
+        <TopResults
+          items={[
+            { stat: "52%", label: "of guests add travel insurance while booking, up from 7%" },
+            { stat: "$125K", label: "insurance revenue in the first quarter" },
+            { stat: "15%", label: "fewer drop-offs before payment" },
+          ]}
         />
       </Copy>
       <Visual>
-        <Figure name="The travel protection section in the traveller details step" />
+        {/* The cover: the travel protection section, cut from the traveller details step of the
+            working prototype, on the case study's orange (rendered by cover.cjs) */}
+        <Figure
+          src="/images/artemis-insurance/cover.webp"
+          alt="The travel protection section: a dark green Travel Protection Plan banner above two plans side by side, Trip Cancellation (CFAR) marked Popular and the Travel Protection Plan, each with its price per trip"
+        />
       </Visual>
     </Chapter>
   );
@@ -83,20 +98,6 @@ const CONVERSATION = [
 
 // What the design had to do, one priority per Discovery finding. Needs, not the solution:
 // how the design meets them is in Exploration and Solution
-// The two pages where guests stopped to look for insurance (screenshots to come)
-const STOP_PAGES = [
-  {
-    alt: "Your Travel Checklist before insurance",
-    title: "Your Travel Checklist",
-    text: "Guests reviewed their trip here and looked for insurance before paying.",
-  },
-  {
-    alt: "The payment page before insurance",
-    title: "Payment",
-    text: "The last place guests looked. With no cover on offer, many stopped to ask.",
-  },
-];
-
 const PRIORITIES = [
   {
     icon: <ShieldCheck size={28} weight="fill" className="text-grape" />,
@@ -145,11 +146,10 @@ function Discovery() {
             cover was arranged. Most asked before paying; a few booked first and
             asked after.
           </p>
+          {/* TODO: when Ashmik shares screenshots of the two pages before insurance, show them
+              here as a plain pair labelled only with the page names: the paragraph already says
+              what happened on them, so the pictures shouldn't repeat it */}
         </Copy>
-        <Visual>
-          {/* TODO: screenshots of the two pages before insurance, from Ashmik */}
-          <PanelCards items={STOP_PAGES} />
-        </Visual>
       </div>
       <div className="cs-sub">
         <Copy>
@@ -184,10 +184,9 @@ function Discovery() {
             How might we let guests add travel insurance on their own, right in
             the booking flow?
           </DesignQuestion>
-          <p>The findings gave the design four priorities:</p>
         </Copy>
         <Visual>
-          <CardGrid items={PRIORITIES} />
+          <CardGrid items={PRIORITIES} label="The four priorities the findings gave the design" />
         </Visual>
       </div>
     </Chapter>
@@ -228,47 +227,55 @@ type IterationItem = {
   label: string;
   title: string;
   shipped?: boolean;
+  /** A clip of the iteration, rendered from its working prototype */
+  video?: string;
   worked: string[];
   didntWork: string[];
 };
 
+// Pros and cons from Ashmik (27 Nov): iterations 1 and 2 are mostly what didn't work; iteration 3
+// is mostly what did, with one trade-off we accepted. The final design then made the banner stand
+// out (Solution). Clips are rendered from each iteration's working prototype.
 const ITERATIONS: IterationItem[] = [
   {
     label: "Iteration 1",
-    title: "Insurance on a page of its own in the trip booking",
+    title: "A yes-or-no question on a page of its own",
+    video: "/videos/artemis-insurance/iteration-1.mp4",
     worked: [
-      "Room to explain both plans in full",
-      "Insurance had the guest’s full attention for one step",
+      "A page of its own gave insurance the guest’s full attention",
     ],
     didntWork: [
-      "Added one more page to the trip booking, right before payment",
-      "Guests who didn’t want cover still had to pass through it",
+      "Added a whole extra step to the trip booking",
+      "A plain yes or no told guests nothing about what either answer meant for their trip",
+      "One cover and no plans to choose from, so there was little reason to say yes",
     ],
   },
   {
     label: "Iteration 2",
-    title: "Insurance as a section in the traveller details step",
+    title: "The same question inside the traveller details step",
+    video: "/videos/artemis-insurance/iteration-2.mp4",
     worked: [
-      "No extra page: guests see it while they fill in details for their trip",
-      "Guests meet the offer before the checklist and payment pages, where they used to stop",
-      "Both plans side by side, each with its price for the trip",
+      "No extra step: the offer sits where guests already fill in details for their trip",
+      "The yes answer spells out what the cover includes",
     ],
     didntWork: [
-      "It looked like part of the form, so guests could scroll straight past it",
+      "Still a plain yes or no, so guests had nothing to compare",
+      "One cover at one price, with no way to pick protection that suits the trip",
     ],
   },
   {
     label: "Iteration 3",
-    title: "The same section, redesigned so guests notice it",
+    title: "Two plans to compare",
     shipped: true,
+    video: "/videos/artemis-insurance/iteration-3.mp4",
     worked: [
-      "A banner with a shield sets it apart from the form fields around it",
-      "Plan cards show the price for the trip, with a Popular tag on the recommended plan",
-      "The recommended plan is added by default, and one tap removes it",
+      "Trip Cancellation (CFAR) and the Travel Protection Plan side by side, each with its price for the trip",
+      "Ticks and crosses show what each plan covers, so guests compare at a glance",
+      "A Popular tag points guests to the recommended plan",
+      "One tap adds a plan or swaps it for the other",
     ],
-    // DRAFT: the trade-off accepted, to confirm once Ashmik shares the iteration images
     didntWork: [
-      "The section takes more space, so the traveller details step gets longer",
+      "Two full plan cards make the traveller details step longer, a trade-off we accepted for a clear choice",
     ],
   },
 ];
@@ -278,14 +285,16 @@ function Process() {
     <Chapter id="exploration" num={3} title="Finding the right place for insurance in the booking">
       <Copy>
         <p>
-          With the priorities set, two questions remained: where guests should
-          see the insurance offer while booking their trip in Artemis, and how
-          much it should stand out. It took three iterations: a page of its own,
-          then a section in the traveller details step, then <Highlight>a redesign of
-          that section so guests wouldn&apos;t miss it</Highlight>.
+          With the priorities set, three questions remained: where guests
+          should see the insurance offer while booking their trip in Artemis,
+          how to present the choice, and how much it should stand out. It took
+          three iterations: a yes-or-no question on a page of its own, then the
+          same question inside the traveller details step, then <Highlight>two plans
+          to compare</Highlight>. The final design gave that section a banner guests
+          can&apos;t miss.
         </p>
       </Copy>
-      {ITERATIONS.map(({ label, title, shipped, worked, didntWork }) => (
+      {ITERATIONS.map(({ label, title, shipped, video, worked, didntWork }) => (
         <div key={label} className="cs-sub">
           <Visual>
             <OptionCard
@@ -293,6 +302,7 @@ function Process() {
               title={title}
               shipped={shipped}
               stamp="Selected"
+              video={video}
               image={`${label}: ${title}`}
             >
               <ProsCons pros={worked} cons={didntWork} />
@@ -307,74 +317,84 @@ function Process() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Solution
 // ─────────────────────────────────────────────────────────────────────────────
+// The three decisions in the final design, one sentence each. Clips are rendered from the
+// working prototype (orange stage, the camera zooms to what each point is about).
+// CHECK (Ashmik, asked 26 Nov): did CFAR ship added by default? Point 3 assumes it.
 const SOLUTION_ITEMS = [
   {
     num: 1,
-    title: "Placed just before payment — not as a separate step",
-    body: <>Insurance appears at the highest-intent moment in the booking journey: <Highlight>right before payment, as part of the existing flow</Highlight>. This placement was deliberate — guests are already in a commitment mindset. Introducing insurance here feels like a natural extension of protecting their investment, not an interruption of it.</>,
+    title: "Same page, same flow",
+    text: <>Travel protection sits on the same page where guests fill in their details, so they add cover and carry on in one place, <Highlight>before they reach Your Travel Checklist and the payment page</Highlight> where they used to stop and look for it.</>,
+    video: "/videos/artemis-insurance/main-1-placement.mp4",
+    alt: "Scrolling the traveller details step from the guests' details down to the travel protection section",
   },
   {
     num: 2,
-    title: "Side-by-side plan comparison with value-first copy",
-    body: <>The final design presents Basic and CFAR plans in a clear two-column layout, with benefits written in plain language. <Highlight>&quot;Cancel for any reason&quot; leads over technical terms</Highlight>. A &quot;POPULAR&quot; badge creates a gentle nudge without overriding guest autonomy. The structure makes the comparison effortless — guests don&apos;t need to remember what one plan said before reading the next.</>,
+    title: "Hard to miss, easy to compare",
+    text: <>A dark green banner with a shield sets the section apart from the form, and <Highlight>both plans sit side by side</Highlight> with ticks, crosses and the price for the trip, so guests can compare cover without asking anyone.</>,
+    video: "/videos/artemis-insurance/main-2-compare.mp4",
+    alt: "The Travel Protection Plan banner, then Trip Cancellation (CFAR), marked Popular, beside the Travel Protection Plan",
   },
   {
     num: 3,
-    title: "Trust-first visual language",
-    body: <>Shield icons, checkmarks, and a clear colour system were chosen specifically because insurance is an anxiety-laden category. Guests aren&apos;t uncertain about what insurance is — <Highlight>they&apos;re uncertain whether they can trust it</Highlight>. Every visual decision reinforced safety and transparency rather than trying to persuade.</>,
-  },
-  {
-    num: 4,
-    title: "Recommended plan auto-selected to reduce decision fatigue",
-    body: <>The CFAR plan is pre-selected as the recommended option. This reduces the cognitive load of a cold decision mid-checkout — guests can accept the default, switch, or skip entirely. <Highlight>The skip option is always visible and never hidden</Highlight>, which preserved trust while improving adoption.</>,
+    title: "Recommended plan added, one tap to change",
+    text: <>Trip Cancellation (CFAR) comes added and marked Popular, with its cost already in the trip total, and <Highlight>one tap removes it or swaps in the other plan</Highlight>.</>,
+    video: "/videos/artemis-insurance/main-3-change.mp4",
+    alt: "Adding the Travel Protection Plan in place of CFAR and back, with the trip total updating each time",
   },
 ];
 
-// Smaller details for the rail, each captured from the working prototype
+// Smaller details for the rail, each a short clip recorded from the working prototype.
+// CHECK: did the empty-field check and the phone price sheet ship, or are they prototype only?
 const DETAILS = [
-  { src: "/images/artemis-insurance/plan-added.webp", alt: "The travel protection section with Trip Cancellation (CFAR) added", title: "Recommended plan", text: "Trip Cancellation (CFAR) starts added and marked Popular, with its price for the trip." },
-  { src: "/images/artemis-insurance/plan-switched.webp", alt: "The Travel Protection Plan added in place of CFAR", title: "Switch in one tap", text: "Adding the other plan swaps it in, and the trip total updates straight away." },
-  { src: "/images/artemis-insurance/whats-covered.webp", alt: "The What's covered panel for Trip Cancellation (CFAR)", title: "What’s covered", text: "View More Benefits lists everything a plan covers without leaving the page." },
-  { src: "/images/artemis-insurance/missing-details.webp", alt: "Empty traveller fields marked in red with a message to fill them in", title: "Missing details", text: "Your Travel Checklist flags every empty field and jumps to the first one." },
-  { src: "/images/artemis-insurance/phone.webp", alt: "The travel protection section on a phone", title: "On a phone", text: "The banner and the plans stack to fit a phone screen." },
-  { src: "/images/artemis-insurance/phone-price.webp", alt: "The price details sheet open on a phone", title: "Price on a phone", text: "The total sits in a bar at the bottom, and Price details opens the breakdown." },
+  { video: "/videos/artemis-insurance/detail-whats-covered.mp4", alt: "The What's covered panel for Trip Cancellation (CFAR)", title: "What’s covered", text: "View More Benefits lists everything a plan covers without leaving the page." },
+  { video: "/videos/artemis-insurance/detail-missing.mp4", alt: "Empty traveller fields marked in red with a message to fill them in", title: "Missing details", text: "Your Travel Checklist flags every empty field and jumps to the first one." },
+  { video: "/videos/artemis-insurance/detail-phone.mp4", alt: "The travel protection section on a phone", title: "On a phone", text: "The banner and the plans stack to fit a phone screen." },
+  { video: "/videos/artemis-insurance/detail-phone-price.mp4", alt: "The price details sheet open on a phone", title: "Price on a phone", text: "The total sits in a bar at the bottom, and Price details opens the breakdown." },
 ];
 
 function Solution() {
   return (
-    <Chapter id="solution" num={4} title="Embedded, trustworthy, and easy to skip">
+    <Chapter id="solution" num={4} title="Travel protection, built into the traveller details step">
       <Copy>
         <p>
-          The final solution wasn&apos;t about designing a better insurance
-          screen — it was about <Highlight>finding the right integration point</Highlight> and giving
-          the choice enough visual weight to be noticed, without turning it
-          into a barrier.
+          The final design adds a travel protection section to the traveller
+          details step. Three decisions shaped it, each answering one of the
+          priorities.
         </p>
       </Copy>
       <Visual>
         <PrototypeCard
           src="/prototypes/artemis-insurance.html"
-          poster="/images/artemis-insurance/poster.webp"
+          previewAt="section.card.tp"
+          previewHash="details"
           title="Travel protection in the Artemis traveller details step"
           label="The traveller details step with travel protection, rebuilt as a working prototype"
           hint="Try it: add or switch a plan, open View More Benefits, or press Your Travel Checklist with fields left empty."
         />
       </Visual>
-      {SOLUTION_ITEMS.map(({ num, title, body }) => (
+      {SOLUTION_ITEMS.map(({ num, title, text, video, alt }) => (
         <div key={num} className="cs-sub">
           <Copy>
             <h3>{num}. {title}</h3>
-            <p>{body}</p>
+            <p>{text}</p>
           </Copy>
           <Visual>
-            <Figure name={`Solution ${num} — ${title}`} />
+            <Figure video={video} alt={alt} />
           </Visual>
         </div>
       ))}
+      {/* A short lead-in for the rail, after the reference: why these details matter, tied to the
+          design question ("on their own"). No new facts: it names what the clips show. */}
       <div className="cs-sub">
         <Copy>
-          <h3>The smaller details</h3>
-          <p>Each of these works in the prototype above.</p>
+          <h3>Helping guests finish on their own</h3>
+          <p>
+            The three decisions got guests to the plans. These smaller details
+            help them finish the step without asking their consultant: <Highlight>checking
+            what a plan covers, fixing missing details and seeing the price on
+            a phone</Highlight>.
+          </p>
         </Copy>
         <Visual>
           <MediaRail label="Smaller details of the travel protection section" items={DETAILS} />
@@ -393,36 +413,30 @@ function Solution() {
 // each one before the page is promoted.
 function Impact() {
   return (
-    <Chapter id="outcome" num={5} title="Numbers from the first quarter post-launch">
+    <Chapter id="outcome" num={5} title="The first quarter after launch">
       <Copy>
         <p>
-          Three metrics — each mapping directly to one of the gaps research
-          identified. <Highlight>The adoption jump from 7% to 52%</Highlight> was the clearest signal
-          that the integration point and design approach were right.
+          Travel protection went live in December 2024. These numbers cover
+          the first full quarter after it, January to March 2025.
         </p>
       </Copy>
       <Copy>
+        {/* 7% (Ashmik, 27 Nov): guests who had a consultant arrange cover from an outside
+            provider. CHECK: 52%, $125K and 15% still unconfirmed; was CFAR added by default? */}
         <ResultsCard
           headline={{ value: 52, suffix: "%" }}
-          title="Insurance adoption rate"
-          body="Clear hierarchy, value-first copy, and seamless flow placement drove the shift."
+          title="Guests who added travel insurance"
+          body="Up from 7% before launch: the guests who asked their consultant to arrange cover from an outside provider. Guests now add cover themselves while they enter their details."
           stats={[
             {
-              before: "7%",
-              after: "52%",
-              change: "+45 pts",
-              label: "Insurance adoption rate",
-              note: "Up from 7% before the integration.",
-            },
-            {
               after: "$125K",
-              label: "Additional revenue generated in Q1 2025",
-              note: "The first full quarter post-launch. A new revenue stream with minimal tech overhead.",
+              label: "Insurance revenue in Q1 2025",
+              note: "A new line of revenue: Enchanting Travels didn’t sell insurance before.",
             },
             {
               after: "15%",
-              label: "Reduction in booking drop-off at checkout",
-              note: "Removing the off-platform detour gave guests a complete, confident path to confirmation.",
+              label: "Fewer drop-offs before payment",
+              note: "Guests no longer leave the booking to ask a consultant for cover.",
             },
           ]}
         />
@@ -434,21 +448,28 @@ function Impact() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Reflection  (pointers, as on the live case studies)
 // ─────────────────────────────────────────────────────────────────────────────
+// Lessons from the confirmed facts (artemis-insurance-notes.md): the reframe in Discovery and
+// the three iterations. CHECK (Ashmik): were the iterations tested with guests? The second
+// "differently" point assumes they were reviewed within the team only.
 const WORKED = [
   {
-    lead: "Placement over polish.",
-    text: <>The first iteration was visually reasonable — clear plans, good copy, clean layout. But it was wrong because of where it sat in the flow, not how it looked. Iteration 1 failed because it interrupted. Iteration 3 succeeded because it extended. That distinction — <Highlight>between a step that interrupts and a choice that extends</Highlight> — became the design principle that guided everything.</>,
+    lead: "Asking guests, not only consultants.",
+    text: <>The request came from consultants: guests kept asking them for insurance. The guests we interviewed wanted something more specific, <Highlight>to add cover themselves while they booked</Highlight>. That answer became the design question and put insurance inside the booking flow.</>,
   },
   {
-    lead: "Research paid off.",
-    text: <>The research phase paid off disproportionately here. Without the Mixpanel data confirming the exact drop-off point, I might have placed the insurance module earlier in the flow — which would have reduced adoption, not increased it. <Highlight>Guests are most receptive to protecting a trip immediately before they pay for it</Highlight>. That&apos;s not an intuition; it&apos;s in the data.</>,
+    lead: "Placement first, then a real choice.",
+    text: <>A yes-or-no question on a page of its own added a step. Moving it into the traveller details step removed that step, but one cover with a yes or no still gave guests nothing to compare. <Highlight>Where the offer sits decides whether guests reach it, and a real choice decides whether they take it.</Highlight> Two plans gave them that choice, and a stronger banner made sure they saw it.</>,
   },
 ];
 
 const NEXT_TIME = [
   {
-    lead: "Track what happens after purchase.",
-    text: <>If I had more time, I&apos;d invest in post-purchase satisfaction tracking — specifically whether guests who purchased insurance felt more confident about their trip overall, and whether that translated to higher rebooking rates. The adoption and revenue numbers are strong, but the longer-term signal — <Highlight>does insurance increase guest lifetime value?</Highlight> — is the metric I&apos;d want to follow.</>,
+    lead: "Agree the measures before launch.",
+    text: <>I&apos;d settle with Anish which numbers to track before the section went live: bookings with cover, where guests leave, and policies consultants still arrange by hand. <Highlight>Every result would then have a clear before and after.</Highlight></>,
+  },
+  {
+    lead: "Test the section with guests.",
+    text: <>We spoke to guests to find the problem, but the iterations were judged within the team. <Highlight>A short test with a few frequent guests</Highlight> would have shown sooner that the second iteration was easy to scroll past.</>,
   },
 ];
 
@@ -476,8 +497,10 @@ export default function ArtemisInsurancePage() {
   return (
     <CaseStudyLayout sections={SECTIONS} reel={reels["artemis-insurance"]}>
       <Hero
-        title="Adding travel insurance to Artemis checkout: 7% to 52% adoption"
+        title="Letting Enchanting Travels guests add travel insurance while they book"
         date="November 2024"
+        image="/images/artemis-insurance/hero.webp"
+        imagePosition="center 30%"
       />
       <Overview />
       <TheProblem />

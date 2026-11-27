@@ -1073,10 +1073,10 @@ html[data-leaving] .page-enter {
 .cta-full .work-cta { width: 100%; }
 .cta-full .work-cta__inner { flex: 1; }
 /* Under NDA: the pill greyed out, and it doesn't react to the card's hover */
-.work-cta--off { color: #8e8292; cursor: not-allowed; }
+.work-cta--off { color: theme("colors.muted"); cursor: not-allowed; }
 /* Muted: greyed like --off, for work behind a password or NDA, but still a working CTA —
    it darkens a shade on hover and its icon circle slides out, in grey rather than grape */
-.work-cta--muted { color: #524555; /* secondary */ }
+.work-cta--muted { color: theme("colors.secondary"); }
 .work-cta--muted .work-cta__inner, .work-cta--muted .work-cta__circle { background-color: #e5e7eb; }
 .group:focus-visible .work-cta--muted .work-cta__inner,
 .group:focus-visible .work-cta--muted .work-cta__circle { background-color: #dcdde2; }
@@ -2442,7 +2442,7 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
   gap: 6px;
   padding-left: 10px;
   border-left: 1px solid rgba(50, 7, 62, 0.14);
-  color: #524555;
+  color: theme("colors.secondary");
 }
 .fb-hint kbd {
   padding: 0 6px;

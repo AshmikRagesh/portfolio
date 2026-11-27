@@ -67,9 +67,14 @@ function Overview() {
           half the time to deliver</Highlight>.
         </p>
         <Meta
-          role="Product Design, Design Systems & AI-assisted Development"
-          team="Ashmik Ragesh, Hriday Gami, Arunava (Design), Travelopia developers (Engineering)"
-          timeline={<>June 2026 – present<br />Pilot in June · Rollout from July · In daily use since August</>}
+          role="I helped build Helix and design with it, across the design systems and AI-assisted development."
+          team={[
+            { name: "Hriday Gami", role: "Design", href: "https://www.linkedin.com/in/hridaygami/", photo: "/images/team/hriday.webp" },
+            { name: "Arunava Sadhu", role: "Design", href: "https://www.linkedin.com/in/arunava-sadhu-6510b2165/", photo: "/images/team/arunava.webp" },
+            // CHECK: Junaid's role on Helix (shared with his LinkedIn, 28 Nov)
+            { name: "Junaid Bhura", role: "Engineering", href: "https://www.linkedin.com/in/junaidbhura/", photo: "/images/team/junaid.webp" },
+          ]}
+          timeline="June 2026 – present"
         />
         {/* The headline numbers up front; the detail is in What changed */}
         <TopResults

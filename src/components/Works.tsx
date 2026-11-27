@@ -15,9 +15,8 @@ import { featuredWorks, roomFor, type FeaturedWork } from "@/content/works";
 // ── Featured card ─────────────────────────────────────────────────────────────
 // A soft grey card in two parts with the same padding all round: the words and the work.
 // The words read in one order on every card: the title in the heading serif, a line about it (lead, 18/28 from md), and a pill "Read case study"
-// pinned to the foot. Flagships sit side by side from lg (words 0.82fr, image 1.18fr) and
-// the image fills its half's full height there; below lg they stack with the image at its
-// own aspect; the smaller pair always stack.
+// pinned to the foot. Flagships sit side by side from lg (words 0.82fr, image 1.18fr); every
+// card image keeps one fixed aspect; the smaller pair always stack.
 // Hovering the card rolls pink pixel clouds (grey for NDA works) in round the image, and
 // turns the pill grape as it makes room for an arrow
 // circle (see .work-cta). NDA works show a stamp on a greyed image and a greyed-out pill.
@@ -99,22 +98,22 @@ export function FeaturedCard({ work }: { work: FeaturedWork }) {
         </div>
       ) : (
         <>
-          <div className="min-w-0 px-[24px] pt-[24px] md:px-[32px] md:pt-[32px]">{title}</div>
-          <div className="flex min-w-0 flex-col justify-between gap-[32px] px-[24px] pt-[12px] md:gap-[40px] md:px-[32px] md:pt-[16px]">
+          {/* The description follows its own title, as on the large cards, so a shorter title
+              never leaves a gap above it; the pill and image rows stay level across the pair */}
+          <div className="flex min-w-0 flex-col gap-[12px] px-[24px] pt-[24px] md:gap-[16px] md:px-[32px] md:pt-[32px]">
+            {title}
             {description}
-            {cta}
           </div>
+          <div className="flex min-w-0 flex-col justify-end px-[24px] pt-[32px] md:px-[32px] md:pt-[40px]">{cta}</div>
         </>
       )}
 
-      {/* The work, in its half with the same padding as the words; side by side (lg) it
-          fills the half's full height, stacked it keeps its own aspect */}
-      <div className={`flex min-w-0 items-center ${isFlagship ? "lg:items-stretch" : ""} ${pad}`}>
-        <div className={`relative w-full ${isFlagship ? "lg:h-full" : ""}`}>
+      {/* The work, in its half with the same padding as the words; every card's image keeps one
+          fixed aspect (never stretched to the text beside it), centred in its half side by side */}
+      <div className={`flex min-w-0 items-center ${pad}`}>
+        <div className="relative w-full">
           <div
-            className={`work-media relative aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder ${
-              isFlagship ? "lg:aspect-auto lg:h-full lg:min-h-[320px]" : ""
-            } ${work.nda ? "stamp-thud" : ""}`}
+            className={`work-media relative aspect-[1071/608] overflow-hidden rounded-lg bg-placeholder ${work.nda ? "stamp-thud" : ""}`}
           >
             <Image
               src={work.image}
