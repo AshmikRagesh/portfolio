@@ -47,7 +47,8 @@ function Frame({ src, title, live }: { src: string; title: string; live: boolean
 
   return (
     <div ref={box} className="absolute inset-0 overflow-hidden bg-white">
-      {size && (
+      {/* Wait for a real size: a box still at 0 wide would give a NaN height */}
+      {size && size.w > 0 && size.h > 0 && (
         <iframe
           src={src}
           title={title}
