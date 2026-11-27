@@ -73,7 +73,6 @@ function Overview() {
             { name: "Arunava Sadhu", role: "Design", href: "https://www.linkedin.com/in/arunava-sadhu-6510b2165/", photo: "/images/team/arunava.webp" },
             // CHECK: Junaid's role on Helix (shared with his LinkedIn, 28 Nov)
             { name: "Junaid Bhura", role: "Engineering", href: "https://www.linkedin.com/in/junaidbhura/", photo: "/images/team/junaid.webp" },
-            { name: "Travelopia developers", role: "Engineering", group: "+" },
           ]}
           timeline="June 2026 – present"
         />
