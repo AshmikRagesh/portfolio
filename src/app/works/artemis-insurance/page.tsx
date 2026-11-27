@@ -231,14 +231,14 @@ type IterationItem = {
 const ITERATIONS: IterationItem[] = [
   {
     label: "Iteration 1",
-    title: "Insurance on a page of its own in the trip booking",
+    title: "A yes-or-no question on a page of its own",
     worked: [
-      "Room to explain both plans in full",
+      "One clear question: add travel insurance to the trip or not",
       "Insurance had the guest’s full attention for one step",
     ],
     didntWork: [
-      "Added one more page to the trip booking, right before payment",
-      "Guests who didn’t want cover still had to pass through it",
+      "Added one more page to the trip booking",
+      "A plain yes or no gave guests nothing to compare, so it did little to encourage cover",
     ],
   },
   {
@@ -247,7 +247,7 @@ const ITERATIONS: IterationItem[] = [
     worked: [
       "No extra page: guests see it while they fill in details for their trip",
       "Guests meet the offer before the checklist and payment pages, where they used to stop",
-      "Both plans side by side, each with its price for the trip",
+      "Two plans side by side, each with its price for the trip, so guests compare cover instead of answering yes or no",
     ],
     didntWork: [
       "It looked like part of the form, so guests could scroll straight past it",
@@ -274,11 +274,12 @@ function Process() {
     <Chapter id="exploration" num={3} title="Finding the right place for insurance in the booking">
       <Copy>
         <p>
-          With the priorities set, two questions remained: where guests should
-          see the insurance offer while booking their trip in Artemis, and how
-          much it should stand out. It took three iterations: a page of its own,
-          then a section in the traveller details step, then <Highlight>a redesign of
-          that section so guests wouldn&apos;t miss it</Highlight>.
+          With the priorities set, three questions remained: where guests
+          should see the insurance offer while booking their trip in Artemis,
+          how to present the choice, and how much it should stand out. It took
+          three iterations: a yes-or-no question on a page of its own, then two
+          plans in a section of the traveller details step, then <Highlight>a redesign
+          of that section so guests wouldn&apos;t miss it</Highlight>.
         </p>
       </Copy>
       {ITERATIONS.map(({ label, title, shipped, worked, didntWork }) => (
@@ -394,13 +395,12 @@ function Impact() {
         </p>
       </Copy>
       <Copy>
-        {/* CHECK (Ashmik): all three numbers are unconfirmed. What did 7% measure, if
-            Enchanting Travels sold no insurance before? Was CFAR added by default? If it
-            was, say so here, since part of the 52% would come from the default. */}
+        {/* 7% (Ashmik, 27 Nov): guests who had a consultant arrange cover from an outside
+            provider. CHECK: 52%, $125K and 15% still unconfirmed; was CFAR added by default? */}
         <ResultsCard
           headline={{ value: 52, suffix: "%" }}
           title="Guests who added travel insurance"
-          body="Up from 7% before launch, when a consultant had to arrange every policy. Guests now add cover themselves while they enter their details."
+          body="Up from 7% before launch: the guests who asked their consultant to arrange cover from an outside provider. Guests now add cover themselves while they enter their details."
           stats={[
             {
               after: "$125K",
@@ -432,7 +432,7 @@ const WORKED = [
   },
   {
     lead: "Placement first, then visibility.",
-    text: <>A page of its own added a step to the booking. A section in the traveller details step fixed that, but it blended into the form. <Highlight>Where the offer sits decides whether guests reach it, and how it looks decides whether they notice it.</Highlight> The final design needed both.</>,
+    text: <>A yes-or-no question on a page of its own added a step and gave guests nothing to compare. Two plans in the traveller details step fixed both, but the section blended into the form. <Highlight>Where the offer sits decides whether guests reach it, and how it looks decides whether they notice it.</Highlight> The final design needed both.</>,
   },
 ];
 
