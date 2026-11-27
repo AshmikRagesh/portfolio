@@ -514,14 +514,13 @@ button.step:active { transform: scale(.97); }
 .banner3 .o-text { display: flex; flex-direction: column; gap: 6px; }
 .banner3 h2 { margin: 0; font: 600 20px/28px var(--public); color: var(--state-black); }
 .banner3 p { margin: 0; max-width: 520px; font: 400 15px/23px var(--public); color: #4e4a43; }
-/* six points in a tidy grid: three across, two rows */
-.bens3 { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, max-content)); gap: 10px 28px; }
+/* four points that say what the guest is spared, two across */
+.bens3 { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, max-content)); gap: 10px 32px; }
 .bens3 li { display: flex; align-items: center; gap: 10px; font: 500 15px/22px var(--public); color: var(--state-black); white-space: nowrap; }
 .bens3 svg { width: 20px; height: 20px; flex: none; border-radius: 50%; box-shadow: 0 0 0 3px rgba(58, 115, 93, 0.12); }
 .banner3 .art3 { flex: none; width: 159px; height: 141px; }
-/* the plans' View More Benefits modal: the final's detailed rows, with the blue tick */
 @container (max-width: 720px) { .banner3 .art3 { display: none; } }
-@container (max-width: 640px) { .banner3 { padding: 20px; } .bens3 { grid-template-columns: repeat(2, minmax(0, max-content)); } }
+@container (max-width: 640px) { .banner3 { padding: 20px; } }
 @media (max-width: 640px) { .banner3 { padding: 20px; } .banner3 .art3 { display: none; } .bens3 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; } }
 @media (max-width: 360px) { .bens3 { grid-template-columns: minmax(0, 1fr); } }
 </style>
@@ -677,12 +676,10 @@ button.step:active { transform: scale(.97); }
               <p>Our insurance plan offers extensive coverage for every aspect of your journey, including your belongings, medical expenses, and the peace of mind you deserve while traveling.</p>
             </div>
             <ul class="bens3">
-              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Cancellation</li>
-              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Interruption</li>
-              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Delay</li>
-              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Medical expenses</li>
-              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Lost baggage</li>
-              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>24/7 assistance</li>
+              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>No cancellation fees</li>
+              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>No interruption costs</li>
+              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>No delay expenses</li>
+              <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#3A735D"/><path d="m6 10.3 2.6 2.6L14 7.4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Emergency medical cover</li>
             </ul>
           </div>
           <svg class="art3" width="159" height="141" viewBox="0 0 132 117" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1279,17 +1276,6 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObse
   }, { threshold: 0.06, rootMargin: '0px 0px -32px 0px' });
   items.forEach(el => io.observe(el));
 }
-
-/* ── Iteration 3: the plans' modal rows in iteration 2's style ─────────────────────────────── */
-(() => {
-  const BLUE = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z" fill="#4B90E2"/><path d="M4.8 7.85 6.82 9.89a.37.37 0 0 0 .53 0L11.2 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  const restyle = () => $$('.m-list li', modal).forEach(li => {
-    const ic = $('.ic', li);
-    if (ic && !/#FF5B31/i.test(ic.innerHTML)) ic.innerHTML = BLUE;   // covered: the blue tick; not covered keeps its cross
-  });
-  // runs after the final's own handler, which fills the list
-  $$('.more a').forEach(a => a.addEventListener('click', restyle));
-})();
 </script>
 </body>
 </html>

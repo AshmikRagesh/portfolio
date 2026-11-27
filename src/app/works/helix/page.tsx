@@ -69,8 +69,10 @@ function Overview() {
         <Meta
           role="I helped build Helix and design with it, across the design systems and AI-assisted development."
           team={[
-            { name: "Hriday Gami", role: "Design" },
-            { name: "Arunava", role: "Design" },
+            { name: "Hriday Gami", role: "Design", href: "https://www.linkedin.com/in/hridaygami/" },
+            { name: "Arunava Sadhu", role: "Design", href: "https://www.linkedin.com/in/arunava-sadhu-6510b2165/" },
+            // CHECK: Junaid's role on Helix (shared with his LinkedIn, 28 Nov)
+            { name: "Junaid Bhura", role: "Engineering", href: "https://www.linkedin.com/in/junaidbhura/" },
             { name: "Travelopia developers", role: "Engineering", group: "+" },
           ]}
           timeline="June 2026 – present"
