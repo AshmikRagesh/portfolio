@@ -77,10 +77,15 @@ function Overview() {
           it, and it has been live since July 2026.
         </p>
         <Meta
-          role="End-to-end Design & Developer Handoff"
+          role="I owned the design end to end, from the brief to the handoff to TCS developers."
           // TODO: add Travis's role once known
-          team="Sharayu Jadhav (Product Owner), Travis Snelling, Sandy Tang (Content), TCS developers (Engineering)"
-          timeline={<>June – July 2026<br />Briefed in June 2026 · V1 built and launched in July 2026</>}
+          team={[
+            { name: "Sharayu Jadhav", role: "Product Owner" },
+            { name: "Travis Snelling" },
+            { name: "Sandy Tang", role: "Content" },
+            { name: "TCS developers", role: "Engineering", group: "+" },
+          ]}
+          timeline="June – July 2026"
         />
         {/* The headline numbers up front; the detail and charts are in What changed after launch */}
         <TopResults

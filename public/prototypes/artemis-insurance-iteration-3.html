@@ -261,7 +261,8 @@ button.step:active { transform: scale(.97); }
 .plan { position: relative; flex: 1 1 0; min-width: 0; padding: 16px; border-radius: 8px; display: flex; flex-direction: column; gap: 28px; background: #fff; box-shadow: inset 0 0 0 1px var(--solitude); transition: background-color .2s var(--ease), box-shadow .2s var(--ease); }
 /* ADDED (Ashmik): the button is the only control – no radio, no card click. The added card keeps
    Figma's cream #fffdf9 fill; its 1.5px outline is stepper orange instead of Figma's #49454f. */
-.plan.on { background: #fffdf9; box-shadow: inset 0 0 0 1.5px var(--step-orange); }
+/* CHANGED (Ashmik, 28 Nov): the added plan takes the gold selected state used in every iteration */
+.plan.on { background: rgba(173, 146, 110, 0.04); box-shadow: inset 0 0 0 2px #ad926e; }
 .plan .top { display: flex; flex-direction: column; gap: 20px; }
 .plan .name { display: flex; align-items: center; gap: 8px; font: 600 18px/24px var(--geist); color: var(--cyprus); }
 .plan[data-plan="cfar"] .name { padding-right: 96px; }   /* clears the ribbon */
@@ -410,7 +411,7 @@ button.step:active { transform: scale(.97); }
 .modal.open { visibility: visible; transition: none; }
 .modal .scrim { position: absolute; inset: 0; background: rgba(9, 22, 36, 0.5); opacity: 0; transition: opacity .3s ease; }
 .modal.open .scrim { opacity: 1; }
-.dlg { position: relative; width: 100%; max-width: 400px; max-height: min(720px, calc(100vh - 48px)); display: flex; flex-direction: column; background: #fff; border-radius: 16px; box-shadow: 0 24px 64px -12px rgba(9, 22, 36, 0.35); opacity: 0; transform: translateY(16px) scale(.98); transition: opacity .25s var(--out), transform .35s var(--out); }
+.dlg { position: relative; width: 100%; max-width: 400px; max-height: min(520px, calc(100vh - 96px)); display: flex; flex-direction: column; background: #fff; border-radius: 16px; box-shadow: 0 24px 64px -12px rgba(9, 22, 36, 0.35); opacity: 0; transform: translateY(16px) scale(.98); transition: opacity .25s var(--out), transform .35s var(--out); }
 .modal.open .dlg { opacity: 1; transform: none; }
 .m-head { flex: none; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 24px 20px 16px 24px; border-bottom: 1px solid transparent; transition: border-color .2s ease; }
 .m-head.scrolled { border-bottom-color: #f1eded; }
@@ -436,7 +437,7 @@ button.step:active { transform: scale(.97); }
 .m-grab { display: none; }
 @media (max-width: 640px) {
   .modal { align-items: flex-end; padding: 0; transition: visibility 0s .45s; }
-  .dlg { max-width: none; max-height: 90vh; border-radius: 20px 20px 0 0; opacity: 1; transform: translateY(100%); transition: transform .45s var(--spring); }
+  .dlg { max-width: none; max-height: 72vh; border-radius: 20px 20px 0 0; opacity: 1; transform: translateY(100%); transition: transform .45s var(--spring); }
   .modal.open .dlg { transform: none; }
   .m-grab { display: block; flex: none; width: 40px; height: 5px; margin: 10px auto 0; border-radius: 3px; background: #d9dce1; }
   .m-head { padding: 14px 16px 12px 20px; }
@@ -519,8 +520,6 @@ button.step:active { transform: scale(.97); }
 .bens3 svg { width: 20px; height: 20px; flex: none; border-radius: 50%; box-shadow: 0 0 0 3px rgba(58, 115, 93, 0.12); }
 .banner3 .art3 { flex: none; width: 159px; height: 141px; }
 /* the plans' View More Benefits modal: the final's detailed rows, with the blue tick */
-/* the added plan takes the gold selected state used in every iteration (Figma 67:8767) */
-.plan.on { background: rgba(173, 146, 110, 0.04); box-shadow: inset 0 0 0 2px #ad926e; }
 @container (max-width: 720px) { .banner3 .art3 { display: none; } }
 @container (max-width: 640px) { .banner3 { padding: 20px; } .bens3 { grid-template-columns: repeat(2, minmax(0, max-content)); } }
 @media (max-width: 640px) { .banner3 { padding: 20px; } .banner3 .art3 { display: none; } .bens3 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; } }

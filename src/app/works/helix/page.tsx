@@ -67,9 +67,13 @@ function Overview() {
           half the time to deliver</Highlight>.
         </p>
         <Meta
-          role="Product Design, Design Systems & AI-assisted Development"
-          team="Ashmik Ragesh, Hriday Gami, Arunava (Design), Travelopia developers (Engineering)"
-          timeline={<>June 2026 – present<br />Pilot in June · Rollout from July · In daily use since August</>}
+          role="I helped build Helix and design with it, across the design systems and AI-assisted development."
+          team={[
+            { name: "Hriday Gami", role: "Design" },
+            { name: "Arunava", role: "Design" },
+            { name: "Travelopia developers", role: "Engineering", group: "+" },
+          ]}
+          timeline="June 2026 – present"
         />
         {/* The headline numbers up front; the detail is in What changed */}
         <TopResults

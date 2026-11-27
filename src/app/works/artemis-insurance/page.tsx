@@ -56,9 +56,12 @@ function Overview() {
           booking</Highlight>. It launched in December 2024.
         </p>
         <Meta
-          role="End-to-end Design & Developer Handoff"
-          team="Ashmik Ragesh (Design), Anish (Project Manager), Muzamil (Engineering)"
-          timeline={<>November – December 2024<br />1.5 weeks of design · Launched in December 2024</>}
+          role="I owned the design end to end, from research with guests to the handoff to engineering."
+          team={[
+            { name: "Anish", role: "Project Manager" },
+            { name: "Muzamil", role: "Engineering" },
+          ]}
+          timeline={<>November – December 2024<br />1.5 weeks of design</>}
         />
         {/* The headline numbers up front; the detail is in Results. CHECK: unconfirmed */}
         <TopResults

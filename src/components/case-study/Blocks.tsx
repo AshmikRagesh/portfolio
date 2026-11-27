@@ -26,26 +26,74 @@ export function Lead({ children }: { children: React.ReactNode }) {
 }
 
 /** Role / Team / Timeline in one row under the Overview intro */
+/** One person on the team: a small avatar (initials until there's a photo), their name linked to
+ *  LinkedIn when we have it, and their role muted in brackets, after the reference
+ *  (sudhanva.space). A `group` is a team rather than a person, shown with a count or a dot. */
+export type TeamMember = { name: string; role?: string; href?: string; photo?: string; group?: string };
+
+function TeamList({ people }: { people: TeamMember[] }) {
+  return (
+    <ul className="m-0 flex list-none flex-col gap-[10px] p-0">
+      {people.map((p) => {
+        const initials = p.name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+        return (
+          <li key={p.name} className="flex items-start gap-[10px]">
+            <span
+              aria-hidden="true"
+              className="mt-[2px] flex h-[24px] w-[24px] shrink-0 items-center justify-center overflow-hidden rounded-[6px] bg-surface font-geist text-[10px] font-medium leading-none text-secondary ring-1 ring-line-soft"
+            >
+              {p.photo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.photo} alt="" className="h-full w-full object-cover" />
+              ) : (
+                p.group ?? initials
+              )}
+            </span>
+            <span className="min-w-0">
+              {p.href ? (
+                <a
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-heading underline decoration-line underline-offset-[4px] transition-colors hover:decoration-heading"
+                >
+                  {p.name}
+                </a>
+              ) : (
+                <span className="text-heading">{p.name}</span>
+              )}
+              {p.role && <span className="text-muted"> ({p.role})</span>}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 export function Meta({
   role,
   team,
   timeline,
 }: {
+  /** One line in my own words about what I did (after the reference's "My role") */
   role: React.ReactNode;
-  team: React.ReactNode;
+  /** The people I worked with; a plain string is still accepted */
+  team: React.ReactNode | TeamMember[];
+  /** Just the dates, and the design time when it's worth saying */
   timeline: React.ReactNode;
 }) {
   const items = [
-    { label: "Role", value: role },
-    { label: "Team", value: team },
+    { label: "My role", value: role },
+    { label: "Team", value: Array.isArray(team) ? <TeamList people={team as TeamMember[]} /> : team },
     { label: "Timeline", value: timeline },
   ];
   return (
-    <dl className="mb-[28px] mt-[48px] grid grid-cols-1 gap-[20px] md:grid-cols-[1fr_1.5fr_1.4fr] md:gap-[28px]">
+    <dl className="mb-[28px] mt-[48px] grid grid-cols-1 gap-[20px] md:grid-cols-[1.2fr_1.5fr_1fr] md:gap-[28px]">
       {items.map(({ label, value }) => (
         <div key={label}>
           <dt className="mb-[8px] font-body text-[18px] font-medium leading-[28px] text-heading">{label}</dt>
-          <dd className="font-body text-[18px] leading-[28px] text-secondary">{value}</dd>
+          <dd className="m-0 font-body text-[18px] leading-[28px] text-secondary">{value}</dd>
         </div>
       ))}
     </dl>

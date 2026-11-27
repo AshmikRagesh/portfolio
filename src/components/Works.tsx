@@ -99,11 +99,13 @@ export function FeaturedCard({ work }: { work: FeaturedWork }) {
         </div>
       ) : (
         <>
-          <div className="min-w-0 px-[24px] pt-[24px] md:px-[32px] md:pt-[32px]">{title}</div>
-          <div className="flex min-w-0 flex-col justify-between gap-[32px] px-[24px] pt-[12px] md:gap-[40px] md:px-[32px] md:pt-[16px]">
+          {/* The description follows its own title, as on the large cards, so a shorter title
+              never leaves a gap above it; the pill and image rows stay level across the pair */}
+          <div className="flex min-w-0 flex-col gap-[12px] px-[24px] pt-[24px] md:gap-[16px] md:px-[32px] md:pt-[32px]">
+            {title}
             {description}
-            {cta}
           </div>
+          <div className="flex min-w-0 flex-col justify-end px-[24px] pt-[32px] md:px-[32px] md:pt-[40px]">{cta}</div>
         </>
       )}
 
