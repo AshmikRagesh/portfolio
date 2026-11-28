@@ -169,12 +169,13 @@ export default function FocusOverlay({ source, open, onClosed, label, width, hei
           </div>
         </div>
       </div>
-      {/* Close: one large, quiet button in the corner, the same for every object */}
+      {/* Close: the same for every object. A blackcurrant rounded square (the cards' 16px
+          inner corner) with a white cross; it turns grape on hover, like the CTA */}
       <button
         type="button"
         onClick={close}
         aria-label="Close"
-        className={`absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-background/80 text-heading shadow-[0_0_0_1px_rgba(30,5,37,0.08),0_2px_4px_rgba(30,5,37,0.06),0_8px_24px_rgba(30,5,37,0.12)] backdrop-blur-md transition-[opacity,transform,background-color] duration-300 ease-out hover:bg-background active:scale-95 md:right-6 md:top-6 md:h-12 md:w-12 ${
+        className={`absolute right-4 top-4 z-10 flex size-11 items-center justify-center rounded-xl bg-primary text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_2px_4px_rgba(30,5,37,0.12),0_8px_24px_rgba(30,5,37,0.2)] transition-[opacity,transform,background-color] duration-300 ease-out hover:bg-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape active:scale-95 md:right-6 md:top-6 md:size-12 ${
           phase === "open" ? "scale-100 opacity-100" : "pointer-events-none scale-90 opacity-0"
         }`}
       >

@@ -177,12 +177,18 @@ function MedalIcon() {
 // hairline, and the faintest lift, so they read as one set on the card
 const PANEL = "rounded-xl border border-line-soft bg-background shadow-[0_1px_2px_rgba(30,5,37,0.04)]";
 
-/** One figure in the stats panel: the number over what it counts, centred in its column */
+// The hero panel: the match card's blackcurrant tile (Chelsea), so the hero objects' cards
+// read as one set, with the numbers in its lighter inner tiles
+const TILE_BG = "linear-gradient(160deg, #3a0944 0%, #32073e 50%, #24062d 100%)";
+// The medal's gold, for the rating star
+const GOLD = "#e3b553";
+
+/** One figure on the hero panel: the number over what it counts, in a light inner tile */
 function Stat({ value, label }: { value: React.ReactNode; label: string }) {
   return (
-    <div className="flex min-w-0 flex-col items-center gap-1 px-2 py-4 text-center">
-      <span className="font-heading text-h3-lg tabular-nums text-heading">{value}</span>
-      <span className="font-geist text-caption text-muted">{label}</span>
+    <div className="flex min-w-0 flex-col items-center gap-1 rounded-[12px] bg-white/[0.08] px-2 py-3 text-center">
+      <span className="font-heading text-h3-lg tabular-nums text-white">{value}</span>
+      <span className="font-geist text-caption text-white/60">{label}</span>
     </div>
   );
 }
@@ -195,43 +201,46 @@ function SectionHead({ children }: { children: React.ReactNode }) {
 // Hierarchy, after the reference's host sheet (Doorin, Dribbble): who (photo, name,
 // Superhost) → the proof as three numbers in one panel → about the place (why we
 // host) → guests in their own words → the way out to Airbnb, filling the card's width.
-// Sections are set apart by space and a serif heading, not by eyebrows or fills.
+// The who and the numbers sit on the Chelsea card's blackcurrant tile; the sections
+// below are set apart by space and a serif heading, not by eyebrows or fills.
 // The numbers and the reviews are from Nivasa's Airbnb profile (17 Nov 2026).
 function HostCard() {
   return (
-    <div className="w-[calc(100vw-32px)] max-h-[calc(100dvh-32px)] max-w-[440px] overflow-y-auto overscroll-contain rounded-2xl bg-background p-5 text-left shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)] sm:p-6">
-      {/* Who */}
-      <div className="flex items-center gap-4">
-        <div className="relative shrink-0 rounded-full p-0.5 ring-1 ring-line">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/hero/nivasa-hosts.png" alt="Nandagopal and Ashmik, the hosts of Nivasa" width={64} height={64} className="block size-16 rounded-full object-cover" />
-          <span className="absolute -bottom-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-background shadow-[0_1px_2px_rgba(30,5,37,0.2)]" title="Identity verified">
-            <Shield className="size-3.5 text-grape" />
-          </span>
-        </div>
-        <div className="flex min-w-0 flex-col items-start gap-2">
-          <h2 className="m-0 font-heading text-h2 text-heading sm:text-h2-md">Nivasa</h2>
-          <Tag tone="grey" face="geist">
-            <MedalIcon /> Superhost
-          </Tag>
-        </div>
-      </div>
-
-      {/* The proof, rating first */}
-      <div className={`mt-6 grid grid-cols-3 divide-x divide-line-soft ${PANEL}`}>
-        <Stat
-          value={
-            <span className="inline-flex items-center gap-1">
-              4.97
-              <Star className="size-4 fill-grape text-grape" strokeWidth={0} aria-label="stars" />
+    <div className="w-[calc(100vw-32px)] max-h-[calc(100dvh-32px)] max-w-[440px] overflow-y-auto overscroll-contain rounded-2xl bg-background p-2 text-left shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]">
+      {/* Who, and the proof: on the blackcurrant hero tile */}
+      <div className="overflow-hidden rounded-[18px] px-4 pb-4 pt-5 text-white sm:px-5" style={{ background: TILE_BG }}>
+        <div className="flex items-center gap-4">
+          <div className="relative shrink-0 rounded-full p-0.5 ring-1 ring-white/25">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/hero/nivasa-hosts.png" alt="Nandagopal and Ashmik, the hosts of Nivasa" width={64} height={64} className="block size-16 rounded-full object-cover" />
+            <span className="absolute -bottom-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-white shadow-[0_1px_2px_rgba(30,5,37,0.3)]" title="Identity verified">
+              <Shield className="size-3.5 text-grape" />
             </span>
-          }
-          label="Guest rating"
-        />
-        <Stat value="33" label="Reviews" />
-        <Stat value="3" label="Months open" />
+          </div>
+          <div className="flex min-w-0 flex-col items-start gap-2">
+            <h2 className="m-0 font-heading text-h2 text-white sm:text-h2-md">Nivasa</h2>
+            <Tag tone="grey" face="geist">
+              <MedalIcon /> Superhost
+            </Tag>
+          </div>
+        </div>
+
+        <div className="mt-5 grid grid-cols-3 gap-1.5">
+          <Stat
+            value={
+              <span className="inline-flex items-center gap-1">
+                4.97
+                <Star className="size-4" style={{ fill: GOLD, color: GOLD }} strokeWidth={0} aria-label="stars" />
+              </span>
+            }
+            label="Guest rating"
+          />
+          <Stat value="33" label="Reviews" />
+          <Stat value="3" label="Months open" />
+        </div>
       </div>
 
+      <div className="px-3 pb-3 sm:px-4 sm:pb-4">
       {/* About the place */}
       <SectionHead>About Nivasa</SectionHead>
       <p className="mt-2 text-pretty font-geist text-body text-secondary sm:text-body-md">
@@ -247,6 +256,7 @@ function HostCard() {
       <Cta href={PROFILE} external className="cta-full mt-8">
         See Nivasa on Airbnb
       </Cta>
+      </div>
     </div>
   );
 }
