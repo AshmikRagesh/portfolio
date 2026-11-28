@@ -202,18 +202,17 @@ function LiveDot() {
   return <span className="h-[6px] w-[6px] animate-pulse rounded-full bg-[#e5484d]" aria-hidden="true" />;
 }
 
+// Plain status text, the same voice as the footer: a live dot and minute, or when it is
 function Status({ m, now, tone = "dark" }: { m: Match; now: number; tone?: "dark" | "light" }) {
-  const quiet = tone === "dark" ? "bg-white/10 text-white" : "bg-surface text-heading";
-  const pill = "inline-flex h-[24px] items-center gap-[6px] rounded-full px-[10px] font-geist text-caption font-semibold tabular-nums";
+  const text = "inline-flex items-center gap-[6px] font-geist text-caption font-semibold tabular-nums";
   if (m.state === "in")
     return (
-      <span className={`${pill} ${tone === "dark" ? "bg-white text-[#c4231a]" : "bg-[#fdecec] text-[#c4231a]"}`}>
+      <span className={`${text} ${tone === "dark" ? "text-[#ff8a8f]" : "text-[#c4231a]"}`}>
         <LiveDot />
         {m.clock === "HT" ? "Half time" : `Live · ${m.clock}`}
       </span>
     );
-  if (m.state === "post") return <span className={`${pill} ${quiet}`}>Full time</span>;
-  return <span className={`${pill} font-medium ${quiet}`}>{when(new Date(m.date), now)}</span>;
+  return <span className={`${text} font-medium ${tone === "dark" ? "text-white/70" : "text-muted"}`}>{m.state === "post" ? "Full time" : when(new Date(m.date), now)}</span>;
 }
 
 function SectionHead({ title, aside }: { title: string; aside?: ReactNode }) {
@@ -275,7 +274,7 @@ function Footer({ live, updated, now, href }: { live: boolean; updated: number; 
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex h-[32px] shrink-0 items-center gap-[4px] rounded-full bg-surface pl-[12px] pr-[10px] font-geist text-caption font-medium text-heading transition-colors hover:bg-card"
+        className="mc-r-ctl inline-flex h-[32px] shrink-0 items-center gap-[4px] bg-surface pl-[12px] pr-[10px] font-geist text-caption font-medium text-heading transition-colors hover:bg-card"
       >
         Open on ESPN
         <ArrowUpRight size={14} {...ICON} />
@@ -355,9 +354,7 @@ function Overview({ data, now, onOpen }: { data: Fixtures; now: number; onOpen: 
                     onFocus={() => prefetchMatch(x.id)}
                     className="group flex w-full items-center gap-[12px] px-[14px] py-[12px] text-left transition-colors hover:bg-surface"
                   >
-                    <span className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full bg-surface">
-                      <Crest src={opp.logo} size={24} />
-                    </span>
+                    <Crest src={opp.logo} size={32} />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-geist text-body font-medium text-heading">
                         {atHome ? "vs" : "at"} {opp.name}
@@ -385,9 +382,7 @@ function Overview({ data, now, onOpen }: { data: Fixtures; now: number; onOpen: 
 function TileSide({ s }: { s: Side }) {
   return (
     <div className="flex w-[104px] flex-col items-center gap-[10px] text-center">
-      <span className="flex h-[64px] w-[64px] items-center justify-center rounded-full bg-white">
-        <Crest src={s.logo} size={40} />
-      </span>
+      <Crest src={s.logo} size={56} className="my-[4px]" />
       <span className="font-geist text-body font-medium leading-[18px] text-white">{s.name}</span>
     </div>
   );
@@ -405,7 +400,7 @@ function MatchTile({ m, now, onOpen }: { m: Match; now: number; onOpen: () => vo
       className="mc-r-tile group block w-full overflow-hidden p-[8px] text-left text-white transition-transform duration-300 active:scale-[0.99]"
       style={{ background: TILE_BG }}
     >
-      <div className="px-[12px] pt-[10px]">
+      <div className="flex justify-end px-[12px] pt-[10px]">
         <Status m={m} now={now} />
       </div>
 
@@ -446,10 +441,10 @@ function MatchTile({ m, now, onOpen }: { m: Match; now: number; onOpen: () => vo
           <MapPin size={16} {...ICON} className="shrink-0 text-white/60" />
           <span className="min-w-0">
             <span className="block truncate font-geist text-caption font-medium text-white">{m.venue}</span>
-            <span className="block font-geist text-[10px] leading-[12px] text-white/60">{m.home.isChelsea ? "Chelsea at home" : `Away at ${m.home.name}`}</span>
+            <span className="block font-geist text-caption text-white/60">{m.home.isChelsea ? "Chelsea at home" : `Away at ${m.home.name}`}</span>
           </span>
         </span>
-        <span className="inline-flex h-[32px] shrink-0 items-center gap-[2px] rounded-full bg-white pl-[12px] pr-[8px] font-geist text-caption font-semibold text-heading transition-transform group-hover:translate-x-[2px]">
+        <span className="mc-r-ctl inline-flex h-[32px] shrink-0 items-center gap-[2px] bg-white pl-[12px] pr-[8px] font-geist text-caption font-semibold text-heading transition-transform group-hover:translate-x-[2px]">
           {m.state === "pre" ? "Preview" : "Match centre"}
           <ChevronRight size={16} {...ICON} />
         </span>
@@ -472,7 +467,7 @@ function Countdown({ to, now }: { to: number; now: number }) {
       {parts.map(([v, l]) => (
         <div key={l} className="mc-r-cell flex items-baseline justify-center gap-[4px] bg-white/[0.08] py-[10px]">
           <span className="font-heading text-h2 tabular-nums text-white">{String(v).padStart(2, "0")}</span>
-          <span className="font-geist text-[10px] leading-[12px] text-white/60">{l}</span>
+          <span className="font-geist text-caption text-white/60">{l}</span>
         </div>
       ))}
     </div>
@@ -525,14 +520,14 @@ function MatchView({ base, now, onBack }: { base: Match; now: number; onBack: ()
     <>
       <header className="shrink-0 border-b border-line-soft px-[16px] pb-[12px] pt-[12px]">
         <div className="flex items-center justify-between">
-          <button type="button" onClick={onBack} className="-ml-[6px] flex h-[36px] items-center gap-[2px] rounded-full pl-[4px] pr-[12px] font-geist text-body font-medium text-secondary transition-colors hover:bg-surface hover:text-heading">
+          <button type="button" onClick={onBack} className="mc-r-ctl -ml-[6px] flex h-[36px] items-center gap-[2px] pl-[4px] pr-[12px] font-geist text-body font-medium text-secondary transition-colors hover:bg-surface hover:text-heading">
             <ChevronLeft size={18} {...ICON} />
             Back
           </button>
           <Status m={m} now={now} tone="light" />
         </div>
         <Scoreboard m={m} />
-        <div role="tablist" aria-label="Match centre" className="mt-[16px] grid grid-cols-4 gap-[2px] rounded-full bg-surface p-[4px]">
+        <div role="tablist" aria-label="Match centre" className="mc-r-track mt-[16px] grid grid-cols-4 gap-[2px] bg-surface p-[4px]">
           {tabs.map(([k, label]) => (
             <button
               key={k}
@@ -541,7 +536,7 @@ function MatchView({ base, now, onBack }: { base: Match; now: number; onBack: ()
               aria-selected={tab === k}
               data-sound-click="toggle"
               onClick={() => setTab(k)}
-              className={`h-[32px] rounded-full font-geist text-caption font-medium transition-[background-color,color,box-shadow] duration-200 ${
+              className={`mc-r-ctl h-[32px] font-geist text-body font-medium transition-[background-color,color,box-shadow] duration-200 ${
                 tab === k ? "bg-background text-heading shadow-[0_0_0_1px_rgba(30,5,37,0.08)]" : "text-muted hover:text-heading"
               }`}
             >
@@ -719,7 +714,7 @@ function HeadToHead({ d }: { d: MatchDetail }) {
 // Each event gets one 28px round badge with a Lucide icon: goals solid blackcurrant (own
 // goals red), cards as the card itself, changes as a swap.
 function EventBadge({ kind }: { kind: KeyEvent["kind"] }) {
-  const base = "flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full";
+  const base = "mc-r-chip flex h-[28px] w-[28px] shrink-0 items-center justify-center";
   if (isGoal(kind))
     return (
       <span className={`${base} ${kind === "own-goal" ? "bg-[#c4231a]" : "bg-primary"} text-white`} aria-label={kind === "own-goal" ? "Own goal" : kind === "penalty" ? "Penalty goal" : "Goal"}>
@@ -806,7 +801,7 @@ function Timeline({ d }: { d: MatchDetail }) {
             <li key={i} className="relative grid grid-cols-[1fr_56px_1fr] items-center py-[10px]">
               <div className="flex min-w-0 justify-end">{e.home && text}</div>
               <div className="flex justify-center">
-                <span className={`relative min-w-[40px] rounded-full px-[6px] py-[2px] text-center font-geist text-caption font-semibold tabular-nums ${goal ? "bg-primary text-white" : "bg-background text-muted ring-1 ring-inset ring-line-soft"}`}>{e.minute}</span>
+                <span className={`mc-r-tag relative min-w-[40px] px-[6px] py-[2px] text-center font-geist text-caption font-semibold tabular-nums ${goal ? "bg-primary text-white" : "bg-background text-muted ring-1 ring-inset ring-line-soft"}`}>{e.minute}</span>
               </div>
               <div className="flex min-w-0 justify-start">{!e.home && text}</div>
             </li>
@@ -972,13 +967,13 @@ function Pitch({ home, away, marks }: { home?: Lineup; away?: Lineup; marks?: Ma
             <span className={`relative flex h-[28px] w-[28px] items-center justify-center rounded-full font-geist text-caption font-bold tabular-nums ${isAway ? "bg-[#1e0525] text-white ring-[1.5px] ring-white/70" : "bg-white text-heading"}`}>
               {p.number}
               {mk?.goals ? (
-                <span className="absolute -left-[8px] -top-[6px] flex h-[16px] items-center gap-[1px] rounded-full bg-white px-[3px] text-heading">
+                <span className="absolute -left-[8px] -top-[6px] flex h-[16px] items-center gap-[2px] rounded-[4px] bg-white px-[2px] text-heading">
                   <Goal size={10} strokeWidth={2.2} aria-label="Scored" />
                   {mk.goals > 1 && <span className="font-geist text-[10px] font-bold leading-[12px]">{mk.goals}</span>}
                 </span>
               ) : null}
               {(mk?.yellow || mk?.red) && <span className={`absolute -right-[4px] -top-[4px] h-[10px] w-[8px] rounded-[2px] ${mk.red ? "bg-[#E03131]" : "bg-[#F5C518]"}`} />}
-              {mk?.off && <span className="absolute -bottom-[4px] -right-[8px] flex h-[16px] items-center rounded-full bg-[#c4231a] px-[4px] font-geist text-[10px] font-semibold leading-[12px] text-white">{mk.off}</span>}
+              {mk?.off && <span className="absolute -bottom-[4px] -right-[8px] flex h-[16px] items-center rounded-[4px] bg-[#c4231a] px-[4px] font-geist text-[10px] font-semibold leading-[12px] text-white">{mk.off}</span>}
             </span>
             <span className="max-w-full truncate font-geist text-[10px] font-medium leading-[12px] text-white">{p.short}</span>
           </div>
@@ -1019,13 +1014,14 @@ function Bench({ m, home, away }: { m: Match; home?: Lineup; away?: Lineup }) {
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
-// One list, Shots down to Red cards, the way Apple Sports shows a box score: value ·
-// label · value on even 48px rows. The side ahead on a row is set in its team colour, bold,
-// with a short underline in that colour; the other side drops back to grey. Discipline
-// rows have no "winner" (more fouls isn't a lead), so both stay plain.
+// One list, Shots down to Red cards, like a box score in Apple Sports: number · label ·
+// number on even 44px rows, in three fixed columns so every number sits on the same edge
+// as the crest above it. The side ahead on a row is set bold in its team colour, the other
+// drops to grey. Discipline rows have no "winner" (more fouls isn't a lead), so both stay
+// plain.
 const NEUTRAL = new Set(["Fouls", "Offsides", "Yellow cards", "Red cards"]);
 const teamText = (s: Side) => (s.isChelsea ? "text-grape" : "text-primary");
-const teamBg = (s: Side) => (s.isChelsea ? "bg-grape" : "bg-primary");
+const STAT_COLS = "grid grid-cols-[48px_1fr_48px] items-center px-[16px]";
 
 function Stats({ d }: { d: MatchDetail }) {
   const m = d.match;
@@ -1033,14 +1029,10 @@ function Stats({ d }: { d: MatchDetail }) {
   if (!rows.length) return <Empty title="No stats yet" body="Match stats fill in once the game is under way." />;
   return (
     <section className="mc-r-box overflow-hidden ring-1 ring-inset ring-line-soft">
-      <div className="grid h-[52px] grid-cols-[1fr_auto_1fr] items-center gap-[12px] border-b border-line-soft bg-surface px-[16px]">
-        {[m.home, m.away].map((s, i) => (
-          <span key={s.id} className={`flex min-w-0 items-center gap-[8px] ${i ? "col-start-3 flex-row-reverse" : ""}`}>
-            <Crest src={s.logo} size={20} />
-            <span className={`truncate font-geist text-body font-semibold ${teamText(s)}`}>{s.abbr || s.name}</span>
-          </span>
-        ))}
-        <span className="col-start-2 row-start-1 font-geist text-caption font-semibold uppercase tracking-[0.6px] text-muted">Team stats</span>
+      <div className={`${STAT_COLS} h-[48px] border-b border-line-soft`}>
+        <Crest src={m.home.logo} size={24} className="justify-self-start" />
+        <span className="text-center font-geist text-caption font-semibold uppercase tracking-[0.6px] text-muted">Team stats</span>
+        <Crest src={m.away.logo} size={24} className="justify-self-end" />
       </div>
       <ul>
         {rows.map((s) => (
@@ -1053,20 +1045,12 @@ function Stats({ d }: { d: MatchDetail }) {
 
 function CompareRow({ s, home, away, neutral }: { s: Stat; home: Side; away: Side; neutral?: boolean }) {
   const lead = neutral || s.home === s.away ? null : s.home > s.away ? "home" : "away";
-  const value = (v: number, side: "home" | "away", t: Side) => {
-    const ahead = lead === side;
-    return (
-      <span className="relative inline-flex flex-col items-center">
-        <span className={`font-geist text-body-md tabular-nums ${ahead ? `font-semibold ${teamText(t)}` : lead ? "text-muted" : "font-medium text-heading"}`}>{v}</span>
-        {ahead && <span className={`absolute -bottom-[6px] h-[2px] w-[16px] rounded-full ${teamBg(t)}`} aria-hidden="true" />}
-      </span>
-    );
-  };
+  const tone = (side: "home" | "away", t: Side) => (lead === side ? `font-semibold ${teamText(t)}` : lead ? "text-muted" : "font-medium text-heading");
   return (
-    <li className="grid h-[48px] grid-cols-[56px_1fr_56px] items-center border-t border-line-soft px-[16px] first:border-t-0">
-      <span className="justify-self-start">{value(s.home, "home", home)}</span>
+    <li className={`${STAT_COLS} h-[44px] border-t border-line-soft first:border-t-0`}>
+      <span className={`text-left font-geist text-body tabular-nums ${tone("home", home)}`}>{s.home}</span>
       <span className="text-center font-geist text-body text-secondary">{s.label}</span>
-      <span className="justify-self-end">{value(s.away, "away", away)}</span>
+      <span className={`text-right font-geist text-body tabular-nums ${tone("away", away)}`}>{s.away}</span>
     </li>
   );
 }
