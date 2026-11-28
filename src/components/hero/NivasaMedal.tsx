@@ -173,20 +173,21 @@ function MedalIcon() {
   );
 }
 
-// Every inner panel (the numbers, the facts, the reviews) shares one finish: white, a
-// hairline, and the faintest lift, so they read as one set on the card
-const PANEL = "rounded-xl border border-line-soft bg-background shadow-[0_1px_2px_rgba(30,5,37,0.04)]";
-
-// The hero panel: the match card's blackcurrant tile (Chelsea), so the hero objects' cards
-// read as one set, with the numbers in its lighter inner tiles
+// Corners: one concentric set from the DS radius scale, so every inner corner sits
+// evenly inside the one around it, all drawn as smooth squircles where the browser can
+// (corner-shape; plain round corners elsewhere):
+//   card 24 (2xl) → hero tile 16 (xl, 8px in) → number tiles 8 (md)
+//   the review is a guestbook page (2px, like the testimonials) · photo and faces round
+// The hero tile is the match card's blackcurrant (Chelsea), so the hero objects' cards
+// read as one set.
 const TILE_BG = "linear-gradient(160deg, #3a0944 0%, #32073e 50%, #24062d 100%)";
 // The medal's gold, for the rating star
 const GOLD = "#e3b553";
 
-/** One figure on the hero panel: the number over what it counts, in a light inner tile */
+/** One figure on the hero tile: the number over what it counts, in a light inner tile */
 function Stat({ value, label }: { value: React.ReactNode; label: string }) {
   return (
-    <div className="flex min-w-0 flex-col items-center gap-1 rounded-[12px] bg-white/[0.08] px-2 py-3 text-center">
+    <div className="[corner-shape:squircle] flex min-w-0 flex-col items-center gap-1 rounded-md bg-white/[0.08] px-2 py-3 text-center">
       <span className="font-heading text-h3-lg tabular-nums text-white">{value}</span>
       <span className="font-geist text-caption text-white/60">{label}</span>
     </div>
@@ -195,24 +196,22 @@ function Stat({ value, label }: { value: React.ReactNode; label: string }) {
 
 /** A section's serif heading */
 function SectionHead({ children }: { children: React.ReactNode }) {
-  return <h3 className="m-0 mt-8 font-heading text-h4 text-heading sm:text-h4-md">{children}</h3>;
+  return <h3 className="m-0 mt-6 font-heading text-h4 text-heading sm:text-h4-md">{children}</h3>;
 }
 
 // Hierarchy, after the reference's host sheet (Doorin, Dribbble): who (photo, name,
-// Superhost) → the proof as three numbers in one panel → about the place (why we
-// host) → guests in their own words → the way out to Airbnb, filling the card's width.
-// The who and the numbers sit on the Chelsea card's blackcurrant tile; the sections
-// below are set apart by space and a serif heading, not by eyebrows or fills.
-// The numbers and the reviews are from Nivasa's Airbnb profile (17 Nov 2026).
+// Superhost) and the proof, on the blackcurrant tile → about Nivasa, in the hosts' own
+// words from the Airbnb profile → guests in their own words, on a guestbook page → the way out to Airbnb, filling the card's width.
+// The numbers, the intro and the reviews are from Nivasa's Airbnb profile (28 Nov 2026).
 function HostCard() {
   return (
-    <div className="w-[calc(100vw-32px)] max-h-[calc(100dvh-32px)] max-w-[440px] overflow-y-auto overscroll-contain rounded-2xl bg-background p-2 text-left shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]">
+    <div className="[corner-shape:squircle] w-[calc(100vw-32px)] max-h-[calc(100dvh-32px)] max-w-[440px] overflow-y-auto overscroll-contain rounded-2xl bg-background p-2 text-left shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]">
       {/* Who, and the proof: on the blackcurrant hero tile */}
-      <div className="overflow-hidden rounded-[18px] px-4 pb-4 pt-5 text-white sm:px-5" style={{ background: TILE_BG }}>
+      <div className="[corner-shape:squircle] overflow-hidden rounded-xl p-4 text-white sm:px-5" style={{ background: TILE_BG }}>
         <div className="flex items-center gap-4">
-          <div className="relative shrink-0 rounded-full p-0.5 ring-1 ring-white/25">
+          <div className="relative shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/hero/nivasa-hosts.png" alt="Nandagopal and Ashmik, the hosts of Nivasa" width={64} height={64} className="block size-16 rounded-full object-cover" />
+            <img src="/images/hero/nivasa-hosts.png" alt="Nandagopal and Ashmik, the hosts of Nivasa" width={64} height={64} className="block size-16 rounded-full object-cover ring-2 ring-white/20" />
             <span className="absolute -bottom-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-white shadow-[0_1px_2px_rgba(30,5,37,0.3)]" title="Identity verified">
               <Shield className="size-3.5 text-grape" />
             </span>
@@ -225,7 +224,7 @@ function HostCard() {
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-3 gap-1.5">
+        <div className="mt-4 grid grid-cols-3 gap-2">
           <Stat
             value={
               <span className="inline-flex items-center gap-1">
@@ -235,46 +234,83 @@ function HostCard() {
             }
             label="Guest rating"
           />
-          <Stat value="33" label="Reviews" />
-          <Stat value="3" label="Months open" />
+          <Stat value="34" label="Reviews" />
+          <Stat value="4" label="Months open" />
         </div>
       </div>
 
       <div className="px-3 pb-3 sm:px-4 sm:pb-4">
-      {/* About the place */}
-      <SectionHead>About Nivasa</SectionHead>
-      <p className="mt-2 text-pretty font-geist text-body text-secondary sm:text-body-md">
-        We love hosting people and building the spaces they stay in. Guests test a home the way users test a product.
-      </p>
+        {/* About: the hosts' own intro from the Airbnb profile, trimmed */}
+        <SectionHead>About Nivasa</SectionHead>
+        <p className="mt-2 text-pretty font-geist text-body text-secondary sm:text-body-md">
+          We’re Nandagopal and Ashmik, the two behind Nivasa. We started it out of two things we enjoy: hosting people, and building the spaces they stay in.
+        </p>
 
-      {/* Guests, in their own words, one at a time */}
-      <SectionHead>Guest reviews</SectionHead>
-      <GuestReviews />
+        {/* Guests, in their own words, one at a time */}
+        <SectionHead>Guest reviews</SectionHead>
+        <GuestReviews />
 
-      {/* The site's CTA, filled to the card's width (as in the expanded reel): grape on
-          hover, and the arrow circle slides out */}
-      <Cta href={PROFILE} external className="cta-full mt-8">
-        See Nivasa on Airbnb
-      </Cta>
+        {/* The site's CTA, filled to the card's width (as in the expanded reel): grape on
+            hover, and the arrow circle slides out */}
+        <Cta href={PROFILE} external className="cta-full mt-6">
+          See Nivasa on Airbnb
+        </Cta>
       </div>
     </div>
   );
 }
 
+// ── Guest faces ───────────────────────────────────────────────────────────────
+// Illustrated stand-ins for the guests (placeholders until we use real photos): a
+// flat head-and-shoulders on a soft DS tint, each with its own hair and colours.
+type Face = { bg: string; shirt: string; skin: string; hair: string; style: "short" | "side" | "curly" | "long" | "flat"; beard?: boolean; glasses?: boolean };
+
+function GuestFace({ face, className = "" }: { face: Face; className?: string }) {
+  const { bg, shirt, skin, hair, style, beard, glasses } = face;
+  return (
+    <svg viewBox="0 0 40 40" aria-hidden="true" className={className}>
+      <circle cx="20" cy="20" r="20" fill={bg} />
+      {style === "long" && <path d="M11 18 C10 9 15 6 20 6 C25 6 30 9 29 18 L30 31 C26 32 24 30 24 27 L16 27 C16 30 14 32 10 31 Z" fill={hair} />}
+      <path d="M6 41 C6 32 12.5 28 20 28 C27.5 28 34 32 34 41 Z" fill={shirt} />
+      <rect x="17" y="22" width="6" height="7" rx="3" fill={skin} />
+      <ellipse cx="20" cy="17" rx="7" ry="8" fill={skin} />
+      {style === "short" && <path d="M13 16 C12.5 9 16.5 7 20.5 7 C25 7 27.8 10 27 16 C26 13 24 12 20 12 C16.5 12 14.5 13 13 16 Z" fill={hair} />}
+      {style === "side" && <path d="M12.8 17 C12 9 17 6.5 21 7 C26 7.5 28 11 27.2 17 C26.5 13 25 11.5 22.5 11 C19.5 12.8 16 13.2 12.8 17 Z" fill={hair} />}
+      {style === "flat" && <path d="M12.8 15 C13 8.5 17 7 20 7 C24 7 27.2 8.5 27.2 15 L26.5 12.5 L13.5 12.5 Z" fill={hair} />}
+      {style === "curly" && (
+        <g fill={hair}>
+          <circle cx="14" cy="13" r="3" /><circle cx="16.5" cy="9.5" r="3" /><circle cx="20.5" cy="8.2" r="3.2" /><circle cx="24.5" cy="9.8" r="3" /><circle cx="26.5" cy="13.5" r="2.6" />
+        </g>
+      )}
+      {style === "long" && <path d="M13 17 C13 10 16.5 8.5 20 8.5 C24 8.5 27 10.5 27 17 C24 15.5 22 13.5 21 11.5 C19 14.5 16 16 13 17 Z" fill={hair} />}
+      {beard && <path d="M13.4 18.5 C13.8 24 16.8 25.6 20 25.6 C23.2 25.6 26.2 24 26.6 18.5 C25.2 21.2 23 22.2 20 22.2 C17 22.2 14.8 21.2 13.4 18.5 Z" fill={hair} />}
+      <circle cx="17.4" cy="17.6" r="0.9" fill="#1e0525" />
+      <circle cx="22.6" cy="17.6" r="0.9" fill="#1e0525" />
+      {glasses && (
+        <g fill="none" stroke="#1e0525" strokeWidth="0.9">
+          <circle cx="17.4" cy="17.6" r="2.5" /><circle cx="22.6" cy="17.6" r="2.5" /><path d="M19.9 17.6 H20.1" />
+        </g>
+      )}
+    </svg>
+  );
+}
+
 // ── Guest reviews ─────────────────────────────────────────────────────────────
 // Five real reviews from Nivasa's Airbnb page, quoted word for word (one sentence each),
-// in a white hairline card, each signed with the guest's initial, name and stay. One shows at a time: every 7 seconds the quote lifts out and blurs,
-// and the next one comes in word by word, rising out of a soft blur. The active dot fills
-// up as the 7 seconds pass. All five sit in one grid cell, so the card is always as tall
-// as the longest and never jumps. Hovering or focusing pauses them (the dot stops
-// filling); the dots pick one; with reduced motion they swap without moving and don't
-// turn on their own.
-const REVIEWS = [
-  { quote: "The property had everything already, we didn’t need to ask for anything.", who: "Kabir", role: "Guest" },
-  { quote: "The space is calm, peaceful, and immaculate.", who: "Santosh", role: "Guest" },
-  { quote: "Everything felt fresh, clean and thoughtfully designed.", who: "Avinash", role: "Guest" },
-  { quote: "Loved the place, feels like home.", who: "Koushik", role: "Guest" },
-  { quote: "It genuinely felt like my little nest in the city.", who: "Jeena", role: "Our first guest" },
+// on a small guestbook page: the testimonials' cream paper and ruled lines, with a light
+// shadow for the white card and none of their tilt, hover or punch hole. One shows at a
+// time: every 7 seconds the quote lifts out and blurs, and the next one comes in word by
+// word, rising out of a soft blur. The guests' faces
+// sit in a row as the pager: the one speaking is ringed in grape and the rest wait, a
+// little faded. All five quotes sit in one grid cell, so the card is always as tall as the
+// longest and never jumps. Hovering or focusing pauses them; with reduced motion they swap
+// without moving and don't turn on their own.
+const REVIEWS: { quote: string; who: string; role: string; face: Face }[] = [
+  { quote: "The property had everything already, we didn’t need to ask for anything.", who: "Kabir", role: "Guest", face: { bg: "#F9E4FF", shirt: "#9D136A", skin: "#c98d63", hair: "#1e0525", style: "short" } },
+  { quote: "The space is calm, peaceful, and immaculate.", who: "Santosh", role: "Guest", face: { bg: "#e7f8f2", shirt: "#2f6b4f", skin: "#a86f4c", hair: "#2b1a12", style: "side", beard: true } },
+  { quote: "Everything felt fresh, clean and thoughtfully designed.", who: "Avinash", role: "Guest", face: { bg: "#ece5d8", shirt: "#32073e", skin: "#b97a55", hair: "#241510", style: "curly" } },
+  { quote: "Loved the place, feels like home.", who: "Koushik", role: "Guest", face: { bg: "#f3f3f2", shirt: "#565351", skin: "#8d5a3b", hair: "#1a1210", style: "flat", glasses: true } },
+  { quote: "It genuinely felt like my little nest in the city.", who: "Jeena", role: "Our first guest", face: { bg: "#f8c2f7", shirt: "#6e0d4b", skin: "#c48a64", hair: "#2a160f", style: "long" } },
 ];
 const REVIEW_MS = 7000;
 const WORD_STAGGER_MS = 40;
@@ -306,7 +342,7 @@ function GuestReviews() {
 
   return (
     <figure
-      className={`relative m-0 mt-4 overflow-hidden px-4 pb-3 pt-4 ${PANEL}`}
+      className="gb-paper relative m-0 mt-3 rounded-xs px-4 pb-4 pt-3 text-heading !shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(120,100,70,0.1),0_1px_2px_rgba(30,5,37,0.08),0_6px_16px_-8px_rgba(30,5,37,0.18)] sm:px-5"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -314,7 +350,13 @@ function GuestReviews() {
       aria-roledescription="carousel"
       aria-label="What guests say"
     >
-      <div className="relative grid">
+      {/* The page's head: which review this is, as on the guestbook pages */}
+      <div className="mb-1 border-b border-line/60 pb-2 font-brand text-[10px] uppercase leading-[14px] tracking-[1px] text-muted">
+        {String(index + 1).padStart(2, "0")} / {String(REVIEWS.length).padStart(2, "0")}
+      </div>
+
+      {/* The quote, written on the ruled lines (one rule per 28px line) */}
+      <div className="gb-ruled relative -mx-4 grid px-4 pb-2 sm:-mx-5 sm:px-5">
         {REVIEWS.map((r, i) => {
           const on = i === index;
           const words = `“${r.quote}”`.split(" ");
@@ -322,7 +364,7 @@ function GuestReviews() {
             <blockquote
               key={r.who}
               aria-hidden={!on}
-              className={`col-start-1 row-start-1 m-0 text-pretty font-heading text-h4 text-heading ${on ? "" : "pointer-events-none"}`}
+              className={`relative col-start-1 row-start-1 m-0 text-pretty font-heading text-h4 leading-[28px] text-heading sm:text-h4-md sm:leading-[28px] ${on ? "" : "pointer-events-none"}`}
             >
               {words.map((w, j) => (
                 <span key={j}>
@@ -344,26 +386,24 @@ function GuestReviews() {
         })}
       </div>
 
-      <figcaption className="mt-4 flex items-center justify-between gap-4 border-t border-line-soft pt-3">
+      <figcaption className="mt-2 flex items-center justify-between gap-4 border-t border-line/60 pt-3">
+        {/* Who is speaking */}
         <span className="grid min-w-0">
-            {REVIEWS.map((r, i) => (
-              <span
-                key={r.who}
-                aria-hidden={i !== index}
-                className={`col-start-1 row-start-1 flex min-w-0 items-center gap-2 ${ease} duration-300 ${i === index ? "opacity-100" : "opacity-0"}`}
-                style={{ transitionDelay: i === index && !reduced ? "300ms" : "0ms" }}
-              >
-                <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full border border-line-soft font-heading text-body text-grape">
-                  {r.who[0]}
-                </span>
-                <span className="flex min-w-0 flex-col">
-                  <span className="truncate font-geist text-body font-medium text-text">{r.who}</span>
-                  <span className="truncate font-geist text-caption text-muted">{r.role}</span>
-                </span>
-              </span>
-            ))}
+          {REVIEWS.map((r, i) => (
+            <span
+              key={r.who}
+              aria-hidden={i !== index}
+              className={`col-start-1 row-start-1 flex min-w-0 flex-col ${ease} duration-300 ${i === index ? "opacity-100" : "opacity-0"}`}
+              style={{ transitionDelay: i === index && !reduced ? "300ms" : "0ms" }}
+            >
+              <span className="truncate font-geist text-body font-medium text-text-base">{r.who}</span>
+              <span className="truncate font-geist text-caption text-muted">{r.role}</span>
+            </span>
+          ))}
         </span>
-        <span className="flex shrink-0 items-center">
+
+        {/* The guests' faces, as the pager */}
+        <span className="flex shrink-0 items-center -space-x-2">
           {REVIEWS.map((r, i) => {
             const on = i === index;
             return (
@@ -371,32 +411,19 @@ function GuestReviews() {
                 key={r.who}
                 type="button"
                 onClick={() => go(i)}
-                aria-label={`Review ${i + 1} of ${REVIEWS.length}`}
+                aria-label={`Review ${i + 1} of ${REVIEWS.length}, from ${r.who}`}
                 aria-current={on}
-                className="group/dot flex h-6 w-5 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
+                className={`relative rounded-full ring-2 transition-[transform,opacity,box-shadow] duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape ${
+                  on ? "z-10 scale-110 opacity-100 ring-grape" : "opacity-60 ring-[#f6f2e9] hover:opacity-100"
+                }`}
               >
-                <span
-                  className={`relative block h-1.5 overflow-hidden rounded-full transition-all duration-300 ${
-                    on ? "w-4 bg-grape/20" : "w-1.5 bg-muted/40 group-hover/dot:bg-muted"
-                  }`}
-                >
-                  {on && (
-                    <span
-                      key={index}
-                      className="absolute inset-y-0 left-0 rounded-full bg-grape"
-                      style={
-                        reduced
-                          ? { width: "100%" }
-                          : { animation: `review-progress ${REVIEW_MS}ms linear forwards`, animationPlayState: paused ? "paused" : "running" }
-                      }
-                    />
-                  )}
-                </span>
+                <GuestFace face={r.face} className="block size-8 rounded-full" />
               </button>
             );
           })}
         </span>
       </figcaption>
+
     </figure>
   );
 }
