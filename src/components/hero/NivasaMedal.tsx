@@ -258,7 +258,8 @@ function HostCard() {
       <div className="px-3 pb-3 sm:px-4 sm:pb-4">
         {/* About: the hosts' own intro from the Airbnb profile, trimmed */}
         <SectionHead>About Nivasa</SectionHead>
-        <p className="mt-2 text-pretty font-geist text-body text-secondary sm:text-body-md">
+        {/* A true neutral grey (Ashmik's pick, 28 Nov 2026), not the DS's warm body grey */}
+        <p className="mt-2 text-pretty font-geist text-body text-[#555555] sm:text-body-md">
           We’re Nandagopal and Ashmik, the two behind Nivasa. We started it out of two things we enjoy: hosting people, and building the spaces they stay in.
         </p>
 
