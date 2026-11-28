@@ -11,11 +11,11 @@
 // turns over into a small match centre: the next (or live) match, then lineups, stats,
 // timeline and news for it, live from ESPN (chelsea/MatchCentre.tsx).
 
-import { useCallback, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { LION_BODY, LION_EYE, LION_RING, LION_STAFF, LION_TRANSFORM, LION_VIEWBOX } from "./lionPath";
 import { useCursorLight } from "./light";
 import HoverTip from "./HoverTip";
-import MatchCentreCard from "./chelsea/MatchCentre";
+import MatchCentreCard, { prefetchChelsea } from "./chelsea/MatchCentre";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 
 const W = 200;
@@ -146,12 +146,26 @@ export default function ChelseaBadge({ className = "" }: { className?: string })
   useCursorLight(svg, { w: W, h: H }, { tilt, tiltDeg: 10, reduced });
   const onClosed = useCallback(() => setOpen(false), []);
 
+  // Fetch the match data and crests while the page is idle, so the card opens with no
+  // loading; hover and focus top it up if it has gone stale
+  useEffect(() => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (h: number) => void };
+    if (w.requestIdleCallback) {
+      const h = w.requestIdleCallback(prefetchChelsea, { timeout: 3000 });
+      return () => w.cancelIdleCallback?.(h);
+    }
+    const t = window.setTimeout(prefetchChelsea, 1500);
+    return () => window.clearTimeout(t);
+  }, []);
+
   return (
     <>
       <button
         ref={btn}
         type="button"
         onClick={() => setOpen(true)}
+        onPointerEnter={prefetchChelsea}
+        onFocus={prefetchChelsea}
         aria-label="Chelsea lion pin. See the next match"
         aria-haspopup="dialog"
         className={`group group/tip relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}

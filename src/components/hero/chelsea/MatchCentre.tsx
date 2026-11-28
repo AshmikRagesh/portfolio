@@ -3,18 +3,24 @@
 // ── Chelsea match centre (the back of the pin) ────────────────────────────────
 // Two views in one card, after matchday apps (Apple Sports, FotMob, the Premier League
 // app):
-//   Overview      one dark match tile (crests, kick-off or the live score, a countdown),
-//                 then Chelsea's form and the next fixtures.
+//   Overview      one dark match tile (status, crests, kick-off or the live score, a
+//                 countdown, the venue), then Chelsea's form and the next fixtures.
 //   Match centre  tap the tile or any fixture: a compact scoreboard, then tabs. Before
 //                 kick-off: Preview (form, head-to-head), Lineups, Table, News. Live or
 //                 finished: Timeline, Lineups, Stats, News.
-// Flat surfaces only: no glows, blurs or coloured shadows inside the card.
+//
+// Opens with no loading: the data and crests are fetched while the page is idle and again
+// when the pin is hovered (prefetchChelsea), and every view paints from that cache.
+// Flat surfaces only (no glows, blurs or coloured shadows); corners come from one
+// concentric radius scale, squircles where supported (.mc-r-* in globals.css). Icons are
+// Lucide, like the rest of the site.
 //
 // Live: ESPN's live feed (through /api/fixture, cached ~10s) is polled every 15 seconds
 // while a match is on, and every minute once kick-off is near, so the card flips to live on
 // its own. Times are in the visitor's time zone.
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { ArrowDown, ArrowLeftRight, ArrowUp, ArrowUpRight, ChevronLeft, ChevronRight, Goal, MapPin, RectangleVertical } from "lucide-react";
 import type { Article, FormGame, KeyEvent, Lineup, Match, MatchDetail, Player, Side, Stat, TableRow } from "@/lib/chelsea";
 
 const TEAM = "363";
@@ -22,6 +28,7 @@ const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const TILE_BG = "linear-gradient(160deg, #3a0944 0%, #32073e 50%, #24062d 100%)";
 const LIVE_MS = 15_000;
 const NEAR_MS = 60_000;
+const ICON = { strokeWidth: 1.8, "aria-hidden": true } as const;
 
 // Results read the way every sports app reads them: won green, drew grey, lost red.
 // Each passes 4.5:1 with white bold caption text.
@@ -32,32 +39,96 @@ const RESULT = {
 };
 const RESULT_WORD = { W: "Won", D: "Drew", L: "Lost" };
 
-// ── Data ──────────────────────────────────────────────────────────────────────
+// ── Data: one cache, filled ahead of time ─────────────────────────────────────
+type Fixtures = { next: Match[]; form: FormGame[] };
+
 // In development, ?match=<ESPN event id> on the page shows that match as live.
 const demoId = () => (typeof window !== "undefined" && process.env.NODE_ENV !== "production" ? new URLSearchParams(window.location.search).get("match") : null);
+const fixturesUrl = () => {
+  const demo = demoId();
+  return `/api/fixture${demo ? `?demo=${demo}` : ""}`;
+};
+const matchUrl = (id: string) => `/api/fixture/match?id=${id}${demoId() === id ? "&demo=1" : ""}`;
 
-/** Fetches `url`, then again after `every(data)` ms (null = stop). */
-function usePoll<T>(url: string | null, every: (d: T) => number | null) {
-  const [state, setState] = useState<{ data: T | null | "error"; at: number }>({ data: null, at: 0 });
+const cache = new Map<string, { data: unknown; at: number }>();
+const inflight = new Map<string, Promise<unknown>>();
+
+function load<T>(url: string): Promise<T> {
+  const running = inflight.get(url);
+  if (running) return running as Promise<T>;
+  const p = fetch(url, { cache: "no-store" })
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+    .then((d) => {
+      cache.set(url, { data: d, at: Date.now() });
+      return d as T;
+    })
+    .finally(() => inflight.delete(url));
+  inflight.set(url, p);
+  return p;
+}
+
+const fresh = (url: string, ms = 60_000) => {
+  const c = cache.get(url);
+  return c && Date.now() - c.at < ms;
+};
+
+function preloadImage(src?: string) {
+  if (!src) return;
+  const i = new Image();
+  i.src = src;
+}
+
+/** Warm the cache: the fixtures, every crest, and the first match's full detail. */
+export function prefetchChelsea() {
+  const url = fixturesUrl();
+  if (fresh(url) || inflight.has(url)) return;
+  load<Fixtures>(url)
+    .then((f) => {
+      f.next.forEach((m) => [m.home.logo, m.away.logo].forEach(preloadImage));
+      f.form.forEach((g) => preloadImage(g.logo));
+      if (f.next[0]) prefetchMatch(f.next[0].id);
+    })
+    .catch(() => {});
+}
+
+function prefetchMatch(id: string) {
+  const url = matchUrl(id);
+  if (fresh(url) || inflight.has(url)) return;
+  load<MatchDetail>(url)
+    .then((d) => {
+      d.news.slice(0, 3).forEach((a) => preloadImage(a.image));
+      d.h2h.forEach((g) => [g.home.logo, g.away.logo].forEach(preloadImage));
+    })
+    .catch(() => {});
+}
+
+/** Paints from the cache at once, refreshes in the background, then every `every(data)` ms. */
+function usePoll<T>(url: string, every: (d: T) => number | null) {
+  const [state, setState] = useState<{ data: T | null | "error"; at: number }>(() => {
+    const c = cache.get(url);
+    return c ? { data: c.data as T, at: c.at } : { data: null, at: 0 };
+  });
   useEffect(() => {
-    if (!url) return;
     let stop = false;
     let timer = 0;
-    const load = () =>
-      fetch(url, { cache: "no-store" })
-        .then((r) => (r.ok ? r.json() : Promise.reject()))
-        .then((d: T) => {
+    const tick = () =>
+      load<T>(url)
+        .then((d) => {
           if (stop) return;
-          setState({ data: d, at: Date.now() });
+          setState({ data: d, at: cache.get(url)?.at ?? Date.now() });
           const ms = every(d);
-          if (ms) timer = window.setTimeout(load, ms);
+          if (ms) timer = window.setTimeout(tick, ms);
         })
         .catch(() => {
           if (stop) return;
           setState((p) => (p.data && p.data !== "error" ? p : { data: "error", at: Date.now() }));
-          timer = window.setTimeout(load, NEAR_MS);
+          timer = window.setTimeout(tick, NEAR_MS);
         });
-    load();
+    const c = cache.get(url);
+    if (c && fresh(url, 10_000)) {
+      const ms = every(c.data as T);
+      if (ms) timer = window.setTimeout(tick, ms);
+    } else tick();
     return () => {
       stop = true;
       window.clearTimeout(timer);
@@ -68,18 +139,17 @@ function usePoll<T>(url: string | null, every: (d: T) => number | null) {
 }
 
 const pollFor = (m?: Match) => {
-  if (!m || m.state === "post") return null;
+  if (!m || m.state === "post" || demoId()) return null;
   if (m.state === "in") return LIVE_MS;
   return Date.parse(m.date) - Date.now() < 15 * 6e4 ? NEAR_MS : null;
 };
 
-function useNow(on: boolean) {
+function useNow() {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    if (!on) return;
     const t = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(t);
-  }, [on]);
+  }, []);
   return now;
 }
 
@@ -107,22 +177,24 @@ function when(d: Date, now: number) {
   if (days === 1) return "Tomorrow";
   return `In ${days} days`;
 }
-function ago(iso: string | number, now: number) {
-  const s = Math.max(0, Math.round((now - (typeof iso === "number" ? iso : Date.parse(iso))) / 1000));
+function ago(t: string | number, now: number) {
+  const s = Math.max(0, Math.round((now - (typeof t === "number" ? t : Date.parse(t))) / 1000));
+  if (s < 10) return "just now";
   if (s < 60) return `${s}s ago`;
   const m = Math.round(s / 60);
   if (m < 60) return `${m}m ago`;
   const h = Math.round(m / 60);
   if (h < 48) return `${h}h ago`;
-  return fullDate(new Date(iso));
+  return fullDate(new Date(t));
 }
 const lastName = (n: string) => n.split(" ").slice(-1)[0];
 const espnUrl = (id: string) => `https://www.espn.com/soccer/match/_/gameId/${id}`;
+const isGoal = (k: KeyEvent["kind"]) => k === "goal" || k === "penalty" || k === "own-goal";
 
 // ── Small parts ───────────────────────────────────────────────────────────────
 function Crest({ src, size, className = "" }: { src: string; size: number; className?: string }) {
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt="" width={size} height={size} className={`shrink-0 object-contain ${className}`} style={{ width: size, height: size }} />;
+  return <img src={src} alt="" width={size} height={size} decoding="async" className={`shrink-0 object-contain ${className}`} style={{ width: size, height: size }} />;
 }
 
 // A steady dot that breathes in opacity: no halo
@@ -131,7 +203,7 @@ function LiveDot() {
 }
 
 function Status({ m, now, tone = "dark" }: { m: Match; now: number; tone?: "dark" | "light" }) {
-  const quiet = tone === "dark" ? "bg-white/10 text-white" : "bg-surface text-heading ring-1 ring-inset ring-line-soft";
+  const quiet = tone === "dark" ? "bg-white/10 text-white" : "bg-surface text-heading";
   const pill = "inline-flex h-[24px] items-center gap-[6px] rounded-full px-[10px] font-geist text-caption font-semibold tabular-nums";
   if (m.state === "in")
     return (
@@ -153,17 +225,9 @@ function SectionHead({ title, aside }: { title: string; aside?: ReactNode }) {
   );
 }
 
-function Chevron({ dir = "right" }: { dir?: "right" | "left" }) {
+function ResultChip({ r }: { r: FormGame["result"] }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className={dir === "left" ? "rotate-180" : ""}>
-      <path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ResultChip({ r, size = 24 }: { r: FormGame["result"]; size?: number }) {
-  return (
-    <span className={`flex items-center justify-center rounded-[6px] font-geist text-caption font-bold ${RESULT[r] ?? RESULT.D}`} style={{ width: size, height: size }} title={RESULT_WORD[r]}>
+    <span className={`mc-r-chip flex h-[24px] w-[24px] items-center justify-center font-geist text-caption font-bold ${RESULT[r] ?? RESULT.D}`} title={RESULT_WORD[r]}>
       {r}
     </span>
   );
@@ -189,26 +253,49 @@ function Slide({ dir, children, className = "" }: { dir: 1 | -1 | 0; children: R
   );
 }
 
+// The card's foot: how fresh the data is, and the way out to the full match page
+function Footer({ live, updated, now, href }: { live: boolean; updated: number; now: number; href: string }) {
+  return (
+    <div className="flex shrink-0 items-center justify-between gap-[12px] border-t border-line-soft px-[16px] py-[10px]">
+      <span className="flex min-w-0 items-center gap-[8px] truncate font-geist text-caption text-muted">
+        {live ? (
+          <>
+            <span className="flex items-center gap-[6px] font-semibold text-[#c4231a]">
+              <LiveDot />
+              Live
+            </span>
+            <span className="h-[12px] w-px bg-line" aria-hidden="true" />
+            <span>Updated {ago(updated, now)}</span>
+          </>
+        ) : (
+          <span>Data from ESPN · updated {ago(updated, now)}</span>
+        )}
+      </span>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex h-[32px] shrink-0 items-center gap-[4px] rounded-full bg-surface pl-[12px] pr-[10px] font-geist text-caption font-medium text-heading transition-colors hover:bg-card"
+      >
+        Open on ESPN
+        <ArrowUpRight size={14} {...ICON} />
+      </a>
+    </div>
+  );
+}
+
 // ── The card ──────────────────────────────────────────────────────────────────
-type Fixtures = { next: Match[]; form: FormGame[] };
 type View = { id: string | null; dir: 1 | -1 | 0 };
 
-const SHELL =
-  "flex h-[min(680px,calc(100dvh-136px))] md:h-[min(680px,calc(100dvh-96px))] w-[calc(100vw-24px)] max-w-[440px] flex-col overflow-hidden rounded-[24px] bg-background shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_24px_56px_rgba(30,5,37,0.16)]";
+const SHELL = "mc-r-card flex h-[min(680px,calc(100dvh-136px))] md:h-[min(680px,calc(100dvh-96px))] w-[calc(100vw-24px)] max-w-[440px] flex-col overflow-hidden bg-background shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_24px_56px_rgba(30,5,37,0.16)]";
 
 export default function MatchCentreCard() {
-  const demo = demoId();
-  const { data: fixtures, at } = usePoll<Fixtures>(`/api/fixture${demo ? `?demo=${demo}` : ""}`, (d) => (demo ? null : pollFor(d.next[0])));
+  const { data: fixtures, at } = usePoll<Fixtures>(fixturesUrl(), (d) => pollFor(d.next[0]));
   const [view, setView] = useState<View>({ id: null, dir: 0 });
   const data = fixtures && fixtures !== "error" && fixtures.next.length ? fixtures : fixtures === null ? null : "error";
-  const now = useNow(true);
+  const now = useNow();
 
-  if (data === null)
-    return (
-      <div className={`${SHELL} items-center justify-center`}>
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-line border-t-grape" aria-label="Loading fixtures" />
-      </div>
-    );
+  if (data === null) return <div className={SHELL} aria-busy="true" />;
   if (data === "error")
     return (
       <div className={`${SHELL} justify-center p-[32px]`}>
@@ -222,11 +309,14 @@ export default function MatchCentreCard() {
     <div className={SHELL}>
       {open ? (
         <Slide key={open.id} dir={view.dir} className="flex min-h-0 flex-1 flex-col">
-          <MatchView base={open} demo={demo === open.id} now={now} onBack={() => setView({ id: null, dir: -1 })} />
+          <MatchView base={open} now={now} onBack={() => setView({ id: null, dir: -1 })} />
         </Slide>
       ) : (
-        <Slide key="overview" dir={view.dir} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <Overview data={data} now={now} updated={at} onOpen={(id) => setView({ id, dir: 1 })} />
+        <Slide key="overview" dir={view.dir} className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <Overview data={data} now={now} onOpen={(id) => setView({ id, dir: 1 })} />
+          </div>
+          <Footer live={data.next[0].state === "in"} updated={at} now={now} href={espnUrl(data.next[0].id)} />
         </Slide>
       )}
     </div>
@@ -234,10 +324,10 @@ export default function MatchCentreCard() {
 }
 
 // ── Overview ──────────────────────────────────────────────────────────────────
-function Overview({ data, now, updated, onOpen }: { data: Fixtures; now: number; updated: number; onOpen: (id: string) => void }) {
+function Overview({ data, now, onOpen }: { data: Fixtures; now: number; onOpen: (id: string) => void }) {
   const [m, ...later] = data.next;
   return (
-    <div className="flex flex-col gap-[28px] p-[8px] pb-[20px]">
+    <div className="flex flex-col gap-[28px] p-[8px] pb-[24px]">
       <MatchTile m={m} now={now} onOpen={() => onOpen(m.id)} />
 
       {data.form.length > 0 && (
@@ -249,8 +339,8 @@ function Overview({ data, now, updated, onOpen }: { data: Fixtures; now: number;
 
       {later.length > 0 && (
         <section className="px-[12px]">
-          <SectionHead title="Coming up" />
-          <ul className="flex flex-col overflow-hidden rounded-[16px] ring-1 ring-line-soft">
+          <SectionHead title="Coming up" aside={`Times in ${zone(new Date(m.date))}`} />
+          <ul className="mc-r-box flex flex-col overflow-hidden ring-1 ring-inset ring-line-soft">
             {later.map((x) => {
               const d = new Date(x.date);
               const atHome = x.home.isChelsea;
@@ -258,7 +348,13 @@ function Overview({ data, now, updated, onOpen }: { data: Fixtures; now: number;
               const c = clock(d);
               return (
                 <li key={x.id} className="border-t border-line-soft first:border-t-0">
-                  <button type="button" onClick={() => onOpen(x.id)} className="group flex w-full items-center gap-[12px] px-[14px] py-[12px] text-left transition-colors hover:bg-surface">
+                  <button
+                    type="button"
+                    onClick={() => onOpen(x.id)}
+                    onPointerEnter={() => prefetchMatch(x.id)}
+                    onFocus={() => prefetchMatch(x.id)}
+                    className="group flex w-full items-center gap-[12px] px-[14px] py-[12px] text-left transition-colors hover:bg-surface"
+                  >
                     <span className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full bg-surface">
                       <Crest src={opp.logo} size={24} />
                     </span>
@@ -274,9 +370,7 @@ function Overview({ data, now, updated, onOpen }: { data: Fixtures; now: number;
                         {c.time} {c.period}
                       </span>
                     </span>
-                    <span className="text-muted transition-transform group-hover:translate-x-[2px]">
-                      <Chevron />
-                    </span>
+                    <ChevronRight size={16} {...ICON} className="shrink-0 text-muted transition-transform group-hover:translate-x-[2px]" />
                   </button>
                 </li>
               );
@@ -284,26 +378,6 @@ function Overview({ data, now, updated, onOpen }: { data: Fixtures; now: number;
           </ul>
         </section>
       )}
-
-      <Source live={m.state === "in"} updated={updated} now={now} href={espnUrl(m.id)} note={`Times in ${zone(new Date(m.date))}`} />
-    </div>
-  );
-}
-
-// Where the data comes from, how fresh it is, and the way out to the full page
-function Source({ live, updated, now, href, note, className = "px-[12px]" }: { live: boolean; updated: number; now: number; href: string; note?: string; className?: string }) {
-  return (
-    <div className={`flex items-center justify-between gap-[12px] font-geist text-caption text-muted ${className}`}>
-      <span className="flex min-w-0 items-center gap-[6px] truncate">
-        {live && <LiveDot />}
-        {live ? `Live from ESPN · updated ${ago(updated, now)}` : `${note ? `${note} · ` : ""}Data from ESPN`}
-      </span>
-      <a href={href} target="_blank" rel="noopener noreferrer" className="flex shrink-0 items-center gap-[2px] font-medium text-heading underline-offset-[3px] hover:underline">
-        Open on ESPN
-        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-          <path d="M4 2.5h5.5V8M9.5 2.5 3 9" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </a>
     </div>
   );
 }
@@ -328,15 +402,14 @@ function MatchTile({ m, now, onOpen }: { m: Match; now: number; onOpen: () => vo
       type="button"
       onClick={onOpen}
       aria-label={`Open match centre: ${m.home.name} v ${m.away.name}`}
-      className="group block w-full overflow-hidden rounded-[18px] text-left text-white transition-transform duration-300 active:scale-[0.99]"
+      className="mc-r-tile group block w-full overflow-hidden p-[8px] text-left text-white transition-transform duration-300 active:scale-[0.99]"
       style={{ background: TILE_BG }}
     >
-      <div className="flex items-center justify-between gap-[12px] px-[20px] pt-[18px]">
-        <span className="truncate font-geist text-caption font-medium text-white/70">{comp(m.competition)}</span>
+      <div className="px-[12px] pt-[10px]">
         <Status m={m} now={now} />
       </div>
 
-      <div className="flex items-start justify-between px-[12px] pt-[24px]">
+      <div className="flex items-start justify-between px-[4px] pt-[16px]">
         <TileSide s={m.home} />
         <div className="flex min-w-0 flex-1 flex-col items-center pt-[10px]">
           {started ? (
@@ -346,7 +419,7 @@ function MatchTile({ m, now, onOpen }: { m: Match; now: number; onOpen: () => vo
                 <span className="mx-[8px] text-white/40">–</span>
                 {m.away.score ?? 0}
               </span>
-              <span className="mt-[8px] font-geist text-caption text-white/60">{m.state === "in" ? "Score updates live" : day(at)}</span>
+              {m.state === "post" && <span className="mt-[8px] font-geist text-caption text-white/60">{day(at)}</span>}
             </>
           ) : (
             <>
@@ -362,33 +435,26 @@ function MatchTile({ m, now, onOpen }: { m: Match; now: number; onOpen: () => vo
       </div>
 
       {m.state === "pre" && (
-        <div className="px-[16px] pt-[20px]">
+        <div className="px-[8px] pt-[20px]">
           <Countdown to={at.getTime()} now={now} />
         </div>
       )}
 
-      <div className="mt-[20px] flex items-center justify-between gap-[12px] border-t border-white/10 px-[20px] py-[14px]">
-        <span className="flex min-w-0 items-center gap-[6px] font-geist text-caption text-white/60">
-          <PinIcon />
-          <span className="truncate">{m.venue}</span>
-          <span className="text-white/30">·</span>
-          <span>{m.home.isChelsea ? "Home" : "Away"}</span>
+      {/* Venue and the way in, as one inset bar (concentric with the tile) */}
+      <div className="mc-r-inset mt-[20px] flex items-center justify-between gap-[8px] bg-white/[0.08] py-[6px] pl-[12px] pr-[6px]">
+        <span className="flex min-w-0 items-center gap-[8px]">
+          <MapPin size={16} {...ICON} className="shrink-0 text-white/60" />
+          <span className="min-w-0">
+            <span className="block truncate font-geist text-caption font-medium text-white">{m.venue}</span>
+            <span className="block font-geist text-[10px] leading-[12px] text-white/60">{m.home.isChelsea ? "Chelsea at home" : `Away at ${m.home.name}`}</span>
+          </span>
         </span>
-        <span className="flex shrink-0 items-center gap-[2px] font-geist text-caption font-semibold text-white transition-transform group-hover:translate-x-[2px]">
-          {m.state === "pre" ? "Match preview" : "Match centre"}
-          <Chevron />
+        <span className="inline-flex h-[32px] shrink-0 items-center gap-[2px] rounded-full bg-white pl-[12px] pr-[8px] font-geist text-caption font-semibold text-heading transition-transform group-hover:translate-x-[2px]">
+          {m.state === "pre" ? "Preview" : "Match centre"}
+          <ChevronRight size={16} {...ICON} />
         </span>
       </div>
     </button>
-  );
-}
-
-function PinIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" className="shrink-0">
-      <path d="M6 11s4-3.6 4-6.4A4 4 0 0 0 2 4.6C2 7.4 6 11 6 11Z" fill="none" stroke="currentColor" strokeWidth="1.2" />
-      <circle cx="6" cy="4.8" r="1.4" fill="currentColor" />
-    </svg>
   );
 }
 
@@ -400,11 +466,11 @@ function Countdown({ to, now }: { to: number; now: number }) {
     [Math.floor(left / 6e4) % 60, "min"],
     [Math.floor(left / 1e3) % 60, "sec"],
   ] as const;
-  if (left === 0) return <p className="rounded-[12px] bg-white/10 py-[12px] text-center font-geist text-body font-medium">Kicking off now</p>;
+  if (left === 0) return <p className="mc-r-cell bg-white/10 py-[12px] text-center font-geist text-body font-medium">Kicking off now</p>;
   return (
     <div className="grid grid-cols-4 gap-[6px]" role="timer" aria-label="Time to kick-off">
       {parts.map(([v, l]) => (
-        <div key={l} className="flex items-baseline justify-center gap-[4px] rounded-[12px] bg-white/[0.08] py-[10px]">
+        <div key={l} className="mc-r-cell flex items-baseline justify-center gap-[4px] bg-white/[0.08] py-[10px]">
           <span className="font-heading text-h2 tabular-nums text-white">{String(v).padStart(2, "0")}</span>
           <span className="font-geist text-[10px] leading-[12px] text-white/60">{l}</span>
         </div>
@@ -418,7 +484,7 @@ function Form({ games }: { games: FormGame[] }) {
   return (
     <ol className="grid grid-cols-5 gap-[8px]">
       {sorted.map((g, i) => (
-        <li key={g.date + i} className="flex flex-col items-center gap-[8px] rounded-[14px] py-[12px] ring-1 ring-line-soft" title={`${RESULT_WORD[g.result]} ${g.score} ${g.home ? "vs" : "at"} ${g.opponent}`}>
+        <li key={g.date + i} className="mc-r-cell flex flex-col items-center gap-[8px] py-[12px] ring-1 ring-inset ring-line-soft" title={`${RESULT_WORD[g.result]} ${g.score} ${g.home ? "vs" : "at"} ${g.opponent}`}>
           <Crest src={g.logo} size={20} />
           <ResultChip r={g.result} />
           <span className="font-geist text-caption tabular-nums text-secondary">{g.score}</span>
@@ -431,8 +497,8 @@ function Form({ games }: { games: FormGame[] }) {
 // ── Match centre ──────────────────────────────────────────────────────────────
 type Tab = "preview" | "timeline" | "lineups" | "stats" | "table" | "news";
 
-function MatchView({ base, demo, now, onBack }: { base: Match; demo: boolean; now: number; onBack: () => void }) {
-  const { data: d, at } = usePoll<MatchDetail>(`/api/fixture/match?id=${base.id}${demo ? "&demo=1" : ""}`, (x) => (demo ? null : pollFor(x.match)));
+function MatchView({ base, now, onBack }: { base: Match; now: number; onBack: () => void }) {
+  const { data: d, at } = usePoll<MatchDetail>(matchUrl(base.id), (x) => pollFor(x.match));
   const detail = d && d !== "error" ? d : null;
   const m = detail?.match ?? base;
   const pre = m.state === "pre";
@@ -459,8 +525,8 @@ function MatchView({ base, demo, now, onBack }: { base: Match; demo: boolean; no
     <>
       <header className="shrink-0 border-b border-line-soft px-[16px] pb-[12px] pt-[12px]">
         <div className="flex items-center justify-between">
-          <button type="button" onClick={onBack} className="-ml-[6px] flex h-[36px] items-center gap-[2px] rounded-full pl-[6px] pr-[12px] font-geist text-body font-medium text-secondary transition-colors hover:bg-surface hover:text-heading">
-            <Chevron dir="left" />
+          <button type="button" onClick={onBack} className="-ml-[6px] flex h-[36px] items-center gap-[2px] rounded-full pl-[4px] pr-[12px] font-geist text-body font-medium text-secondary transition-colors hover:bg-surface hover:text-heading">
+            <ChevronLeft size={18} {...ICON} />
             Back
           </button>
           <Status m={m} now={now} tone="light" />
@@ -485,12 +551,8 @@ function MatchView({ base, demo, now, onBack }: { base: Match; demo: boolean; no
         </div>
       </header>
 
-      <div ref={body} role="tabpanel" className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[16px] pb-[20px] pt-[20px]">
-        {d === null ? (
-          <div className="flex h-full items-center justify-center">
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-line border-t-grape" aria-label="Loading match" />
-          </div>
-        ) : !detail ? (
+      <div ref={body} role="tabpanel" className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[16px] pb-[24px] pt-[20px]">
+        {d === null ? null : !detail ? (
           <Empty title="Match centre isn’t loading" body="ESPN didn’t answer. Try again in a bit." />
         ) : (
           <>
@@ -503,7 +565,7 @@ function MatchView({ base, demo, now, onBack }: { base: Match; demo: boolean; no
           </>
         )}
       </div>
-      <Source live={m.state === "in"} updated={at} now={now} href={espnUrl(m.id)} className="shrink-0 border-t border-line-soft px-[16px] py-[12px]" />
+      <Footer live={m.state === "in"} updated={at} now={now} href={espnUrl(m.id)} />
     </>
   );
 }
@@ -563,7 +625,7 @@ function Preview({ d }: { d: MatchDetail }) {
       {d.form.length > 0 && (
         <section>
           <SectionHead title="Form" aside="Last 5 · newest on the right" />
-          <div className="flex flex-col overflow-hidden rounded-[16px] ring-1 ring-line-soft">
+          <div className="mc-r-box flex flex-col overflow-hidden ring-1 ring-inset ring-line-soft">
             {sides.map((s) => {
               const games = [...(d.form.find((f) => f.teamId === s.id)?.games ?? [])].sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
               const pts = games.reduce((n, g) => n + (g.result === "W" ? 3 : g.result === "D" ? 1 : 0), 0);
@@ -608,33 +670,25 @@ function HeadToHead({ d }: { d: MatchDetail }) {
     else if (a === b) drew++;
     else lost++;
   }
-  const total = Math.max(1, d.h2h.length);
   const opp = d.match.home.isChelsea ? d.match.away : d.match.home;
   return (
     <section>
       <SectionHead title="Head to head" aside={`Last ${d.h2h.length} meetings`} />
-      <div className="rounded-[16px] p-[16px] ring-1 ring-line-soft">
-        <div className="grid grid-cols-3">
-          {[
-            [won, "Chelsea", "text-left"],
-            [drew, "Draws", "text-center"],
-            [lost, opp.name, "text-right"],
-          ].map(([n, l, align]) => (
-            <div key={String(l)} className={String(align)}>
-              <span className="block font-heading text-h1 tabular-nums text-heading">{n}</span>
-              <span className="block font-geist text-caption text-muted">{l === "Draws" ? "Draws" : `${l} wins`}</span>
-            </div>
-          ))}
-        </div>
-        <div className="mt-[14px] flex h-[6px] gap-[2px] overflow-hidden rounded-full">
-          {won > 0 && <span className="rounded-full bg-grape" style={{ width: `${(won / total) * 100}%` }} />}
-          {drew > 0 && <span className="rounded-full bg-[#D4D2CF]" style={{ width: `${(drew / total) * 100}%` }} />}
-          {lost > 0 && <span className="rounded-full bg-primary" style={{ width: `${(lost / total) * 100}%` }} />}
-        </div>
+      <div className="mc-r-box grid grid-cols-3 divide-x divide-line-soft py-[14px] ring-1 ring-inset ring-line-soft">
+        {[
+          [won, "Chelsea wins"],
+          [drew, "Draws"],
+          [lost, `${opp.name} wins`],
+        ].map(([n, l]) => (
+          <div key={String(l)} className="flex flex-col items-center gap-[2px] px-[8px] text-center">
+            <span className="font-heading text-h1 tabular-nums text-heading">{n}</span>
+            <span className="truncate font-geist text-caption text-muted">{l}</span>
+          </div>
+        ))}
       </div>
 
       {/* Each meeting: the date on top, the two sides stacked, the result on the right */}
-      <ul className="mt-[12px] flex flex-col overflow-hidden rounded-[16px] ring-1 ring-line-soft">
+      <ul className="mc-r-box mt-[12px] flex flex-col overflow-hidden ring-1 ring-inset ring-line-soft">
         {d.h2h.map((g) => {
           const hs = Number(g.home.score),
             as = Number(g.away.score);
@@ -662,27 +716,26 @@ function HeadToHead({ d }: { d: MatchDetail }) {
 }
 
 // ── Timeline ──────────────────────────────────────────────────────────────────
-function EventIcon({ kind, size = 16 }: { kind: KeyEvent["kind"]; size?: number }) {
-  if (kind === "yellow" || kind === "red")
-    return <span className={`inline-block shrink-0 rounded-[2px] ${kind === "yellow" ? "bg-[#F5C518]" : "bg-[#E03131]"}`} style={{ width: size * 0.62, height: size * 0.875 }} aria-label={kind === "yellow" ? "Yellow card" : "Red card"} />;
-  if (kind === "sub")
+// Each event gets one 28px round badge with a Lucide icon: goals solid blackcurrant (own
+// goals red), cards as the card itself, changes as a swap.
+function EventBadge({ kind }: { kind: KeyEvent["kind"] }) {
+  const base = "flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full";
+  if (isGoal(kind))
     return (
-      <svg width={size} height={size} viewBox="0 0 16 16" aria-label="Substitution" className="shrink-0">
-        <path d="M5 13V4m0 0L2 7m3-3 3 3" fill="none" stroke="#15803d" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M11 3v9m0 0 3-3m-3 3-3-3" fill="none" stroke="#c4231a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      <span className={`${base} ${kind === "own-goal" ? "bg-[#c4231a]" : "bg-primary"} text-white`} aria-label={kind === "own-goal" ? "Own goal" : kind === "penalty" ? "Penalty goal" : "Goal"}>
+        <Goal size={14} strokeWidth={2} aria-hidden="true" />
+      </span>
     );
-  return <Ball size={size} own={kind === "own-goal"} />;
-}
-
-function Ball({ size = 16, own }: { size?: number; own?: boolean }) {
-  const ink = own ? "#c4231a" : "#32073e";
+  if (kind === "yellow" || kind === "red")
+    return (
+      <span className={`${base} bg-surface`} aria-label={kind === "yellow" ? "Yellow card" : "Red card"}>
+        <RectangleVertical size={16} strokeWidth={1.5} aria-hidden="true" fill={kind === "yellow" ? "#F5C518" : "#E03131"} color={kind === "yellow" ? "#d9a800" : "#c4231a"} />
+      </span>
+    );
   return (
-    <svg width={size} height={size} viewBox="0 0 16 16" aria-label={own ? "Own goal" : "Goal"} className="shrink-0">
-      <circle cx="8" cy="8" r="7.2" fill="white" stroke={ink} strokeWidth="1.2" />
-      <path d="M8 4.8 10.6 6.7 9.6 9.8H6.4L5.4 6.7Z" fill={ink} />
-      <path d="M8 4.8V1M10.6 6.7l3.5-1.2M9.6 9.8l2.2 3M6.4 9.8l-2.2 3M5.4 6.7 1.9 5.5" stroke={ink} strokeWidth="1" />
-    </svg>
+    <span className={`${base} bg-surface text-heading`} aria-label="Substitution">
+      <ArrowLeftRight size={14} {...ICON} />
+    </span>
   );
 }
 
@@ -693,52 +746,67 @@ function Timeline({ d }: { d: MatchDetail }) {
   const events = [...d.events].sort((a, b) => minuteValue(a.minute) - minuteValue(b.minute));
   if (live) events.reverse();
   if (!events.length) return <Empty title="Nothing yet" body="Goals, cards and changes show here as they happen." />;
-  const goals = [...d.events].filter((e) => e.kind === "goal" || e.kind === "penalty" || e.kind === "own-goal").sort((a, b) => minuteValue(a.minute) - minuteValue(b.minute));
-  const scorers = (home: boolean) => goals.filter((g) => g.home === home);
+  const goals = [...d.events].filter((e) => isGoal(e.kind)).sort((a, b) => minuteValue(a.minute) - minuteValue(b.minute));
 
   return (
     <div className="flex flex-col gap-[20px]">
       {goals.length > 0 && (
-        <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-[12px] rounded-[16px] px-[14px] py-[12px] ring-1 ring-line-soft">
-          {[true, false].map((h, i) => (
+        <div className="mc-r-box grid grid-cols-[1fr_auto_1fr] items-start gap-[12px] px-[14px] py-[12px] ring-1 ring-inset ring-line-soft">
+          {[true, false].map((h) => (
             <div key={String(h)} className={`flex flex-col gap-[4px] ${h ? "" : "col-start-3 text-right"}`}>
-              {scorers(h).map((g, j) => (
-                <span key={j} className="font-geist text-caption text-secondary">
-                  {lastName(g.player)} <span className="tabular-nums text-muted">{g.minute}</span>
-                  {g.kind === "penalty" && " (pen)"}
-                  {g.kind === "own-goal" && " (og)"}
-                </span>
-              ))}
-              {i === 0 && <span className="sr-only">Home scorers</span>}
+              {goals
+                .filter((g) => g.home === h)
+                .map((g, j) => (
+                  <span key={j} className="font-geist text-caption text-secondary">
+                    {lastName(g.player)} <span className="tabular-nums text-muted">{g.minute}</span>
+                    {g.kind === "penalty" && " (pen)"}
+                    {g.kind === "own-goal" && " (og)"}
+                  </span>
+                ))}
             </div>
           ))}
-          <span className="col-start-2 row-start-1 pt-[2px]">
-            <Ball size={14} />
-          </span>
+          <Goal size={16} {...ICON} className="col-start-2 row-start-1 mt-[2px] text-muted" />
         </div>
       )}
       <ol className="relative flex flex-col">
-        <span className="absolute bottom-[16px] left-1/2 top-[16px] w-px -translate-x-1/2 bg-line-soft" aria-hidden="true" />
+        <span className="absolute bottom-[20px] left-1/2 top-[20px] w-px -translate-x-1/2 bg-line-soft" aria-hidden="true" />
         {events.map((e, i) => {
-          const isGoal = e.kind === "goal" || e.kind === "penalty" || e.kind === "own-goal";
+          const goal = isGoal(e.kind);
           const text = (
-            <span className={`flex min-w-0 items-center gap-[8px] ${e.home ? "flex-row-reverse text-right" : ""}`}>
-              <EventIcon kind={e.kind} />
+            <span className={`flex min-w-0 items-center gap-[10px] ${e.home ? "flex-row-reverse text-right" : ""}`}>
+              <EventBadge kind={e.kind} />
               <span className="min-w-0">
-                <span className={`block truncate font-geist text-body ${isGoal ? "font-semibold" : ""} text-heading`}>{e.player}</span>
-                {(e.other || e.kind === "penalty" || e.kind === "own-goal") && (
-                  <span className="block truncate font-geist text-caption text-muted">
-                    {e.kind === "sub" ? `For ${e.other}` : e.kind === "penalty" ? "Penalty" : e.kind === "own-goal" ? "Own goal" : `Assist ${e.other}`}
-                  </span>
+                {e.kind === "sub" ? (
+                  <>
+                    <span className={`flex items-center gap-[4px] font-geist text-body font-medium text-heading ${e.home ? "justify-end" : ""}`}>
+                      <ArrowUp size={12} strokeWidth={2.2} aria-label="On" className="shrink-0 text-[#15803d]" />
+                      <span className="truncate">{e.player}</span>
+                    </span>
+                    {e.other && (
+                      <span className={`flex items-center gap-[4px] font-geist text-caption text-muted ${e.home ? "justify-end" : ""}`}>
+                        <ArrowDown size={12} strokeWidth={2.2} aria-label="Off" className="shrink-0 text-[#c4231a]" />
+                        <span className="truncate">{e.other}</span>
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <span className={`block truncate font-geist text-body text-heading ${goal ? "font-semibold" : "font-medium"}`}>{e.player}</span>
+                    {(goal || e.kind === "red") && (
+                      <span className="block truncate font-geist text-caption text-muted">
+                        {e.kind === "penalty" ? "Penalty" : e.kind === "own-goal" ? "Own goal" : e.kind === "red" ? "Sent off" : e.other ? `Assist · ${e.other}` : "Goal"}
+                      </span>
+                    )}
+                  </>
                 )}
               </span>
             </span>
           );
           return (
-            <li key={i} className="relative grid grid-cols-[1fr_56px_1fr] items-center py-[8px]">
+            <li key={i} className="relative grid grid-cols-[1fr_56px_1fr] items-center py-[10px]">
               <div className="flex min-w-0 justify-end">{e.home && text}</div>
               <div className="flex justify-center">
-                <span className={`relative min-w-[40px] rounded-full px-[6px] py-[2px] text-center font-geist text-caption font-semibold tabular-nums ${isGoal ? "bg-primary text-white" : "bg-background text-muted ring-1 ring-line-soft"}`}>{e.minute}</span>
+                <span className={`relative min-w-[40px] rounded-full px-[6px] py-[2px] text-center font-geist text-caption font-semibold tabular-nums ${goal ? "bg-primary text-white" : "bg-background text-muted ring-1 ring-inset ring-line-soft"}`}>{e.minute}</span>
               </div>
               <div className="flex min-w-0 justify-start">{!e.home && text}</div>
             </li>
@@ -808,7 +876,7 @@ function Lineups({ d }: { d: MatchDetail }) {
       <div className="relative">
         <Pitch />
         <div className="absolute inset-0 flex items-center justify-center p-[24px]">
-          <p className="max-w-[240px] rounded-[14px] bg-background px-[16px] py-[12px] text-center font-geist text-body text-heading">Lineups are announced about an hour before kick-off.</p>
+          <p className="mc-r-cell max-w-[240px] bg-background px-[16px] py-[12px] text-center font-geist text-body text-heading">Lineups are announced about an hour before kick-off.</p>
         </div>
       </div>
     );
@@ -861,17 +929,14 @@ function PitchMarkings() {
         <rect x="0" y="0" width={W} height={L} vectorEffect="non-scaling-stroke" />
         <line x1="0" y1={L / 2} x2={W} y2={L / 2} vectorEffect="non-scaling-stroke" />
         <circle cx={W / 2} cy={L / 2} r="9.15" vectorEffect="non-scaling-stroke" />
-        {/* top end */}
         <rect x={x(box)} y="0" width={box} height="16.5" vectorEffect="non-scaling-stroke" />
         <rect x={x(six)} y="0" width={six} height="5.5" vectorEffect="non-scaling-stroke" />
         <rect x={x(goal)} y="-1.6" width={goal} height="1.6" vectorEffect="non-scaling-stroke" />
         <circle cx={W / 2} cy="11" r="9.15" clipPath="url(#pitch-top)" vectorEffect="non-scaling-stroke" />
-        {/* bottom end */}
         <rect x={x(box)} y={L - 16.5} width={box} height="16.5" vectorEffect="non-scaling-stroke" />
         <rect x={x(six)} y={L - 5.5} width={six} height="5.5" vectorEffect="non-scaling-stroke" />
         <rect x={x(goal)} y={L} width={goal} height="1.6" vectorEffect="non-scaling-stroke" />
         <circle cx={W / 2} cy={L - 11} r="9.15" clipPath="url(#pitch-bottom)" vectorEffect="non-scaling-stroke" />
-        {/* corners */}
         <path d={`M1 0A1 1 0 0 1 0 1M${W - 1} 0A1 1 0 0 0 ${W} 1M0 ${L - 1}A1 1 0 0 1 1 ${L}M${W} ${L - 1}A1 1 0 0 0 ${W - 1} ${L}`} vectorEffect="non-scaling-stroke" />
       </g>
       <g fill="rgba(255,255,255,0.4)">
@@ -898,28 +963,22 @@ function Pitch({ home, away, marks }: { home?: Lineup; away?: Lineup; marks?: Ma
   };
   const dots = [...(home ? place(home, false) : []), ...(away ? place(away, true) : [])];
   return (
-    <div className="relative aspect-[72/109] w-full overflow-hidden rounded-[16px]" style={{ background: "#2c0737" }}>
+    <div className="mc-r-box relative aspect-[72/109] w-full overflow-hidden" style={{ background: "#2c0737" }}>
       <PitchMarkings />
       {dots.map(({ p, x, y, away: isAway }) => {
         const mk = marks?.get(p.name);
         return (
           <div key={(isAway ? "a" : "h") + p.number + p.name} className="absolute flex w-[68px] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[4px]" style={{ left: `${x}%`, top: `${y}%` }}>
-            <span
-              className={`relative flex h-[28px] w-[28px] items-center justify-center rounded-full font-geist text-caption font-bold tabular-nums ${
-                isAway ? "bg-[#1e0525] text-white ring-[1.5px] ring-white/70" : "bg-white text-heading"
-              }`}
-            >
+            <span className={`relative flex h-[28px] w-[28px] items-center justify-center rounded-full font-geist text-caption font-bold tabular-nums ${isAway ? "bg-[#1e0525] text-white ring-[1.5px] ring-white/70" : "bg-white text-heading"}`}>
               {p.number}
               {mk?.goals ? (
-                <span className="absolute -left-[6px] -top-[6px] flex items-center rounded-full bg-white">
-                  <Ball size={14} />
-                  {mk.goals > 1 && <span className="pr-[3px] font-geist text-[10px] font-bold leading-[12px] text-heading">{mk.goals}</span>}
+                <span className="absolute -left-[8px] -top-[6px] flex h-[16px] items-center gap-[1px] rounded-full bg-white px-[3px] text-heading">
+                  <Goal size={10} strokeWidth={2.2} aria-label="Scored" />
+                  {mk.goals > 1 && <span className="font-geist text-[10px] font-bold leading-[12px]">{mk.goals}</span>}
                 </span>
               ) : null}
-              {(mk?.yellow || mk?.red) && <span className={`absolute -right-[4px] -top-[4px] h-[10px] w-[8px] rounded-[1px] ${mk.red ? "bg-[#E03131]" : "bg-[#F5C518]"}`} />}
-              {mk?.off && (
-                <span className="absolute -bottom-[4px] -right-[8px] flex h-[16px] items-center rounded-full bg-[#c4231a] px-[4px] font-geist text-[10px] font-semibold leading-[12px] text-white">{mk.off}</span>
-              )}
+              {(mk?.yellow || mk?.red) && <span className={`absolute -right-[4px] -top-[4px] h-[10px] w-[8px] rounded-[2px] ${mk.red ? "bg-[#E03131]" : "bg-[#F5C518]"}`} />}
+              {mk?.off && <span className="absolute -bottom-[4px] -right-[8px] flex h-[16px] items-center rounded-full bg-[#c4231a] px-[4px] font-geist text-[10px] font-semibold leading-[12px] text-white">{mk.off}</span>}
             </span>
             <span className="max-w-full truncate font-geist text-[10px] font-medium leading-[12px] text-white">{p.short}</span>
           </div>
@@ -942,11 +1001,7 @@ function Bench({ m, home, away }: { m: Match; home?: Lineup; away?: Lineup }) {
             <li key={p.number + p.name} className="flex items-center gap-[8px] border-b border-line-soft py-[8px] last:border-b-0">
               <span className="w-[20px] font-geist text-caption tabular-nums text-muted">{p.number}</span>
               <span className={`min-w-0 flex-1 truncate font-geist text-body ${p.subIn ? "font-medium text-heading" : "text-secondary"}`}>{p.short}</span>
-              {p.subIn && (
-                <svg width="12" height="12" viewBox="0 0 12 12" aria-label="Came on" className="shrink-0">
-                  <path d="M6 10V2m0 0L3 5m3-3 3 3" fill="none" stroke="#15803d" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              )}
+              {p.subIn && <ArrowUp size={14} strokeWidth={2.2} aria-label="Came on" className="shrink-0 text-[#15803d]" />}
             </li>
           ))}
         </ul>
@@ -964,119 +1019,32 @@ function Bench({ m, home, away }: { m: Match; home?: Lineup; away?: Lineup }) {
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
-// After FotMob / Apple Sports: a team key, possession as one split bar with the numbers
-// inside it, a shooting card with an accuracy ring per side, then grouped cards of rows.
-// Each row is value · label · value; the side that leads gets its number in a filled pill
-// in its team colour, so the winner of every row reads at a glance without extra bars.
-const teamFill = (s: Side) => (s.isChelsea ? "bg-grape" : "bg-primary");
-const teamStroke = (s: Side) => (s.isChelsea ? "#9D136A" : "#32073e");
-
-const GROUPS: [string, string[]][] = [
-  ["Top stats", ["Corners", "Saves", "Accurate passes"]],
-  ["Discipline", ["Fouls", "Offsides", "Yellow cards", "Red cards"]],
-];
+// One list, Shots down to Red cards, the way Apple Sports shows a box score: value ·
+// label · value on even 48px rows. The side ahead on a row is set in its team colour, bold,
+// with a short underline in that colour; the other side drops back to grey. Discipline
+// rows have no "winner" (more fouls isn't a lead), so both stay plain.
+const NEUTRAL = new Set(["Fouls", "Offsides", "Yellow cards", "Red cards"]);
+const teamText = (s: Side) => (s.isChelsea ? "text-grape" : "text-primary");
+const teamBg = (s: Side) => (s.isChelsea ? "bg-grape" : "bg-primary");
 
 function Stats({ d }: { d: MatchDetail }) {
   const m = d.match;
-  if (!d.stats.length) return <Empty title="No stats yet" body="Match stats fill in once the game is under way." />;
-  const get = (label: string) => d.stats.find((s) => s.label === label);
-  const poss = get("Possession");
-  const shots = get("Shots");
-  const onTarget = get("Shots on target");
-  const used = new Set(["Possession", "Shots", "Shots on target"]);
-
+  const rows = d.stats.filter((s) => !s.pct);
+  if (!rows.length) return <Empty title="No stats yet" body="Match stats fill in once the game is under way." />;
   return (
-    <div className="flex flex-col gap-[20px]">
-      {/* Key: which colour is which side */}
-      <div className="flex items-center justify-between">
+    <section className="mc-r-box overflow-hidden ring-1 ring-inset ring-line-soft">
+      <div className="grid h-[52px] grid-cols-[1fr_auto_1fr] items-center gap-[12px] border-b border-line-soft bg-surface px-[16px]">
         {[m.home, m.away].map((s, i) => (
-          <span key={s.id} className={`flex items-center gap-[8px] ${i ? "flex-row-reverse" : ""}`}>
-            <Crest src={s.logo} size={24} />
-            <span className="font-geist text-body font-semibold text-heading">{s.name}</span>
-            <span className={`h-[8px] w-[8px] rounded-full ${teamFill(s)}`} aria-hidden="true" />
+          <span key={s.id} className={`flex min-w-0 items-center gap-[8px] ${i ? "col-start-3 flex-row-reverse" : ""}`}>
+            <Crest src={s.logo} size={20} />
+            <span className={`truncate font-geist text-body font-semibold ${teamText(s)}`}>{s.abbr || s.name}</span>
           </span>
         ))}
+        <span className="col-start-2 row-start-1 font-geist text-caption font-semibold uppercase tracking-[0.6px] text-muted">Team stats</span>
       </div>
-
-      {poss && <Possession home={m.home} away={m.away} s={poss} />}
-
-      {shots && onTarget && <Shooting home={m.home} away={m.away} shots={shots} onTarget={onTarget} />}
-
-      {GROUPS.map(([title, labels]) => {
-        const rows = labels.map(get).filter((s): s is Stat => !!s);
-        rows.forEach((r) => used.add(r.label));
-        return rows.length ? <StatGroup key={title} title={title} rows={rows} home={m.home} away={m.away} neutral={title === "Discipline"} /> : null;
-      })}
-      {(() => {
-        const other = d.stats.filter((s) => !used.has(s.label));
-        return other.length ? <StatGroup title="More" rows={other} home={m.home} away={m.away} /> : null;
-      })()}
-    </div>
-  );
-}
-
-function Possession({ s, home, away }: { s: Stat; home: Side; away: Side }) {
-  const h = Math.round(s.home),
-    a = 100 - h;
-  return (
-    <section className="rounded-[16px] p-[16px] ring-1 ring-line-soft">
-      <p className="mb-[12px] text-center font-geist text-caption font-semibold uppercase tracking-[0.6px] text-muted">Ball possession</p>
-      <div className="flex h-[36px] gap-[4px]" role="img" aria-label={`Possession: ${home.name} ${h}%, ${away.name} ${a}%`}>
-        <span className={`flex items-center rounded-l-full rounded-r-[6px] pl-[14px] ${teamFill(home)}`} style={{ width: `${h}%` }}>
-          <span className="font-geist text-body font-semibold tabular-nums text-white">{h}%</span>
-        </span>
-        <span className={`flex items-center justify-end rounded-l-[6px] rounded-r-full pr-[14px] ${teamFill(away)}`} style={{ width: `${a}%` }}>
-          <span className="font-geist text-body font-semibold tabular-nums text-white">{a}%</span>
-        </span>
-      </div>
-    </section>
-  );
-}
-
-function Ring({ value, total, side, align }: { value: number; total: number; side: Side; align: "left" | "right" }) {
-  const pct = total ? value / total : 0;
-  const r = 26,
-    c = 2 * Math.PI * r;
-  return (
-    <div className={`flex items-center gap-[12px] ${align === "right" ? "flex-row-reverse text-right" : ""}`}>
-      <svg width="64" height="64" viewBox="0 0 64 64" className="shrink-0 -rotate-90" aria-hidden="true">
-        <circle cx="32" cy="32" r={r} fill="none" stroke="#eeece8" strokeWidth="6" />
-        <circle cx="32" cy="32" r={r} fill="none" stroke={teamStroke(side)} strokeWidth="6" strokeLinecap="round" strokeDasharray={`${pct * c} ${c}`} />
-      </svg>
-      <div>
-        <span className="block font-heading text-h2 tabular-nums text-heading">{Math.round(pct * 100)}%</span>
-        <span className="block font-geist text-caption tabular-nums text-muted">
-          {value} of {total} on target
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function Shooting({ home, away, shots, onTarget }: { home: Side; away: Side; shots: Stat; onTarget: Stat }) {
-  return (
-    <section className="overflow-hidden rounded-[16px] ring-1 ring-line-soft">
-      <p className="px-[16px] pt-[14px] font-geist text-caption font-semibold uppercase tracking-[0.6px] text-muted">Shooting</p>
-      <div className="flex items-center justify-between px-[16px] py-[14px]">
-        <Ring value={onTarget.home} total={shots.home} side={home} align="left" />
-        <Ring value={onTarget.away} total={shots.away} side={away} align="right" />
-      </div>
-      <ul className="border-t border-line-soft">
-        <CompareRow s={shots} home={home} away={away} />
-        <CompareRow s={onTarget} home={home} away={away} />
-      </ul>
-    </section>
-  );
-}
-
-// Discipline has no "winner": more fouls or cards isn't a lead, so its numbers stay plain
-function StatGroup({ title, rows, home, away, neutral }: { title: string; rows: Stat[]; home: Side; away: Side; neutral?: boolean }) {
-  return (
-    <section className="overflow-hidden rounded-[16px] ring-1 ring-line-soft">
-      <p className="px-[16px] pt-[14px] pb-[4px] font-geist text-caption font-semibold uppercase tracking-[0.6px] text-muted">{title}</p>
       <ul>
         {rows.map((s) => (
-          <CompareRow key={s.label} s={s} home={home} away={away} neutral={neutral} />
+          <CompareRow key={s.label} s={s} home={m.home} away={m.away} neutral={NEUTRAL.has(s.label)} />
         ))}
       </ul>
     </section>
@@ -1085,17 +1053,17 @@ function StatGroup({ title, rows, home, away, neutral }: { title: string; rows: 
 
 function CompareRow({ s, home, away, neutral }: { s: Stat; home: Side; away: Side; neutral?: boolean }) {
   const lead = neutral || s.home === s.away ? null : s.home > s.away ? "home" : "away";
-  const value = (v: number, side: "home" | "away", t: Side) => (
-    <span
-      className={`inline-flex h-[28px] min-w-[40px] items-center justify-center rounded-full px-[10px] font-geist text-body font-semibold tabular-nums ${
-        lead === side ? `${teamFill(t)} text-white` : "text-heading"
-      }`}
-    >
-      {v}
-    </span>
-  );
+  const value = (v: number, side: "home" | "away", t: Side) => {
+    const ahead = lead === side;
+    return (
+      <span className="relative inline-flex flex-col items-center">
+        <span className={`font-geist text-body-md tabular-nums ${ahead ? `font-semibold ${teamText(t)}` : lead ? "text-muted" : "font-medium text-heading"}`}>{v}</span>
+        {ahead && <span className={`absolute -bottom-[6px] h-[2px] w-[16px] rounded-full ${teamBg(t)}`} aria-hidden="true" />}
+      </span>
+    );
+  };
   return (
-    <li className="grid h-[48px] grid-cols-[64px_1fr_64px] items-center border-t border-line-soft px-[12px] first:border-t-0">
+    <li className="grid h-[48px] grid-cols-[56px_1fr_56px] items-center border-t border-line-soft px-[16px] first:border-t-0">
       <span className="justify-self-start">{value(s.home, "home", home)}</span>
       <span className="text-center font-geist text-body text-secondary">{s.label}</span>
       <span className="justify-self-end">{value(s.away, "away", away)}</span>
@@ -1151,7 +1119,7 @@ function News({ items, now }: { items: Article[]; now: number }) {
   const [lead, ...rest] = items;
   return (
     <div className="flex flex-col gap-[16px]">
-      <a href={lead.href} target="_blank" rel="noopener noreferrer" className="group block overflow-hidden rounded-[16px] ring-1 ring-line-soft">
+      <a href={lead.href} target="_blank" rel="noopener noreferrer" className="mc-r-box group block overflow-hidden ring-1 ring-inset ring-line-soft">
         {lead.image && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={lead.image} alt="" className="aspect-[16/9] w-full object-cover" />
@@ -1171,7 +1139,7 @@ function News({ items, now }: { items: Article[]; now: number }) {
               </span>
               {a.image && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={a.image} alt="" className="h-[56px] w-[80px] shrink-0 rounded-[10px] object-cover" />
+                <img src={a.image} alt="" className="mc-r-cell h-[56px] w-[80px] shrink-0 object-cover" />
               )}
             </a>
           </li>
