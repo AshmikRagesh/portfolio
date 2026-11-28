@@ -14,7 +14,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import HoverTip from "./HoverTip";
 import Cta from "@/components/Cta";
 import { Tag } from "@/components/Tag";
-import { House, MapPin, Star, UsersRound } from "lucide-react";
+import { Star } from "lucide-react";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 import { useCursorLight } from "./light";
 
@@ -187,33 +187,15 @@ function Stat({ value, label }: { value: React.ReactNode; label: string }) {
   );
 }
 
-/** A fact about the place, as a row in a grouped list: icon, then what it is over a detail */
-function Fact({ icon, title, detail }: { icon: React.ReactNode; title: string; detail: string }) {
-  return (
-    <li className="flex items-center gap-3 px-4 py-3">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-line-soft text-grape [&>svg]:size-4">{icon}</span>
-      <span className="flex min-w-0 flex-col">
-        <span className="font-geist text-body font-medium text-text">{title}</span>
-        <span className="font-geist text-caption text-muted">{detail}</span>
-      </span>
-    </li>
-  );
-}
-
-/** A section's serif heading, with an optional quiet note on the right */
-function SectionHead({ children, note }: { children: React.ReactNode; note?: string }) {
-  return (
-    <div className="mt-6 flex items-baseline justify-between gap-4">
-      <h3 className="m-0 font-heading text-h4 text-heading">{children}</h3>
-      {note && <span className="font-geist text-caption text-muted">{note}</span>}
-    </div>
-  );
+/** A section's serif heading */
+function SectionHead({ children }: { children: React.ReactNode }) {
+  return <h3 className="m-0 mt-8 font-heading text-h4 text-heading sm:text-h4-md">{children}</h3>;
 }
 
 // Hierarchy, after the reference's host sheet (Doorin, Dribbble): who (photo, name,
-// Superhost, where) → the proof as three numbers in one panel → about the place (why we
-// host, then the facts as a grouped list) → guests in their own words → the way out to
-// Airbnb. Sections are set apart by space and a serif heading, not by eyebrows or fills.
+// Superhost) → the proof as three numbers in one panel → about the place (why we
+// host) → guests in their own words → the way out to Airbnb, filling the card's width.
+// Sections are set apart by space and a serif heading, not by eyebrows or fills.
 // The numbers and the reviews are from Nivasa's Airbnb profile (17 Nov 2026).
 function HostCard() {
   return (
@@ -229,15 +211,9 @@ function HostCard() {
         </div>
         <div className="flex min-w-0 flex-col items-start gap-2">
           <h2 className="m-0 font-heading text-h2 text-heading sm:text-h2-md">Nivasa</h2>
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <Tag tone="grey" face="geist">
-              <MedalIcon /> Superhost
-            </Tag>
-            <span className="inline-flex items-center gap-1 font-geist text-caption text-muted">
-              <MapPin className="size-3" strokeWidth={2} aria-hidden="true" />
-              Bengaluru
-            </span>
-          </div>
+          <Tag tone="grey" face="geist">
+            <MedalIcon /> Superhost
+          </Tag>
         </div>
       </div>
 
@@ -258,20 +234,17 @@ function HostCard() {
 
       {/* About the place */}
       <SectionHead>About Nivasa</SectionHead>
-      <p className="mt-2 text-pretty font-geist text-body text-secondary">
+      <p className="mt-2 text-pretty font-geist text-body text-secondary sm:text-body-md">
         We love hosting people and building the spaces they stay in. Guests test a home the way users test a product.
       </p>
-      <ul className={`m-0 mt-4 flex list-none flex-col divide-y divide-line-soft p-0 ${PANEL}`}>
-        <Fact icon={<House strokeWidth={1.75} />} title="A sunlit 1BHK" detail="In HSR, Bengaluru" />
-        <Fact icon={<UsersRound strokeWidth={1.75} />} title="Run by two friends" detail="Nandagopal and me" />
-      </ul>
 
       {/* Guests, in their own words, one at a time */}
-      <SectionHead note="33 on Airbnb">Guest reviews</SectionHead>
+      <SectionHead>Guest reviews</SectionHead>
       <GuestReviews />
 
-      {/* The work cards' CTA, smaller: grape on hover, and the arrow circle slides out */}
-      <Cta href={PROFILE} external size="sm" className="mt-6">
+      {/* The site's CTA, filled to the card's width (as in the expanded reel): grape on
+          hover, and the arrow circle slides out */}
+      <Cta href={PROFILE} external className="cta-full mt-8">
         See Nivasa on Airbnb
       </Cta>
     </div>
@@ -323,7 +296,7 @@ function GuestReviews() {
 
   return (
     <figure
-      className={`relative m-0 mt-3 overflow-hidden px-4 pb-3 pt-4 ${PANEL}`}
+      className={`relative m-0 mt-4 overflow-hidden px-4 pb-3 pt-4 ${PANEL}`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
