@@ -390,7 +390,7 @@ function MatchTile({ m, now, onOpen }: { m: Match; now: number; onOpen: () => vo
       style={{ background: TILE_BG }}
     >
 
-      <div className="flex items-start justify-between px-[4px] pt-[20px]">
+      <div className="flex items-start justify-between px-[8px] pb-[20px] pt-[16px]">
         <TileSide s={m.home} />
         <div className="flex min-w-0 flex-1 flex-col items-center">
           <span className="mb-[10px]">
@@ -419,13 +419,15 @@ function MatchTile({ m, now, onOpen }: { m: Match; now: number; onOpen: () => vo
       </div>
 
       {m.state === "pre" && (
-        <div className="px-[8px] pt-[20px]">
+        <div className="pb-[8px]">
           <Countdown to={at.getTime()} now={now} />
         </div>
       )}
 
-      {/* Venue and the way in, as one inset bar (concentric with the tile) */}
-      <div className="mc-r-inset mt-[20px] flex items-center justify-between gap-[8px] bg-white/[0.08] py-[6px] pl-[12px] pr-[6px]">
+      {/* The countdown and the venue bar both fill the tile inside its 8px padding, 8px
+          apart, with inset corners concentric with the tile's; the button sits 8px inside
+          the bar on three sides */}
+      <div className="mc-r-inset flex items-center justify-between gap-[8px] bg-white/[0.08] py-[8px] pl-[12px] pr-[8px]">
         <span className="flex min-w-0 items-center gap-[8px]">
           <MapPin size={16} {...ICON} className="shrink-0 text-white/60" />
           <span className="min-w-0">
@@ -450,11 +452,11 @@ function Countdown({ to, now }: { to: number; now: number }) {
     [Math.floor(left / 6e4) % 60, "min"],
     [Math.floor(left / 1e3) % 60, "sec"],
   ] as const;
-  if (left === 0) return <p className="mc-r-cell bg-white/10 py-[12px] text-center font-geist text-body font-medium">Kicking off now</p>;
+  if (left === 0) return <p className="mc-r-inset bg-white/[0.08] py-[12px] text-center font-geist text-body font-medium">Kicking off now</p>;
   return (
-    <div className="grid grid-cols-4 gap-[6px]" role="timer" aria-label="Time to kick-off">
+    <div className="grid grid-cols-4 gap-[8px]" role="timer" aria-label="Time to kick-off">
       {parts.map(([v, l]) => (
-        <div key={l} className="mc-r-cell flex items-baseline justify-center gap-[4px] bg-white/[0.08] py-[10px]">
+        <div key={l} className="mc-r-inset flex items-baseline justify-center gap-[4px] bg-white/[0.08] py-[10px]">
           <span className="font-heading text-h2 tabular-nums text-white">{String(v).padStart(2, "0")}</span>
           <span className="font-geist text-caption text-white/60">{l}</span>
         </div>
