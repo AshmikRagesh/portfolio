@@ -335,7 +335,7 @@ function Player({
       onKeyDown={onKey}
       onPointerMove={wake}
       onPointerLeave={() => setActive(false)}
-      className={`group/player relative isolate h-full w-full overflow-hidden bg-black outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-grape ${
+      className={`group/player relative isolate h-full w-full overflow-hidden ${expanded ? "bg-black" : "bg-transparent"} outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-grape ${
         shown ? "" : "cursor-none"
       }`}
     >
@@ -371,7 +371,9 @@ function Player({
           if (!expanded && onOpen && window.matchMedia("(hover: none) and (pointer: coarse)").matches) onOpen(where());
           else toggle();
         }}
-        className="block h-full w-full cursor-pointer object-contain"
+        // Inline the clip fills its box (no black behind it, so a box a fraction of a pixel off
+        // 16:9 never shows a dark hairline at the edges); the expanded view letterboxes on black
+        className={`block h-full w-full cursor-pointer ${expanded ? "object-contain" : "object-cover"}`}
       />
 
       {/* Centre: play while paused, pause on hover while playing, a spinner while loading */}
