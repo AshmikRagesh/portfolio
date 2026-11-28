@@ -2570,3 +2570,32 @@ html[data-cursor] .pw-gate[data-cursor-off] * { cursor: none !important; }
     0 2px 3px rgba(10, 0, 14, 0.45),
     0 18px 28px -12px rgba(10, 0, 14, 0.75);
 }
+
+/* ── Chelsea match centre: one radius scale ──────────────────────────────────
+   Concentric: the match tile sits 8px inside the card and the venue bar 8px inside the
+   tile, so each inner radius is the outer one minus the gap. Where the browser supports
+   it the corners are squircles (continuous curvature, like iOS), which read tighter than
+   round corners at the same value, so they get larger values. Pills stay fully round. */
+.mc-r-card { border-radius: 24px; }
+.mc-r-tile { border-radius: 16px; }
+.mc-r-inset { border-radius: 8px; }
+.mc-r-box { border-radius: 16px; }
+.mc-r-cell { border-radius: 12px; }
+.mc-r-chip { border-radius: 6px; }
+/* Controls and tags are rounded rectangles too, never full pills: buttons and tabs 8px,
+   the tab track 12px (tab 8 + its 4px padding), small 24px tags 6px */
+.mc-r-ctl { border-radius: 8px; }
+.mc-r-track { border-radius: 12px; }
+.mc-r-tag { border-radius: 6px; }
+@supports (corner-shape: squircle) {
+  .mc-r-card, .mc-r-tile, .mc-r-inset, .mc-r-box, .mc-r-cell, .mc-r-chip, .mc-r-ctl, .mc-r-track, .mc-r-tag { corner-shape: squircle; }
+  .mc-r-card { border-radius: 40px; }
+  .mc-r-tile { border-radius: 32px; }
+  .mc-r-inset { border-radius: 24px; }
+  .mc-r-box { border-radius: 28px; }
+  .mc-r-cell { border-radius: 20px; }
+  .mc-r-chip { border-radius: 10px; }
+  .mc-r-ctl { border-radius: 12px; }
+  .mc-r-track { border-radius: 16px; }
+  .mc-r-tag { border-radius: 8px; }
+}

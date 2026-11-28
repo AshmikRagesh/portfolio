@@ -7,14 +7,15 @@
 // enamel, gold eye and staff ring, and a small gold bar underneath, "CFC · LDN", in
 // gold on grape. A point light follows the pointer so the polish moves across the gold.
 //
-// Hover leans it towards the pointer. Click and it comes to
-// the middle of the screen and turns over into Chelsea's next match, live from ESPN.
+// Hover leans it towards the pointer. Click and it comes to the middle of the screen and
+// turns over into a small match centre: the next (or live) match, then lineups, stats,
+// timeline and news for it, live from ESPN (chelsea/MatchCentre.tsx).
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { LION_BODY, LION_EYE, LION_RING, LION_STAFF, LION_TRANSFORM, LION_VIEWBOX } from "./lionPath";
 import { useCursorLight } from "./light";
-import { Tag } from "@/components/Tag";
 import HoverTip from "./HoverTip";
+import MatchCentreCard, { prefetchChelsea } from "./chelsea/MatchCentre";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 
 const W = 200;
@@ -134,180 +135,6 @@ export function LionArt({ id, svgRef }: { id: string; svgRef?: React.Ref<SVGSVGE
   );
 }
 
-// ── The next fixture (back) ───────────────────────────────────────────────────
-// After matchday cards in sports apps (Apple Sports, the Premier League app): the two
-// crests either side of the kick-off time, the competition and venue, a live countdown,
-// then the two after it as a short list. Times are shown in the visitor's own time zone.
-
-type Side = { name: string; abbr: string; logo: string; isChelsea: boolean };
-type Match = { date: string; competition: string; venue: string; home: Side; away: Side };
-
-function useFixtures(open: boolean) {
-  const [data, setData] = useState<Match[] | null | "error">(null);
-  useEffect(() => {
-    if (!open || (data && data !== "error")) return;
-    fetch("/api/fixture")
-      .then((r) => r.json())
-      .then((d: { next: Match[] }) => setData(d.next?.length ? d.next : "error"))
-      .catch(() => setData("error"));
-  }, [open, data]);
-  return data;
-}
-
-function useNow(on: boolean) {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    if (!on) return;
-    const t = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(t);
-  }, [on]);
-  return now;
-}
-
-const comp = (s: string) => s.replace(/^English /, "");
-const day = (d: Date) => d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
-const time = (d: Date) => d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
-const zone = (d: Date) => d.toLocaleTimeString(undefined, { timeZoneName: "short" }).split(" ").pop();
-
-function Crest({ side }: { side: Side }) {
-  return (
-    <div className="flex w-[100px] flex-col items-center gap-2.5 text-center">
-      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-background shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_6px_16px_rgba(0,0,0,0.25)]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={side.logo} alt="" width={40} height={40} className="h-10 w-10 object-contain" />
-      </span>
-      <span className={`font-geist text-body font-medium leading-tight ${side.isChelsea ? "text-background" : "text-background/75"}`}>{side.name}</span>
-    </div>
-  );
-}
-
-function Countdown({ to, now }: { to: number; now: number }) {
-  const left = Math.max(0, to - now);
-  const parts = [
-    [Math.floor(left / 864e5), "Days"],
-    [Math.floor(left / 36e5) % 24, "Hours"],
-    [Math.floor(left / 6e4) % 60, "Mins"],
-    [Math.floor(left / 1e3) % 60, "Secs"],
-  ] as const;
-  if (left === 0) return <p className="py-3 text-center font-geist text-body font-medium text-grape">Kicking off now</p>;
-  return (
-    <div className="grid grid-cols-4 gap-2" role="timer" aria-label="Time to kick-off">
-      {parts.map(([v, l], i) => (
-        <div key={l} className={`flex flex-col items-center gap-1 rounded-xl py-3 ${i === 3 ? "bg-grape-light" : "bg-surface"}`}>
-          <span className={`font-heading text-[28px] leading-none tracking-[-0.8px] tabular-nums ${i === 3 ? "text-grape" : "text-heading"}`}>{String(v).padStart(2, "0")}</span>
-          <span className="font-geist text-caption text-muted">{l}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function Pin() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-      <path d="M6 11s4-3.6 4-6.4A4 4 0 0 0 2 4.6C2 7.4 6 11 6 11Z" fill="none" stroke="currentColor" strokeWidth="1.2" />
-      <circle cx="6" cy="4.8" r="1.4" fill="currentColor" />
-    </svg>
-  );
-}
-
-function FixtureCard({ open }: { open: boolean }) {
-  const data = useFixtures(open);
-  const now = useNow(open);
-  const shell = "w-[calc(100vw-24px)] max-w-[420px] overflow-hidden rounded-[20px] bg-background shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]";
-  if (data === null)
-    return (
-      <div className={`${shell} flex h-[420px] items-center justify-center`}>
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-line border-t-grape" aria-label="Loading fixtures" />
-      </div>
-    );
-  if (data === "error")
-    return (
-      <div className={`${shell} p-7`}>
-        <p className="font-heading text-[24px] text-heading">No fixtures right now</p>
-        <p className="mt-2 font-geist text-body text-secondary">The fixture list isn’t loading. Try again in a bit.</p>
-      </div>
-    );
-  const [m, ...later] = data;
-  const at = new Date(m.date);
-  const home = m.home.isChelsea;
-  return (
-    <div className={shell}>
-      {/* The match: the same blackcurrant band as the host card */}
-      <div className="relative overflow-hidden px-5 pb-6 pt-5 text-background sm:px-6" style={{ background: "linear-gradient(150deg, #32073e 0%, #4a0a3f 50%, #6e0d4b 100%)" }}>
-        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-grape/40 blur-3xl" aria-hidden="true" />
-        <div className="relative flex items-center justify-between gap-3">
-          <span className="flex items-center gap-2 font-geist text-caption font-medium text-background/90">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-pink opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-pink" />
-            </span>
-            Next match
-          </span>
-          <span className="truncate rounded-full bg-background/10 px-2.5 py-1 font-geist text-caption text-background/80 ring-1 ring-background/15">{comp(m.competition)}</span>
-        </div>
-        <div className="relative mt-6 flex items-start justify-between">
-          <Crest side={m.home} />
-          <div className="flex flex-col items-center gap-1.5 pt-3">
-            <span className="font-heading text-[34px] leading-none tracking-[-1px] text-background">{time(at)}</span>
-            <span className="font-geist text-caption text-background/70">{day(at)}</span>
-            <span className="font-geist text-[10px] uppercase tracking-[1px] text-background/50">{zone(at)}</span>
-          </div>
-          <Crest side={m.away} />
-        </div>
-      </div>
-
-      <div className="px-5 pb-5 pt-5 sm:px-6">
-        <div className="flex items-center justify-between gap-3">
-          <span className="flex min-w-0 items-center gap-1.5 font-geist text-body text-secondary">
-            <Pin />
-            <span className="truncate">{m.venue}</span>
-          </span>
-          <Tag tone={home ? "grape" : "grey"} face="geist">
-            {home ? "Home" : "Away"}
-          </Tag>
-        </div>
-        <div className="mt-4">
-          <Countdown to={at.getTime()} now={now} />
-        </div>
-
-        {later.length > 0 && (
-          <div className="mt-6">
-            <p className="font-geist text-caption font-medium text-muted">Coming up</p>
-            <ul className="mt-2 flex flex-col">
-              {later.map((x) => {
-                const d = new Date(x.date);
-                const atHome = x.home.isChelsea;
-                const opp = atHome ? x.away : x.home;
-                return (
-                  <li key={x.date} className="flex items-center gap-3 border-t border-line-soft py-3 first:border-t-0">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={opp.logo} alt="" width={20} height={20} className="h-5 w-5 object-contain" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-geist text-body font-medium text-heading">{opp.name}</span>
-                      <span className="block font-geist text-caption text-muted">
-                        {atHome ? "Home" : "Away"} · {comp(x.competition)}
-                      </span>
-                    </span>
-                    <span className="text-right font-geist text-caption tabular-nums text-secondary">
-                      {day(d)}
-                      <br />
-                      <span className="text-muted">{time(d)}</span>
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
-        <p className="mt-4 font-geist text-caption text-muted">Times in your time zone · from ESPN</p>
-      </div>
-    </div>
-  );
-}
-
 // ── In the hero ───────────────────────────────────────────────────────────────
 export default function ChelseaBadge({ className = "" }: { className?: string }) {
   const id = useId().replace(/:/g, "");
@@ -319,12 +146,26 @@ export default function ChelseaBadge({ className = "" }: { className?: string })
   useCursorLight(svg, { w: W, h: H }, { tilt, tiltDeg: 10, reduced });
   const onClosed = useCallback(() => setOpen(false), []);
 
+  // Fetch the match data and crests while the page is idle, so the card opens with no
+  // loading; hover and focus top it up if it has gone stale
+  useEffect(() => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (h: number) => void };
+    if (w.requestIdleCallback) {
+      const h = w.requestIdleCallback(prefetchChelsea, { timeout: 3000 });
+      return () => w.cancelIdleCallback?.(h);
+    }
+    const t = window.setTimeout(prefetchChelsea, 1500);
+    return () => window.clearTimeout(t);
+  }, []);
+
   return (
     <>
       <button
         ref={btn}
         type="button"
         onClick={() => setOpen(true)}
+        onPointerEnter={prefetchChelsea}
+        onFocus={prefetchChelsea}
         aria-label="Chelsea lion pin. See the next match"
         aria-haspopup="dialog"
         className={`group group/tip relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape ${className}`}
@@ -346,5 +187,5 @@ export default function ChelseaBadge({ className = "" }: { className?: string })
 function LionStage({ id, phase }: { id: string; phase: FocusPhase }) {
   const svg = useRef<SVGSVGElement>(null);
   useCursorLight(svg, { w: W, h: H });
-  return <FlipStage phase={phase} front={<LionArt id={id} svgRef={svg} />} back={<FixtureCard open />} />;
+  return <FlipStage phase={phase} front={<LionArt id={id} svgRef={svg} />} back={<MatchCentreCard />} />;
 }

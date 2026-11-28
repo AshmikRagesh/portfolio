@@ -12,6 +12,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { X } from "lucide-react";
 import { Backdrop } from "@/components/resume/paper";
 import { EASE, spring } from "@/components/resume/motion";
 
@@ -169,18 +170,17 @@ export default function FocusOverlay({ source, open, onClosed, label, width, hei
           </div>
         </div>
       </div>
-      {/* Close: one large, quiet button in the corner, the same for every object */}
+      {/* Close: the same for every object, and the site's standard close (as in the Play
+          viewer): a white round button with a hairline and the Lucide cross */}
       <button
         type="button"
         onClick={close}
         aria-label="Close"
-        className={`absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-background/80 text-heading shadow-[0_0_0_1px_rgba(30,5,37,0.08),0_2px_4px_rgba(30,5,37,0.06),0_8px_24px_rgba(30,5,37,0.12)] backdrop-blur-md transition-[opacity,transform,background-color] duration-300 ease-out hover:bg-background active:scale-95 md:right-6 md:top-6 md:h-12 md:w-12 ${
+        className={`absolute right-4 top-4 z-10 flex size-11 items-center justify-center rounded-full bg-white text-heading shadow-[0_0_0_1px_rgba(30,5,37,0.08),0_8px_20px_-12px_rgba(30,5,37,0.3)] transition-[opacity,transform,background-color] duration-300 ease-out hover:bg-grape-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape active:scale-95 md:right-6 md:top-6 md:size-12 ${
           phase === "open" ? "scale-100 opacity-100" : "pointer-events-none scale-90 opacity-0"
         }`}
       >
-        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-          <path d="M2 2l10 10M12 2 2 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
+        <X size={20} strokeWidth={1.8} aria-hidden="true" />
       </button>
     </div>,
     document.body,
