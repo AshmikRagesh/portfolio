@@ -14,9 +14,9 @@ export async function GET(req: Request) {
   if (!id || !/^\d+$/.test(id)) return NextResponse.json({ error: "id" }, { status: 400 });
   const demo = process.env.NODE_ENV !== "production" && q.get("demo") === "1";
   try {
-    const d = detail(await espn(`/all/summary?event=${id}`, 20), id, demo ? { state: "in", clock: "67'" } : undefined);
+    const d = detail(await espn(`/all/summary?event=${id}`, 10), id, demo ? { state: "in", clock: "67'" } : undefined);
     const live = d.match.state === "in";
-    return NextResponse.json(d, { headers: { "Cache-Control": live ? "public, s-maxage=20" : "public, s-maxage=300, stale-while-revalidate=1800" } });
+    return NextResponse.json(d, { headers: { "Cache-Control": live ? "public, s-maxage=10" : "public, s-maxage=300, stale-while-revalidate=1800" } });
   } catch {
     return NextResponse.json({ error: "espn" }, { status: 502 });
   }

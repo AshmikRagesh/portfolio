@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   try {
     const demo = process.env.NODE_ENV !== "production" ? new URL(req.url).searchParams.get("demo") : null;
-    const fixtures = await espn<{ events?: EspnEvent[] }>(`/all/teams/${TEAM}/schedule?fixture=true`, 60);
+    const fixtures = await espn<{ events?: EspnEvent[] }>(`/all/teams/${TEAM}/schedule?fixture=true`, 15);
     const now = Date.now();
     let next: Match[] = (fixtures.events ?? [])
       .filter((e) => Date.parse(e.date) > now - 3 * 3600e3)
@@ -38,7 +38,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json(
       { next, form },
-      { headers: { "Cache-Control": next[0]?.state === "in" ? "public, s-maxage=20" : "public, s-maxage=300, stale-while-revalidate=1800" } },
+      { headers: { "Cache-Control": next[0]?.state === "in" ? "public, s-maxage=10" : "public, s-maxage=300, stale-while-revalidate=1800" } },
     );
   } catch {
     return NextResponse.json({ next: [], form: [] }, { status: 502 });

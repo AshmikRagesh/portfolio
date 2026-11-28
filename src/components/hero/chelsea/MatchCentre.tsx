@@ -3,39 +3,60 @@
 // ── Chelsea match centre (the back of the pin) ────────────────────────────────
 // Two views in one card, after matchday apps (Apple Sports, FotMob, the Premier League
 // app):
-//   Overview      one dark match tile (the hero: crests, kick-off or the live score, a
-//                 countdown), then Chelsea's form and the next fixtures.
+//   Overview      one dark match tile (crests, kick-off or the live score, a countdown),
+//                 then Chelsea's form and the next fixtures.
 //   Match centre  tap the tile or any fixture: a compact scoreboard, then tabs. Before
 //                 kick-off: Preview (form, head-to-head), Lineups, Table, News. Live or
 //                 finished: Timeline, Lineups, Stats, News.
-// A live match refreshes itself every 30 seconds. Times are in the visitor's time zone.
+// Flat surfaces only: no glows, blurs or coloured shadows inside the card.
+//
+// Live: ESPN's live feed (through /api/fixture, cached ~10s) is polled every 15 seconds
+// while a match is on, and every minute once kick-off is near, so the card flips to live on
+// its own. Times are in the visitor's time zone.
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import type { Article, FormGame, KeyEvent, Lineup, Match, MatchDetail, Player, Side, Stat, TableRow } from "@/lib/chelsea";
 
 const TEAM = "363";
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-const TILE_BG = "linear-gradient(155deg, #3d0a45 0%, #32073e 45%, #1e0525 100%)";
+const TILE_BG = "linear-gradient(160deg, #3a0944 0%, #32073e 50%, #24062d 100%)";
+const LIVE_MS = 15_000;
+const NEAR_MS = 60_000;
+
+// Results read the way every sports app reads them: won green, drew grey, lost red.
+// Each passes 4.5:1 with white bold caption text.
+const RESULT = {
+  W: "bg-[#15803d] text-white",
+  D: "bg-[#6f6d6b] text-white",
+  L: "bg-[#c4231a] text-white",
+};
+const RESULT_WORD = { W: "Won", D: "Drew", L: "Lost" };
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 // In development, ?match=<ESPN event id> on the page shows that match as live.
 const demoId = () => (typeof window !== "undefined" && process.env.NODE_ENV !== "production" ? new URLSearchParams(window.location.search).get("match") : null);
 
-function usePoll<T>(url: string | null, live: (d: T) => boolean) {
-  const [data, setData] = useState<T | null | "error">(null);
+/** Fetches `url`, then again after `every(data)` ms (null = stop). */
+function usePoll<T>(url: string | null, every: (d: T) => number | null) {
+  const [state, setState] = useState<{ data: T | null | "error"; at: number }>({ data: null, at: 0 });
   useEffect(() => {
     if (!url) return;
     let stop = false;
     let timer = 0;
     const load = () =>
-      fetch(url)
+      fetch(url, { cache: "no-store" })
         .then((r) => (r.ok ? r.json() : Promise.reject()))
         .then((d: T) => {
           if (stop) return;
-          setData(d);
-          if (live(d)) timer = window.setTimeout(load, 30_000);
+          setState({ data: d, at: Date.now() });
+          const ms = every(d);
+          if (ms) timer = window.setTimeout(load, ms);
         })
-        .catch(() => !stop && setData((p) => (p && p !== "error" ? p : "error")));
+        .catch(() => {
+          if (stop) return;
+          setState((p) => (p.data && p.data !== "error" ? p : { data: "error", at: Date.now() }));
+          timer = window.setTimeout(load, NEAR_MS);
+        });
     load();
     return () => {
       stop = true;
@@ -43,8 +64,14 @@ function usePoll<T>(url: string | null, live: (d: T) => boolean) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
-  return data;
+  return state;
 }
+
+const pollFor = (m?: Match) => {
+  if (!m || m.state === "post") return null;
+  if (m.state === "in") return LIVE_MS;
+  return Date.parse(m.date) - Date.now() < 15 * 6e4 ? NEAR_MS : null;
+};
 
 function useNow(on: boolean) {
   const [now, setNow] = useState(() => Date.now());
@@ -59,7 +86,7 @@ function useNow(on: boolean) {
 // ── Formatting ────────────────────────────────────────────────────────────────
 const comp = (s: string) => s.replace(/^English /, "").replace(/^\d{4}-\d{2} /, "");
 const day = (d: Date) => d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
-const shortDate = (d: Date) => d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+const fullDate = (d: Date) => d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
 function clock(d: Date) {
   // 12-hour locales get "7:30" + "PM"; 24-hour ones "01:00", never a bare "1:00"
   const h12 = new Intl.DateTimeFormat(undefined, { hour: "numeric" }).resolvedOptions().hour12;
@@ -80,14 +107,17 @@ function when(d: Date, now: number) {
   if (days === 1) return "Tomorrow";
   return `In ${days} days`;
 }
-function ago(iso: string, now: number) {
-  const m = Math.max(1, Math.round((now - Date.parse(iso)) / 6e4));
+function ago(iso: string | number, now: number) {
+  const s = Math.max(0, Math.round((now - (typeof iso === "number" ? iso : Date.parse(iso))) / 1000));
+  if (s < 60) return `${s}s ago`;
+  const m = Math.round(s / 60);
   if (m < 60) return `${m}m ago`;
   const h = Math.round(m / 60);
   if (h < 48) return `${h}h ago`;
-  return shortDate(new Date(iso));
+  return fullDate(new Date(iso));
 }
-const chelseaSide = (m: Match) => (m.home.isChelsea ? "home" : "away");
+const lastName = (n: string) => n.split(" ").slice(-1)[0];
+const espnUrl = (id: string) => `https://www.espn.com/soccer/match/_/gameId/${id}`;
 
 // ── Small parts ───────────────────────────────────────────────────────────────
 function Crest({ src, size, className = "" }: { src: string; size: number; className?: string }) {
@@ -95,26 +125,23 @@ function Crest({ src, size, className = "" }: { src: string; size: number; class
   return <img src={src} alt="" width={size} height={size} className={`shrink-0 object-contain ${className}`} style={{ width: size, height: size }} />;
 }
 
-function LiveDot({ className = "bg-[#ff4d6d]" }: { className?: string }) {
-  return (
-    <span className="relative flex h-2 w-2">
-      <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-70 ${className}`} />
-      <span className={`relative inline-flex h-2 w-2 rounded-full ${className}`} />
-    </span>
-  );
+// A steady dot that breathes in opacity: no halo
+function LiveDot() {
+  return <span className="h-[6px] w-[6px] animate-pulse rounded-full bg-[#e5484d]" aria-hidden="true" />;
 }
 
 function Status({ m, now, tone = "dark" }: { m: Match; now: number; tone?: "dark" | "light" }) {
-  const base = tone === "dark" ? "bg-white/10 text-white ring-1 ring-white/15" : "bg-surface text-heading ring-1 ring-line-soft";
+  const quiet = tone === "dark" ? "bg-white/10 text-white" : "bg-surface text-heading ring-1 ring-inset ring-line-soft";
+  const pill = "inline-flex h-[24px] items-center gap-[6px] rounded-full px-[10px] font-geist text-caption font-semibold tabular-nums";
   if (m.state === "in")
     return (
-      <span className="inline-flex h-[24px] items-center gap-[6px] rounded-full bg-[#ff4d6d]/15 px-[10px] font-geist text-caption font-semibold text-[#ff8fa3] ring-1 ring-[#ff4d6d]/30 data-[tone=light]:text-[#d92d4b]" data-tone={tone}>
+      <span className={`${pill} ${tone === "dark" ? "bg-white text-[#c4231a]" : "bg-[#fdecec] text-[#c4231a]"}`}>
         <LiveDot />
-        LIVE · {m.clock}
+        {m.clock === "HT" ? "Half time" : `Live · ${m.clock}`}
       </span>
     );
-  if (m.state === "post") return <span className={`inline-flex h-[24px] items-center rounded-full px-[10px] font-geist text-caption font-medium ${base}`}>Full time</span>;
-  return <span className={`inline-flex h-[24px] items-center rounded-full px-[10px] font-geist text-caption font-medium ${base}`}>{when(new Date(m.date), now)}</span>;
+  if (m.state === "post") return <span className={`${pill} ${quiet}`}>Full time</span>;
+  return <span className={`${pill} font-medium ${quiet}`}>{when(new Date(m.date), now)}</span>;
 }
 
 function SectionHead({ title, aside }: { title: string; aside?: ReactNode }) {
@@ -131,6 +158,14 @@ function Chevron({ dir = "right" }: { dir?: "right" | "left" }) {
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className={dir === "left" ? "rotate-180" : ""}>
       <path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
+  );
+}
+
+function ResultChip({ r, size = 24 }: { r: FormGame["result"]; size?: number }) {
+  return (
+    <span className={`flex items-center justify-center rounded-[6px] font-geist text-caption font-bold ${RESULT[r] ?? RESULT.D}`} style={{ width: size, height: size }} title={RESULT_WORD[r]}>
+      {r}
+    </span>
   );
 }
 
@@ -156,14 +191,14 @@ function Slide({ dir, children, className = "" }: { dir: 1 | -1 | 0; children: R
 
 // ── The card ──────────────────────────────────────────────────────────────────
 type Fixtures = { next: Match[]; form: FormGame[] };
-type View = { id: string; dir: 1 | -1 | 0 } | { id: null; dir: 1 | -1 | 0 };
+type View = { id: string | null; dir: 1 | -1 | 0 };
 
 const SHELL =
-  "flex h-[min(680px,calc(100dvh-136px))] md:h-[min(680px,calc(100dvh-96px))] w-[calc(100vw-24px)] max-w-[440px] flex-col overflow-hidden rounded-[24px] bg-background shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.18)]";
+  "flex h-[min(680px,calc(100dvh-136px))] md:h-[min(680px,calc(100dvh-96px))] w-[calc(100vw-24px)] max-w-[440px] flex-col overflow-hidden rounded-[24px] bg-background shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_24px_56px_rgba(30,5,37,0.16)]";
 
 export default function MatchCentreCard() {
   const demo = demoId();
-  const fixtures = usePoll<Fixtures>(`/api/fixture${demo ? `?demo=${demo}` : ""}`, (d) => d.next[0]?.state === "in");
+  const { data: fixtures, at } = usePoll<Fixtures>(`/api/fixture${demo ? `?demo=${demo}` : ""}`, (d) => (demo ? null : pollFor(d.next[0])));
   const [view, setView] = useState<View>({ id: null, dir: 0 });
   const data = fixtures && fixtures !== "error" && fixtures.next.length ? fixtures : fixtures === null ? null : "error";
   const now = useNow(true);
@@ -191,7 +226,7 @@ export default function MatchCentreCard() {
         </Slide>
       ) : (
         <Slide key="overview" dir={view.dir} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <Overview data={data} now={now} onOpen={(id) => setView({ id, dir: 1 })} />
+          <Overview data={data} now={now} updated={at} onOpen={(id) => setView({ id, dir: 1 })} />
         </Slide>
       )}
     </div>
@@ -199,21 +234,21 @@ export default function MatchCentreCard() {
 }
 
 // ── Overview ──────────────────────────────────────────────────────────────────
-function Overview({ data, now, onOpen }: { data: Fixtures; now: number; onOpen: (id: string) => void }) {
+function Overview({ data, now, updated, onOpen }: { data: Fixtures; now: number; updated: number; onOpen: (id: string) => void }) {
   const [m, ...later] = data.next;
   return (
-    <div className="flex flex-col gap-[28px] p-[8px] pb-[24px]">
+    <div className="flex flex-col gap-[28px] p-[8px] pb-[20px]">
       <MatchTile m={m} now={now} onOpen={() => onOpen(m.id)} />
 
       {data.form.length > 0 && (
-        <section className="px-[16px]">
-          <SectionHead title="Form" aside="Last 5, oldest first" />
+        <section className="px-[12px]">
+          <SectionHead title="Form" aside="Last 5 · newest on the right" />
           <Form games={data.form} />
         </section>
       )}
 
       {later.length > 0 && (
-        <section className="px-[16px]">
+        <section className="px-[12px]">
           <SectionHead title="Coming up" />
           <ul className="flex flex-col overflow-hidden rounded-[16px] ring-1 ring-line-soft">
             {later.map((x) => {
@@ -224,7 +259,7 @@ function Overview({ data, now, onOpen }: { data: Fixtures; now: number; onOpen: 
               return (
                 <li key={x.id} className="border-t border-line-soft first:border-t-0">
                   <button type="button" onClick={() => onOpen(x.id)} className="group flex w-full items-center gap-[12px] px-[14px] py-[12px] text-left transition-colors hover:bg-surface">
-                    <span className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full bg-surface ring-1 ring-line-soft">
+                    <span className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full bg-surface">
                       <Crest src={opp.logo} size={24} />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -250,18 +285,36 @@ function Overview({ data, now, onOpen }: { data: Fixtures; now: number; onOpen: 
         </section>
       )}
 
-      <p className="px-[16px] font-geist text-caption text-muted">Times in your time zone ({zone(new Date(m.date))}) · Data from ESPN</p>
+      <Source live={m.state === "in"} updated={updated} now={now} href={espnUrl(m.id)} note={`Times in ${zone(new Date(m.date))}`} />
     </div>
   );
 }
 
-function TileSide({ s, live }: { s: Side; live: boolean }) {
+// Where the data comes from, how fresh it is, and the way out to the full page
+function Source({ live, updated, now, href, note, className = "px-[12px]" }: { live: boolean; updated: number; now: number; href: string; note?: string; className?: string }) {
+  return (
+    <div className={`flex items-center justify-between gap-[12px] font-geist text-caption text-muted ${className}`}>
+      <span className="flex min-w-0 items-center gap-[6px] truncate">
+        {live && <LiveDot />}
+        {live ? `Live from ESPN · updated ${ago(updated, now)}` : `${note ? `${note} · ` : ""}Data from ESPN`}
+      </span>
+      <a href={href} target="_blank" rel="noopener noreferrer" className="flex shrink-0 items-center gap-[2px] font-medium text-heading underline-offset-[3px] hover:underline">
+        Open on ESPN
+        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+          <path d="M4 2.5h5.5V8M9.5 2.5 3 9" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </a>
+    </div>
+  );
+}
+
+function TileSide({ s }: { s: Side }) {
   return (
     <div className="flex w-[104px] flex-col items-center gap-[10px] text-center">
-      <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-white shadow-[0_0_0_4px_rgba(255,255,255,0.08),0_8px_24px_rgba(0,0,0,0.35)]">
-        <Crest src={s.logo} size={44} />
+      <span className="flex h-[64px] w-[64px] items-center justify-center rounded-full bg-white">
+        <Crest src={s.logo} size={40} />
       </span>
-      <span className={`font-geist text-body font-medium leading-[18px] ${s.isChelsea || live ? "text-white" : "text-white/80"}`}>{s.name}</span>
+      <span className="font-geist text-body font-medium leading-[18px] text-white">{s.name}</span>
     </div>
   );
 }
@@ -269,39 +322,31 @@ function TileSide({ s, live }: { s: Side; live: boolean }) {
 function MatchTile({ m, now, onOpen }: { m: Match; now: number; onOpen: () => void }) {
   const at = new Date(m.date);
   const c = clock(at);
-  const live = m.state !== "pre";
+  const started = m.state !== "pre";
   return (
     <button
       type="button"
       onClick={onOpen}
       aria-label={`Open match centre: ${m.home.name} v ${m.away.name}`}
-      className="group relative isolate block w-full overflow-hidden rounded-[18px] text-left text-white shadow-[0_1px_0_rgba(255,255,255,0.08)_inset,0_12px_32px_rgba(30,5,37,0.28)] transition-transform duration-300 active:scale-[0.99]"
+      className="group block w-full overflow-hidden rounded-[18px] text-left text-white transition-transform duration-300 active:scale-[0.99]"
       style={{ background: TILE_BG }}
     >
-      {/* Light from the top corner, and a faint pitch arc behind the score */}
-      <span className="pointer-events-none absolute -right-[64px] -top-[80px] -z-10 h-[240px] w-[240px] rounded-full bg-grape/50 blur-[64px]" aria-hidden="true" />
-      <svg className="pointer-events-none absolute left-1/2 top-[52px] -z-10 -translate-x-1/2 opacity-[0.08]" width="240" height="160" viewBox="0 0 240 160" aria-hidden="true">
-        <circle cx="120" cy="80" r="56" fill="none" stroke="white" strokeWidth="1.5" />
-        <line x1="120" y1="0" x2="120" y2="160" stroke="white" strokeWidth="1.5" />
-        <circle cx="120" cy="80" r="3" fill="white" />
-      </svg>
-
       <div className="flex items-center justify-between gap-[12px] px-[20px] pt-[18px]">
         <span className="truncate font-geist text-caption font-medium text-white/70">{comp(m.competition)}</span>
         <Status m={m} now={now} />
       </div>
 
       <div className="flex items-start justify-between px-[12px] pt-[24px]">
-        <TileSide s={m.home} live={live} />
-        <div className="flex min-w-0 flex-1 flex-col items-center pt-[12px]">
-          {live ? (
+        <TileSide s={m.home} />
+        <div className="flex min-w-0 flex-1 flex-col items-center pt-[10px]">
+          {started ? (
             <>
               <span className="font-heading text-stat tabular-nums text-white">
                 {m.home.score ?? 0}
                 <span className="mx-[8px] text-white/40">–</span>
                 {m.away.score ?? 0}
               </span>
-              <span className="mt-[8px] font-geist text-caption text-white/60">{m.state === "in" ? (m.clock === "HT" ? "Half time" : "Live now") : day(at)}</span>
+              <span className="mt-[8px] font-geist text-caption text-white/60">{m.state === "in" ? "Score updates live" : day(at)}</span>
             </>
           ) : (
             <>
@@ -313,7 +358,7 @@ function MatchTile({ m, now, onOpen }: { m: Match; now: number; onOpen: () => vo
             </>
           )}
         </div>
-        <TileSide s={m.away} live={live} />
+        <TileSide s={m.away} />
       </div>
 
       {m.state === "pre" && (
@@ -330,7 +375,7 @@ function MatchTile({ m, now, onOpen }: { m: Match; now: number; onOpen: () => vo
           <span>{m.home.isChelsea ? "Home" : "Away"}</span>
         </span>
         <span className="flex shrink-0 items-center gap-[2px] font-geist text-caption font-semibold text-white transition-transform group-hover:translate-x-[2px]">
-          Match centre
+          {m.state === "pre" ? "Match preview" : "Match centre"}
           <Chevron />
         </span>
       </div>
@@ -359,32 +404,24 @@ function Countdown({ to, now }: { to: number; now: number }) {
   return (
     <div className="grid grid-cols-4 gap-[6px]" role="timer" aria-label="Time to kick-off">
       {parts.map(([v, l]) => (
-        <div key={l} className="flex items-baseline justify-center gap-[4px] rounded-[12px] bg-white/[0.07] py-[10px] ring-1 ring-inset ring-white/10">
+        <div key={l} className="flex items-baseline justify-center gap-[4px] rounded-[12px] bg-white/[0.08] py-[10px]">
           <span className="font-heading text-h2 tabular-nums text-white">{String(v).padStart(2, "0")}</span>
-          <span className="font-geist text-[10px] leading-[12px] text-white/50">{l}</span>
+          <span className="font-geist text-[10px] leading-[12px] text-white/60">{l}</span>
         </div>
       ))}
     </div>
   );
 }
 
-const RESULT = {
-  W: "bg-grape text-white",
-  D: "bg-[#E5E7EB] text-primary",
-  L: "bg-background text-secondary ring-1 ring-inset ring-line",
-};
-
 function Form({ games }: { games: FormGame[] }) {
   const sorted = [...games].sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
   return (
     <ol className="grid grid-cols-5 gap-[8px]">
       {sorted.map((g, i) => (
-        <li key={g.date + i} className="flex flex-col items-center gap-[6px] rounded-[14px] py-[10px] ring-1 ring-line-soft">
+        <li key={g.date + i} className="flex flex-col items-center gap-[8px] rounded-[14px] py-[12px] ring-1 ring-line-soft" title={`${RESULT_WORD[g.result]} ${g.score} ${g.home ? "vs" : "at"} ${g.opponent}`}>
           <Crest src={g.logo} size={20} />
-          <span className={`flex h-[24px] w-[24px] items-center justify-center rounded-[8px] font-geist text-caption font-bold ${RESULT[g.result] ?? RESULT.D}`} title={g.result === "W" ? "Won" : g.result === "L" ? "Lost" : "Drew"}>
-            {g.result}
-          </span>
-          <span className="font-geist text-[10px] leading-[12px] tabular-nums text-muted">{g.score}</span>
+          <ResultChip r={g.result} />
+          <span className="font-geist text-caption tabular-nums text-secondary">{g.score}</span>
         </li>
       ))}
     </ol>
@@ -395,7 +432,7 @@ function Form({ games }: { games: FormGame[] }) {
 type Tab = "preview" | "timeline" | "lineups" | "stats" | "table" | "news";
 
 function MatchView({ base, demo, now, onBack }: { base: Match; demo: boolean; now: number; onBack: () => void }) {
-  const d = usePoll<MatchDetail>(`/api/fixture/match?id=${base.id}${demo ? "&demo=1" : ""}`, (x) => x.match.state === "in");
+  const { data: d, at } = usePoll<MatchDetail>(`/api/fixture/match?id=${base.id}${demo ? "&demo=1" : ""}`, (x) => (demo ? null : pollFor(x.match)));
   const detail = d && d !== "error" ? d : null;
   const m = detail?.match ?? base;
   const pre = m.state === "pre";
@@ -429,7 +466,7 @@ function MatchView({ base, demo, now, onBack }: { base: Match; demo: boolean; no
           <Status m={m} now={now} tone="light" />
         </div>
         <Scoreboard m={m} />
-        <div role="tablist" aria-label="Match centre" className="mt-[14px] grid grid-cols-4 gap-[2px] rounded-full bg-surface p-[4px] ring-1 ring-inset ring-line-soft">
+        <div role="tablist" aria-label="Match centre" className="mt-[16px] grid grid-cols-4 gap-[2px] rounded-full bg-surface p-[4px]">
           {tabs.map(([k, label]) => (
             <button
               key={k}
@@ -439,7 +476,7 @@ function MatchView({ base, demo, now, onBack }: { base: Match; demo: boolean; no
               data-sound-click="toggle"
               onClick={() => setTab(k)}
               className={`h-[32px] rounded-full font-geist text-caption font-medium transition-[background-color,color,box-shadow] duration-200 ${
-                tab === k ? "bg-background text-heading shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_1px_3px_rgba(30,5,37,0.10)]" : "text-muted hover:text-heading"
+                tab === k ? "bg-background text-heading shadow-[0_0_0_1px_rgba(30,5,37,0.08)]" : "text-muted hover:text-heading"
               }`}
             >
               {label}
@@ -448,7 +485,7 @@ function MatchView({ base, demo, now, onBack }: { base: Match; demo: boolean; no
         </div>
       </header>
 
-      <div ref={body} role="tabpanel" className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[16px] pb-[24px] pt-[20px]">
+      <div ref={body} role="tabpanel" className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[16px] pb-[20px] pt-[20px]">
         {d === null ? (
           <div className="flex h-full items-center justify-center">
             <span className="h-5 w-5 animate-spin rounded-full border-2 border-line border-t-grape" aria-label="Loading match" />
@@ -466,6 +503,7 @@ function MatchView({ base, demo, now, onBack }: { base: Match; demo: boolean; no
           </>
         )}
       </div>
+      <Source live={m.state === "in"} updated={at} now={now} href={espnUrl(m.id)} className="shrink-0 border-t border-line-soft px-[16px] py-[12px]" />
     </>
   );
 }
@@ -507,11 +545,10 @@ function Scoreboard({ m }: { m: Match }) {
   );
 }
 
-function Empty({ title, body, icon }: { title: string; body: string; icon?: ReactNode }) {
+function Empty({ title, body }: { title: string; body: string }) {
   return (
     <div className="flex flex-col items-center px-[16px] py-[40px] text-center">
-      {icon}
-      <p className="mt-[12px] font-geist text-body font-semibold text-heading">{title}</p>
+      <p className="font-geist text-body font-semibold text-heading">{title}</p>
       <p className="mt-[4px] max-w-[280px] font-geist text-body text-muted">{body}</p>
     </div>
   );
@@ -525,23 +562,25 @@ function Preview({ d }: { d: MatchDetail }) {
     <div className="flex flex-col gap-[28px]">
       {d.form.length > 0 && (
         <section>
-          <SectionHead title="Form" aside="Last 5" />
-          <div className="flex flex-col gap-[8px]">
+          <SectionHead title="Form" aside="Last 5 · newest on the right" />
+          <div className="flex flex-col overflow-hidden rounded-[16px] ring-1 ring-line-soft">
             {sides.map((s) => {
               const games = [...(d.form.find((f) => f.teamId === s.id)?.games ?? [])].sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
               const pts = games.reduce((n, g) => n + (g.result === "W" ? 3 : g.result === "D" ? 1 : 0), 0);
               return (
-                <div key={s.id} className="flex items-center gap-[12px] rounded-[14px] px-[12px] py-[10px] ring-1 ring-line-soft">
+                <div key={s.id} className="flex items-center gap-[12px] border-t border-line-soft px-[14px] py-[12px] first:border-t-0">
                   <Crest src={s.logo} size={24} />
-                  <span className="min-w-0 flex-1 truncate font-geist text-body font-medium text-heading">{s.name}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-geist text-body font-medium text-heading">{s.name}</span>
+                    <span className="block font-geist text-caption tabular-nums text-muted">{pts} of 15 points</span>
+                  </span>
                   <span className="flex gap-[4px]">
                     {games.map((g, i) => (
-                      <span key={i} title={`${g.result} ${g.score} ${g.home ? "vs" : "at"} ${g.opponent}`} className={`flex h-[24px] w-[24px] items-center justify-center rounded-[8px] font-geist text-caption font-bold ${RESULT[g.result] ?? RESULT.D}`}>
-                        {g.result}
+                      <span key={i} title={`${RESULT_WORD[g.result]} ${g.score} ${g.home ? "vs" : "at"} ${g.opponent}`}>
+                        <ResultChip r={g.result} />
                       </span>
                     ))}
                   </span>
-                  <span className="w-[40px] text-right font-geist text-caption tabular-nums text-muted">{pts} pts</span>
                 </div>
               );
             })}
@@ -570,120 +609,138 @@ function HeadToHead({ d }: { d: MatchDetail }) {
     else lost++;
   }
   const total = Math.max(1, d.h2h.length);
+  const opp = d.match.home.isChelsea ? d.match.away : d.match.home;
   return (
     <section>
       <SectionHead title="Head to head" aside={`Last ${d.h2h.length} meetings`} />
       <div className="rounded-[16px] p-[16px] ring-1 ring-line-soft">
-        <div className="flex items-end justify-between">
+        <div className="grid grid-cols-3">
           {[
-            [won, "Chelsea wins"],
-            [drew, "Draws"],
-            [lost, "Losses"],
-          ].map(([n, l]) => (
-            <div key={l} className="flex flex-col items-center gap-[2px]">
-              <span className="font-heading text-h1 tabular-nums text-heading">{n}</span>
-              <span className="font-geist text-caption text-muted">{l}</span>
+            [won, "Chelsea", "text-left"],
+            [drew, "Draws", "text-center"],
+            [lost, opp.name, "text-right"],
+          ].map(([n, l, align]) => (
+            <div key={String(l)} className={String(align)}>
+              <span className="block font-heading text-h1 tabular-nums text-heading">{n}</span>
+              <span className="block font-geist text-caption text-muted">{l === "Draws" ? "Draws" : `${l} wins`}</span>
             </div>
           ))}
         </div>
         <div className="mt-[14px] flex h-[6px] gap-[2px] overflow-hidden rounded-full">
-          <span className="bg-grape" style={{ width: `${(won / total) * 100}%` }} />
-          <span className="bg-[#D4D2CF]" style={{ width: `${(drew / total) * 100}%` }} />
-          <span className="bg-primary/30" style={{ width: `${(lost / total) * 100}%` }} />
+          {won > 0 && <span className="rounded-full bg-grape" style={{ width: `${(won / total) * 100}%` }} />}
+          {drew > 0 && <span className="rounded-full bg-[#D4D2CF]" style={{ width: `${(drew / total) * 100}%` }} />}
+          {lost > 0 && <span className="rounded-full bg-primary" style={{ width: `${(lost / total) * 100}%` }} />}
         </div>
       </div>
-      <ul className="mt-[8px] flex flex-col">
-        {d.h2h.map((g) => (
-          <li key={g.date} className="flex items-center gap-[10px] border-b border-line-soft py-[10px] last:border-b-0">
-            <span className="w-[52px] font-geist text-caption tabular-nums text-muted">{shortDate(new Date(g.date))}</span>
-            <span className="flex min-w-0 flex-1 items-center justify-end gap-[8px] text-right">
-              <span className={`truncate font-geist text-body ${g.home.isChelsea ? "font-semibold text-heading" : "text-secondary"}`}>{g.home.name}</span>
-              <Crest src={g.home.logo} size={20} />
+
+      {/* Each meeting: the date on top, the two sides stacked, the result on the right */}
+      <ul className="mt-[12px] flex flex-col overflow-hidden rounded-[16px] ring-1 ring-line-soft">
+        {d.h2h.map((g) => {
+          const hs = Number(g.home.score),
+            as = Number(g.away.score);
+          const row = (s: Side, score: number, other: number) => (
+            <span className="flex items-center gap-[10px]">
+              <Crest src={s.logo} size={20} />
+              <span className={`min-w-0 flex-1 truncate font-geist text-body ${score > other ? "font-semibold text-heading" : "text-secondary"}`}>{s.name}</span>
+              <span className={`w-[24px] text-right font-geist text-body tabular-nums ${score > other ? "font-semibold text-heading" : "text-muted"}`}>{s.score}</span>
             </span>
-            <span className="rounded-[8px] bg-surface px-[8px] py-[2px] font-geist text-caption font-semibold tabular-nums text-heading">
-              {g.home.score}–{g.away.score}
-            </span>
-            <span className="flex min-w-0 flex-1 items-center gap-[8px]">
-              <Crest src={g.away.logo} size={20} />
-              <span className={`truncate font-geist text-body ${g.away.isChelsea ? "font-semibold text-heading" : "text-secondary"}`}>{g.away.name}</span>
-            </span>
-          </li>
-        ))}
+          );
+          return (
+            <li key={g.date} className="flex flex-col gap-[8px] border-t border-line-soft px-[14px] py-[12px] first:border-t-0">
+              <span className="font-geist text-caption text-muted">
+                {fullDate(new Date(g.date))}
+                {g.competition && ` · ${comp(g.competition)}`}
+              </span>
+              {row(g.home, hs, as)}
+              {row(g.away, as, hs)}
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
 }
 
 // ── Timeline ──────────────────────────────────────────────────────────────────
-function EventIcon({ kind }: { kind: KeyEvent["kind"] }) {
+function EventIcon({ kind, size = 16 }: { kind: KeyEvent["kind"]; size?: number }) {
   if (kind === "yellow" || kind === "red")
-    return <span className={`inline-block h-[14px] w-[10px] rounded-[2px] ${kind === "yellow" ? "bg-[#F5C518]" : "bg-[#E03131]"} shadow-[0_1px_2px_rgba(0,0,0,0.15)]`} aria-label={kind === "yellow" ? "Yellow card" : "Red card"} />;
+    return <span className={`inline-block shrink-0 rounded-[2px] ${kind === "yellow" ? "bg-[#F5C518]" : "bg-[#E03131]"}`} style={{ width: size * 0.62, height: size * 0.875 }} aria-label={kind === "yellow" ? "Yellow card" : "Red card"} />;
   if (kind === "sub")
     return (
-      <svg width="16" height="16" viewBox="0 0 16 16" aria-label="Substitution">
-        <path d="M5 13V4m0 0L2 7m3-3 3 3" fill="none" stroke="#1f9d55" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M11 3v9m0 0 3-3m-3 3-3-3" fill="none" stroke="#E03131" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <svg width={size} height={size} viewBox="0 0 16 16" aria-label="Substitution" className="shrink-0">
+        <path d="M5 13V4m0 0L2 7m3-3 3 3" fill="none" stroke="#15803d" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M11 3v9m0 0 3-3m-3 3-3-3" fill="none" stroke="#c4231a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     );
+  return <Ball size={size} own={kind === "own-goal"} />;
+}
+
+function Ball({ size = 16, own }: { size?: number; own?: boolean }) {
+  const ink = own ? "#c4231a" : "#32073e";
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-label={kind === "own-goal" ? "Own goal" : kind === "penalty" ? "Penalty goal" : "Goal"}>
-      <circle cx="8" cy="8" r="7" fill="white" stroke={kind === "own-goal" ? "#E03131" : "#32073e"} strokeWidth="1.4" />
-      <path d="M8 4.6 10.9 6.7 9.8 10.1H6.2L5.1 6.7Z" fill={kind === "own-goal" ? "#E03131" : "#32073e"} />
+    <svg width={size} height={size} viewBox="0 0 16 16" aria-label={own ? "Own goal" : "Goal"} className="shrink-0">
+      <circle cx="8" cy="8" r="7.2" fill="white" stroke={ink} strokeWidth="1.2" />
+      <path d="M8 4.8 10.6 6.7 9.6 9.8H6.4L5.4 6.7Z" fill={ink} />
+      <path d="M8 4.8V1M10.6 6.7l3.5-1.2M9.6 9.8l2.2 3M6.4 9.8l-2.2 3M5.4 6.7 1.9 5.5" stroke={ink} strokeWidth="1" />
     </svg>
   );
 }
 
-const minuteValue = (s: string) => s.split("+").reduce((n, p) => n + (parseInt(p, 10) || 0) / (n ? 100 : 1), 0);
+const minuteValue = (s: string) => s.split("+").reduce((n, p, i) => n + (parseInt(p, 10) || 0) / (i ? 100 : 1), 0);
 
 function Timeline({ d }: { d: MatchDetail }) {
   const live = d.match.state === "in";
   const events = [...d.events].sort((a, b) => minuteValue(a.minute) - minuteValue(b.minute));
   if (live) events.reverse();
   if (!events.length) return <Empty title="Nothing yet" body="Goals, cards and changes show here as they happen." />;
-  const goals = events.filter((e) => e.kind !== "yellow" && e.kind !== "red" && e.kind !== "sub");
-  const scorers = (home: boolean) => goals.filter((g) => g.home === home).map((g) => `${g.player.split(" ").pop()} ${g.minute}`);
+  const goals = [...d.events].filter((e) => e.kind === "goal" || e.kind === "penalty" || e.kind === "own-goal").sort((a, b) => minuteValue(a.minute) - minuteValue(b.minute));
+  const scorers = (home: boolean) => goals.filter((g) => g.home === home);
 
   return (
-    <div className="flex flex-col gap-[24px]">
+    <div className="flex flex-col gap-[20px]">
       {goals.length > 0 && (
-        <div className="grid grid-cols-2 gap-[12px] rounded-[16px] p-[14px] ring-1 ring-line-soft">
-          {[true, false].map((h) => (
-            <div key={String(h)} className={`flex flex-col gap-[2px] ${h ? "" : "text-right"}`}>
-              {scorers(h).map((s) => (
-                <span key={s} className="font-geist text-caption text-secondary">
-                  {s}
+        <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-[12px] rounded-[16px] px-[14px] py-[12px] ring-1 ring-line-soft">
+          {[true, false].map((h, i) => (
+            <div key={String(h)} className={`flex flex-col gap-[4px] ${h ? "" : "col-start-3 text-right"}`}>
+              {scorers(h).map((g, j) => (
+                <span key={j} className="font-geist text-caption text-secondary">
+                  {lastName(g.player)} <span className="tabular-nums text-muted">{g.minute}</span>
+                  {g.kind === "penalty" && " (pen)"}
+                  {g.kind === "own-goal" && " (og)"}
                 </span>
               ))}
+              {i === 0 && <span className="sr-only">Home scorers</span>}
             </div>
           ))}
+          <span className="col-start-2 row-start-1 pt-[2px]">
+            <Ball size={14} />
+          </span>
         </div>
       )}
-      <ol className="relative flex flex-col gap-[4px]">
-        <span className="absolute bottom-[12px] left-1/2 top-[12px] w-px -translate-x-1/2 bg-line-soft" aria-hidden="true" />
+      <ol className="relative flex flex-col">
+        <span className="absolute bottom-[16px] left-1/2 top-[16px] w-px -translate-x-1/2 bg-line-soft" aria-hidden="true" />
         {events.map((e, i) => {
           const isGoal = e.kind === "goal" || e.kind === "penalty" || e.kind === "own-goal";
           const text = (
             <span className={`flex min-w-0 items-center gap-[8px] ${e.home ? "flex-row-reverse text-right" : ""}`}>
               <EventIcon kind={e.kind} />
               <span className="min-w-0">
-                <span className={`block truncate font-geist text-body ${isGoal ? "font-semibold text-heading" : "text-heading"}`}>{e.player}</span>
-                {e.other && (
+                <span className={`block truncate font-geist text-body ${isGoal ? "font-semibold" : ""} text-heading`}>{e.player}</span>
+                {(e.other || e.kind === "penalty" || e.kind === "own-goal") && (
                   <span className="block truncate font-geist text-caption text-muted">
-                    {e.kind === "sub" ? `Off: ${e.other}` : `Assist: ${e.other}`}
+                    {e.kind === "sub" ? `For ${e.other}` : e.kind === "penalty" ? "Penalty" : e.kind === "own-goal" ? "Own goal" : `Assist ${e.other}`}
                   </span>
                 )}
-                {e.kind === "penalty" && <span className="block font-geist text-caption text-muted">Penalty</span>}
-                {e.kind === "own-goal" && <span className="block font-geist text-caption text-muted">Own goal</span>}
               </span>
             </span>
           );
           return (
-            <li key={i} className="relative grid grid-cols-[1fr_52px_1fr] items-center py-[8px]">
-              <div className="flex justify-end">{e.home && text}</div>
+            <li key={i} className="relative grid grid-cols-[1fr_56px_1fr] items-center py-[8px]">
+              <div className="flex min-w-0 justify-end">{e.home && text}</div>
               <div className="flex justify-center">
-                <span className={`z-[1] min-w-[40px] rounded-full px-[6px] py-[2px] text-center font-geist text-caption font-semibold tabular-nums ${isGoal ? "bg-primary text-white" : "bg-background text-muted ring-1 ring-line-soft"}`}>{e.minute}</span>
+                <span className={`relative min-w-[40px] rounded-full px-[6px] py-[2px] text-center font-geist text-caption font-semibold tabular-nums ${isGoal ? "bg-primary text-white" : "bg-background text-muted ring-1 ring-line-soft"}`}>{e.minute}</span>
               </div>
-              <div className="flex justify-start">{!e.home && text}</div>
+              <div className="flex min-w-0 justify-start">{!e.home && text}</div>
             </li>
           );
         })}
@@ -692,7 +749,7 @@ function Timeline({ d }: { d: MatchDetail }) {
   );
 }
 
-// ── Lineups: a pitch for one side at a time, then the bench ───────────────────
+// ── Lineups: both sides on one pitch, home from the bottom ────────────────────
 const DEPTH: [RegExp, number][] = [
   [/^G/, 0],
   [/^(CD|CB|D)/, 1],
@@ -708,193 +765,340 @@ const DEPTH: [RegExp, number][] = [
 const depthOf = (pos: string) => DEPTH.find(([r]) => r.test(pos))?.[1] ?? 2.5;
 const sideOf = (pos: string) => (/-L$|^L/.test(pos) ? -1 : /-R$|^R/.test(pos) ? 1 : 0);
 
-// Rows from the keeper up, each left to right, sized by the formation where it adds up
-function rows(starters: Player[], formation?: string): Player[][] {
+// Lines from the keeper up, each from the team's left to right, sized by the formation
+function lines(starters: Player[], formation?: string): Player[][] {
   const gk = starters.filter((p) => depthOf(p.pos) === 0).slice(0, 1);
   const out = starters.filter((p) => !gk.includes(p)).sort((a, b) => depthOf(a.pos) - depthOf(b.pos) || a.place - b.place);
   const counts = formation?.split("-").map(Number) ?? [];
-  let lines: Player[][] = [];
+  let rows: Player[][] = [];
   if (counts.length && counts.every(Boolean) && counts.reduce((a, b) => a + b, 0) === out.length) {
     let i = 0;
-    lines = counts.map((n) => out.slice(i, (i += n)));
+    rows = counts.map((n) => out.slice(i, (i += n)));
   } else {
     const by = new Map<number, Player[]>();
     for (const p of out) {
       const k = Math.round(depthOf(p.pos));
       by.set(k, [...(by.get(k) ?? []), p]);
     }
-    lines = [...by.entries()].sort((a, b) => a[0] - b[0]).map(([, v]) => v);
+    rows = [...by.entries()].sort((a, b) => a[0] - b[0]).map(([, v]) => v);
   }
-  return [gk, ...lines].map((l) => [...l].sort((a, b) => sideOf(a.pos) - sideOf(b.pos)));
+  return [gk, ...rows].map((l) => [...l].sort((a, b) => sideOf(a.pos) - sideOf(b.pos)));
+}
+
+type Marks = { goals: number; yellow: boolean; red: boolean; off?: string };
+function marksFor(events: KeyEvent[]) {
+  const map = new Map<string, Marks>();
+  const get = (n: string) => map.get(n) ?? (map.set(n, { goals: 0, yellow: false, red: false }), map.get(n)!);
+  for (const e of events) {
+    if (e.kind === "goal" || e.kind === "penalty") get(e.player).goals++;
+    if (e.kind === "yellow") get(e.player).yellow = true;
+    if (e.kind === "red") get(e.player).red = true;
+    if (e.kind === "sub" && e.other) get(e.other).off = e.minute;
+  }
+  return map;
 }
 
 function Lineups({ d }: { d: MatchDetail }) {
   const m = d.match;
-  const [pick, setPick] = useState(m[chelseaSide(m)].id);
-  const sides = [m.home, m.away];
-  const lineup = d.lineups.find((l) => l.teamId === pick);
-  if (!d.lineups.length)
+  const home = d.lineups.find((l) => l.teamId === m.home.id);
+  const away = d.lineups.find((l) => l.teamId === m.away.id);
+  const marks = marksFor(d.events);
+  if (!home && !away)
     return (
-      <div className="flex flex-col gap-[16px]">
-        <Pitch faded />
-        <p className="text-center font-geist text-body text-muted">Lineups are announced about an hour before kick-off.</p>
+      <div className="relative">
+        <Pitch />
+        <div className="absolute inset-0 flex items-center justify-center p-[24px]">
+          <p className="max-w-[240px] rounded-[14px] bg-background px-[16px] py-[12px] text-center font-geist text-body text-heading">Lineups are announced about an hour before kick-off.</p>
+        </div>
       </div>
     );
   return (
-    <div className="flex flex-col gap-[16px]">
-      <div role="tablist" aria-label="Team" className="grid grid-cols-2 gap-[6px]">
-        {sides.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            role="tab"
-            aria-selected={pick === s.id}
-            data-sound-click="toggle"
-            onClick={() => setPick(s.id)}
-            className={`flex h-[44px] items-center justify-center gap-[8px] rounded-[12px] font-geist text-body font-medium transition-[background-color,box-shadow,color] ${
-              pick === s.id ? "bg-background text-heading shadow-[0_0_0_1.5px_#32073e]" : "text-muted ring-1 ring-inset ring-line-soft hover:text-heading"
-            }`}
-          >
-            <Crest src={s.logo} size={20} />
-            <span className="truncate">{s.name}</span>
-          </button>
-        ))}
+    <div className="flex flex-col gap-[24px]">
+      <div>
+        <TeamBar s={m.away} formation={away?.formation} />
+        <Pitch home={home} away={away} marks={marks} />
+        <TeamBar s={m.home} formation={home?.formation} />
       </div>
-      {lineup && <Pitch lineup={lineup} />}
-      {lineup && lineup.bench.length > 0 && <Bench players={lineup.bench} />}
+      <Bench m={m} home={home} away={away} />
     </div>
   );
 }
 
-function PitchLines() {
+function TeamBar({ s, formation }: { s: Side; formation?: string }) {
   return (
-    <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 130" preserveAspectRatio="none" aria-hidden="true">
-      <g fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="0.5" vectorEffect="non-scaling-stroke">
-        <rect x="4" y="4" width="92" height="122" rx="1" />
-        <line x1="4" y1="65" x2="96" y2="65" />
-        <circle cx="50" cy="65" r="11" />
-        <rect x="26" y="108" width="48" height="18" />
-        <rect x="38" y="120" width="24" height="6" />
-        <rect x="26" y="4" width="48" height="18" />
-        <rect x="38" y="4" width="24" height="6" />
+    <div className="flex items-center justify-between py-[10px]">
+      <span className="flex items-center gap-[8px] font-geist text-body font-semibold text-heading">
+        <Crest src={s.logo} size={20} />
+        {s.name}
+      </span>
+      {formation && <span className="font-geist text-caption font-medium tabular-nums text-muted">{formation}</span>}
+    </div>
+  );
+}
+
+// A full pitch to scale (68 × 105 m): mown stripes and every marking
+function PitchMarkings() {
+  const W = 68,
+    L = 105,
+    box = 40.32,
+    six = 18.32,
+    goal = 7.32;
+  const x = (w: number) => (W - w) / 2;
+  return (
+    <svg className="absolute inset-0 h-full w-full" viewBox={`-2 -2 ${W + 4} ${L + 4}`} preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <clipPath id="pitch-top">
+          <rect x="0" y="16.5" width={W} height="20" />
+        </clipPath>
+        <clipPath id="pitch-bottom">
+          <rect x="0" y={L - 36.5} width={W} height="20" />
+        </clipPath>
+      </defs>
+      {Array.from({ length: 14 }, (_, i) => (
+        <rect key={i} x="-2" y={-2 + i * ((L + 4) / 14)} width={W + 4} height={(L + 4) / 14} fill={i % 2 ? "rgba(255,255,255,0.035)" : "transparent"} />
+      ))}
+      <g fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth="1" vectorEffect="non-scaling-stroke">
+        <rect x="0" y="0" width={W} height={L} vectorEffect="non-scaling-stroke" />
+        <line x1="0" y1={L / 2} x2={W} y2={L / 2} vectorEffect="non-scaling-stroke" />
+        <circle cx={W / 2} cy={L / 2} r="9.15" vectorEffect="non-scaling-stroke" />
+        {/* top end */}
+        <rect x={x(box)} y="0" width={box} height="16.5" vectorEffect="non-scaling-stroke" />
+        <rect x={x(six)} y="0" width={six} height="5.5" vectorEffect="non-scaling-stroke" />
+        <rect x={x(goal)} y="-1.6" width={goal} height="1.6" vectorEffect="non-scaling-stroke" />
+        <circle cx={W / 2} cy="11" r="9.15" clipPath="url(#pitch-top)" vectorEffect="non-scaling-stroke" />
+        {/* bottom end */}
+        <rect x={x(box)} y={L - 16.5} width={box} height="16.5" vectorEffect="non-scaling-stroke" />
+        <rect x={x(six)} y={L - 5.5} width={six} height="5.5" vectorEffect="non-scaling-stroke" />
+        <rect x={x(goal)} y={L} width={goal} height="1.6" vectorEffect="non-scaling-stroke" />
+        <circle cx={W / 2} cy={L - 11} r="9.15" clipPath="url(#pitch-bottom)" vectorEffect="non-scaling-stroke" />
+        {/* corners */}
+        <path d={`M1 0A1 1 0 0 1 0 1M${W - 1} 0A1 1 0 0 0 ${W} 1M0 ${L - 1}A1 1 0 0 1 1 ${L}M${W} ${L - 1}A1 1 0 0 0 ${W - 1} ${L}`} vectorEffect="non-scaling-stroke" />
+      </g>
+      <g fill="rgba(255,255,255,0.4)">
+        <circle cx={W / 2} cy={L / 2} r="0.5" />
+        <circle cx={W / 2} cy="11" r="0.4" />
+        <circle cx={W / 2} cy={L - 11} r="0.4" />
       </g>
     </svg>
   );
 }
 
-function Pitch({ lineup, faded }: { lineup?: Lineup; faded?: boolean }) {
-  const lines = lineup ? rows(lineup.starters, lineup.formation) : [];
+function Pitch({ home, away, marks }: { home?: Lineup; away?: Lineup; marks?: Map<string, Marks> }) {
+  // Home keeper at the bottom edge, its forwards just below halfway; away mirrored on top
+  const place = (lineup: Lineup, top: boolean) => {
+    const ls = lines(lineup.starters, lineup.formation);
+    const n = ls.length;
+    return ls.flatMap((line, r) => {
+      const y = r === 0 ? 6 : 15 + ((r - 1) / Math.max(1, n - 2)) * 25; // % from own goal line
+      return line.map((p, i) => {
+        const xi = (i + 1) / (line.length + 1);
+        return { p, x: (top ? 1 - xi : xi) * 100, y: top ? y : 100 - y, away: top };
+      });
+    });
+  };
+  const dots = [...(home ? place(home, false) : []), ...(away ? place(away, true) : [])];
   return (
-    <div className={`relative aspect-[100/130] w-full overflow-hidden rounded-[18px] ${faded ? "opacity-40" : ""}`} style={{ background: `repeating-linear-gradient(180deg, rgba(255,255,255,0.025) 0 10%, transparent 10% 20%), ${TILE_BG}` }}>
-      <PitchLines />
-      {lineup?.formation && <span className="absolute left-[14px] top-[12px] rounded-full bg-white/10 px-[8px] py-[2px] font-geist text-caption font-semibold tabular-nums text-white ring-1 ring-white/15">{lineup.formation}</span>}
-      {/* Keeper at the bottom, attack at the top */}
-      <div className="absolute inset-x-[8px] bottom-[16px] top-[40px] flex flex-col-reverse justify-between">
-        {lines.map((line, i) => (
-          <div key={i} className="flex justify-around">
-            {line.map((p) => (
-              <div key={p.number + p.name} className="flex w-[64px] flex-col items-center gap-[4px]">
-                <span className="relative flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white font-geist text-caption font-bold tabular-nums text-heading shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
-                  {p.number}
-                  {p.subOut && (
-                    <span className="absolute -right-[4px] -top-[4px] flex h-[14px] w-[14px] items-center justify-center rounded-full bg-[#E03131] ring-2 ring-[#32073e]" aria-label="Substituted">
-                      <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
-                        <path d="M4 1v6m0 0L1.5 4.5M4 7l2.5-2.5" fill="none" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
-                      </svg>
-                    </span>
-                  )}
+    <div className="relative aspect-[72/109] w-full overflow-hidden rounded-[16px]" style={{ background: "#2c0737" }}>
+      <PitchMarkings />
+      {dots.map(({ p, x, y, away: isAway }) => {
+        const mk = marks?.get(p.name);
+        return (
+          <div key={(isAway ? "a" : "h") + p.number + p.name} className="absolute flex w-[68px] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[4px]" style={{ left: `${x}%`, top: `${y}%` }}>
+            <span
+              className={`relative flex h-[28px] w-[28px] items-center justify-center rounded-full font-geist text-caption font-bold tabular-nums ${
+                isAway ? "bg-[#1e0525] text-white ring-[1.5px] ring-white/70" : "bg-white text-heading"
+              }`}
+            >
+              {p.number}
+              {mk?.goals ? (
+                <span className="absolute -left-[6px] -top-[6px] flex items-center rounded-full bg-white">
+                  <Ball size={14} />
+                  {mk.goals > 1 && <span className="pr-[3px] font-geist text-[10px] font-bold leading-[12px] text-heading">{mk.goals}</span>}
                 </span>
-                <span className="max-w-full truncate rounded-[6px] bg-black/25 px-[4px] font-geist text-[10px] font-medium leading-[14px] text-white">{p.short}</span>
-              </div>
-            ))}
+              ) : null}
+              {(mk?.yellow || mk?.red) && <span className={`absolute -right-[4px] -top-[4px] h-[10px] w-[8px] rounded-[1px] ${mk.red ? "bg-[#E03131]" : "bg-[#F5C518]"}`} />}
+              {mk?.off && (
+                <span className="absolute -bottom-[4px] -right-[8px] flex h-[16px] items-center rounded-full bg-[#c4231a] px-[4px] font-geist text-[10px] font-semibold leading-[12px] text-white">{mk.off}</span>
+              )}
+            </span>
+            <span className="max-w-full truncate font-geist text-[10px] font-medium leading-[12px] text-white">{p.short}</span>
           </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function Bench({ m, home, away }: { m: Match; home?: Lineup; away?: Lineup }) {
+  const col = (s: Side, l?: Lineup) =>
+    l && (
+      <div className="min-w-0">
+        <p className="mb-[4px] flex items-center gap-[6px] font-geist text-caption font-medium text-muted">
+          <Crest src={s.logo} size={14} />
+          {s.name}
+        </p>
+        <ul>
+          {l.bench.map((p) => (
+            <li key={p.number + p.name} className="flex items-center gap-[8px] border-b border-line-soft py-[8px] last:border-b-0">
+              <span className="w-[20px] font-geist text-caption tabular-nums text-muted">{p.number}</span>
+              <span className={`min-w-0 flex-1 truncate font-geist text-body ${p.subIn ? "font-medium text-heading" : "text-secondary"}`}>{p.short}</span>
+              {p.subIn && (
+                <svg width="12" height="12" viewBox="0 0 12 12" aria-label="Came on" className="shrink-0">
+                  <path d="M6 10V2m0 0L3 5m3-3 3 3" fill="none" stroke="#15803d" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  return (
+    <section>
+      <SectionHead title="Substitutes" />
+      <div className="grid grid-cols-2 gap-x-[20px]">
+        {col(m.home, home)}
+        {col(m.away, away)}
+      </div>
+    </section>
+  );
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+// After FotMob / Apple Sports: a team key, possession as one split bar with the numbers
+// inside it, a shooting card with an accuracy ring per side, then grouped cards of rows.
+// Each row is value · label · value; the side that leads gets its number in a filled pill
+// in its team colour, so the winner of every row reads at a glance without extra bars.
+const teamFill = (s: Side) => (s.isChelsea ? "bg-grape" : "bg-primary");
+const teamStroke = (s: Side) => (s.isChelsea ? "#9D136A" : "#32073e");
+
+const GROUPS: [string, string[]][] = [
+  ["Top stats", ["Corners", "Saves", "Accurate passes"]],
+  ["Discipline", ["Fouls", "Offsides", "Yellow cards", "Red cards"]],
+];
+
+function Stats({ d }: { d: MatchDetail }) {
+  const m = d.match;
+  if (!d.stats.length) return <Empty title="No stats yet" body="Match stats fill in once the game is under way." />;
+  const get = (label: string) => d.stats.find((s) => s.label === label);
+  const poss = get("Possession");
+  const shots = get("Shots");
+  const onTarget = get("Shots on target");
+  const used = new Set(["Possession", "Shots", "Shots on target"]);
+
+  return (
+    <div className="flex flex-col gap-[20px]">
+      {/* Key: which colour is which side */}
+      <div className="flex items-center justify-between">
+        {[m.home, m.away].map((s, i) => (
+          <span key={s.id} className={`flex items-center gap-[8px] ${i ? "flex-row-reverse" : ""}`}>
+            <Crest src={s.logo} size={24} />
+            <span className="font-geist text-body font-semibold text-heading">{s.name}</span>
+            <span className={`h-[8px] w-[8px] rounded-full ${teamFill(s)}`} aria-hidden="true" />
+          </span>
         ))}
+      </div>
+
+      {poss && <Possession home={m.home} away={m.away} s={poss} />}
+
+      {shots && onTarget && <Shooting home={m.home} away={m.away} shots={shots} onTarget={onTarget} />}
+
+      {GROUPS.map(([title, labels]) => {
+        const rows = labels.map(get).filter((s): s is Stat => !!s);
+        rows.forEach((r) => used.add(r.label));
+        return rows.length ? <StatGroup key={title} title={title} rows={rows} home={m.home} away={m.away} neutral={title === "Discipline"} /> : null;
+      })}
+      {(() => {
+        const other = d.stats.filter((s) => !used.has(s.label));
+        return other.length ? <StatGroup title="More" rows={other} home={m.home} away={m.away} /> : null;
+      })()}
+    </div>
+  );
+}
+
+function Possession({ s, home, away }: { s: Stat; home: Side; away: Side }) {
+  const h = Math.round(s.home),
+    a = 100 - h;
+  return (
+    <section className="rounded-[16px] p-[16px] ring-1 ring-line-soft">
+      <p className="mb-[12px] text-center font-geist text-caption font-semibold uppercase tracking-[0.6px] text-muted">Ball possession</p>
+      <div className="flex h-[36px] gap-[4px]" role="img" aria-label={`Possession: ${home.name} ${h}%, ${away.name} ${a}%`}>
+        <span className={`flex items-center rounded-l-full rounded-r-[6px] pl-[14px] ${teamFill(home)}`} style={{ width: `${h}%` }}>
+          <span className="font-geist text-body font-semibold tabular-nums text-white">{h}%</span>
+        </span>
+        <span className={`flex items-center justify-end rounded-l-[6px] rounded-r-full pr-[14px] ${teamFill(away)}`} style={{ width: `${a}%` }}>
+          <span className="font-geist text-body font-semibold tabular-nums text-white">{a}%</span>
+        </span>
+      </div>
+    </section>
+  );
+}
+
+function Ring({ value, total, side, align }: { value: number; total: number; side: Side; align: "left" | "right" }) {
+  const pct = total ? value / total : 0;
+  const r = 26,
+    c = 2 * Math.PI * r;
+  return (
+    <div className={`flex items-center gap-[12px] ${align === "right" ? "flex-row-reverse text-right" : ""}`}>
+      <svg width="64" height="64" viewBox="0 0 64 64" className="shrink-0 -rotate-90" aria-hidden="true">
+        <circle cx="32" cy="32" r={r} fill="none" stroke="#eeece8" strokeWidth="6" />
+        <circle cx="32" cy="32" r={r} fill="none" stroke={teamStroke(side)} strokeWidth="6" strokeLinecap="round" strokeDasharray={`${pct * c} ${c}`} />
+      </svg>
+      <div>
+        <span className="block font-heading text-h2 tabular-nums text-heading">{Math.round(pct * 100)}%</span>
+        <span className="block font-geist text-caption tabular-nums text-muted">
+          {value} of {total} on target
+        </span>
       </div>
     </div>
   );
 }
 
-function Bench({ players }: { players: Player[] }) {
+function Shooting({ home, away, shots, onTarget }: { home: Side; away: Side; shots: Stat; onTarget: Stat }) {
   return (
-    <section className="mt-[8px]">
-      <SectionHead title="Bench" />
-      <ul className="grid grid-cols-2 gap-x-[16px]">
-        {players.map((p) => (
-          <li key={p.number + p.name} className="flex items-center gap-[8px] border-b border-line-soft py-[8px]">
-            <span className="w-[20px] font-geist text-caption tabular-nums text-muted">{p.number}</span>
-            <span className="min-w-0 flex-1 truncate font-geist text-body text-heading">{p.name}</span>
-            {p.subIn && (
-              <svg width="12" height="12" viewBox="0 0 12 12" aria-label="Came on">
-                <path d="M6 10V2m0 0L3 5m3-3 3 3" fill="none" stroke="#1f9d55" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
-          </li>
+    <section className="overflow-hidden rounded-[16px] ring-1 ring-line-soft">
+      <p className="px-[16px] pt-[14px] font-geist text-caption font-semibold uppercase tracking-[0.6px] text-muted">Shooting</p>
+      <div className="flex items-center justify-between px-[16px] py-[14px]">
+        <Ring value={onTarget.home} total={shots.home} side={home} align="left" />
+        <Ring value={onTarget.away} total={shots.away} side={away} align="right" />
+      </div>
+      <ul className="border-t border-line-soft">
+        <CompareRow s={shots} home={home} away={away} />
+        <CompareRow s={onTarget} home={home} away={away} />
+      </ul>
+    </section>
+  );
+}
+
+// Discipline has no "winner": more fouls or cards isn't a lead, so its numbers stay plain
+function StatGroup({ title, rows, home, away, neutral }: { title: string; rows: Stat[]; home: Side; away: Side; neutral?: boolean }) {
+  return (
+    <section className="overflow-hidden rounded-[16px] ring-1 ring-line-soft">
+      <p className="px-[16px] pt-[14px] pb-[4px] font-geist text-caption font-semibold uppercase tracking-[0.6px] text-muted">{title}</p>
+      <ul>
+        {rows.map((s) => (
+          <CompareRow key={s.label} s={s} home={home} away={away} neutral={neutral} />
         ))}
       </ul>
     </section>
   );
 }
 
-// ── Stats: possession on top, then side-by-side bars ──────────────────────────
-function Stats({ d }: { d: MatchDetail }) {
-  const m = d.match;
-  if (!d.stats.length) return <Empty title="No stats yet" body="Match stats fill in once the game is under way." />;
-  const [poss, ...rest] = d.stats[0].pct ? d.stats : [undefined, ...d.stats];
-  const tone = (s: Side) => (s.isChelsea ? "bg-grape" : "bg-primary");
-  return (
-    <div className="flex flex-col gap-[24px]">
-      <div className="flex items-center justify-between">
-        <Crest src={m.home.logo} size={24} />
-        <span className="font-geist text-caption font-semibold uppercase tracking-[0.6px] text-heading">Team stats</span>
-        <Crest src={m.away.logo} size={24} />
-      </div>
-      {poss && (
-        <section>
-          <div className="mb-[8px] flex items-baseline justify-between">
-            <span className="font-heading text-h2 tabular-nums text-heading">{Math.round(poss.home)}%</span>
-            <span className="font-geist text-caption text-muted">Possession</span>
-            <span className="font-heading text-h2 tabular-nums text-heading">{Math.round(poss.away)}%</span>
-          </div>
-          <div className="flex h-[10px] gap-[4px]">
-            <span className={`rounded-full ${tone(m.home)}`} style={{ width: `${poss.home}%` }} />
-            <span className={`rounded-full ${tone(m.away)} opacity-30`} style={{ width: `${poss.away}%` }} />
-          </div>
-        </section>
-      )}
-      <ul className="flex flex-col gap-[16px]">
-        {rest.map((s) => s && <StatRow key={s.label} s={s} home={m.home} away={m.away} />)}
-      </ul>
-    </div>
-  );
-}
-
-function StatRow({ s, home, away }: { s: Stat; home: Side; away: Side }) {
-  const max = Math.max(s.home, s.away, 1);
-  const lead = s.home === s.away ? null : s.home > s.away ? "home" : "away";
+function CompareRow({ s, home, away, neutral }: { s: Stat; home: Side; away: Side; neutral?: boolean }) {
+  const lead = neutral || s.home === s.away ? null : s.home > s.away ? "home" : "away";
   const value = (v: number, side: "home" | "away", t: Side) => (
     <span
-      className={`min-w-[32px] rounded-full px-[8px] py-[2px] text-center font-geist text-caption font-semibold tabular-nums ${
-        lead === side ? (t.isChelsea ? "bg-grape text-white" : "bg-primary text-white") : "text-heading"
+      className={`inline-flex h-[28px] min-w-[40px] items-center justify-center rounded-full px-[10px] font-geist text-body font-semibold tabular-nums ${
+        lead === side ? `${teamFill(t)} text-white` : "text-heading"
       }`}
     >
       {v}
     </span>
   );
   return (
-    <li>
-      <div className="flex items-center justify-between">
-        {value(s.home, "home", home)}
-        <span className="font-geist text-caption text-secondary">{s.label}</span>
-        {value(s.away, "away", away)}
-      </div>
-      <div className="mt-[6px] grid grid-cols-2 gap-[4px]">
-        <div className="flex h-[4px] justify-end overflow-hidden rounded-full bg-line-soft">
-          <span className={`rounded-full ${lead === "home" ? (home.isChelsea ? "bg-grape" : "bg-primary") : "bg-[#C9C5BF]"}`} style={{ width: `${(s.home / max) * 100}%` }} />
-        </div>
-        <div className="flex h-[4px] overflow-hidden rounded-full bg-line-soft">
-          <span className={`rounded-full ${lead === "away" ? (away.isChelsea ? "bg-grape" : "bg-primary") : "bg-[#C9C5BF]"}`} style={{ width: `${(s.away / max) * 100}%` }} />
-        </div>
-      </div>
+    <li className="grid h-[48px] grid-cols-[64px_1fr_64px] items-center border-t border-line-soft px-[12px] first:border-t-0">
+      <span className="justify-self-start">{value(s.home, "home", home)}</span>
+      <span className="text-center font-geist text-body text-secondary">{s.label}</span>
+      <span className="justify-self-end">{value(s.away, "away", away)}</span>
     </li>
   );
 }
@@ -909,11 +1113,11 @@ function Table({ d }: { d: MatchDetail }) {
       <table className="w-full font-geist text-body tabular-nums">
         <thead>
           <tr className="text-left text-caption text-muted">
-            <th className="w-[28px] pb-[8px] font-medium">#</th>
+            <th className="w-[28px] pb-[8px] pl-[6px] font-medium">#</th>
             <th className="pb-[8px] font-medium">Team</th>
             <th className="w-[32px] pb-[8px] text-right font-medium">P</th>
             <th className="w-[40px] pb-[8px] text-right font-medium">GD</th>
-            <th className="w-[40px] pb-[8px] text-right font-medium">Pts</th>
+            <th className="w-[44px] pb-[8px] pr-[6px] text-right font-medium">Pts</th>
           </tr>
         </thead>
         <tbody>
@@ -950,10 +1154,10 @@ function News({ items, now }: { items: Article[]; now: number }) {
       <a href={lead.href} target="_blank" rel="noopener noreferrer" className="group block overflow-hidden rounded-[16px] ring-1 ring-line-soft">
         {lead.image && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={lead.image} alt="" className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" />
+          <img src={lead.image} alt="" className="aspect-[16/9] w-full object-cover" />
         )}
         <span className="block p-[14px]">
-          <span className="block font-geist text-body-md font-semibold text-heading">{lead.headline}</span>
+          <span className="block font-geist text-body-md font-semibold text-heading group-hover:text-grape">{lead.headline}</span>
           <span className="mt-[4px] block font-geist text-caption text-muted">ESPN · {ago(lead.published, now)}</span>
         </span>
       </a>
