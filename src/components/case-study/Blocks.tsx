@@ -551,15 +551,24 @@ export function Reasons({ items }: { items: string[] }) {
 }
 
 /**
- * The small label over a card's title ("Variant 2", "Option C"): Geist capitals in the grape
- * accent with a 6px grape dot before it. Plain text, not a tag. Shared by OptionCard and
- * VariantPair so every option and variant is named the same way.
+ * The small label over a card's title ("Iteration 2", "Variant 2 · Text links"): Geist
+ * capitals in a quiet warm grey, so the serif title below stays the first read. A trailing or
+ * leading number is pulled out in the heading ink with tabular figures ("ITERATION 02"), so
+ * the order of iterations and variants is what the eye catches. No dot, no brand colour: the
+ * grape is kept for links and highlights.
  */
 export function CardKicker({ children }: { children: React.ReactNode }) {
+  const m = typeof children === "string" ? children.match(/^(.*?\S)\s+(\d{1,2})(\s*[·:–-]\s*.+)?$/) : null;
   return (
-    <p className="m-0 flex items-center gap-[8px] font-geist text-caption-md font-medium uppercase tracking-[1px] text-grape">
-      <span aria-hidden="true" className="size-[6px] shrink-0 rounded-full bg-grape" />
-      {children}
+    <p className="m-0 font-geist text-caption-md font-medium uppercase tracking-[1px] text-muted">
+      {m ? (
+        <>
+          {m[1]} <span className="font-semibold tabular-nums text-heading">{m[2].padStart(2, "0")}</span>
+          {m[3] && <span>{m[3]}</span>}
+        </>
+      ) : (
+        children
+      )}
     </p>
   );
 }

@@ -370,7 +370,7 @@ function Solution() {
           previewHash="details"
           title="Travel protection in the Artemis traveller details step"
           label="The traveller details step with travel protection, rebuilt as a working prototype"
-          hint="Try it: add or switch a plan, open View More Benefits, or press Your Travel Checklist with fields left empty."
+          hint="Try it: add or switch a plan, open View More Benefits, or jump to any step from the bar at the top, even before every field is filled."
         />
       </Visual>
       {SOLUTION_ITEMS.map(({ num, title, text, video, alt }) => (

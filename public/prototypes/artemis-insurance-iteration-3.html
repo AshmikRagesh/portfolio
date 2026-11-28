@@ -1286,7 +1286,7 @@ const DETAIL = {
   'Baggage loss and delay': 'Receive up to $2,000 in coverage for lost, stolen, or delayed baggage to help you replace essential items.',
   'Trip interruption cover': 'Get back the unused part of your trip if you have to cut it short for a covered reason.',
 };
-const modal = $('.modal'), dlg = $('.dlg', modal);
+const modal = $('.modal:not(.itin)'), dlg = $('.dlg', modal);
 let mPlan = null, mReturn = null;
 function syncModal() {}             // the modal is read-only: adding / removing stays on the card
 function openModal(plan, from) {
