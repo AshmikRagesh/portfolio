@@ -1,54 +1,46 @@
 // ── Chelsea's next fixtures ───────────────────────────────────────────────────
-// For the Chelsea pin in the hero. Reads ESPN's public site API (no key): the upcoming
-// fixtures across every competition. (Its results feed lags months behind, so no "last
-// result".) Cached for half an hour so the page never waits on ESPN.
+// For the Chelsea pin in the hero: the match on now (if any) and the next ones across every
+// competition, plus Chelsea's last five results. Reads ESPN's public site API (no key);
+// see lib/chelsea. Short cache so a live score stays close to real time.
+//
+// In development, ?demo=<ESPN event id> shows that (finished) match as if it were live, so
+// the live card and the match centre can be checked on a day with no game.
 
 import { NextResponse } from "next/server";
+import { TEAM, espn, match, detail, type EspnEvent, type FormGame, type Match } from "@/lib/chelsea";
 
-export const revalidate = 1800;
+export const dynamic = "force-dynamic";
 
-const TEAM = "363"; // Chelsea on ESPN
-const BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer";
-
-type EspnCompetitor = {
-  homeAway: "home" | "away";
-  team: { id: string; displayName: string; shortDisplayName?: string; abbreviation?: string; logos?: { href: string }[] };
-  score?: { displayValue?: string } | string;
-};
-type EspnEvent = {
-  date: string;
-  league?: { name?: string; abbreviation?: string };
-  competitions: { venue?: { fullName?: string }; competitors: EspnCompetitor[] }[];
-};
-
-const side = (c: EspnCompetitor) => ({
-  name: c.team.shortDisplayName ?? c.team.displayName,
-  abbr: c.team.abbreviation ?? "",
-  logo: c.team.logos?.[0]?.href ?? `https://a.espncdn.com/i/teamlogos/soccer/500/${c.team.id}.png`,
-  isChelsea: c.team.id === TEAM,
-  score: typeof c.score === "string" ? c.score : c.score?.displayValue,
-});
-
-function match(e: EspnEvent) {
-  const c = e.competitions[0];
-  const home = c.competitors.find((x) => x.homeAway === "home")!;
-  const away = c.competitors.find((x) => x.homeAway === "away")!;
-  return { date: e.date, competition: e.league?.name ?? "", venue: c.venue?.fullName ?? "", home: side(home), away: side(away) };
-}
-
-async function get(url: string) {
-  const r = await fetch(url, { next: { revalidate } });
-  if (!r.ok) throw new Error(String(r.status));
-  return (await r.json()) as { events?: EspnEvent[] };
-}
-
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const fixtures = await get(`${BASE}/all/teams/${TEAM}/schedule?fixture=true`);
+    const demo = process.env.NODE_ENV !== "production" ? new URL(req.url).searchParams.get("demo") : null;
+    const fixtures = await espn<{ events?: EspnEvent[] }>(`/all/teams/${TEAM}/schedule?fixture=true`, 60);
     const now = Date.now();
-    const next = (fixtures.events ?? []).filter((e) => Date.parse(e.date) > now - 2 * 3600e3).slice(0, 3).map(match);
-    return NextResponse.json({ next }, { headers: { "Cache-Control": "public, s-maxage=1800, stale-while-revalidate=3600" } });
+    let next: Match[] = (fixtures.events ?? [])
+      .filter((e) => Date.parse(e.date) > now - 3 * 3600e3)
+      .map((e) => match(e))
+      .filter((m) => m.state !== "post")
+      .slice(0, 3);
+
+    if (demo && /^\d+$/.test(demo)) {
+      const d = detail(await espn(`/all/summary?event=${demo}`, 600), demo, { state: "in", clock: "67'" });
+      next = [d.match, ...next].slice(0, 3);
+    }
+
+    // Form comes with the first match's summary (ESPN's team results feed lags months behind)
+    let form: FormGame[] = [];
+    if (next[0]) {
+      try {
+        const d = detail(await espn(`/all/summary?event=${next[0].id}`, 600), next[0].id);
+        form = d.form.find((f) => f.teamId === TEAM)?.games ?? [];
+      } catch {}
+    }
+
+    return NextResponse.json(
+      { next, form },
+      { headers: { "Cache-Control": next[0]?.state === "in" ? "public, s-maxage=20" : "public, s-maxage=300, stale-while-revalidate=1800" } },
+    );
   } catch {
-    return NextResponse.json({ next: [] }, { status: 502 });
+    return NextResponse.json({ next: [], form: [] }, { status: 502 });
   }
 }
