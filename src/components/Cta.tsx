@@ -17,8 +17,9 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
  *
  * `size="sm"` for CTAs inside cards and dialogs. `dark` for midnight surfaces: a white
  * pill with midnight text, still turning grape on hover. `off` greys it out (NDA work).
+ * `secondary` is the outline pill (hairline, no fill) that fills grape on hover.
  */
-type Look = { size?: "md" | "sm"; dark?: boolean; off?: boolean; muted?: boolean };
+type Look = { size?: "md" | "sm"; dark?: boolean; off?: boolean; muted?: boolean; secondary?: boolean };
 
 /** `muted`: the greyed pill for work behind a password or NDA — it still works, and its
  *  icon still slides out on hover, but in grey. `icon` swaps the arrow that slides out on hover (a lock for locked work, mail for NDA). */
@@ -28,6 +29,7 @@ export function CtaPill({
   dark,
   off,
   muted,
+  secondary,
   icon,
   external,
 }: Look & { children: React.ReactNode; icon?: React.ReactNode; external?: boolean }) {
@@ -38,6 +40,7 @@ export function CtaPill({
     dark && "work-cta--dark",
     off && "work-cta--off",
     muted && "work-cta--muted",
+    secondary && "work-cta--secondary",
   ]
     .filter(Boolean)
     .join(" ");

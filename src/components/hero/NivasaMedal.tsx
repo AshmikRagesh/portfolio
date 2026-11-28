@@ -267,9 +267,9 @@ function HostCard() {
         <SectionHead>Guest reviews</SectionHead>
         <GuestReviews />
 
-        {/* The site's CTA, filled to the card's width (as in the expanded reel): grape on
-            hover, and the arrow circle slides out */}
-        <Cta href={PROFILE} external className="cta-full mt-6">
+        {/* The site's CTA as the secondary outline, filled to the card's width (as in the
+            expanded reel): grape on hover, and the arrow circle slides out */}
+        <Cta href={PROFILE} external secondary className="cta-full mt-6">
           See Nivasa on Airbnb
         </Cta>
       </div>

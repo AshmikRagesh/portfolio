@@ -1084,6 +1084,18 @@ html[data-leaving] .page-enter {
   .group:hover .work-cta--muted .work-cta__inner,
   .group:hover .work-cta--muted .work-cta__circle { background-color: #dcdde2; }
 }
+/* Secondary: the same pill as an outline (hairline, blackcurrant text, no fill); on hover or
+   focus it fills grape with white text and the arrow circle slides out, like the main CTA */
+.work-cta--secondary { color: theme("colors.heading"); }
+.work-cta--secondary .work-cta__inner, .work-cta--secondary .work-cta__circle { background-color: transparent; box-shadow: inset 0 0 0 1px theme("colors.line"); }
+.group:focus-visible .work-cta--secondary { color: #fff; }
+.group:focus-visible .work-cta--secondary .work-cta__inner,
+.group:focus-visible .work-cta--secondary .work-cta__circle { box-shadow: inset 0 0 0 1px #9d136a; }
+@media (hover: hover) {
+  .group:hover .work-cta--secondary { color: #fff; }
+  .group:hover .work-cta--secondary .work-cta__inner,
+  .group:hover .work-cta--secondary .work-cta__circle { box-shadow: inset 0 0 0 1px #9d136a; }
+}
 /* The same pill, smaller, for CTAs inside cards and dialogs */
 .work-cta--sm { --cta-h: 40px; }
 .work-cta--sm .work-cta__inner { padding-inline: 20px; }
