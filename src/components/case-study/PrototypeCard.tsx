@@ -182,18 +182,29 @@ export default function PrototypeCard({
   const close = useCallback(() => setOpen(false), []);
   const show = () => setOpen(true);
 
-  // The spotlight: the label appears and the rest of the page blurs and dims once the card
-  // has scrolled well into view (most of it on screen), and while it's hovered or
-  // keyboard-focused. At rest the card shows only the prototype.
+  // The spotlight: the label appears and the rest of the page blurs and dims the first time the
+  // card scrolls well into view (most of it on screen). After that first pass it comes on only
+  // while the card is hovered or keyboard-focused. At rest the card shows only the prototype.
   const ref = useRef<HTMLElement>(null);
   const [seen, setSeen] = useState(false);
+  const firstDone = useRef(false);   // the scroll-in spotlight has played once
+  const seenNow = useRef(false);
   const [hover, setHover] = useState(false);
   const [focus, setFocus] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => setSeen(e.intersectionRatio >= 0.7), { threshold: [0, 0.7, 1] });
+    const io = new IntersectionObserver(
+      ([e]) => {
+        const inView = e.intersectionRatio >= 0.7;
+        if (firstDone.current) return;
+        if (!inView && seenNow.current) firstDone.current = true;   // scrolled away after the first spotlight
+        seenNow.current = inView;
+        setSeen(inView && !firstDone.current);
+      },
+      { threshold: [0, 0.7, 1] },
+    );
     io.observe(el);
     return () => io.disconnect();
   }, []);
