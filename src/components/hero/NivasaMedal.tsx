@@ -14,7 +14,6 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import HoverTip from "./HoverTip";
 import Cta from "@/components/Cta";
 import { Tag } from "@/components/Tag";
-import { Star } from "lucide-react";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 import { useCursorLight } from "./light";
 
@@ -181,14 +180,39 @@ function MedalIcon() {
 // The hero tile is the match card's blackcurrant (Chelsea), so the hero objects' cards
 // read as one set.
 const TILE_BG = "linear-gradient(160deg, #3a0944 0%, #32073e 50%, #24062d 100%)";
-// The medal's gold, for the rating star
-const GOLD = "#e3b553";
+/** The rating star: five rounded points in a warm gold, lit from the top like the medal */
+function RatingStar({ className = "" }: { className?: string }) {
+  const id = useId().replace(/:/g, "");
+  return (
+    <svg viewBox="0 0 24 24" className={className} role="img" aria-label="out of 5 stars">
+      <defs>
+        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffd978" />
+          <stop offset="1" stopColor="#f2a93b" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M11.1 2.6a1 1 0 0 1 1.8 0l2.4 4.9 5.4.8a1 1 0 0 1 .55 1.7l-3.9 3.8.92 5.4a1 1 0 0 1-1.45 1.05L12 17.7l-4.83 2.55a1 1 0 0 1-1.45-1.05l.92-5.4-3.9-3.8a1 1 0 0 1 .55-1.7l5.4-.8Z"
+        fill={`url(#${id}-g)`}
+        stroke="#f2a93b"
+        strokeWidth="1"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 /** One figure on the hero tile: the number over what it counts, in a light inner tile */
-function Stat({ value, label }: { value: React.ReactNode; label: string }) {
+// The number sits dead centre over its label; a mark after it (the star) hangs to the
+// right without pulling the number off centre. Number and label share one centre line in
+// every tile, and the number has a tight line box so all three tiles line up.
+function Stat({ value, label, mark }: { value: string; label: string; mark?: React.ReactNode }) {
   return (
-    <div className="[corner-shape:squircle] flex min-w-0 flex-col items-center gap-1 rounded-md bg-white/[0.08] px-2 py-3 text-center">
-      <span className="font-heading text-h3-lg tabular-nums text-white">{value}</span>
+    <div className="[corner-shape:squircle] flex min-w-0 flex-col items-center justify-center gap-2 rounded-md bg-white/[0.08] px-2 py-3 text-center">
+      <span className="relative font-heading text-h3-lg leading-none tabular-nums text-white">
+        {value}
+        {mark && <span className="absolute left-full top-1/2 ml-1 flex -translate-y-1/2">{mark}</span>}
+      </span>
       <span className="font-geist text-caption text-white/60">{label}</span>
     </div>
   );
@@ -225,15 +249,7 @@ function HostCard() {
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-2">
-          <Stat
-            value={
-              <span className="inline-flex items-center gap-1">
-                4.97
-                <Star className="size-4" style={{ fill: GOLD, color: GOLD }} strokeWidth={0} aria-label="stars" />
-              </span>
-            }
-            label="Guest rating"
-          />
+          <Stat value="4.97" mark={<RatingStar className="size-4" />} label="Guest rating" />
           <Stat value="34" label="Reviews" />
           <Stat value="4" label="Months open" />
         </div>
