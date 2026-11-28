@@ -14,6 +14,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import HoverTip from "./HoverTip";
 import Cta from "@/components/Cta";
 import { Tag } from "@/components/Tag";
+import { House, UsersRound } from "lucide-react";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 import { useCursorLight } from "./light";
 
@@ -172,110 +173,107 @@ function MedalIcon() {
   );
 }
 
-/** One figure in the stats row: the number, and what it counts under it, both left-aligned */
+/** One figure in the stats panel: the number over what it counts, centred in its column */
 function Stat({ value, label }: { value: React.ReactNode; label: string }) {
   return (
-    <div className="flex min-w-0 flex-1 flex-col items-start gap-1 px-4 text-left first:pl-0">
-      <span className="font-heading text-h3-lg tabular-nums text-heading">{value}</span>
+    <div className="flex min-w-0 flex-col items-center gap-1 px-2 py-4 text-center">
+      <span className="font-heading text-h3-md tabular-nums text-heading">{value}</span>
       <span className="font-geist text-caption text-muted">{label}</span>
     </div>
   );
 }
 
-/** The pixel pattern from the work cards, as a soft field on the verified card */
-function PixelField() {
-  const cells = [];
-  let seed = 3;
-  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  for (let y = 0; y < 22; y++)
-    for (let x = 0; x < 40; x++) {
-      const toRight = x / 40;
-      if (rnd() < toRight * 0.95 - 0.15) cells.push(<rect key={`${x}-${y}`} x={x * 12 + 2} y={y * 12 + 2} width="8" height="8" rx="1.5" fill={rnd() < 0.5 ? "#F2B6EC" : "#F9E4FF"} opacity={0.12 + toRight * 0.3} />);
-    }
+/** A fact about the place: a line icon in a small warm square, then the fact */
+function Fact({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <svg className="absolute inset-0 h-full w-full" viewBox="0 0 480 264" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      {cells}
-    </svg>
+    <li className="flex items-center gap-3">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-surface text-grape [&>svg]:size-4">{icon}</span>
+      <span className="font-geist text-body text-secondary">{children}</span>
+    </li>
   );
 }
 
-// Hierarchy, top to bottom: who (the name, with Superhost beside it) → what Nivasa is,
-// in one line → the proof, rating first → guests in their own words, one at a time → why we host →
-// the way out to Airbnb. Everything reads from one left edge. The numbers and the review
-// are from Nivasa's Airbnb profile (17 Nov 2026).
+// Hierarchy, after the reference's host sheet (Doorin, Dribbble): who (photo, name,
+// Superhost, where) → the proof as three numbers in one panel → about the place (why we
+// host, then two plain facts with icons) → guests in their own words → the way out to
+// Airbnb. Sections are set apart by space and a serif heading, not by eyebrows or fills.
+// The numbers and the reviews are from Nivasa's Airbnb profile (17 Nov 2026).
 function HostCard() {
   return (
-    <div className="w-[calc(100vw-32px)] max-w-[440px] overflow-hidden rounded-[20px] bg-background text-left shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)]">
-      {/* Header band */}
-      <div className="relative h-[72px] overflow-hidden sm:h-[80px]" style={{ background: "linear-gradient(120deg, #32073e 0%, #6e0d4b 55%, #9D136A 100%)" }}>
-        <PixelField />
-      </div>
-      <div className="px-5 pb-6 sm:px-6">
-        {/* Who */}
-        <div className="relative -mt-10 w-fit">
+    <div className="w-[calc(100vw-32px)] max-w-[440px] overflow-hidden rounded-2xl bg-background p-5 text-left shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)] sm:p-6">
+      {/* Who */}
+      <div className="flex items-center gap-4">
+        <div className="relative shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/hero/nivasa-hosts.png" alt="Nandagopal and Ashmik, the hosts of Nivasa" width={80} height={80} className="h-20 w-20 rounded-full object-cover ring-4 ring-background" />
-          <span className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-background shadow-[0_1px_3px_rgba(30,5,37,0.25)]" title="Identity verified">
-            <Shield className="h-3.5 w-3.5 text-grape" />
+          <img src="/images/hero/nivasa-hosts.png" alt="Nandagopal and Ashmik, the hosts of Nivasa" width={64} height={64} className="size-16 rounded-full object-cover" />
+          <span className="absolute -bottom-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-background shadow-[0_1px_2px_rgba(30,5,37,0.2)]" title="Identity verified">
+            <Shield className="size-3.5 text-grape" />
           </span>
         </div>
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <h2 className="m-0 font-heading text-h2 text-heading sm:text-h2-md">Nivasa</h2>
-          <Tag tone="grey" face="geist">
-            <MedalIcon /> Superhost
-          </Tag>
+        <div className="flex min-w-0 flex-col items-start gap-2">
+          <h2 className="m-0 font-heading text-h2 text-heading">Nivasa</h2>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <Tag tone="grey" face="geist">
+              <MedalIcon /> Superhost
+            </Tag>
+            <span className="font-geist text-caption text-muted">Bengaluru</span>
+          </div>
         </div>
-        <p className="mt-2 text-pretty font-geist text-body text-secondary sm:text-body-md">
-          <span className="text-text-base">Our side project with walls:</span> a sunlit 1BHK in HSR, Bengaluru, run by my friend Nandagopal and me.
-        </p>
-
-        {/* The proof, rating first */}
-        <div className="mt-5 flex items-stretch divide-x divide-line-soft border-y border-line-soft py-4">
-          <Stat
-            value={
-              <span className="inline-flex items-baseline gap-1">
-                4.97<span className="text-[16px] text-grape">★</span>
-              </span>
-            }
-            label="Guest rating"
-          />
-          <Stat value="33" label="Reviews" />
-          <Stat value="3" label="Months open" />
-        </div>
-
-        {/* Guests, in their own words, one at a time */}
-        <GuestReviews />
-
-        {/* Why we host */}
-        <p className="mt-5 font-geist text-caption font-medium uppercase tracking-[0.5px] text-muted">Why we host</p>
-        <p className="mt-2 text-pretty font-geist text-body text-secondary sm:text-body-md">
-          We love two things: hosting people, and building the spaces they stay in. Turns out guests test a home the way users test a product.
-        </p>
-
-        {/* The work cards' CTA, smaller: grape on hover, and the arrow circle slides out */}
-        <Cta href={PROFILE} external size="sm" className="mt-6">
-          See Nivasa on Airbnb
-        </Cta>
       </div>
+
+      {/* The proof, rating first */}
+      <div className="mt-5 grid grid-cols-3 divide-x divide-line-soft rounded-xl border border-line-soft">
+        <Stat
+          value={
+            <span className="inline-flex items-baseline gap-1">
+              4.97<span className="text-[16px] text-grape">★</span>
+            </span>
+          }
+          label="Guest rating"
+        />
+        <Stat value="33" label="Reviews" />
+        <Stat value="3" label="Months open" />
+      </div>
+
+      {/* About the place */}
+      <h3 className="m-0 mt-6 font-heading text-h4 text-heading">About Nivasa</h3>
+      <p className="mt-2 text-pretty font-geist text-body text-secondary">
+        We love hosting people and building the spaces they stay in. Guests test a home the way users test a product.
+      </p>
+      <ul className="m-0 mt-4 flex list-none flex-col gap-2 p-0">
+        <Fact icon={<House strokeWidth={1.75} />}>A sunlit 1BHK in HSR</Fact>
+        <Fact icon={<UsersRound strokeWidth={1.75} />}>Run by my friend Nandagopal and me</Fact>
+      </ul>
+
+      {/* Guests, in their own words, one at a time */}
+      <div className="mt-6 flex items-baseline justify-between gap-4">
+        <h3 className="m-0 font-heading text-h4 text-heading">Guest reviews</h3>
+        <span className="font-geist text-caption text-muted">33 on Airbnb</span>
+      </div>
+      <GuestReviews />
+
+      {/* The work cards' CTA, smaller: grape on hover, and the arrow circle slides out */}
+      <Cta href={PROFILE} external size="sm" className="mt-6">
+        See Nivasa on Airbnb
+      </Cta>
     </div>
   );
 }
 
 // ── Guest reviews ─────────────────────────────────────────────────────────────
 // Five real reviews from Nivasa's Airbnb page, quoted word for word (one sentence each),
-// on their own warm-grey card (the work cards' fill) so they read apart from the hosts'
-// own words below. One shows at a time: every 7 seconds the quote lifts out and blurs,
+// in a white hairline card, each signed with the guest's initial, name and stay. One shows at a time: every 7 seconds the quote lifts out and blurs,
 // and the next one comes in word by word, rising out of a soft blur. The active dot fills
 // up as the 7 seconds pass. All five sit in one grid cell, so the card is always as tall
 // as the longest and never jumps. Hovering or focusing pauses them (the dot stops
 // filling); the dots pick one; with reduced motion they swap without moving and don't
 // turn on their own.
 const REVIEWS = [
-  { quote: "The property had everything already, we didn’t need to ask for anything.", who: "Kabir, a guest" },
-  { quote: "The space is calm, peaceful, and immaculate.", who: "Santosh, a guest" },
-  { quote: "Everything felt fresh, clean and thoughtfully designed.", who: "Avinash, a guest" },
-  { quote: "Loved the place, feels like home.", who: "Koushik, a guest" },
-  { quote: "It genuinely felt like my little nest in the city.", who: "Jeena, our first guest" },
+  { quote: "The property had everything already, we didn’t need to ask for anything.", who: "Kabir", role: "Guest" },
+  { quote: "The space is calm, peaceful, and immaculate.", who: "Santosh", role: "Guest" },
+  { quote: "Everything felt fresh, clean and thoughtfully designed.", who: "Avinash", role: "Guest" },
+  { quote: "Loved the place, feels like home.", who: "Koushik", role: "Guest" },
+  { quote: "It genuinely felt like my little nest in the city.", who: "Jeena", role: "Our first guest" },
 ];
 const REVIEW_MS = 7000;
 const WORD_STAGGER_MS = 40;
@@ -307,7 +305,7 @@ function GuestReviews() {
 
   return (
     <figure
-      className="relative m-0 mt-5 overflow-hidden rounded-[16px] bg-card px-4 pb-3 pt-4 sm:px-5 sm:pt-5"
+      className="relative m-0 mt-3 overflow-hidden rounded-xl border border-line-soft px-4 pb-3 pt-4"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -315,13 +313,7 @@ function GuestReviews() {
       aria-roledescription="carousel"
       aria-label="What guests say"
     >
-      {/* A big opening quote mark, tucked into the corner */}
-      <span aria-hidden="true" className="pointer-events-none absolute -top-2 right-3 select-none font-heading text-[96px] leading-none text-grape/15">
-        “
-      </span>
-      <p className="m-0 font-geist text-caption font-medium uppercase tracking-[0.5px] text-muted">Guests say</p>
-
-      <div className="relative mt-2 grid">
+      <div className="relative grid">
         {REVIEWS.map((r, i) => {
           const on = i === index;
           const words = `“${r.quote}”`.split(" ");
@@ -329,7 +321,7 @@ function GuestReviews() {
             <blockquote
               key={r.who}
               aria-hidden={!on}
-              className={`col-start-1 row-start-1 m-0 text-pretty font-heading text-h4 text-heading sm:text-h4-md ${on ? "" : "pointer-events-none"}`}
+              className={`col-start-1 row-start-1 m-0 text-pretty font-heading text-h4 text-heading ${on ? "" : "pointer-events-none"}`}
             >
               {words.map((w, j) => (
                 <span key={j}>
@@ -351,22 +343,24 @@ function GuestReviews() {
         })}
       </div>
 
-      <figcaption className="mt-3 flex items-center justify-between gap-4 border-t border-heading/[0.06] pt-2">
-        <span className="flex min-w-0 items-center gap-2 font-geist text-caption text-muted">
-          <span className="text-grape" aria-hidden="true">★★★★★</span>
-          <span className="sr-only">5 stars, </span>
-          <span className="grid">
+      <figcaption className="mt-4 flex items-center justify-between gap-4">
+        <span className="grid min-w-0">
             {REVIEWS.map((r, i) => (
               <span
                 key={r.who}
                 aria-hidden={i !== index}
-                className={`col-start-1 row-start-1 truncate ${ease} duration-300 ${i === index ? "opacity-100" : "opacity-0"}`}
+                className={`col-start-1 row-start-1 flex min-w-0 items-center gap-2 ${ease} duration-300 ${i === index ? "opacity-100" : "opacity-0"}`}
                 style={{ transitionDelay: i === index && !reduced ? "300ms" : "0ms" }}
               >
-                {r.who}
+                <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface font-heading text-body text-grape">
+                  {r.who[0]}
+                </span>
+                <span className="flex min-w-0 flex-col">
+                  <span className="truncate font-geist text-body font-medium text-text">{r.who}</span>
+                  <span className="truncate font-geist text-caption text-muted">{r.role}</span>
+                </span>
               </span>
             ))}
-          </span>
         </span>
         <span className="flex shrink-0 items-center">
           {REVIEWS.map((r, i) => {
