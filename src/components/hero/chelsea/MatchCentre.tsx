@@ -253,22 +253,11 @@ function Slide({ dir, children, className = "" }: { dir: 1 | -1 | 0; children: R
 }
 
 // The card's foot: how fresh the data is, and the way out to the full match page
-function Footer({ live, updated, now, href }: { live: boolean; updated: number; now: number; href: string }) {
+function Footer({ updated, now, href }: { updated: number; now: number; href: string }) {
   return (
     <div className="flex shrink-0 items-center justify-between gap-[12px] border-t border-line-soft px-[16px] py-[10px]">
-      <span className="flex min-w-0 items-center gap-[8px] truncate font-geist text-caption text-muted">
-        {live ? (
-          <>
-            <span className="flex items-center gap-[6px] font-semibold text-[#c4231a]">
-              <LiveDot />
-              Live
-            </span>
-            <span className="h-[12px] w-px bg-line" aria-hidden="true" />
-            <span>Updated {ago(updated, now)}</span>
-          </>
-        ) : (
-          <span>Data from ESPN · updated {ago(updated, now)}</span>
-        )}
+      <span className="min-w-0 truncate font-geist text-caption text-muted">
+        Updated {ago(updated, now)}
       </span>
       <a
         href={href}
@@ -315,7 +304,7 @@ export default function MatchCentreCard() {
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             <Overview data={data} now={now} onOpen={(id) => setView({ id, dir: 1 })} />
           </div>
-          <Footer live={data.next[0].state === "in"} updated={at} now={now} href={espnUrl(data.next[0].id)} />
+          <Footer updated={at} now={now} href={espnUrl(data.next[0].id)} />
         </Slide>
       )}
     </div>
@@ -400,13 +389,13 @@ function MatchTile({ m, now, onOpen }: { m: Match; now: number; onOpen: () => vo
       className="mc-r-tile group block w-full overflow-hidden p-[8px] text-left text-white transition-transform duration-300 active:scale-[0.99]"
       style={{ background: TILE_BG }}
     >
-      <div className="flex justify-end px-[12px] pt-[10px]">
-        <Status m={m} now={now} />
-      </div>
 
-      <div className="flex items-start justify-between px-[4px] pt-[16px]">
+      <div className="flex items-start justify-between px-[4px] pt-[20px]">
         <TileSide s={m.home} />
-        <div className="flex min-w-0 flex-1 flex-col items-center pt-[10px]">
+        <div className="flex min-w-0 flex-1 flex-col items-center">
+          <span className="mb-[10px]">
+            <Status m={m} now={now} />
+          </span>
           {started ? (
             <>
               <span className="font-heading text-stat tabular-nums text-white">
@@ -524,7 +513,6 @@ function MatchView({ base, now, onBack }: { base: Match; now: number; onBack: ()
             <ChevronLeft size={18} {...ICON} />
             Back
           </button>
-          <Status m={m} now={now} tone="light" />
         </div>
         <Scoreboard m={m} />
         <div role="tablist" aria-label="Match centre" className="mc-r-track mt-[16px] grid grid-cols-4 gap-[2px] bg-surface p-[4px]">
@@ -560,7 +548,7 @@ function MatchView({ base, now, onBack }: { base: Match; now: number; onBack: ()
           </>
         )}
       </div>
-      <Footer live={m.state === "in"} updated={at} now={now} href={espnUrl(m.id)} />
+      <Footer updated={at} now={now} href={espnUrl(m.id)} />
     </>
   );
 }
@@ -590,11 +578,15 @@ function Scoreboard({ m }: { m: Match }) {
             <span className="font-geist text-caption text-muted">{day(at)}</span>
           </>
         ) : (
-          <span className="font-heading text-h1 tabular-nums text-heading">
-            {m.home.score ?? 0}
-            <span className="mx-[6px] text-muted">–</span>
-            {m.away.score ?? 0}
-          </span>
+          <>
+            <span className="font-heading text-h1 tabular-nums text-heading">
+              {m.home.score ?? 0}
+              <span className="mx-[6px] text-muted">–</span>
+              {m.away.score ?? 0}
+            </span>
+            {/* Just the minute (or FT) here; "Live" is said once, on the overview tile */}
+            <span className="font-geist text-caption tabular-nums text-muted">{m.state === "in" ? (m.clock === "HT" ? "Half time" : m.clock) : "Full time"}</span>
+          </>
         )}
       </div>
       {team(m.away, true)}
@@ -736,6 +728,8 @@ function EventBadge({ kind }: { kind: KeyEvent["kind"] }) {
 
 const minuteValue = (s: string) => s.split("+").reduce((n, p, i) => n + (parseInt(p, 10) || 0) / (i ? 100 : 1), 0);
 
+// Home events sit flush left (badge, then text), away events flush right (text, then
+// badge), so each side reads down one straight edge; the minute runs down the middle.
 function Timeline({ d }: { d: MatchDetail }) {
   const live = d.match.state === "in";
   const events = [...d.events].sort((a, b) => minuteValue(a.minute) - minuteValue(b.minute));
@@ -768,17 +762,17 @@ function Timeline({ d }: { d: MatchDetail }) {
         {events.map((e, i) => {
           const goal = isGoal(e.kind);
           const text = (
-            <span className={`flex min-w-0 items-center gap-[10px] ${e.home ? "flex-row-reverse text-right" : ""}`}>
+            <span className={`flex min-w-0 items-center gap-[10px] ${e.home ? "" : "flex-row-reverse text-right"}`}>
               <EventBadge kind={e.kind} />
               <span className="min-w-0">
                 {e.kind === "sub" ? (
                   <>
-                    <span className={`flex items-center gap-[4px] font-geist text-body font-medium text-heading ${e.home ? "justify-end" : ""}`}>
+                    <span className={`flex items-center gap-[4px] font-geist text-body font-medium text-heading ${e.home ? "" : "flex-row-reverse"}`}>
                       <ArrowUp size={12} strokeWidth={2.2} aria-label="On" className="shrink-0 text-[#15803d]" />
                       <span className="truncate">{e.player}</span>
                     </span>
                     {e.other && (
-                      <span className={`flex items-center gap-[4px] font-geist text-caption text-muted ${e.home ? "justify-end" : ""}`}>
+                      <span className={`flex items-center gap-[4px] font-geist text-caption text-muted ${e.home ? "" : "flex-row-reverse"}`}>
                         <ArrowDown size={12} strokeWidth={2.2} aria-label="Off" className="shrink-0 text-[#c4231a]" />
                         <span className="truncate">{e.other}</span>
                       </span>
@@ -799,11 +793,11 @@ function Timeline({ d }: { d: MatchDetail }) {
           );
           return (
             <li key={i} className="relative grid grid-cols-[1fr_56px_1fr] items-center py-[10px]">
-              <div className="flex min-w-0 justify-end">{e.home && text}</div>
+              <div className="flex min-w-0 justify-start">{e.home && text}</div>
               <div className="flex justify-center">
                 <span className={`mc-r-tag relative min-w-[40px] px-[6px] py-[2px] text-center font-geist text-caption font-semibold tabular-nums ${goal ? "bg-primary text-white" : "bg-background text-muted ring-1 ring-inset ring-line-soft"}`}>{e.minute}</span>
               </div>
-              <div className="flex min-w-0 justify-start">{!e.home && text}</div>
+              <div className="flex min-w-0 justify-end">{!e.home && text}</div>
             </li>
           );
         })}
@@ -1014,14 +1008,15 @@ function Bench({ m, home, away }: { m: Match; home?: Lineup; away?: Lineup }) {
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
-// One list, Shots down to Red cards, like a box score in Apple Sports: number · label ·
-// number on even 44px rows, in three fixed columns so every number sits on the same edge
-// as the crest above it. The side ahead on a row is set bold in its team colour, the other
-// drops to grey. Discipline rows have no "winner" (more fouls isn't a lead), so both stay
-// plain.
+// One list, Shots down to Red cards. Three fixed columns so every number sits on the
+// edge under its crest. The numbers lead (14px semibold, tabular); the label is the quiet
+// part (12px, centred). Each side keeps its own colour on every row, Chelsea grape and the
+// opponent blackcurrant: the side ahead in full strength, the side behind in a soft tint
+// of the same colour, never grey. Discipline rows have no "winner" (more fouls isn't a
+// lead), so both sides show in full.
 const NEUTRAL = new Set(["Fouls", "Offsides", "Yellow cards", "Red cards"]);
-const teamText = (s: Side) => (s.isChelsea ? "text-grape" : "text-primary");
 const STAT_COLS = "grid grid-cols-[48px_1fr_48px] items-center px-[16px]";
+const teamInk = (s: Side, strong: boolean) => (s.isChelsea ? (strong ? "text-grape" : "text-grape/45") : strong ? "text-primary" : "text-primary/40");
 
 function Stats({ d }: { d: MatchDetail }) {
   const m = d.match;
@@ -1031,7 +1026,7 @@ function Stats({ d }: { d: MatchDetail }) {
     <section className="mc-r-box overflow-hidden ring-1 ring-inset ring-line-soft">
       <div className={`${STAT_COLS} h-[48px] border-b border-line-soft`}>
         <Crest src={m.home.logo} size={24} className="justify-self-start" />
-        <span className="text-center font-geist text-caption font-semibold uppercase tracking-[0.6px] text-muted">Team stats</span>
+        <span className="text-center font-geist text-caption font-semibold uppercase tracking-[0.6px] text-heading">Team stats</span>
         <Crest src={m.away.logo} size={24} className="justify-self-end" />
       </div>
       <ul>
@@ -1045,12 +1040,12 @@ function Stats({ d }: { d: MatchDetail }) {
 
 function CompareRow({ s, home, away, neutral }: { s: Stat; home: Side; away: Side; neutral?: boolean }) {
   const lead = neutral || s.home === s.away ? null : s.home > s.away ? "home" : "away";
-  const tone = (side: "home" | "away", t: Side) => (lead === side ? `font-semibold ${teamText(t)}` : lead ? "text-muted" : "font-medium text-heading");
+  const ink = (side: "home" | "away", t: Side) => teamInk(t, !lead || lead === side);
   return (
     <li className={`${STAT_COLS} h-[44px] border-t border-line-soft first:border-t-0`}>
-      <span className={`text-left font-geist text-body tabular-nums ${tone("home", home)}`}>{s.home}</span>
-      <span className="text-center font-geist text-body text-secondary">{s.label}</span>
-      <span className={`text-right font-geist text-body tabular-nums ${tone("away", away)}`}>{s.away}</span>
+      <span className={`text-left font-geist text-body font-semibold tabular-nums ${ink("home", home)}`}>{s.home}</span>
+      <span className="text-center font-geist text-caption text-secondary">{s.label}</span>
+      <span className={`text-right font-geist text-body font-semibold tabular-nums ${ink("away", away)}`}>{s.away}</span>
     </li>
   );
 }
