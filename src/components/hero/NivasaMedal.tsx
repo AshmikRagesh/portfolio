@@ -12,14 +12,12 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import HoverTip from "./HoverTip";
-import { ArrowUpRight } from "lucide-react";
 import { Tag } from "@/components/Tag";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 import { useCursorLight } from "./light";
 
 export const MEDAL_W = 180;
 export const MEDAL_H = 270;
-const PROFILE = "https://www.airbnb.co.in/users/profile/1734971986341408714";
 const CX = 90;
 const CY = 198;
 
@@ -225,8 +223,8 @@ function SectionHead({ children }: { children: React.ReactNode }) {
 
 // Hierarchy, after the reference's host sheet (Doorin, Dribbble): who (photo, name,
 // Superhost) and the proof, on the blackcurrant tile → about Nivasa, in the hosts' own
-// words from the Airbnb profile → guests in their own words, on a guestbook page. The
-// way out to Airbnb is a small link in the tile's top right.
+// words from the Airbnb profile → guests in their own words, on a guestbook page. No
+// button: the card is just the host profile.
 // The numbers, the intro and the reviews are from Nivasa's Airbnb profile (28 Nov 2026).
 function HostCard() {
   return (
@@ -247,19 +245,6 @@ function HostCard() {
               <MedalIcon /> Superhost
             </Tag>
           </div>
-
-          {/* The way out to Airbnb: a small linked pill in the tile's top right, glass on the
-              blackcurrant, turning grape on hover with the arrow nudging out */}
-          <a
-            href={PROFILE}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="See Nivasa on Airbnb (opens in a new tab)"
-            className="group/air ml-auto inline-flex h-8 shrink-0 items-center gap-1 self-start rounded-full bg-white/10 pl-3 pr-2 font-geist text-caption font-medium text-white ring-1 ring-inset ring-white/15 transition-colors duration-300 hover:bg-grape hover:ring-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          >
-            Airbnb
-            <ArrowUpRight className="size-4 transition-transform duration-300 group-hover/air:-translate-y-px group-hover/air:translate-x-px" strokeWidth={2} aria-hidden="true" />
-          </a>
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-2">
