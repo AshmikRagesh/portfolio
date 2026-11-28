@@ -12,14 +12,12 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import HoverTip from "./HoverTip";
-import Cta from "@/components/Cta";
 import { Tag } from "@/components/Tag";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 import { useCursorLight } from "./light";
 
 export const MEDAL_W = 180;
 export const MEDAL_H = 270;
-const PROFILE = "https://www.airbnb.co.in/users/profile/1734971986341408714";
 const CX = 90;
 const CY = 198;
 
@@ -225,7 +223,8 @@ function SectionHead({ children }: { children: React.ReactNode }) {
 
 // Hierarchy, after the reference's host sheet (Doorin, Dribbble): who (photo, name,
 // Superhost) and the proof, on the blackcurrant tile → about Nivasa, in the hosts' own
-// words from the Airbnb profile → guests in their own words, on a guestbook page → the way out to Airbnb, filling the card's width.
+// words from the Airbnb profile → guests in their own words, on a guestbook page. No
+// button: the card is just the host profile.
 // The numbers, the intro and the reviews are from Nivasa's Airbnb profile (28 Nov 2026).
 function HostCard() {
   return (
@@ -266,12 +265,6 @@ function HostCard() {
         {/* Guests, in their own words, one at a time */}
         <SectionHead>Guest reviews</SectionHead>
         <GuestReviews />
-
-        {/* The site's CTA, filled to the card's width (as in the expanded reel): grape on
-            hover, and the arrow circle slides out */}
-        <Cta href={PROFILE} external className="cta-full mt-6">
-          See Nivasa on Airbnb
-        </Cta>
       </div>
     </div>
   );
