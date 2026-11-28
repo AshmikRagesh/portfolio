@@ -14,7 +14,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import HoverTip from "./HoverTip";
 import Cta from "@/components/Cta";
 import { Tag } from "@/components/Tag";
-import { House, UsersRound } from "lucide-react";
+import { House, MapPin, Star, UsersRound } from "lucide-react";
 import FocusOverlay, { FlipStage, TURN_MS, useReducedMotion, type FocusPhase } from "./FocusOverlay";
 import { useCursorLight } from "./light";
 
@@ -173,60 +173,81 @@ function MedalIcon() {
   );
 }
 
+// Every inner panel (the numbers, the facts, the reviews) shares one finish: white, a
+// hairline, and the faintest lift, so they read as one set on the card
+const PANEL = "rounded-xl border border-line-soft bg-background shadow-[0_1px_2px_rgba(30,5,37,0.04)]";
+
 /** One figure in the stats panel: the number over what it counts, centred in its column */
 function Stat({ value, label }: { value: React.ReactNode; label: string }) {
   return (
     <div className="flex min-w-0 flex-col items-center gap-1 px-2 py-4 text-center">
-      <span className="font-heading text-h3-md tabular-nums text-heading">{value}</span>
+      <span className="font-heading text-h3-lg tabular-nums text-heading">{value}</span>
       <span className="font-geist text-caption text-muted">{label}</span>
     </div>
   );
 }
 
-/** A fact about the place: a line icon in a small warm square, then the fact */
-function Fact({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
+/** A fact about the place, as a row in a grouped list: icon, then what it is over a detail */
+function Fact({ icon, title, detail }: { icon: React.ReactNode; title: string; detail: string }) {
   return (
-    <li className="flex items-center gap-3">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-surface text-grape [&>svg]:size-4">{icon}</span>
-      <span className="font-geist text-body text-secondary">{children}</span>
+    <li className="flex items-center gap-3 px-4 py-3">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-line-soft text-grape [&>svg]:size-4">{icon}</span>
+      <span className="flex min-w-0 flex-col">
+        <span className="font-geist text-body font-medium text-text">{title}</span>
+        <span className="font-geist text-caption text-muted">{detail}</span>
+      </span>
     </li>
+  );
+}
+
+/** A section's serif heading, with an optional quiet note on the right */
+function SectionHead({ children, note }: { children: React.ReactNode; note?: string }) {
+  return (
+    <div className="mt-6 flex items-baseline justify-between gap-4">
+      <h3 className="m-0 font-heading text-h4 text-heading">{children}</h3>
+      {note && <span className="font-geist text-caption text-muted">{note}</span>}
+    </div>
   );
 }
 
 // Hierarchy, after the reference's host sheet (Doorin, Dribbble): who (photo, name,
 // Superhost, where) → the proof as three numbers in one panel → about the place (why we
-// host, then two plain facts with icons) → guests in their own words → the way out to
+// host, then the facts as a grouped list) → guests in their own words → the way out to
 // Airbnb. Sections are set apart by space and a serif heading, not by eyebrows or fills.
 // The numbers and the reviews are from Nivasa's Airbnb profile (17 Nov 2026).
 function HostCard() {
   return (
-    <div className="w-[calc(100vw-32px)] max-w-[440px] overflow-hidden rounded-2xl bg-background p-5 text-left shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)] sm:p-6">
+    <div className="w-[calc(100vw-32px)] max-h-[calc(100dvh-32px)] max-w-[440px] overflow-y-auto overscroll-contain rounded-2xl bg-background p-5 text-left shadow-[0_0_0_1px_rgba(30,5,37,0.06),0_2px_4px_rgba(30,5,37,0.04),0_24px_56px_rgba(30,5,37,0.16)] sm:p-6">
       {/* Who */}
       <div className="flex items-center gap-4">
-        <div className="relative shrink-0">
+        <div className="relative shrink-0 rounded-full p-0.5 ring-1 ring-line">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/hero/nivasa-hosts.png" alt="Nandagopal and Ashmik, the hosts of Nivasa" width={64} height={64} className="size-16 rounded-full object-cover" />
+          <img src="/images/hero/nivasa-hosts.png" alt="Nandagopal and Ashmik, the hosts of Nivasa" width={64} height={64} className="block size-16 rounded-full object-cover" />
           <span className="absolute -bottom-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-background shadow-[0_1px_2px_rgba(30,5,37,0.2)]" title="Identity verified">
             <Shield className="size-3.5 text-grape" />
           </span>
         </div>
         <div className="flex min-w-0 flex-col items-start gap-2">
-          <h2 className="m-0 font-heading text-h2 text-heading">Nivasa</h2>
+          <h2 className="m-0 font-heading text-h2 text-heading sm:text-h2-md">Nivasa</h2>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <Tag tone="grey" face="geist">
               <MedalIcon /> Superhost
             </Tag>
-            <span className="font-geist text-caption text-muted">Bengaluru</span>
+            <span className="inline-flex items-center gap-1 font-geist text-caption text-muted">
+              <MapPin className="size-3" strokeWidth={2} aria-hidden="true" />
+              Bengaluru
+            </span>
           </div>
         </div>
       </div>
 
       {/* The proof, rating first */}
-      <div className="mt-5 grid grid-cols-3 divide-x divide-line-soft rounded-xl border border-line-soft">
+      <div className={`mt-6 grid grid-cols-3 divide-x divide-line-soft ${PANEL}`}>
         <Stat
           value={
-            <span className="inline-flex items-baseline gap-1">
-              4.97<span className="text-[16px] text-grape">★</span>
+            <span className="inline-flex items-center gap-1">
+              4.97
+              <Star className="size-4 fill-grape text-grape" strokeWidth={0} aria-label="stars" />
             </span>
           }
           label="Guest rating"
@@ -236,20 +257,17 @@ function HostCard() {
       </div>
 
       {/* About the place */}
-      <h3 className="m-0 mt-6 font-heading text-h4 text-heading">About Nivasa</h3>
+      <SectionHead>About Nivasa</SectionHead>
       <p className="mt-2 text-pretty font-geist text-body text-secondary">
         We love hosting people and building the spaces they stay in. Guests test a home the way users test a product.
       </p>
-      <ul className="m-0 mt-4 flex list-none flex-col gap-2 p-0">
-        <Fact icon={<House strokeWidth={1.75} />}>A sunlit 1BHK in HSR</Fact>
-        <Fact icon={<UsersRound strokeWidth={1.75} />}>Run by my friend Nandagopal and me</Fact>
+      <ul className={`m-0 mt-4 flex list-none flex-col divide-y divide-line-soft p-0 ${PANEL}`}>
+        <Fact icon={<House strokeWidth={1.75} />} title="A sunlit 1BHK" detail="In HSR, Bengaluru" />
+        <Fact icon={<UsersRound strokeWidth={1.75} />} title="Run by two friends" detail="Nandagopal and me" />
       </ul>
 
       {/* Guests, in their own words, one at a time */}
-      <div className="mt-6 flex items-baseline justify-between gap-4">
-        <h3 className="m-0 font-heading text-h4 text-heading">Guest reviews</h3>
-        <span className="font-geist text-caption text-muted">33 on Airbnb</span>
-      </div>
+      <SectionHead note="33 on Airbnb">Guest reviews</SectionHead>
       <GuestReviews />
 
       {/* The work cards' CTA, smaller: grape on hover, and the arrow circle slides out */}
@@ -305,7 +323,7 @@ function GuestReviews() {
 
   return (
     <figure
-      className="relative m-0 mt-3 overflow-hidden rounded-xl border border-line-soft px-4 pb-3 pt-4"
+      className={`relative m-0 mt-3 overflow-hidden px-4 pb-3 pt-4 ${PANEL}`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -343,7 +361,7 @@ function GuestReviews() {
         })}
       </div>
 
-      <figcaption className="mt-4 flex items-center justify-between gap-4">
+      <figcaption className="mt-4 flex items-center justify-between gap-4 border-t border-line-soft pt-3">
         <span className="grid min-w-0">
             {REVIEWS.map((r, i) => (
               <span
@@ -352,7 +370,7 @@ function GuestReviews() {
                 className={`col-start-1 row-start-1 flex min-w-0 items-center gap-2 ${ease} duration-300 ${i === index ? "opacity-100" : "opacity-0"}`}
                 style={{ transitionDelay: i === index && !reduced ? "300ms" : "0ms" }}
               >
-                <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface font-heading text-body text-grape">
+                <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full border border-line-soft font-heading text-body text-grape">
                   {r.who[0]}
                 </span>
                 <span className="flex min-w-0 flex-col">
